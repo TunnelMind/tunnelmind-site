@@ -1,1 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TunnelMind — Chat with your WireGuard VPN</title>
+<meta name="description" content="Open source MCP server for WireGuard. Read logs, query peers, and manage policy through natural language AI.">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+--bg: #060810;
+--surface: #0d1117;
+--surface2: #131a24;
+--border: #1a2535;
+--green: #00ff88;
+--green-dim: #00cc6a;
+--cyan: #00d4ff;
+--amber: #ffb800;
+--red: #ff4455;
+--text: #c9d8e8;
+--muted: #4a6075;
+--mono: 'JetBrains Mono', monospace;
+--display: 'Bebas Neue', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+background: var(--bg);
+color: var(--text);
+font-family: var(--mono);
+font-size: 14px;
+line-height: 1.6;
+overflow-x: hidden;
+}
+body::before {
+content: '';
+position: fixed;
+inset: 0;
+background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+pointer-events: none;
+z-index: 9999;
+}
+body::after {
+content: '';
+position: fixed;
+inset: 0;
+background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,255,136,0.03) 1px, transparent 1px);
+background-size: 40px 40px;
+pointer-events: none;
+z-index: 0;
+}
+nav {
+position: fixed;
+top: 0; left: 0; right: 0;
+z-index: 100;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 0 40px;
+height: 56px;
+background: rgba(6,8,16,0.9);
+border-bottom: 1px solid var(--border);
+backdrop-filter: blur(8px);
+}
+.nav-logo { font-family: var(--display); font-size: 22px; letter-spacing: 2px; color: var(--green); text-shadow: 0 0 20px rgba(0,255,136,0.4); }
+.nav-logo span { color: var(--cyan); }
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 12px; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s; }
+.nav-links a:hover { color: var(--green); }
+.nav-cta { background: transparent; border: 1px solid var(--green); color: var(--green) !important; padding: 6px 16px; border-radius: 3px; transition: background 0.2s, color 0.2s !important; }
+.nav-cta:hover { background: var(--green) !important; color: var(--bg) !important; }
+.hero {
+position: relative; z-index: 1;
+min-height: 100vh;
+display: flex; flex-direction: column; justify-content: center;
+padding: 80px 40px 60px;
+max-width: 1100px; margin: 0 auto;
+}
+.hero-eyebrow { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 24px; opacity: 0; animation: fadeUp 0.6s ease 0.2s forwards; }
+.hero-eyebrow::before { content: '// '; color: var(--muted); }
+.hero-title { font-family: var(--display); font-size: clamp(56px, 10vw, 120px); line-height: 0.95; letter-spacing: 3px; color: #fff; margin-bottom: 8px; opacity: 0; animation: fadeUp 0.6s ease 0.35s forwards; }
+.hero-title .accent { color: var(--green); text-shadow: 0 0 40px rgba(0,255,136,0.3); }
+.hero-subtitle { font-family: var(--display); font-size: clamp(28px, 4vw, 52px); letter-spacing: 3px; color: var(--muted); margin-bottom: 40px; opacity: 0; animation: fadeUp 0.6s ease 0.5s forwards; }
+.hero-desc { font-size: 15px; color: var(--text); max-width: 540px; line-height: 1.8; margin-bottom: 48px; opacity: 0; animation: fadeUp 0.6s ease 0.65s forwards; }
+.hero-actions { display: flex; gap: 16px; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.6s ease 0.8s forwards; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; font-family: var(--mono); font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-decoration: none; border-radius: 3px; transition: all 0.2s; cursor: pointer; border: none; }
+.btn-primary { background: var(--green); color: var(--bg); }
+.btn-primary:hover { background: var(--green-dim); transform: translateY(-1px); box-shadow: 0 8px 24px rgba(0,255,136,0.25); }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.btn-ghost:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-1px); }
+.terminal-wrap { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 480px; opacity: 0; animation: fadeLeft 0.8s ease 1s forwards; }
+@media (max-width: 900px) {
+.terminal-wrap { position: relative; top: auto; right: auto; transform: none; width: 100%; margin-top: 48px; animation: fadeUp 0.8s ease 1s forwards; }
+}
+.terminal { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(0,255,136,0.05); }
+.terminal-bar { background: var(--surface2); padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); }
+.dot { width: 10px; height: 10px; border-radius: 50%; }
+.dot-r { background: #ff5f56; } .dot-y { background: #ffbd2e; } .dot-g { background: #27c93f; }
+.terminal-title { margin-left: 8px; font-size: 11px; color: var(--muted); letter-spacing: 1px; }
+.terminal-body { padding: 20px; min-height: 320px; font-size: 13px; line-height: 1.9; }
+.t-prompt { color: var(--green); } .t-cmd { color: #fff; } .t-key { color: var(--cyan); }
+.t-val { color: var(--amber); } .t-ok { color: var(--green); } .t-dim { color: var(--muted); } .t-warn { color: var(--red); }
+.cursor { display: inline-block; width: 8px; height: 14px; background: var(--green); vertical-align: middle; animation: blink 1s step-end infinite; }
+.section { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 80px 40px; }
+.section-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 12px; }
+.section-label::before { content: '// '; color: var(--muted); }
+.section-title { font-family: var(--display); font-size: clamp(36px, 5vw, 64px); letter-spacing: 2px; color: #fff; margin-bottom: 48px; line-height: 1; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.feature { background: var(--surface); padding: 32px 28px; transition: background 0.2s; }
+.feature:hover { background: var(--surface2); }
+.feature-icon { font-size: 24px; margin-bottom: 16px; }
+.feature-name { font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 10px; letter-spacing: 0.5px; }
+.feature-desc { font-size: 12px; color: var(--muted); line-height: 1.8; }
+.feature-tag { display: inline-block; margin-top: 12px; font-size: 10px; padding: 2px 8px; border-radius: 2px; letter-spacing: 1px; text-transform: uppercase; }
+.tag-live { background: rgba(0,255,136,0.1); color: var(--green); border: 1px solid rgba(0,255,136,0.2); }
+.tag-soon { background: rgba(0,212,255,0.08); color: var(--cyan); border: 1px solid rgba(0,212,255,0.15); }
+.tag-future { background: rgba(255,184,0,0.08); color: var(--amber); border: 1px solid rgba(255,184,0,0.15); }
+.tools-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.tools-header { background: var(--surface2); display: grid; grid-template-columns: 200px 1fr 120px; padding: 12px 24px; border-bottom: 1px solid var(--border); font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.tool-row { display: grid; grid-template-columns: 200px 1fr 120px; padding: 16px 24px; border-bottom: 1px solid var(--border); align-items: center; transition: background 0.15s; }
+.tool-row:last-child { border-bottom: none; }
+.tool-row:hover { background: var(--surface2); }
+.tool-name { font-weight: 600; color: var(--cyan); font-size: 13px; }
+.tool-desc { font-size: 12px; color: var(--muted); padding-right: 20px; }
+.roadmap { display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.roadmap-item { display: flex; align-items: flex-start; gap: 24px; padding: 24px 28px; border-bottom: 1px solid var(--border); background: var(--surface); transition: background 0.2s; }
+.roadmap-item:last-child { border-bottom: none; }
+.roadmap-item:hover { background: var(--surface2); }
+.roadmap-version { font-family: var(--display); font-size: 28px; letter-spacing: 1px; min-width: 80px; line-height: 1; padding-top: 2px; }
+.v1 { color: var(--green); } .v2 { color: var(--cyan); } .v25 { color: var(--amber); } .v3 { color: #a78bfa; }
+.roadmap-title { font-weight: 700; font-size: 14px; color: #fff; margin-bottom: 6px; }
+.roadmap-desc { font-size: 12px; color: var(--muted); line-height: 1.8; }
+.cta-section { position: relative; z-index: 1; text-align: center; padding: 80px 40px 100px; border-top: 1px solid var(--border); }
+.cta-section::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 600px; height: 1px; background: linear-gradient(90deg, transparent, var(--green), transparent); }
+.cta-label { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: var(--green); margin-bottom: 20px; }
+.cta-title { font-family: var(--display); font-size: clamp(40px, 6vw, 72px); letter-spacing: 3px; color: #fff; margin-bottom: 16px; line-height: 1; }
+.cta-sub { font-size: 13px; color: var(--muted); margin-bottom: 40px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.email-form { display: flex; gap: 12px; max-width: 420px; margin: 0 auto 24px; justify-content: center; }
+.email-input { flex: 1; background: var(--surface); border: 1px solid var(--border); border-radius: 3px; padding: 11px 16px; font-family: var(--mono); font-size: 13px; color: var(--text); outline: none; transition: border-color 0.2s; }
+.email-input::placeholder { color: var(--muted); }
+.email-input:focus { border-color: var(--green); }
+.cta-links { display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 32px; }
+.cta-links a { font-size: 12px; color: var(--muted); text-decoration: none; letter-spacing: 1px; transition: color 0.2s; }
+.cta-links a:hover { color: var(--green); }
+footer { position: relative; z-index: 1; border-top: 1px solid var(--border); padding: 24px 40px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 11px; color: var(--muted); }
+footer a { color: var(--muted); text-decoration: none; }
+footer a:hover { color: var(--green); }
+.divider { position: relative; z-index: 1; border: none; border-top: 1px solid var(--border); max-width: 1100px; margin: 0 auto; }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes fadeLeft { from { opacity: 0; transform: translate(20px, -50%); } to { opacity: 1; transform: translate(0, -50%); } }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+.t-line { display: block; overflow: hidden; white-space: nowrap; opacity: 0; }
+.t-line.show { opacity: 1; }
+</style>
+</head>
+<body>
+<nav>
+<div class="nav-logo">TUNNEL<span>MIND</span></div>
+<ul class="nav-links">
+<li><a href="#features">Features</a></li>
+<li><a href="#tools">Tools</a></li>
+<li><a href="#roadmap">Roadmap</a></li>
+<li><a href="https://github.com/TunnelMind/tunnelmind" target="_blank" class="nav-cta">GitHub →</a></li>
+</ul>
+</nav>
 
+<section class="hero">
+<p class="hero-eyebrow">open source · apache 2.0 · mcp server</p>
+<h1 class="hero-title">TUNNEL<span class="accent">MIND</span></h1>
+<p class="hero-subtitle">TALK TO YOUR VPN</p>
+<p class="hero-desc">An open source MCP server for WireGuard. Query peers, read logs, and manage policy through natural language — directly inside your AI assistant. No dashboards. No GUIs. Just ask.</p>
+<div class="hero-actions">
+<a href="https://github.com/TunnelMind/tunnelmind" target="_blank" class="btn btn-primary">↓ Get Started</a>
+<a href="#features" class="btn btn-ghost">See How It Works</a>
+</div>
+<div class="terminal-wrap">
+<div class="terminal">
+<div class="terminal-bar">
+<div class="dot dot-r"></div><div class="dot dot-y"></div><div class="dot dot-g"></div>
+<span class="terminal-title">tunnelmind — claude desktop</span>
+</div>
+<div class="terminal-body" id="terminal-body"></div>
+</div>
+</div>
+</section>
+
+<hr class="divider">
+
+<section class="section" id="features">
+<p class="section-label">What it does</p>
+<h2 class="section-title">NATURAL LANGUAGE<br>FOR WIREGUARD</h2>
+<div class="features-grid">
+<div class="feature"><div class="feature-icon">🔍</div><div class="feature-name">Peer Visibility</div><div class="feature-desc">Ask "who's connected right now?" and get structured peer data — public keys, endpoints, last handshake, transfer totals.</div><span class="feature-tag tag-live">v1 · live</span></div>
+<div class="feature"><div class="feature-icon">📄</div><div class="feature-name">Config Intelligence</div><div class="feature-desc">Parse and query your wg0.conf in plain English. Private keys are always redacted — never exposed to the AI.</div><span class="feature-tag tag-live">v1 · live</span></div>
+<div class="feature"><div class="feature-icon">📋</div><div class="feature-name">Log Analysis</div><div class="feature-desc">Pull recent WireGuard log entries from journald or syslog. Filter by errors, search by peer, or ask for a plain-English summary.</div><span class="feature-tag tag-live">v1 · live</span></div>
+<div class="feature"><div class="feature-icon">⚙️</div><div class="feature-name">Policy Chat</div><div class="feature-desc">Describe what you want to change. Get a config diff back. Nothing applies without your explicit confirmation — always.</div><span class="feature-tag tag-live">v1 · live</span></div>
+<div class="feature"><div class="feature-icon">⚡</div><div class="feature-name">eBPF Telemetry</div><div class="feature-desc">Kernel-level traffic visibility. Real-time packet drops, latency anomalies, and per-peer flow data via BCC/libbpf.</div><span class="feature-tag tag-soon">v2 · planned</span></div>
+<div class="feature"><div class="feature-icon">🛡️</div><div class="feature-name">Threat Intel</div><div class="feature-desc">OpenClaw integration — correlate peer anomalies with threat feeds. AI-assisted policy synthesis from observed traffic patterns.</div><span class="feature-tag tag-future">v2.5 · roadmap</span></div>
+</div>
+</section>
+
+<hr class="divider">
+
+<section class="section" id="tools">
+<p class="section-label">MCP Tools</p>
+<h2 class="section-title">FIVE TOOLS.<br>FULL CONTROL.</h2>
+<div class="tools-wrap">
+<div class="tools-header"><div>Tool</div><div>Description</div><div>Status</div></div>
+<div class="tool-row"><div class="tool-name">get_peers</div><div class="tool-desc">List all WireGuard peers with status, last handshake, endpoint, and data transfer</div><span class="feature-tag tag-live">v1</span></div>
+<div class="tool-row"><div class="tool-name">read_config</div><div class="tool-desc">Read and parse wg0.conf — private keys automatically redacted before returning</div><span class="feature-tag tag-live">v1</span></div>
+<div class="tool-row"><div class="tool-name">read_logs</div><div class="tool-desc">Tail WireGuard logs from journald or syslog with optional error filtering</div><span class="feature-tag tag-live">v1</span></div>
+<div class="tool-row"><div class="tool-name">suggest_policy</div><div class="tool-desc">Convert natural language intent into a WireGuard config diff — never auto-applies</div><span class="feature-tag tag-live">v1</span></div>
+<div class="tool-row"><div class="tool-name">apply_policy</div><div class="tool-desc">Apply a staged policy change — requires explicit confirm=True as a safety gate</div><span class="feature-tag tag-live">v1</span></div>
+</div>
+</section>
+
+<hr class="divider">
+
+<section class="section" id="roadmap">
+<p class="section-label">What's coming</p>
+<h2 class="section-title">ROADMAP</h2>
+<div class="roadmap">
+<div class="roadmap-item"><div class="roadmap-version v1">V1</div><div class="roadmap-content"><div class="roadmap-title">Core MCP Tools — Available Now</div><div class="roadmap-desc">Peer visibility, config parsing, log reading, and policy chat. Works with Claude Desktop and any MCP-compatible AI assistant. Install via pip.</div></div></div>
+<div class="roadmap-item"><div class="roadmap-version v2">V2</div><div class="roadmap-content"><div class="roadmap-title">eBPF Telemetry Provider</div><div class="roadmap-desc">Kernel-level WireGuard visibility using BCC/libbpf. Real-time packet drops, per-peer latency, and anomalous traffic detection — all queryable in plain English.</div></div></div>
+<div class="roadmap-item"><div class="roadmap-version v25">V2.5</div><div class="roadmap-content"><div class="roadmap-title">OpenClaw Threat Intelligence</div><div class="roadmap-desc">Cross-reference peer anomalies with OpenClaw threat feeds. The AI can correlate eBPF-observed behavior with known threat signatures and suggest defensive policy changes.</div></div></div>
+<div class="roadmap-item"><div class="roadmap-version v3">V3</div><div class="roadmap-content"><div class="roadmap-title">Policy Synthesis Engine</div><div class="roadmap-desc">"Block all peers that haven't sent traffic in 30 days" becomes an auto-generated config diff based on eBPF-observed traffic history. Natural language → policy, grounded in real data.</div></div></div>
+</div>
+</section>
+
+<hr class="divider">
+
+<section class="cta-section">
+<p class="cta-label">// open source · free forever</p>
+<h2 class="cta-title">GET EARLY ACCESS</h2>
+<p class="cta-sub">Stay updated as TunnelMind evolves. No spam — just release notes and major milestones.</p>
+<form class="email-form" onsubmit="handleSubmit(event)">
+<input type="email" class="email-input" placeholder="you@example.com" id="email-input" required>
+<button type="submit" class="btn btn-primary">Notify Me</button>
+</form>
+<div id="form-msg" style="font-size:12px; color: var(--green); margin-top: 8px; min-height: 18px;"></div>
+<div class="cta-links">
+<a href="https://github.com/TunnelMind/tunnelmind" target="_blank">★ Star on GitHub</a>
+<a href="mailto:hello@tunnelmind.ai">hello@tunnelmind.ai</a>
+<a href="mailto:security@tunnelmind.ai">security@tunnelmind.ai</a>
+<a href="https://github.com/TunnelMind/tunnelmind/blob/main/docs/contributing.md" target="_blank">Contribute</a>
+</div>
+</section>
+
+<footer>
+<div>© 2025 TunnelMind · Apache 2.0</div>
+<div><a href="https://github.com/TunnelMind/tunnelmind" target="_blank">GitHub</a> · <a href="mailto:hello@tunnelmind.ai">Contact</a> · <a href="mailto:security@tunnelmind.ai">Security</a></div>
+</footer>
+
+<script>
+const lines = [
+{ text: '$ tunnelmind serve', class: '', delay: 400 },
+{ text: ' → connected to wg0', class: 't-ok', delay: 900 },
+{ text: ' → MCP server ready on stdio', class: 't-ok', delay: 1200 },
+{ text: '', delay: 1600 },
+{ text: '> "Show me all active peers"', class: 't-prompt', delay: 1800 },
+{ text: '', delay: 2400 },
+{ text: ' peer_count: 3', class: 't-key', delay: 2600 },
+{ text: ' ├─ 10.0.0.2 last seen: 2m ago ✓', class: 't-ok', delay: 2900 },
+{ text: ' ├─ 10.0.0.5 last seen: 14m ago ✓', class: 't-ok', delay: 3100 },
+{ text: ' └─ 10.0.0.9 last seen: 8d ago ⚠', class: 't-warn', delay: 3300 },
+{ text: '', delay: 3700 },
+{ text: '> "Block the peer that hasn\'t connected in 8 days"', class: 't-prompt', delay: 3900 },
+{ text: '', delay: 4500 },
+{ text: ' [suggest_policy] diff ready — review before applying', class: 't-dim', delay: 4700 },
+{ text: ' confirm=True to apply _', class: 't-key', delay: 5100 },
+];
+const body = document.getElementById('terminal-body');
+let i = 0;
+function typeLine() {
+if (i >= lines.length) return;
+const l = lines[i];
+const span = document.createElement('span');
+span.className = 't-line ' + (l.class || '');
+span.textContent = l.text || '\u00a0';
+body.appendChild(span);
+setTimeout(() => {
+span.classList.add('show');
+i++;
+if (i < lines.length) setTimeout(typeLine, lines[i].delay - l.delay);
+}, 60);
+}
+setTimeout(typeLine, lines[0].delay);
+function handleSubmit(e) {
+e.preventDefault();
+document.getElementById('form-msg').textContent = '✓ You\'re on the list. We\'ll be in touch.';
+document.getElementById('email-input').value = '';
+}
+</script>
+</body>
+</html>

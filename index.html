@@ -532,7 +532,7 @@ body::after {
       <div class="access-label">Early Access</div>
       <div class="access-title">Request Access</div>
       <div class="access-subtitle">
-        Limited early access for security engineers, homelab operators,<br>and AI infrastructure builders.
+        Limited early access.
       </div>
     </div>
 
@@ -556,22 +556,12 @@ body::after {
       </div>
     </div>
 
-    <div class="field-label" style="margin-bottom:8px">I am a —</div>
-    <div class="access-type-row" id="chip-row">
-      <div class="type-chip" data-val="Network Engineer">Network Engineer</div>
-      <div class="type-chip" data-val="Security Researcher">Security Researcher</div>
-      <div class="type-chip" data-val="Homelab Builder">Homelab Builder</div>
-      <div class="type-chip" data-val="MSP / IT Pro">MSP / IT Pro</div>
-      <div class="type-chip" data-val="AI Developer">AI Developer</div>
-      <div class="type-chip" data-val="Investor">Investor</div>
-    </div>
-
     <button class="submit-btn" id="submit-btn" onclick="submitForm()">
       Request Early Access →
     </button>
 
     <div class="access-note">
-      No spam. No data brokers. No irony.<br>
+      No spam. No data brokers. No garbage<br>
       We'll reach out directly from tunnelmind@proton.me
     </div>
   </div>
@@ -593,7 +583,7 @@ body::after {
   <!-- FOOTER -->
 
   <div class="footer">
-    TunnelMind AI, LLC · Cabot, Arkansas<br>
+    TunnelMind AI, LLC<br>
     AI-native network intelligence infrastructure<br>
     tunnelmind.ai · tunnelmind@proton.me
   </div>
@@ -730,10 +720,7 @@ body::after {
     const body = encodeURIComponent(
       `TunnelMind Early Access Request\n` +
       `================================\n\n` +
-      `Name:      ${name || '—'}\n` +
       `Email:     ${email}\n` +
-      `Role:      ${selectedType || '—'}\n` +
-      `Building:  ${building || '—'}\n\n` +
       `---\nSent from tunnelmind.ai early access form`
     );
 

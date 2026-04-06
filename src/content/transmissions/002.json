@@ -1,0 +1,37 @@
+{
+  "id": "transmission-002",
+  "origin": "AS14618 — Amazon AWS us-east-1",
+  "classification": "TUNNELMIND // SIGINT // NOFORN",
+  "timestamp": "2026-03-15T03:14:02Z",
+  "node": "node-east-017",
+  "title": "Meridian Telemetry Group",
+  "paragraphs": [
+    {
+      "key": "p1",
+      "sentences": [
+        { "key": "s1", "text": "RIPE returned nothing for two of the three ASNs — not expired registrations, not transferred allocations, nothing.", "isRedacted": false },
+        { "key": "s2", "text": "Completely unregistered autonomous systems advertising real routes in a live BGP feed should be impossible by every convention that makes the internet function.", "isRedacted": false },
+        { "key": "s3", "text": "But conventions are not enforcement mechanisms.", "isRedacted": false }
+      ]
+    },
+    {
+      "key": "p2",
+      "sentences": [
+        { "key": "s1", "text": "The third ASN — AS204796 — returned a RIPE registration dated September 2019 to an entity called Meridian Telemetry Group, with a PO Box in Reston, Virginia.", "isRedacted": false },
+        { "key": "s2", "text": "The contact email domain resolved to a Cloudflare-fronted page with a single sentence: \"Meridian Telemetry provides network measurement services for institutional clients.\"", "isRedacted": false },
+        { "key": "s3", "text": "No further information.", "isRedacted": false },
+        { "key": "s4", "text": "No clients named.", "isRedacted": false },
+        { "key": "s5", "text": "No services described.", "isRedacted": false }
+      ]
+    },
+    {
+      "key": "p3",
+      "sentences": [
+        { "key": "s1", "text": "Marcus began logging every appearance.", "isRedacted": false },
+        { "key": "s2", "text": "The log was stored locally, not in any production system, on hardware that belonged to him.", "isRedacted": false },
+        { "key": "s3", "text": "This was not a decision he made consciously.", "isRedacted": false },
+        { "key": "s4", "text": "It was something his hands did while his mind was still working out what he was looking at.", "isRedacted": false }
+      ]
+    }
+  ]
+}

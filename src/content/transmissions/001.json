@@ -1,0 +1,35 @@
+{
+  "id": "transmission-001",
+  "origin": "AS7922 — Comcast Cable, Philadelphia, PA",
+  "classification": "TUNNELMIND // SIGINT // REL FVEY",
+  "timestamp": "2026-03-15T03:12:47Z",
+  "node": "node-east-017",
+  "title": "Ghost ASNs",
+  "paragraphs": [
+    {
+      "key": "p1",
+      "sentences": [
+        { "key": "s1", "text": "The overnight shift at a network operations center is a specific kind of quiet — not peaceful, but held, like a breath before something.", "isRedacted": false },
+        { "key": "s2", "text": "At 03:12 UTC, the monitoring script that Marcus had written on his own time, in his own language, on a Friday three months ago, fired an alert that the production systems were not equipped to fire.", "isRedacted": false },
+        { "key": "s3", "text": "Three autonomous systems, advertising routes to IP blocks that should have been dark space, had just appeared in the BGP feed — and then, forty-seven seconds later, withdrawn cleanly.", "isRedacted": false }
+      ]
+    },
+    {
+      "key": "p2",
+      "sentences": [
+        { "key": "s1", "text": "The prefixes weren't in any active routing table.", "isRedacted": false },
+        { "key": "s2", "text": "No alarms had fired in production because production didn't know to look for them.", "isRedacted": false },
+        { "key": "s3", "text": "Marcus's script caught them because Marcus had been suspicious for six months, and suspicion, when it is precise enough, becomes instrumentation.", "isRedacted": false }
+      ]
+    },
+    {
+      "key": "p3",
+      "sentences": [
+        { "key": "s1", "text": "Three ASNs.", "isRedacted": false },
+        { "key": "s2", "text": "Always the same three.", "isRedacted": false },
+        { "key": "s3", "text": "Always forty-seven seconds.", "isRedacted": false },
+        { "key": "s4", "text": "Marcus stared at the alert for a long time before he did anything at all.", "isRedacted": false }
+      ]
+    }
+  ]
+}

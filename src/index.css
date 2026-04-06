@@ -1,0 +1,161 @@
+/* ── TunnelMind Design System ─────────────────────────────────────── */
+:root {
+  /* Chrome: cold surveillance metal */
+  --chrome-bg: #0a0c10;
+  --chrome-bg2: #0d1117;
+  --chrome-border: #1e2530;
+  --chrome-text: #8b9aab;
+  --chrome-text-dim: #4a5568;
+  --chrome-text-bright: #c9d1d9;
+
+  /* Document: warm aged paper in darkness */
+  --doc-bg: #0e0c0a;
+  --doc-paper: #121009;
+  --doc-text: #d4c9b0;
+  --doc-text-dim: #8c8070;
+  --doc-text-faint: #50483c;
+
+  /* Accent system */
+  --accent-green: #3fb950;
+  --accent-green-dim: #1a4a25;
+  --accent-green-glow: rgba(63, 185, 80, 0.15);
+  --accent-amber: #d29922;
+  --accent-amber-dim: rgba(210, 153, 34, 0.15);
+  --accent-red: #da3633;
+  --accent-red-dim: rgba(218, 54, 51, 0.15);
+  --accent-purple: #8b5cf6;
+  --accent-purple-dim: rgba(139, 92, 246, 0.2);
+  --accent-blue: #388bfd;
+  --accent-cyan: #56d1dc;
+
+  /* Interactive states */
+  --hover-overlay: rgba(255, 255, 255, 0.04);
+  --selected-overlay: rgba(63, 185, 80, 0.07);
+  --vote-up: #3fb950;
+  --vote-down: #da3633;
+
+  /* Typography */
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
+
+  /* Layout */
+  --nav-height: 38px;
+  --ruler-height: 22px;
+  --status-height: 22px;
+  --sidebar-width: 220px;
+  --annotation-width: 280px;
+  --content-max: 720px;
+
+  /* Transitions */
+  --transition: 150ms ease;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  background: var(--chrome-bg);
+  color: var(--doc-text);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--chrome-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--chrome-border);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--chrome-text-dim);
+}
+
+/* Selection */
+::selection {
+  background: var(--accent-green-dim);
+  color: var(--accent-green);
+}
+
+/* Links */
+a {
+  color: var(--accent-blue);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+  color: var(--accent-cyan);
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 1px solid var(--accent-green);
+  outline-offset: 2px;
+}
+
+/* Utility classes */
+.mono { font-family: var(--font-mono); }
+.serif { font-family: var(--font-serif); }
+
+.text-green { color: var(--accent-green); }
+.text-amber { color: var(--accent-amber); }
+.text-red { color: var(--accent-red); }
+.text-purple { color: var(--accent-purple); }
+.text-dim { color: var(--chrome-text-dim); }
+.text-chrome { color: var(--chrome-text); }
+
+/* Animated cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Redaction reveal animation */
+@keyframes declassify {
+  0% { opacity: 0; letter-spacing: 0.5em; filter: blur(8px); }
+  60% { opacity: 0.6; letter-spacing: 0.1em; filter: blur(2px); }
+  100% { opacity: 1; letter-spacing: normal; filter: blur(0); }
+}
+
+/* Slide in from right */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+/* Fade in */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Pulse for new content */
+@keyframes pulse-border {
+  0%, 100% { border-color: var(--accent-green-dim); }
+  50% { border-color: var(--accent-green); }
+}
+
+/* WP-style horizontal divider */
+.wp-divider {
+  height: 1px;
+  background: var(--chrome-border);
+  margin: 0;
+}

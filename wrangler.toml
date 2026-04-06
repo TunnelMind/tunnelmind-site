@@ -1,0 +1,11 @@
+name = "tunnelmind-site"
+compatibility_date = "2024-01-01"
+
+# Cloudflare Pages configuration
+# Deploy with: npx wrangler pages deploy dist --project-name tunnelmind-site
+
+[env.production]
+# Environment variables set via Cloudflare Pages dashboard:
+# VITE_SUPABASE_URL=
+# VITE_SUPABASE_ANON_KEY=
+# VITE_TURNSTILE_SITE_KEY=

@@ -72,9 +72,7 @@ export default function IntroBox() {
             color: 'var(--doc-text-dim)',
             marginBottom: '20px',
           }}>
-            Read what's been written. Annotate in red. Vote sentences up or down.
-            Propose corrections. Submit ideas and code.
-            Using agents, old-school coding, AI — anything at your disposal.
+            Read what's been written. Annotate, contribute, vote, correct, submit ideas and use agents, LLMs, code, anything at your disposal.
           </div>
 
           {/* How it works */}

@@ -41,8 +41,8 @@ export function Ruler({ page, classification }) {
             borderColor: i % 10 === 0
               ? 'var(--chrome-text-dim)'
               : i % 5 === 0
-                ? '#2a3540'
-                : '#1e262e',
+                ? 'var(--chrome-border)'
+                : 'var(--chrome-bg)',
             flexShrink: 0,
           }} />
         ))}

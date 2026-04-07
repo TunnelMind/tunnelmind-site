@@ -1,38 +1,38 @@
 /* ── TunnelMind Design System ─────────────────────────────────────── */
 :root {
-  /* Chrome: cold surveillance metal */
-  --chrome-bg: #0a0c10;
-  --chrome-bg2: #0d1117;
-  --chrome-border: #1e2530;
-  --chrome-text: #8b9aab;
-  --chrome-text-dim: #4a5568;
-  --chrome-text-bright: #c9d1d9;
+  /* Chrome: warm light gray (WP menu bar) */
+  --chrome-bg: #e8e3db;
+  --chrome-bg2: #f0ebe3;
+  --chrome-border: #cdc8bf;
+  --chrome-text: #5a5248;
+  --chrome-text-dim: #9c9288;
+  --chrome-text-bright: #1a1612;
 
-  /* Document: warm aged paper in darkness */
-  --doc-bg: #0e0c0a;
-  --doc-paper: #121009;
-  --doc-text: #d4c9b0;
-  --doc-text-dim: #8c8070;
-  --doc-text-faint: #50483c;
+  /* Document: warm cream paper — Claude-like background */
+  --doc-bg: #f7f4ee;
+  --doc-paper: #faf8f4;
+  --doc-text: #1a1612;
+  --doc-text-dim: #5a5248;
+  --doc-text-faint: #9c9288;
 
   /* Accent system */
-  --accent-green: #3fb950;
-  --accent-green-dim: #1a4a25;
-  --accent-green-glow: rgba(63, 185, 80, 0.15);
-  --accent-amber: #d29922;
-  --accent-amber-dim: rgba(210, 153, 34, 0.15);
-  --accent-red: #da3633;
-  --accent-red-dim: rgba(218, 54, 51, 0.15);
-  --accent-purple: #8b5cf6;
-  --accent-purple-dim: rgba(139, 92, 246, 0.2);
-  --accent-blue: #388bfd;
-  --accent-cyan: #56d1dc;
+  --accent-green: #16a34a;
+  --accent-green-dim: #dcfce7;
+  --accent-green-glow: rgba(22, 163, 74, 0.15);
+  --accent-amber: #b45309;
+  --accent-amber-dim: rgba(180, 83, 9, 0.12);
+  --accent-red: #dc2626;
+  --accent-red-dim: rgba(220, 38, 38, 0.1);
+  --accent-purple: #7c3aed;
+  --accent-purple-dim: rgba(124, 58, 237, 0.12);
+  --accent-blue: #0055ff;
+  --accent-cyan: #0077cc;
 
   /* Interactive states */
-  --hover-overlay: rgba(255, 255, 255, 0.04);
-  --selected-overlay: rgba(63, 185, 80, 0.07);
-  --vote-up: #3fb950;
-  --vote-down: #da3633;
+  --hover-overlay: rgba(0, 0, 0, 0.05);
+  --selected-overlay: rgba(22, 163, 74, 0.08);
+  --vote-up: #16a34a;
+  --vote-down: #dc2626;
 
   /* Typography */
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
@@ -91,8 +91,8 @@ html, body {
 
 /* Selection */
 ::selection {
-  background: var(--accent-green-dim);
-  color: var(--accent-green);
+  background: rgba(0, 85, 255, 0.15);
+  color: var(--doc-text);
 }
 
 /* Links */

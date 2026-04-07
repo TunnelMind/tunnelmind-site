@@ -273,55 +273,8 @@ export default function Dialog({ onNavigate }) {
         <div style={{
           maxWidth: 'var(--content-max)',
           margin: '0 auto',
-          padding: '40px 32px',
+          padding: '28px 32px',
         }}>
-          {/* Novel header */}
-          <div style={{ marginBottom: '48px', textAlign: 'center' }}>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              letterSpacing: '0.2em',
-              textTransform: 'uppercase',
-              marginBottom: '16px',
-            }}>
-              TunnelMind // Serialized Fiction // Intercepted Transmissions
-            </div>
-            <h1 style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '36px',
-              fontWeight: 400,
-              color: 'var(--doc-text)',
-              marginBottom: '8px',
-              lineHeight: 1.2,
-            }}>
-              The Shadow Graph
-            </h1>
-            <div style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '16px',
-              color: 'var(--doc-text-dim)',
-              fontStyle: 'italic',
-            }}>
-              A novel about the infrastructure of surveillance
-            </div>
-
-            {/* Interaction hint */}
-            <div style={{
-              marginTop: '24px',
-              padding: '10px 16px',
-              background: 'var(--chrome-bg2)',
-              border: '1px solid var(--chrome-border)',
-              borderRadius: '3px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              display: 'inline-block',
-            }}>
-              Hover any sentence to vote, correct, or annotate · Redacted passages declassify at vote threshold
-            </div>
-          </div>
-
           {/* Transmissions */}
           {TRANSMISSIONS.map((tx, i) => (
             <div key={tx.id} id={tx.id}>

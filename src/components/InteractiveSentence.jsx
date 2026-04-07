@@ -84,9 +84,9 @@ const S = {
     gap: '2px',
     padding: '1px 4px',
     background: 'transparent',
-    color: hasAnnotations ? 'var(--accent-blue)' : 'var(--chrome-text-dim)',
+    color: hasAnnotations ? 'var(--accent-red)' : 'var(--chrome-text-dim)',
     border: '1px solid',
-    borderColor: hasAnnotations ? 'var(--accent-blue)' : 'var(--chrome-border)',
+    borderColor: hasAnnotations ? 'var(--accent-red)' : 'var(--chrome-border)',
     borderRadius: '2px',
     fontSize: '10px',
     cursor: 'pointer',
@@ -280,7 +280,7 @@ export default function InteractiveSentence({ sentenceId, content, isRedacted = 
             title={annotationCount > 0 ? `${annotationCount} annotation${annotationCount > 1 ? 's' : ''}` : 'Add annotation'}
           >
             ¶{annotationCount > 0 && (
-              <span style={{ ...S.badge, backgroundColor: 'var(--accent-blue)' }}>{annotationCount}</span>
+              <span style={{ ...S.badge, backgroundColor: 'var(--accent-red)' }}>{annotationCount}</span>
             )}
           </button>
         </span>

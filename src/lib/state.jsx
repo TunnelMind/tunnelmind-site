@@ -28,6 +28,9 @@ const DEFAULT_STATE = {
   redactionVotes: {},
   // sentence_id → string (after author applies correction)
   appliedTexts: {},
+  // Document state — author writes here, community interacts
+  // pageId → { title, raw, published, paragraphs: [{ key, sentences: [{ key, text }] }] }
+  documents: {},
   // contributor state
   contributors: [],
   contributionLedger: [], // append-only
@@ -280,6 +283,42 @@ function reducer(state, action) {
           ...state.redactionVotes,
           [action.sentenceId]: { count: newCount, userVoted: true, revealed },
         },
+      }
+    }
+
+    // ── Documents ────────────────────────────────────────────────
+    case 'UPDATE_DOC_TITLE': {
+      const prev = state.documents[action.pageId] || {}
+      return {
+        ...state,
+        documents: { ...state.documents, [action.pageId]: { ...prev, title: action.title } },
+      }
+    }
+
+    case 'UPDATE_DOC_RAW': {
+      const prev = state.documents[action.pageId] || {}
+      return {
+        ...state,
+        documents: { ...state.documents, [action.pageId]: { ...prev, raw: action.raw } },
+      }
+    }
+
+    case 'PUBLISH_DOC': {
+      const prev = state.documents[action.pageId] || {}
+      return {
+        ...state,
+        documents: {
+          ...state.documents,
+          [action.pageId]: { ...prev, published: true, paragraphs: action.paragraphs },
+        },
+      }
+    }
+
+    case 'UNPUBLISH_DOC': {
+      const prev = state.documents[action.pageId] || {}
+      return {
+        ...state,
+        documents: { ...state.documents, [action.pageId]: { ...prev, published: false } },
       }
     }
 

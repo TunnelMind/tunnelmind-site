@@ -49,10 +49,10 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
         fontFamily: 'var(--font-serif)',
         fontSize: '14px',
         lineHeight: '1.6',
-        color: ann.isAuthor ? 'var(--accent-purple)' : 'var(--doc-text)',
+        color: ann.isAuthor ? 'var(--accent-purple)' : 'var(--accent-red)',
         marginBottom: '6px',
-        borderLeft: ann.isAuthor ? '2px solid var(--accent-purple)' : '2px solid transparent',
-        paddingLeft: ann.isAuthor ? '8px' : 0,
+        borderLeft: ann.isAuthor ? '2px solid var(--accent-purple)' : '2px solid var(--accent-red)',
+        paddingLeft: '8px',
       }}>
         {ann.text}
       </div>
@@ -258,11 +258,11 @@ export default function AnnotationPanel({ open }) {
         <span style={{
           fontSize: '9px',
           fontFamily: 'var(--font-mono)',
-          color: 'var(--chrome-text-dim)',
+          color: 'var(--accent-red)',
           textTransform: 'uppercase',
           letterSpacing: '0.1em',
         }}>
-          MARGINALIA — {annotations.length} note{annotations.length !== 1 ? 's' : ''}
+          ANNOTATIONS — {annotations.length} note{annotations.length !== 1 ? 's' : ''}
         </span>
         <button
           style={{

@@ -14,23 +14,23 @@ export default function IntroBox() {
       alignItems: 'center',
       justifyContent: 'center',
       zIndex: 200,
-      background: 'rgba(0, 0, 0, 0.7)',
+      background: 'rgba(0, 0, 0, 0.6)',
       backdropFilter: 'blur(4px)',
       animation: 'fadeIn 0.3s ease',
       padding: '16px',
     }}>
       <div style={{
         width: '100%',
-        maxWidth: '760px',
+        maxWidth: '600px',
         background: 'var(--chrome-bg2)',
         border: '1px solid var(--chrome-border)',
         borderRadius: '4px',
         overflow: 'hidden',
-        boxShadow: '0 16px 48px rgba(0,0,0,0.6), 0 0 0 1px rgba(63, 185, 80, 0.1)',
+        boxShadow: '0 16px 48px rgba(0,0,0,0.5)',
       }}>
-        {/* Header bar */}
+        {/* Header */}
         <div style={{
-          padding: '8px 12px',
+          padding: '10px 16px',
           background: 'var(--chrome-bg)',
           borderBottom: '1px solid var(--chrome-border)',
           display: 'flex',
@@ -41,174 +41,88 @@ export default function IntroBox() {
             <span style={{
               width: '6px', height: '6px', borderRadius: '50%',
               background: 'var(--accent-green)',
-              boxShadow: '0 0 6px var(--accent-green)',
-              animation: 'blink 2s infinite',
               display: 'inline-block',
             }} />
-            <span style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-            }}>
-              SYSTEM MESSAGE — TUNNELMIND.AI — INTERACTIVE COMMUNITY PLATFORM
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+              TunnelMind — Collaborative Intelligence Platform
             </span>
           </div>
           <button
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: 'var(--chrome-text-dim)',
-              cursor: 'pointer',
-              fontSize: '18px',
-              lineHeight: 1,
-              padding: '0 4px',
-            }}
+            style={{ background: 'transparent', border: 'none', color: 'var(--chrome-text-dim)', cursor: 'pointer', fontSize: '18px', lineHeight: 1, padding: '0 4px' }}
             onClick={() => dispatch({ type: 'DISMISS_INTRO' })}
           >×</button>
         </div>
 
-        {/* Two-column body */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: 0,
-        }}>
-          {/* Left: The novel */}
+        {/* Body */}
+        <div style={{ padding: '24px' }}>
           <div style={{
-            padding: '20px 20px 20px 20px',
-            borderRight: '1px solid var(--chrome-border)',
+            fontFamily: 'var(--font-serif)',
+            fontSize: '20px',
+            color: 'var(--doc-text)',
+            marginBottom: '12px',
+            lineHeight: 1.3,
           }}>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--accent-red)',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              marginBottom: '12px',
-              fontWeight: 600,
-            }}>
-              What you're reading
-            </div>
-
-            <div style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '22px',
-              color: 'var(--doc-text)',
-              marginBottom: '8px',
-              lineHeight: 1.2,
-            }}>
-              The Shadow Graph
-            </div>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              marginBottom: '16px',
-            }}>
-              Intercepted transmissions / Serialized surveillance fiction
-            </div>
-
-            <div style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '14px',
-              lineHeight: '1.65',
-              color: 'var(--doc-text-dim)',
-              marginBottom: '16px',
-            }}>
-              A network engineer discovers ghost ASNs in a BGP feed at 3am.
-              What he finds next will change how he understands the infrastructure he's been
-              maintaining for fifteen years.
-            </div>
-
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              borderTop: '1px solid var(--chrome-border)',
-              paddingTop: '12px',
-            }}>
-              <div style={{ marginBottom: '6px', color: 'var(--chrome-text)' }}>HOW TO INTERACT:</div>
-              <div style={{ marginBottom: '4px' }}>▲▼ — Vote any sentence up or down</div>
-              <div style={{ marginBottom: '4px' }}>✎ — Propose a correction to any text</div>
-              <div style={{ marginBottom: '4px' }}>¶ — Add a margin note (annotation)</div>
-              <div style={{ marginBottom: '4px' }}>████ — Vote to declassify redacted passages</div>
-              <div>Corrections reaching +3 votes are flagged for author review</div>
-            </div>
+            A collaborative platform for humans and AIs building tools for a new internet.
           </div>
 
-          {/* Right: What TunnelMind is */}
-          <div style={{ padding: '20px' }}>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--accent-amber)',
-              letterSpacing: '0.1em',
-              textTransform: 'uppercase',
-              marginBottom: '12px',
-              fontWeight: 600,
-            }}>
-              What TunnelMind is
-            </div>
+          <div style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '14px',
+            lineHeight: '1.7',
+            color: 'var(--doc-text-dim)',
+            marginBottom: '20px',
+          }}>
+            Read what's been written. Annotate in red. Vote sentences up or down.
+            Propose corrections. Submit ideas and code.
+            Using agents, old-school coding, AI — anything at your disposal.
+          </div>
 
-            <div style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '16px',
-              color: 'var(--doc-text)',
-              marginBottom: '12px',
-              lineHeight: 1.4,
-            }}>
-              "They've been studying you for years. Now you study them."
-            </div>
+          {/* How it works */}
+          <div style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            color: 'var(--chrome-text-dim)',
+            borderTop: '1px solid var(--chrome-border)',
+            paddingTop: '16px',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '8px',
+          }}>
+            <div>▲ ▼ &nbsp;Vote any sentence</div>
+            <div style={{ color: 'var(--accent-red)' }}>¶ &nbsp;Annotate in red</div>
+            <div>✎ &nbsp;Propose a correction</div>
+            <div>+3 &nbsp;Consensus → author review</div>
+          </div>
 
-            <div style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '13px',
-              lineHeight: '1.65',
-              color: 'var(--doc-text-dim)',
-              marginBottom: '16px',
-            }}>
-              TunnelMind builds tools that expose surveillance infrastructure —
-              the corporate entities, tracker domains, and behavioral data markets
-              that have been mapping your digital life for two decades.
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px' }}>
-              <ProductLink
-                href="https://explore.tunnelmind.ai"
-                label="Surveillance Explorer"
-                desc="53,000+ domains. Surveillance score 0–100."
-              />
-              <ProductLink
-                href="https://receipt.tunnelmind.ai"
-                label="Surveillance Receipt"
-                desc="Upload browser history → dollar value invoice."
-              />
-              <ProductLink
-                href="https://radar.tunnelmind.ai"
-                label="Surveillance Radar"
-                desc="704 entities. Force-directed graph."
-              />
-            </div>
-
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              borderTop: '1px solid var(--chrome-border)',
-              paddingTop: '12px',
-            }}>
-              An interactive community where humans and AIs build tools for a new internet — for everyone.
-              Contributors are tracked. When the platform becomes profitable,{' '}
-              <span style={{ color: 'var(--accent-amber)' }}>contributors get paid</span>.
-            </div>
+          {/* Tools */}
+          <div style={{
+            marginTop: '16px',
+            paddingTop: '16px',
+            borderTop: '1px solid var(--chrome-border)',
+            display: 'flex',
+            gap: '8px',
+            flexWrap: 'wrap',
+          }}>
+            {[
+              { label: 'Explorer ↗', href: 'https://explore.tunnelmind.ai' },
+              { label: 'Receipt ↗', href: 'https://receipt.tunnelmind.ai' },
+              { label: 'Radar ↗', href: 'https://radar.tunnelmind.ai' },
+              { label: 'Data API ↗', href: 'https://data.tunnelmind.ai' },
+            ].map(t => (
+              <a key={t.href} href={t.href} target="_blank" rel="noopener noreferrer" style={{
+                fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)',
+                textDecoration: 'none', padding: '3px 8px',
+                border: '1px solid var(--accent-green)', borderRadius: '2px',
+              }}>
+                {t.label}
+              </a>
+            ))}
           </div>
         </div>
 
         {/* Footer */}
         <div style={{
-          padding: '10px 20px',
+          padding: '10px 16px',
           background: 'var(--chrome-bg)',
           borderTop: '1px solid var(--chrome-border)',
           display: 'flex',
@@ -216,7 +130,7 @@ export default function IntroBox() {
           justifyContent: 'space-between',
         }}>
           <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
-            No account required for voting and annotations · Magic link auth for author-level actions only
+            No account required · Contributors tracked for future compensation
           </span>
           <button
             style={{
@@ -229,45 +143,13 @@ export default function IntroBox() {
               fontSize: '10px',
               fontWeight: 600,
               cursor: 'pointer',
-              letterSpacing: '0.05em',
             }}
             onClick={() => dispatch({ type: 'DISMISS_INTRO' })}
           >
-            Enter Terminal →
+            Enter →
           </button>
         </div>
       </div>
     </div>
-  )
-}
-
-function ProductLink({ href, label, desc }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '2px',
-        padding: '6px 8px',
-        background: 'var(--chrome-bg)',
-        border: '1px solid var(--chrome-border)',
-        borderRadius: '2px',
-        textDecoration: 'none',
-        transition: 'border-color var(--transition)',
-        cursor: 'pointer',
-      }}
-      onMouseEnter={e => { e.currentTarget.style.borderColor = 'var(--accent-green)' }}
-      onMouseLeave={e => { e.currentTarget.style.borderColor = 'var(--chrome-border)' }}
-    >
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--accent-green)' }}>
-        {label} ↗
-      </span>
-      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
-        {desc}
-      </span>
-    </a>
   )
 }

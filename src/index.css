@@ -1,38 +1,38 @@
 /* ── TunnelMind Design System ─────────────────────────────────────── */
 :root {
-  /* Chrome: warm light gray (WP menu bar) */
-  --chrome-bg: #e8e3db;
-  --chrome-bg2: #f0ebe3;
-  --chrome-border: #cdc8bf;
-  --chrome-text: #5a5248;
-  --chrome-text-dim: #9c9288;
-  --chrome-text-bright: #1a1612;
+  /* Chrome: deep slate */
+  --chrome-bg: #0f172a;
+  --chrome-bg2: #1e293b;
+  --chrome-border: #334155;
+  --chrome-text: #94a3b8;
+  --chrome-text-dim: #475569;
+  --chrome-text-bright: #e2e8f0;
 
-  /* Document: warm cream paper — Claude-like background */
-  --doc-bg: #f7f4ee;
-  --doc-paper: #faf8f4;
-  --doc-text: #1a1612;
-  --doc-text-dim: #5a5248;
-  --doc-text-faint: #9c9288;
+  /* Document: slightly lighter slate for readable body text */
+  --doc-bg: #1e293b;
+  --doc-paper: #243044;
+  --doc-text: #e2e8f0;
+  --doc-text-dim: #94a3b8;
+  --doc-text-faint: #64748b;
 
   /* Accent system */
-  --accent-green: #16a34a;
-  --accent-green-dim: #dcfce7;
-  --accent-green-glow: rgba(22, 163, 74, 0.15);
-  --accent-amber: #b45309;
-  --accent-amber-dim: rgba(180, 83, 9, 0.12);
-  --accent-red: #dc2626;
-  --accent-red-dim: rgba(220, 38, 38, 0.1);
-  --accent-purple: #7c3aed;
-  --accent-purple-dim: rgba(124, 58, 237, 0.12);
-  --accent-blue: #0055ff;
-  --accent-cyan: #0077cc;
+  --accent-green: #4ade80;
+  --accent-green-dim: rgba(74, 222, 128, 0.15);
+  --accent-green-glow: rgba(74, 222, 128, 0.2);
+  --accent-amber: #fbbf24;
+  --accent-amber-dim: rgba(251, 191, 36, 0.15);
+  --accent-red: #f87171;
+  --accent-red-dim: rgba(248, 113, 113, 0.15);
+  --accent-purple: #a78bfa;
+  --accent-purple-dim: rgba(167, 139, 250, 0.15);
+  --accent-blue: #60a5fa;
+  --accent-cyan: #38bdf8;
 
   /* Interactive states */
-  --hover-overlay: rgba(0, 0, 0, 0.05);
-  --selected-overlay: rgba(22, 163, 74, 0.08);
-  --vote-up: #16a34a;
-  --vote-down: #dc2626;
+  --hover-overlay: rgba(255, 255, 255, 0.05);
+  --selected-overlay: rgba(74, 222, 128, 0.08);
+  --vote-up: #4ade80;
+  --vote-down: #f87171;
 
   /* Typography */
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
@@ -91,7 +91,7 @@ html, body {
 
 /* Selection */
 ::selection {
-  background: rgba(0, 85, 255, 0.15);
+  background: rgba(96, 165, 250, 0.25);
   color: var(--doc-text);
 }
 

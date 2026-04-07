@@ -42,7 +42,7 @@ export function Ruler({ page, classification }) {
               ? 'var(--chrome-text-dim)'
               : i % 5 === 0
                 ? 'var(--chrome-border)'
-                : 'var(--chrome-bg)',
+                : 'var(--chrome-bg2)',
             flexShrink: 0,
           }} />
         ))}

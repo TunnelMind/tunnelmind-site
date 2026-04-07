@@ -22,7 +22,7 @@ export default function PageDesc({ title, desc }) {
       <span style={{
         fontFamily: 'var(--font-mono)',
         fontSize: '10px',
-        color: 'var(--chrome-text-dim)',
+        color: 'var(--chrome-text-bright)',
         lineHeight: '1.5',
       }}>
         {desc}

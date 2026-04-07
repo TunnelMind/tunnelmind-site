@@ -8,7 +8,7 @@ const COMMUNITIES = [
   {
     key: 'internal',
     items: [
-      { id: 'dialog', label: 't/dialog', desc: 'The Shadow Graph — serialized surveillance fiction', path: '/' },
+      { id: 'dialog', label: 't/dialog', desc: 'Collaborative writing space — read, annotate, vote, contribute', path: '/' },
       { id: 'products', label: 't/products', desc: 'Live tools and products in development', path: '/products' },
       { id: 'roadmap', label: 't/roadmap', desc: 'What we\'re building and when', path: '/roadmap' },
       { id: 'contributors', label: 't/contributors', desc: 'Leaderboard + future compensation', path: '/contributors' },
@@ -28,7 +28,7 @@ const COMMUNITIES = [
 ]
 
 const PAGE_BREADCRUMBS = {
-  dialog: '· The Shadow Graph · interactive dialog · serialized fiction',
+  dialog: '· collaborative writing · annotate · vote · contribute',
   products: '· surveillance tools · live + in development',
   roadmap: '· packet-trace timeline · community priorities',
   contributors: '· leaderboard · contribution scoring · future compensation',
@@ -262,39 +262,6 @@ export default function SubredditNav({ currentPage, onNavigate }) {
           {state.authorMode ? '● AUTHOR' : '○ AUTHOR'}
         </button>
 
-        {/* Access Terminal CTA */}
-        <a
-          href="https://explore.tunnelmind.ai"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '4px',
-            padding: '4px 10px',
-            background: 'var(--accent-green-dim)',
-            border: '1px solid var(--accent-green)',
-            borderRadius: '2px',
-            color: 'var(--accent-green)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
-            fontWeight: 600,
-            textDecoration: 'none',
-            letterSpacing: '0.05em',
-            transition: 'all var(--transition)',
-            whiteSpace: 'nowrap',
-          }}
-          onMouseEnter={e => {
-            e.target.style.background = 'var(--accent-green)'
-            e.target.style.color = '#000'
-          }}
-          onMouseLeave={e => {
-            e.target.style.background = 'var(--accent-green-dim)'
-            e.target.style.color = 'var(--accent-green)'
-          }}
-        >
-          Access Terminal →
-        </a>
       </div>
     </nav>
   )

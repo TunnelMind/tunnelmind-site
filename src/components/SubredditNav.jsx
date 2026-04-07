@@ -1,5 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useTM } from '../lib/state.jsx'
+import { sha256hex } from '../lib/proofOfWork.js'
+
+const AUTHOR_KEY = import.meta.env.VITE_AUTHOR_KEY
 
 const COMMUNITIES = [
   {
@@ -242,7 +245,18 @@ export default function SubredditNav({ currentPage, onNavigate }) {
             transition: 'all var(--transition)',
             letterSpacing: '0.05em',
           }}
-          onClick={() => dispatch({ type: 'SET_AUTHOR_MODE', value: !state.authorMode })}
+          onClick={async () => {
+            if (state.authorMode) {
+              dispatch({ type: 'SET_AUTHOR_MODE', value: false })
+              return
+            }
+            const passphrase = window.prompt('Author passphrase:')
+            if (!passphrase) return
+            const hash = await sha256hex(passphrase.trim())
+            if (hash === AUTHOR_KEY) {
+              dispatch({ type: 'SET_AUTHOR_MODE', value: true })
+            }
+          }}
           title="Toggle Author Mode"
         >
           {state.authorMode ? '● AUTHOR' : '○ AUTHOR'}

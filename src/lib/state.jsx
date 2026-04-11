@@ -61,11 +61,9 @@ The longer arc is post-quantum cryptographic infrastructure for the jurisdiction
   },
   about: {
     title: 'Origin',
-    raw: `Twenty-two years in enterprise network infrastructure. 272 retail locations across 30 states. 802.1X/EAP-TLS at scale. iSIM/EID hardware identity for device enrollment. The kind of work where a misconfigured VLAN takes down 40 stores and you debug it from a laptop in a parking lot at 2am.
+    raw: `Networks are not neutral infrastructure. Every packet has a path, and that path is a legal jurisdiction, a business agreement, a surveillance opportunity. The BGP routing table is a map of power relationships between carriers, governments, and data brokers. Most people never see the map.
 
-What you learn in that environment: networks are not neutral infrastructure. Every packet has a path, and that path is a legal jurisdiction, a business agreement, a surveillance opportunity. The BGP routing table is a map of power relationships between carriers, governments, and data brokers. Most people never see the map.
-
-The personal surveillance question became impossible to ignore. Your phone contacts hundreds of domains before you unlock it in the morning. Your browser fires requests to surveillance infrastructure before the page you actually requested finishes loading. The business model of the modern internet is your behavior, sold at auction in under 100 milliseconds, with no disclosure of who bought it or what they paid.
+The surveillance question is impossible to ignore once you look at it directly. Your phone contacts hundreds of domains before you unlock it in the morning. Your browser fires requests to surveillance infrastructure before the page you actually requested finishes loading. The business model of the modern internet is your behavior, sold at auction in under 100 milliseconds, with no disclosure of who bought it or what they paid.
 
 TunnelMind started as a question: what if you could see all of it? Not a privacy tool that blocks some trackers. A visibility instrument that shows you the full scope — every actor, every coordination pattern, every dollar your behavior generates for the surveillance economy, every legal jurisdiction your data traverses. The surveillance economy has a balance sheet. You've never seen your side of it.
 

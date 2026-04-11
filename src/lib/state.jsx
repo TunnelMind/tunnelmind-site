@@ -10,6 +10,78 @@ import { onAuthStateChange, getSession, getTierFromSession } from './auth.js'
 
 const TMContext = createContext(null)
 
+// ── Paragraph parser (mirrors DocumentEditor) ──────────────────────
+function parseParagraphs(raw) {
+  return raw
+    .split(/\n\n+/)
+    .map(p => p.trim())
+    .filter(Boolean)
+    .map((para, pi) => ({
+      key: `p${pi}`,
+      sentences: para
+        .replace(/([.!?])\s+/g, '$1||')
+        .split('||')
+        .map(s => s.trim())
+        .filter(Boolean)
+        .map((text, si) => ({ key: `s${si}`, text })),
+    }))
+}
+
+// ── Seeded documents (shown to all visitors until author publishes) ─
+const SEEDED_DOCUMENTS = {
+  dialog: {
+    title: 'The Surveillance Economy Has a Balance Sheet',
+    raw: `The surveillance economy operates on a simple premise: your behavior is worth more to advertisers than your privacy is worth to you. They've been studying your browsing patterns, location habits, purchase history, and political dispositions for years. The invoice has never been shown to you. TunnelMind shows you the invoice.
+
+Every domain you visit fires requests to dozens of third parties you never consented to contact. DoubleClick. LiveRamp. Oracle BlueKai. Acxiom. These aren't incidental — they're the business model. When a news site loads, the 47 trackers that load with it are buying and selling a profile of you in under 100 milliseconds.
+
+The surveillance ecosystem isn't a collection of independent actors. It's a coordinated intelligence apparatus. When one tracker fires, others fire milliseconds later — every time, in sequence. That's not coincidence. That's a protocol. TunnelMind calls it Resonance: the timing-pattern coordination graph that shows which actors are talking to each other about you.
+
+TunnelMind is built on a single thesis: you can't fight what you can't see. Every tool we build makes one more piece of the surveillance economy visible, legible, and contestable. The Surveillance Receipt. The tracker database. GhostRoute. The browser extension. The surveillance map. These are instruments of observation, not products. The target is the entire surveillance economy — exposed, modeled, and reverse-engineered.
+
+The internet is fracturing into legal jurisdictions. Your DNS traffic crosses FISA 702 reach, Five Eyes agreements, GDPR-adequate zones, and state surveillance regimes with no indication of which legal rules apply where. GhostRoute traces that path, assigns legal citations to each hop, and issues a cryptographically signed certificate you can put in a legal filing.
+
+This platform exists for people who take that seriously. Read what we're building. Annotate what you disagree with. Propose corrections to anything that's wrong. The surveillance economy has been studying you for years. Now you study them.`,
+    published: true,
+    paragraphs: null,
+  },
+  roadmap: {
+    title: 'What We\'re Building',
+    raw: `The current live tools — Surveillance Receipt, Surveillance Explorer, Surveillance Radar, the Tracker Data API, GhostRoute Certificate Verification, and the browser extension — are instruments in the same project: making the surveillance economy legible. All are free. None require an account.
+
+The next layer is the personal tier. TunnelMind Personal requires an enrolled device, meaning traffic is observed at the kernel level via eBPF, not through a browser extension or proxy. The signal is real and complete. The Surveillance Map shows every actor that contacted your device, color-coded by category, updated in real time as traffic flows. Resonance shows which actors coordinate with each other through your traffic, using Pearson correlation on beacon timing patterns. Dark Mirror shows the demographic profile being bought and sold about you. Cost of You calculates what your data is worth per year, broken down by who extracts the most value.
+
+GhostRoute is live and in testing on enrolled devices. It generates a cryptographically signed certificate proving which legal jurisdictions your DNS traffic traversed — EU GDPR-adequate zones, FISA 702 reach, Five Eyes, China, Russia — weighted by traffic volume so high-frequency domains count proportionally more. Each certificate includes GDPR Article 44 legal citations and an Ed25519 signature verifiable by any third party at data.tunnelmind.ai.
+
+The desktop application is a Tauri shell wrapping the surveillance map and content tools. ReCenter, the companion enrollment app, handles WireGuard connect/disconnect, peer enrollment, and eBPF status display. Both apps share a config file. Enrollment binds your device to the WireGuard hub; from that point on, all DNS traffic is observed at the kernel level and feeds the personal tier tools.
+
+The longer arc is post-quantum cryptographic infrastructure for the jurisdictional fragmentation of the internet — the splinternet. CRYSTALS-Kyber key exchange for WireGuard tunnels. eBPF XDP per-packet routing based on destination ASN and jurisdiction. A local LLM maintaining a live jurisdiction policy graph from observed traffic. The moat is being deep in WireGuard internals and eBPF before anyone else needed it for this purpose.`,
+    published: true,
+    paragraphs: null,
+  },
+  about: {
+    title: 'Origin',
+    raw: `Twenty-two years in enterprise network infrastructure. 272 retail locations across 30 states. 802.1X/EAP-TLS at scale. iSIM/EID hardware identity for device enrollment. The kind of work where a misconfigured VLAN takes down 40 stores and you debug it from a laptop in a parking lot at 2am.
+
+What you learn in that environment: networks are not neutral infrastructure. Every packet has a path, and that path is a legal jurisdiction, a business agreement, a surveillance opportunity. The BGP routing table is a map of power relationships between carriers, governments, and data brokers. Most people never see the map.
+
+The personal surveillance question became impossible to ignore. Your phone contacts hundreds of domains before you unlock it in the morning. Your browser fires requests to surveillance infrastructure before the page you actually requested finishes loading. The business model of the modern internet is your behavior, sold at auction in under 100 milliseconds, with no disclosure of who bought it or what they paid.
+
+TunnelMind started as a question: what if you could see all of it? Not a privacy tool that blocks some trackers. A visibility instrument that shows you the full scope — every actor, every coordination pattern, every dollar your behavior generates for the surveillance economy, every legal jurisdiction your data traverses. The surveillance economy has a balance sheet. You've never seen your side of it.
+
+The architecture runs at the kernel level because that's the only place where the signal is complete. Browser extensions intercept some traffic. Proxies intercept more. eBPF TC hooks on the WireGuard interface intercept everything that transits the tunnel — no bypass possible, no blind spots. If it goes through the tunnel, it gets observed, classified, and attributed.
+
+The thesis is adversarial intelligence. The surveillance industry has spent decades building behavioral dossiers using pattern-recognition methods they've never disclosed. TunnelMind applies the same methods to their infrastructure. Their domains, their corporate ownership trees, their coordination protocols, their legal exposure — reverse-engineered and made public.`,
+    published: true,
+    paragraphs: null,
+  },
+}
+
+// Pre-compute paragraphs for seeded docs
+for (const doc of Object.values(SEEDED_DOCUMENTS)) {
+  doc.paragraphs = parseParagraphs(doc.raw)
+}
+
 // ── Initial State ──────────────────────────────────────────────────
 function loadPersisted() {
   try {
@@ -17,6 +89,24 @@ function loadPersisted() {
     if (raw) return JSON.parse(raw)
   } catch {}
   return null
+}
+
+// Merge seeded documents with persisted state.
+// Seeded pages only show when the author has not published their own version.
+function getInitialState() {
+  const persisted = loadPersisted()
+  const seedDocs = {}
+  for (const [pageId, seed] of Object.entries(SEEDED_DOCUMENTS)) {
+    const persDoc = persisted?.documents?.[pageId]
+    // Use persisted if author has published their own content (raw differs from seed)
+    if (persDoc?.published && persDoc.raw && persDoc.raw !== seed.raw) {
+      seedDocs[pageId] = persDoc
+    } else {
+      seedDocs[pageId] = seed
+    }
+  }
+  if (!persisted) return { ...DEFAULT_STATE, documents: seedDocs }
+  return { ...persisted, documents: { ...persisted.documents, ...seedDocs } }
 }
 
 const DEFAULT_STATE = {
@@ -348,8 +438,7 @@ function reducer(state, action) {
 
 // ── Provider ───────────────────────────────────────────────────────
 export function TMProvider({ children }) {
-  const persisted = loadPersisted()
-  const [state, dispatch] = useReducer(reducer, persisted || DEFAULT_STATE)
+  const [state, dispatch] = useReducer(reducer, undefined, getInitialState)
   const ledgerLengthRef = useRef(state.contributionLedger.length)
 
   // init fingerprint

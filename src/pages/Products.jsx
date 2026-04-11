@@ -32,9 +32,21 @@ const LIVE_TOOLS = [
     label: 'data.tunnelmind.ai/verify/',
     tag: 'Live · Free · Public',
   },
+  {
+    name: 'GhostRoute Certificate Verification',
+    desc: 'Independently verify any GhostRoute Jurisdictional Routing Certificate. Submit a certificate_id to confirm it was signed by TunnelMind and the jurisdiction data has not been tampered with. POST /ghostroute/verify with certificate_id, content_hash, and signature.',
+    url: 'https://data.tunnelmind.ai/ghostroute/verify',
+    label: 'data.tunnelmind.ai/ghostroute/verify',
+    tag: 'Live · Free · Public',
+  },
 ]
 
 const PERSONAL_TOOLS = [
+  {
+    name: 'Surveillance Map',
+    desc: 'Live force-directed graph of every surveillance actor that has contacted your device — built from eBPF DNS telemetry at the kernel level, not browser-level interception. Nodes are color-coded by category (ad tech, data broker, analytics, CDN). Click any node for corporate ownership, contact frequency, and data categories. Updates in real time as traffic flows.',
+    tag: 'Personal · Enrolled',
+  },
   {
     name: 'Surveillance Dossier Receipt',
     desc: 'A cryptographically signed document proving what the surveillance ecosystem knows about you, what your data is worth, and which jurisdictions it flows through. Signed with Ed25519, verifiable at data.tunnelmind.ai. Includes a one-click generator for GDPR Art. 15 / CCPA §1798.100 legal letters to every actor that touched you.',
@@ -43,6 +55,11 @@ const PERSONAL_TOOLS = [
   {
     name: 'Resonance',
     desc: 'Detects which surveillance actors are coordinating with each other through your traffic — purely from beacon timing patterns. When DoubleClick fires and LiveRamp fires 87ms later, every time, that\'s not a coincidence. Resonance builds a cross-actor coordination graph showing who\'s talking to whom about you, with Pearson correlation, lag times, and cluster analysis.',
+    tag: 'Personal · Enrolled',
+  },
+  {
+    name: 'GhostRoute',
+    desc: 'Generates a cryptographically signed certificate proving which legal jurisdictions your DNS traffic traversed — EU GDPR-adequate zones, FISA 702 reach, Five Eyes, China, Russia. Weighted by traffic volume so high-frequency domains count more. Verdicts: COMPLIANT | PARTIAL | NON_COMPLIANT. Each certificate includes GDPR Art. 44 legal citations and an Ed25519 signature verifiable by any third party at data.tunnelmind.ai. Built for DPOs, legal teams, and anyone who needs to prove where their data actually went.',
     tag: 'Personal · New',
   },
   {
@@ -58,7 +75,7 @@ const PERSONAL_TOOLS = [
 ]
 
 function TagColor(tag) {
-  if (tag.includes('New'))      return 'var(--accent-purple, #cc44ff)'
+  if (tag.includes('New'))      return '#00d4a8'
   if (tag.includes('Personal')) return 'var(--accent-blue)'
   return 'var(--accent-green)'
 }

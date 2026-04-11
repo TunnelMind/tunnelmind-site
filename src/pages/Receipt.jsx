@@ -266,6 +266,8 @@ export default function Receipt() {
   const [expanded, setExpanded] = useState({})
   const [showMethod, setShowMethod] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [extDomains, setExtDomains] = useState(null)   // domains from extension bridge
+  const [extChecked, setExtChecked] = useState(false)  // have we probed for the extension?
   const receiptRef = useRef(null)
 
   // Load tracker DB on mount
@@ -279,6 +281,29 @@ export default function Receipt() {
       .catch(e => setLoadError(e.message))
   }, [])
 
+  // Probe for TunnelMind extension via content_bridge postMessage
+  useEffect(() => {
+    const timeout = setTimeout(() => setExtChecked(true), 800)
+
+    function onMessage(e) {
+      if (!e.data || e.data.type !== 'TM_DOMAINS_RESULT') return
+      clearTimeout(timeout)
+      setExtChecked(true)
+      const domains = e.data.domains || {}
+      if (Object.keys(domains).length > 0) {
+        setExtDomains(domains)
+      }
+    }
+
+    window.addEventListener('message', onMessage)
+    window.postMessage({ type: 'TM_GET_DOMAINS' }, '*')
+
+    return () => {
+      window.removeEventListener('message', onMessage)
+      clearTimeout(timeout)
+    }
+  }, [])
+
   const generate = useCallback(() => {
     if (!trackers) return
     const lines = input.split(/[\n,]+/).map(s => s.trim()).filter(Boolean)
@@ -286,6 +311,14 @@ export default function Receipt() {
     setReceipt(buildReceipt(trackers, lines))
     setExpanded({})
   }, [trackers, input])
+
+  const loadFromExtension = useCallback(() => {
+    if (!trackers || !extDomains) return
+    const lines = Object.keys(extDomains)
+    setReceipt(buildReceipt(trackers, lines))
+    setExtDomains(null)
+    setExpanded({})
+  }, [trackers, extDomains])
 
   const reset = useCallback(() => {
     setInput('')
@@ -355,6 +388,45 @@ export default function Receipt() {
             Paste domains or URLs you've visited. Get a line-item invoice for what your browsing data is worth to the surveillance economy. All processing is local — nothing leaves your browser.
           </div>
         </div>
+
+        {/* Extension data banner */}
+        {!receipt && extChecked && extDomains && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '12px',
+            padding: '10px 14px',
+            marginBottom: '16px',
+            background: 'var(--accent-green-dim)',
+            border: '1px solid var(--accent-green)',
+            borderRadius: '3px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+          }}>
+            <div>
+              <span style={{ color: 'var(--accent-green)', fontWeight: 600 }}>
+                ● Extension detected
+              </span>
+              <span style={{ color: 'var(--doc-text-dim)', marginLeft: '10px' }}>
+                {Object.keys(extDomains).length} domains tracked this session
+              </span>
+            </div>
+            <button
+              style={{
+                ...S.btnPrimary,
+                opacity: !trackers ? 0.5 : 1,
+                cursor: !trackers ? 'not-allowed' : 'pointer',
+                whiteSpace: 'nowrap',
+                flexShrink: 0,
+              }}
+              onClick={loadFromExtension}
+              disabled={!trackers}
+            >
+              Generate from session →
+            </button>
+          </div>
+        )}
 
         {/* Input */}
         {!receipt && (

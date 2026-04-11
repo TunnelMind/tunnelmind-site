@@ -225,44 +225,6 @@ export default function SubredditNav({ currentPage, onNavigate }) {
         {breadcrumb}
       </span>
 
-      {/* Right side controls */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0, marginLeft: 'auto' }}>
-        {/* Author mode toggle */}
-        <button
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            padding: '3px 8px',
-            background: state.authorMode ? 'var(--accent-purple-dim)' : 'transparent',
-            border: '1px solid',
-            borderColor: state.authorMode ? 'var(--accent-purple)' : 'var(--chrome-border)',
-            borderRadius: '2px',
-            color: state.authorMode ? 'var(--accent-purple)' : 'var(--chrome-text-dim)',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            cursor: 'pointer',
-            transition: 'all var(--transition)',
-            letterSpacing: '0.05em',
-          }}
-          onClick={async () => {
-            if (state.authorMode) {
-              dispatch({ type: 'SET_AUTHOR_MODE', value: false })
-              return
-            }
-            const passphrase = window.prompt('Author passphrase:')
-            if (!passphrase) return
-            const hash = await sha256hex(passphrase.trim())
-            if (hash === AUTHOR_KEY) {
-              dispatch({ type: 'SET_AUTHOR_MODE', value: true })
-            }
-          }}
-          title="Toggle Author Mode"
-        >
-          {state.authorMode ? '● AUTHOR' : '○ AUTHOR'}
-        </button>
-
-      </div>
     </nav>
   )
 }

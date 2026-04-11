@@ -5,6 +5,13 @@ import PageDesc from '../components/PageDesc.jsx'
 
 const LIVE_TOOLS = [
   {
+    name: 'Surveillance Receipt',
+    desc: 'Paste any domains or URLs you\'ve visited. Get a line-item invoice showing what your browsing data is worth to the surveillance economy — broken down by tracker, company, and data category. Fully local, nothing leaves your browser. If you have the TunnelMind extension installed, it auto-loads your real session.',
+    url: '/#/receipt',
+    label: 'tunnelmind.ai/receipt',
+    tag: 'Live · Free · Local',
+  },
+  {
     name: 'Surveillance Explorer',
     desc: '53,000+ tracker domains with surveillance scores 0–100, corporate ownership trees, and shareable URLs.',
     url: 'https://explore.tunnelmind.ai',
@@ -38,6 +45,13 @@ const LIVE_TOOLS = [
     url: 'https://data.tunnelmind.ai/ghostroute/verify',
     label: 'data.tunnelmind.ai/ghostroute/verify',
     tag: 'Live · Free · Public',
+  },
+  {
+    name: 'Browser Extension',
+    desc: 'Passive tracker interception as you browse — no proxy, no DNS redirect. Every third-party request is matched against 9,786 known surveillance domains. Real-time popup shows who\'s watching and what your session is worth. One-click access to the live surveillance map. Firefox + Chrome.',
+    url: 'https://addons.mozilla.org/firefox/addon/tunnelmind-surveillance-receipt/',
+    label: 'Firefox · Chrome Web Store',
+    tag: 'Pending Review',
   },
 ]
 

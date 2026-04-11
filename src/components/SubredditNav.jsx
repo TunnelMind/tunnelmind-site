@@ -32,7 +32,7 @@ const PAGE_BREADCRUMBS = {
   products: '· surveillance tools · live + in development',
   roadmap: '· packet-trace timeline · community priorities',
   contributors: '· leaderboard · contribution scoring · future compensation',
-  about: '· origin story · philosophy · 22 years of networking',
+  about: '',
 }
 
 export default function SubredditNav({ currentPage, onNavigate }) {

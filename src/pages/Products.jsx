@@ -12,34 +12,66 @@ const LIVE_TOOLS = [
     tag: 'Live · Free',
   },
   {
-    name: 'Surveillance Receipt',
-    desc: 'Upload your browser history and get a dollar-value invoice showing what your behavioral data is worth. 100% client-side.',
-    url: 'https://receipt.tunnelmind.ai',
-    label: 'receipt.tunnelmind.ai',
-    tag: 'Live · Free · No upload',
-  },
-  {
     name: 'Surveillance Radar',
-    desc: '704 surveillance entities and 9,786 domains rendered as an interactive force-directed graph.',
+    desc: '704 surveillance entities and 9,786 domains rendered as an interactive force-directed graph. Click any node to explore corporate ownership chains.',
     url: 'https://radar.tunnelmind.ai',
     label: 'radar.tunnelmind.ai',
     tag: 'Live · Free',
   },
   {
     name: 'Tracker Data API',
-    desc: 'REST API with 50 free requests/day, CORS open, no key required. The dataset powering all TunnelMind tools.',
+    desc: 'REST API with 50 free requests/day, CORS open, no key required. The dataset powering all TunnelMind tools — domains, entities, scores, ownership.',
     url: 'https://data.tunnelmind.ai',
     label: 'data.tunnelmind.ai',
     tag: 'Live · 50 req/day free',
   },
+  {
+    name: 'Receipt Verification',
+    desc: 'Independently verify any TunnelMind Surveillance Receipt. Submit a receipt_id to confirm it was signed by TunnelMind and the content has not been tampered with.',
+    url: 'https://data.tunnelmind.ai/verify/',
+    label: 'data.tunnelmind.ai/verify/',
+    tag: 'Live · Free · Public',
+  },
 ]
 
+const PERSONAL_TOOLS = [
+  {
+    name: 'Surveillance Dossier Receipt',
+    desc: 'A cryptographically signed document proving what the surveillance ecosystem knows about you, what your data is worth, and which jurisdictions it flows through. Signed with Ed25519, verifiable at data.tunnelmind.ai. Includes a one-click generator for GDPR Art. 15 / CCPA §1798.100 legal letters to every actor that touched you.',
+    tag: 'Personal · Enrolled',
+  },
+  {
+    name: 'Resonance',
+    desc: 'Detects which surveillance actors are coordinating with each other through your traffic — purely from beacon timing patterns. When DoubleClick fires and LiveRamp fires 87ms later, every time, that\'s not a coincidence. Resonance builds a cross-actor coordination graph showing who\'s talking to whom about you, with Pearson correlation, lag times, and cluster analysis.',
+    tag: 'Personal · New',
+  },
+  {
+    name: 'Dark Mirror',
+    desc: 'What advertisers believe they know about you. Inferred from every surveillance actor observed contacting your device: age range, income bracket, health signals, political targeting exposure, purchase intent. The profile being bought and sold about you, made visible.',
+    tag: 'Personal · Enrolled',
+  },
+  {
+    name: 'Cost of You',
+    desc: 'Real-time dollar valuation of your data profile. Every actor that contacted your device contributes an estimated annual data value based on their CPM rates and your inferred demographic. Broken down by category: who is extracting the most, and what they\'re getting paid for it.',
+    tag: 'Personal · Enrolled',
+  },
+]
+
+function TagColor(tag) {
+  if (tag.includes('New'))      return 'var(--accent-purple, #cc44ff)'
+  if (tag.includes('Personal')) return 'var(--accent-blue)'
+  return 'var(--accent-green)'
+}
+
 function ProductCard({ tool }) {
+  const isLink = !!tool.url
+  const El = isLink ? 'a' : 'div'
+  const linkProps = isLink ? { href: tool.url, target: '_blank', rel: 'noopener noreferrer' } : {}
+  const tagColor = TagColor(tool.tag)
+
   return (
-    <a
-      href={tool.url}
-      target="_blank"
-      rel="noopener noreferrer"
+    <El
+      {...linkProps}
       style={{
         display: 'flex',
         flexDirection: 'column',
@@ -50,16 +82,16 @@ function ProductCard({ tool }) {
         borderRadius: '3px',
         textDecoration: 'none',
         transition: 'border-color 150ms ease, background 150ms ease',
-        cursor: 'pointer',
+        cursor: isLink ? 'pointer' : 'default',
       }}
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = 'var(--accent-green)'
+      onMouseEnter={isLink ? e => {
+        e.currentTarget.style.borderColor = tagColor
         e.currentTarget.style.background = 'var(--doc-paper)'
-      }}
-      onMouseLeave={e => {
+      } : undefined}
+      onMouseLeave={isLink ? e => {
         e.currentTarget.style.borderColor = 'var(--chrome-border)'
         e.currentTarget.style.background = 'var(--chrome-bg2)'
-      }}
+      } : undefined}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
         <span style={{
@@ -73,12 +105,13 @@ function ProductCard({ tool }) {
         <span style={{
           fontFamily: 'var(--font-mono)',
           fontSize: '8px',
-          color: 'var(--accent-green)',
-          border: '1px solid var(--accent-green)',
+          color: tagColor,
+          border: `1px solid ${tagColor}`,
           borderRadius: '2px',
           padding: '1px 5px',
           whiteSpace: 'nowrap',
           flexShrink: 0,
+          opacity: 0.85,
         }}>
           {tool.tag}
         </span>
@@ -94,15 +127,17 @@ function ProductCard({ tool }) {
         {tool.desc}
       </p>
 
-      <span style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '9px',
-        color: 'var(--accent-blue)',
-        marginTop: 'auto',
-      }}>
-        {tool.label} ↗
-      </span>
-    </a>
+      {tool.label && (
+        <span style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '9px',
+          color: 'var(--accent-blue)',
+          marginTop: 'auto',
+        }}>
+          {tool.label} ↗
+        </span>
+      )}
+    </El>
   )
 }
 
@@ -112,11 +147,13 @@ export default function Products() {
       <Ruler page="products" />
       <PageDesc
         title="t/products"
-        desc="Tools we've built and what's in development. Free tools live at explore, receipt, radar, and data.tunnelmind.ai — no account required."
+        desc="Tools we've built. Public web tools require no account. Personal features require an enrolled TunnelMind device — traffic observed at the kernel level, not via browser extension."
       />
 
       {/* Product cards */}
       <div style={{ padding: '24px 32px 0', maxWidth: '960px', margin: '0 auto' }}>
+
+        {/* Public web tools */}
         <div style={{
           fontFamily: 'var(--font-mono)',
           fontSize: '9px',
@@ -125,7 +162,7 @@ export default function Products() {
           textTransform: 'uppercase',
           marginBottom: '12px',
         }}>
-          ● Live Now
+          ● Public Web Tools
         </div>
         <div style={{
           display: 'grid',
@@ -135,6 +172,38 @@ export default function Products() {
         }}>
           {LIVE_TOOLS.map(tool => (
             <ProductCard key={tool.url} tool={tool} />
+          ))}
+        </div>
+
+        {/* Personal tier */}
+        <div style={{ height: '1px', background: 'var(--chrome-border)', marginBottom: '24px' }} />
+        <div style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '9px',
+          color: 'var(--accent-blue)',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          marginBottom: '8px',
+        }}>
+          ◎ TunnelMind Personal — Enrolled Device Features
+        </div>
+        <div style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: '12px',
+          color: 'var(--doc-text-dim)',
+          marginBottom: '14px',
+          lineHeight: '1.6',
+        }}>
+          These features require a TunnelMind-enrolled device (VPN peer). Traffic is observed at the kernel level via eBPF — not via a browser extension or proxy. The signal is real.
+        </div>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '10px',
+          marginBottom: '32px',
+        }}>
+          {PERSONAL_TOOLS.map(tool => (
+            <ProductCard key={tool.name} tool={tool} />
           ))}
         </div>
 

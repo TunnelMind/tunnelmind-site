@@ -3,7 +3,7 @@ import { Ruler } from '../components/WPChrome.jsx'
 import DocumentEditor from '../components/DocumentEditor.jsx'
 import PageDesc from '../components/PageDesc.jsx'
 import { useTM } from '../lib/state.jsx'
-import { SCORE_WEIGHTS, calculateScore } from '../lib/scoring.js'
+import { SCORE_WEIGHTS, IDENTITY_TIERS, REVENUE_WATERFALL, calculateScore } from '../lib/scoring.js'
 
 function ScoreBar({ score, maxScore }) {
   const pct = maxScore > 0 ? Math.min((score / maxScore) * 100, 100) : 0
@@ -101,6 +101,56 @@ function Leaderboard() {
       <div style={{ marginTop: '8px', fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
         Scores are session-local until Supabase persistence is connected.
         Contributors will be compensated proportionally when the platform becomes profitable.
+      </div>
+
+      {/* Identity tiers */}
+      <div style={{ marginTop: '40px' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '12px' }}>
+          Identity Tiers — Score Multiplier
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'var(--chrome-border)', border: '1px solid var(--chrome-border)', borderRadius: '3px', overflow: 'hidden' }}>
+          {Object.values(IDENTITY_TIERS).map(tier => (
+            <div key={tier.label} style={{ padding: '12px', background: 'var(--chrome-bg2)' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--accent-amber)', marginBottom: '4px' }}>
+                ×{tier.multiplier}
+              </div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-bright)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
+                {tier.label}
+              </div>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--chrome-text-dim)' }}>
+                {tier.desc}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: '6px', fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
+          Multiplier is applied to your raw score at payout time. Hardware attestation = highest signal quality.
+        </div>
+      </div>
+
+      {/* Revenue waterfall */}
+      <div style={{ marginTop: '32px' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '12px' }}>
+          Revenue Waterfall
+        </div>
+        <div style={{ background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderRadius: '3px', padding: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px' }}>
+          {[
+            { label: 'Business reserve', value: `${REVENUE_WATERFALL.business_reserve_pct}% off top` },
+            { label: 'Contributor pool', value: `${REVENUE_WATERFALL.contributor_pool_min_pct}–${REVENUE_WATERFALL.contributor_pool_max_pct}% of remainder` },
+            { label: 'Payout threshold', value: `$${REVENUE_WATERFALL.payout_threshold_usd} minimum` },
+            { label: 'Payout cycle', value: REVENUE_WATERFALL.payout_cycle },
+            { label: 'Sub-threshold balance', value: 'rolls forward' },
+            { label: 'Distribution basis', value: '% of total weighted signal' },
+          ].map(row => (
+            <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>{row.label}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-bright)', textAlign: 'right' }}>{row.value}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ marginTop: '6px', fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
+          No investors. Surplus stays in the pool and grows with the platform. Stripe Connect handles individual payouts.
+        </div>
       </div>
 
       {/* Divider + doc editor for contributor notes */}

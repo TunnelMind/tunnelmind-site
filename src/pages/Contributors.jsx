@@ -2,9 +2,13 @@ import React from 'react'
 import { Ruler } from '../components/WPChrome.jsx'
 import DocumentEditor from '../components/DocumentEditor.jsx'
 import PageDesc from '../components/PageDesc.jsx'
+import { useState } from 'react'
 import { useTM } from '../lib/state.jsx'
 import { SCORE_WEIGHTS, IDENTITY_TIERS, REVENUE_WATERFALL, calculateScore } from '../lib/scoring.js'
 import StripeConnect from '../components/StripeConnect.jsx'
+import AuthModal from '../components/AuthModal.jsx'
+import { signOut } from '../lib/auth.js'
+import { isPhase2 } from '../lib/supabase.js'
 
 function ScoreBar({ score, maxScore }) {
   const pct = maxScore > 0 ? Math.min((score / maxScore) * 100, 100) : 0
@@ -169,14 +173,55 @@ function Leaderboard() {
 }
 
 export default function Contributors() {
+  const { state, dispatch } = useTM()
+  const [authOpen, setAuthOpen] = useState(false)
+  const isAuthed = !!state.authUser
+
+  function handleSignOut() {
+    signOut().then(() => dispatch({ type: 'SET_AUTH_SESSION', session: null, tier: 'email' }))
+  }
+
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
       <Ruler page="contributors" />
-      <PageDesc
-        title="t/contributors"
-        desc="Everyone building here gets tracked. When TunnelMind becomes profitable, contributors get paid proportionally based on their share of total community signal."
-      />
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '0 32px' }}>
+        <PageDesc
+          title="t/contributors"
+          desc="Everyone building here gets tracked. When TunnelMind becomes profitable, contributors get paid proportionally based on their share of total community signal."
+        />
+        <div style={{ paddingTop: '24px', flexShrink: 0 }}>
+          {isAuthed ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)' }}>
+                {state.authUser.email?.split('@')[0] || state.userHandle || 'signed in'}
+              </span>
+              <button
+                onClick={handleSignOut}
+                style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
+              >
+                sign out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => setAuthOpen(true)}
+              style={{
+                fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)',
+                background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)',
+                borderRadius: '3px', padding: '6px 12px', cursor: 'pointer', letterSpacing: '0.08em',
+              }}
+            >
+              SIGN IN TO CONTRIBUTE
+            </button>
+          )}
+        </div>
+      </div>
       <Leaderboard />
+      <AuthModal
+        open={authOpen}
+        onClose={() => setAuthOpen(false)}
+        onAuth={(session) => dispatch({ type: 'SET_AUTH_SESSION', session, tier: 'email' })}
+      />
     </div>
   )
 }

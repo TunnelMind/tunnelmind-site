@@ -2,9 +2,11 @@
  * TunnelMind Global State
  * Phase 1: in-memory + localStorage (no Supabase yet)
  */
-import React, { createContext, useContext, useReducer, useEffect } from 'react'
+import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react'
 import { generateFingerprint } from './fingerprint.js'
 import { calculateScore } from './scoring.js'
+import { supabase, isPhase2 } from './supabase.js'
+import { onAuthStateChange, getSession, getTierFromSession } from './auth.js'
 
 const TMContext = createContext(null)
 
@@ -41,6 +43,11 @@ const DEFAULT_STATE = {
   annotationPanelOpen: false,
   userHandle: null,
   fingerprint: null,
+  // Auth state (Phase 2 — null until Supabase is configured)
+  authSession: null,
+  authUser: null,
+  authTier: 'email',
+  stripeContributor: null,
 }
 
 // ── Reducer ────────────────────────────────────────────────────────
@@ -48,6 +55,18 @@ function reducer(state, action) {
   switch (action.type) {
     case 'INIT_FINGERPRINT':
       return { ...state, fingerprint: action.fingerprint }
+
+    case 'SET_AUTH_SESSION':
+      return {
+        ...state,
+        authSession: action.session,
+        authUser: action.session?.user ?? null,
+        authTier: action.tier ?? 'email',
+        userHandle: action.session?.user?.user_metadata?.username || state.userHandle,
+      }
+
+    case 'SET_STRIPE_CONTRIBUTOR':
+      return { ...state, stripeContributor: action.contributor }
 
     case 'SET_AUTHOR_MODE':
       return { ...state, authorMode: action.value }
@@ -331,6 +350,7 @@ function reducer(state, action) {
 export function TMProvider({ children }) {
   const persisted = loadPersisted()
   const [state, dispatch] = useReducer(reducer, persisted || DEFAULT_STATE)
+  const ledgerLengthRef = useRef(state.contributionLedger.length)
 
   // init fingerprint
   useEffect(() => {
@@ -339,11 +359,74 @@ export function TMProvider({ children }) {
     })
   }, [])
 
-  // persist state (throttled)
+  // Phase 2: subscribe to Supabase auth state
+  useEffect(() => {
+    if (!isPhase2) return
+
+    // Load initial session
+    getSession().then(session => {
+      if (session) {
+        dispatch({ type: 'SET_AUTH_SESSION', session, tier: getTierFromSession(session) })
+        loadStripeContributor(session, dispatch)
+      }
+    })
+
+    // Subscribe to changes (sign-in, sign-out, token refresh)
+    const unsub = onAuthStateChange((event, session) => {
+      dispatch({ type: 'SET_AUTH_SESSION', session, tier: getTierFromSession(session) })
+      if (session) {
+        loadStripeContributor(session, dispatch)
+      }
+    })
+    return unsub
+  }, [])
+
+  // Phase 2: flush new ledger entries to Supabase when authenticated
+  useEffect(() => {
+    if (!isPhase2 || !state.authUser || !state.authSession) return
+
+    const currentLen = state.contributionLedger.length
+    if (currentLen <= ledgerLengthRef.current) {
+      ledgerLengthRef.current = currentLen
+      return
+    }
+
+    // New entries since last flush
+    const newEntries = state.contributionLedger.slice(ledgerLengthRef.current)
+    ledgerLengthRef.current = currentLen
+
+    // Write to Supabase (fire and forget — local state is source of truth in Phase 1)
+    const userId = state.authUser.id
+    const rows = newEntries
+      .filter(e => e.points > 0)  // skip zero-point entries
+      .map(e => ({
+        contributor_id: userId,
+        contributor_fingerprint: state.fingerprint,
+        action_type: e.action_type,
+        target_id: e.target_id ?? null,
+        target_type: e.target_type ?? null,
+        points: e.points,
+      }))
+
+    if (rows.length > 0) {
+      supabase.from('contribution_ledger').insert(rows).then(({ error }) => {
+        if (error) console.warn('Ledger write failed:', error.message)
+      })
+    }
+  }, [state.contributionLedger])
+
+  // persist state (throttled — exclude auth session from localStorage)
   useEffect(() => {
     const id = setTimeout(() => {
       try {
-        const toSave = { ...state, annotationPanelOpen: false, selectedSentenceId: null }
+        const toSave = {
+          ...state,
+          annotationPanelOpen: false,
+          selectedSentenceId: null,
+          authSession: null,     // never persist session to localStorage
+          authUser: null,
+          stripeContributor: null,
+        }
         localStorage.setItem('tm_state', JSON.stringify(toSave))
       } catch {}
     }, 500)
@@ -355,6 +438,17 @@ export function TMProvider({ children }) {
       {children}
     </TMContext.Provider>
   )
+}
+
+// ── Auth helpers ───────────────────────────────────────────────────
+async function loadStripeContributor(session, dispatch) {
+  if (!supabase || !session?.user) return
+  const { data } = await supabase
+    .from('contributors')
+    .select('id, stripe_account_id, stripe_onboarded, stripe_deauthorized, payout_balance_cents, identity_tier')
+    .eq('id', session.user.id)
+    .single()
+  if (data) dispatch({ type: 'SET_STRIPE_CONTRIBUTOR', contributor: data })
 }
 
 export function useTM() {

@@ -62,7 +62,7 @@ export default function IntroBox() {
             marginBottom: '12px',
             lineHeight: 1.3,
           }}>
-            A collaborative platform for humans and AIs building tools for a new internet.
+            A collaborative platform for humans and AIs building something new.
           </div>
 
           <div style={{
@@ -127,9 +127,10 @@ export default function IntroBox() {
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
-          <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
-            No account required · Contributors tracked for future compensation
-          </span>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', lineHeight: '1.7' }}>
+            <div>Account required to contribute · Contributors tracked for future compensation</div>
+            <div>No investors, just collaborators</div>
+          </div>
           <button
             style={{
               padding: '5px 16px',

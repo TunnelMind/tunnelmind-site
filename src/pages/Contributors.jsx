@@ -4,6 +4,7 @@ import DocumentEditor from '../components/DocumentEditor.jsx'
 import PageDesc from '../components/PageDesc.jsx'
 import { useTM } from '../lib/state.jsx'
 import { SCORE_WEIGHTS, IDENTITY_TIERS, REVENUE_WATERFALL, calculateScore } from '../lib/scoring.js'
+import StripeConnect from '../components/StripeConnect.jsx'
 
 function ScoreBar({ score, maxScore }) {
   const pct = maxScore > 0 ? Math.min((score / maxScore) * 100, 100) : 0
@@ -102,6 +103,9 @@ function Leaderboard() {
         Scores are session-local until Supabase persistence is connected.
         Contributors will be compensated proportionally when the platform becomes profitable.
       </div>
+
+      {/* Stripe payout dashboard */}
+      <StripeConnect />
 
       {/* Identity tiers */}
       <div style={{ marginTop: '40px' }}>

@@ -20,7 +20,7 @@ const COMMUNITIES = [
     label: 'Live Tools',
     items: [
       { id: 'explore', label: 't/explore', desc: '53k+ domains, surveillance scores, corporate ownership', href: 'https://explore.tunnelmind.ai', external: true },
-      { id: 'receipt', label: 't/receipt', desc: 'Upload browser history → dollar value invoice', href: 'https://receipt.tunnelmind.ai', external: true },
+      { id: 'receipt', label: 't/receipt', desc: 'Paste domains → dollar value invoice · fully local' },
       { id: 'radar', label: 't/radar', desc: '704 entities, 9,786 domains — live force graph', href: 'https://radar.tunnelmind.ai', external: true },
       { id: 'api', label: 't/api', desc: 'REST API, 50 req/day free, CORS open', href: 'https://data.tunnelmind.ai', external: true },
     ],
@@ -33,6 +33,7 @@ const PAGE_BREADCRUMBS = {
   roadmap: '· packet-trace timeline · community priorities',
   contributors: '· leaderboard · contribution scoring · future compensation',
   about: '',
+  receipt: '· paste domains · get your surveillance invoice · fully local',
 }
 
 export default function SubredditNav({ currentPage, onNavigate }) {

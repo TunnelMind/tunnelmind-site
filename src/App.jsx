@@ -11,6 +11,7 @@ import Products from './pages/Products.jsx'
 import Roadmap from './pages/Roadmap.jsx'
 import Contributors from './pages/Contributors.jsx'
 import About from './pages/About.jsx'
+import Receipt from './pages/Receipt.jsx'
 
 // ── Hash Router ────────────────────────────────────────────────────
 function getPageFromHash() {
@@ -51,6 +52,7 @@ function AppInner() {
     roadmap: <Roadmap />,
     contributors: <Contributors />,
     about: <About />,
+    receipt: <Receipt />,
   }
 
   const currentPageEl = pageComponent[page] || pageComponent.dialog

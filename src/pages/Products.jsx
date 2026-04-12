@@ -283,13 +283,29 @@ export default function Products() {
               whiteSpace: 'nowrap',
               flexShrink: 0,
             }}>
-              Free · Desktop
+              Beta · Unsigned
             </span>
           </div>
 
           <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text)', margin: 0 }}>
             SSH/Telnet/Serial terminal built for network engineers. Multi-tab sessions, encrypted credential vault, broadcast commands to multiple devices simultaneously, compliance scanning (CIS/STIG), AI-assisted troubleshooting, topology discovery via LLDP, TFTP file transfer, GitOps config drift detection, and session recording with Ed25519 audit signatures. Connects to SSH, Telnet, Serial, Cisco Meraki, gNMI, Kubernetes, and AWS SSM.
           </p>
+
+          <div style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '9px',
+            color: 'var(--chrome-text-dim)',
+            lineHeight: '1.6',
+            padding: '6px 8px',
+            background: 'var(--chrome-bg)',
+            border: '1px solid var(--chrome-border)',
+            borderRadius: '2px',
+          }}>
+            <span style={{ color: 'var(--accent-amber)' }}>⚠ Unsigned builds.</span>
+            {' '}Windows: click "More info → Run anyway" if SmartScreen appears.
+            {' '}macOS: right-click the app → Open → Open to bypass Gatekeeper.
+            {' '}Code signing coming once certificates are issued.
+          </div>
 
           <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
             {NETSHELL_DOWNLOADS.map(({ platform, ext, file }) => (

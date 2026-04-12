@@ -3,6 +3,12 @@ import { Ruler } from '../components/WPChrome.jsx'
 import DocumentEditor from '../components/DocumentEditor.jsx'
 import PageDesc from '../components/PageDesc.jsx'
 
+const NETSHELL_DOWNLOADS = [
+  { platform: 'Windows', ext: '.exe', file: 'NetShell-Setup.exe' },
+  { platform: 'macOS',   ext: '.dmg', file: 'NetShell-1.0.0-arm64.dmg' },
+  { platform: 'Linux',   ext: '.deb', file: 'netshell_1.0.0_amd64.deb' },
+]
+
 const LIVE_TOOLS = [
   {
     name: 'Surveillance Receipt',
@@ -89,7 +95,7 @@ const PERSONAL_TOOLS = [
 ]
 
 function TagColor(tag) {
-  if (tag.includes('New'))      return '#00d4a8'
+  if (tag.includes('New'))      return 'var(--accent-cyan)'
   if (tag.includes('Personal')) return 'var(--accent-blue)'
   return 'var(--accent-green)'
 }
@@ -152,7 +158,7 @@ function ProductCard({ tool }) {
         fontFamily: 'var(--font-serif)',
         fontSize: '13px',
         lineHeight: '1.6',
-        color: 'var(--doc-text-dim)',
+        color: 'var(--doc-text)',
         margin: 0,
       }}>
         {tool.desc}
@@ -221,7 +227,7 @@ export default function Products() {
         <div style={{
           fontFamily: 'var(--font-serif)',
           fontSize: '12px',
-          color: 'var(--doc-text-dim)',
+          color: 'var(--doc-text)',
           marginBottom: '14px',
           lineHeight: '1.6',
         }}>
@@ -236,6 +242,100 @@ export default function Products() {
           {PERSONAL_TOOLS.map(tool => (
             <ProductCard key={tool.name} tool={tool} />
           ))}
+        </div>
+
+        <div style={{ height: '1px', background: 'var(--chrome-border)', marginBottom: '24px' }} />
+
+        {/* NetShell */}
+        <div style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '9px',
+          color: 'var(--accent-amber)',
+          letterSpacing: '0.12em',
+          textTransform: 'uppercase',
+          marginBottom: '12px',
+        }}>
+          ⬡ Desktop Apps
+        </div>
+
+        <div style={{
+          background: 'var(--chrome-bg2)',
+          border: '1px solid var(--chrome-border)',
+          borderRadius: '3px',
+          padding: '16px',
+          marginBottom: '32px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '10px',
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 600, color: 'var(--chrome-text-bright)' }}>
+              NetShell
+            </span>
+            <span style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '8px',
+              color: 'var(--accent-amber)',
+              border: '1px solid var(--accent-amber)',
+              borderRadius: '2px',
+              padding: '1px 5px',
+              opacity: 0.85,
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
+            }}>
+              Free · Desktop
+            </span>
+          </div>
+
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text)', margin: 0 }}>
+            SSH/Telnet/Serial terminal built for network engineers. Multi-tab sessions, encrypted credential vault, broadcast commands to multiple devices simultaneously, compliance scanning (CIS/STIG), AI-assisted troubleshooting, topology discovery via LLDP, TFTP file transfer, GitOps config drift detection, and session recording with Ed25519 audit signatures. Connects to SSH, Telnet, Serial, Cisco Meraki, gNMI, Kubernetes, and AWS SSM.
+          </p>
+
+          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
+            {NETSHELL_DOWNLOADS.map(({ platform, ext, file }) => (
+              <a
+                key={platform}
+                href={`https://github.com/TunnelMind/netshell/releases/latest/download/${file}`}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '5px',
+                  padding: '4px 10px',
+                  background: 'var(--chrome-bg)',
+                  border: '1px solid var(--chrome-border)',
+                  borderRadius: '2px',
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '9px',
+                  color: 'var(--accent-amber)',
+                  textDecoration: 'none',
+                  transition: 'border-color 150ms ease',
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = 'var(--accent-amber)'}
+                onMouseLeave={e => e.currentTarget.style.borderColor = 'var(--chrome-border)'}
+              >
+                ↓ {platform} <span style={{ color: 'var(--chrome-text-dim)' }}>{ext}</span>
+              </a>
+            ))}
+            <a
+              href="https://github.com/TunnelMind/netshell/releases"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                padding: '4px 10px',
+                background: 'transparent',
+                border: '1px solid var(--chrome-border)',
+                borderRadius: '2px',
+                fontFamily: 'var(--font-mono)',
+                fontSize: '9px',
+                color: 'var(--chrome-text-dim)',
+                textDecoration: 'none',
+              }}
+            >
+              All releases ↗
+            </a>
+          </div>
         </div>
 
         <div style={{ height: '1px', background: 'var(--chrome-border)', marginBottom: '0' }} />

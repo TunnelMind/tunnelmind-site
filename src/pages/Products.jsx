@@ -352,6 +352,62 @@ export default function Products() {
               All releases ↗
             </a>
           </div>
+
+          {/* Package repo one-liners */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '8px',
+            marginTop: '4px',
+          }}>
+            {[
+              {
+                label: 'Debian / Ubuntu',
+                lines: [
+                  'curl -fsSL https://packages.tunnelmind.ai/apt/gpg.key | sudo apt-key add -',
+                  'echo "deb https://packages.tunnelmind.ai/apt stable main" | sudo tee /etc/apt/sources.list.d/netshell.list',
+                  'sudo apt-get update && sudo apt-get install netshell',
+                ],
+              },
+              {
+                label: 'Fedora / RHEL / Rocky',
+                lines: [
+                  'sudo curl -fsSL https://packages.tunnelmind.ai/rpm/netshell.repo \\',
+                  '  -o /etc/yum.repos.d/netshell.repo',
+                  'sudo dnf install netshell',
+                ],
+              },
+            ].map(({ label, lines }) => (
+              <div key={label} style={{
+                background: 'var(--chrome-bg)',
+                border: '1px solid var(--chrome-border)',
+                borderRadius: '2px',
+                padding: '8px 10px',
+              }}>
+                <div style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '8px',
+                  color: 'var(--chrome-text-dim)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.08em',
+                  marginBottom: '6px',
+                }}>
+                  {label}
+                </div>
+                {lines.map((line, i) => (
+                  <div key={i} style={{
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '9px',
+                    color: 'var(--accent-green)',
+                    lineHeight: '1.7',
+                    whiteSpace: 'pre',
+                  }}>
+                    {line}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div style={{ height: '1px', background: 'var(--chrome-border)', marginBottom: '0' }} />

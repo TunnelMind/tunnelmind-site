@@ -49,7 +49,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
         fontFamily: 'var(--font-serif)',
         fontSize: '14px',
         lineHeight: '1.6',
-        color: ann.isAuthor ? 'var(--accent-purple)' : 'var(--accent-red)',
+        color: ann.isAuthor ? 'var(--accent-purple)' : 'var(--doc-text)',
         marginBottom: '6px',
         borderLeft: ann.isAuthor ? '2px solid var(--accent-purple)' : '2px solid var(--accent-red)',
         paddingLeft: '8px',
@@ -62,7 +62,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
         <button
           style={{
             background: ann.votes.userVote === 1 ? 'var(--vote-up)' : 'transparent',
-            color: ann.votes.userVote === 1 ? '#fff' : 'var(--chrome-text-dim)',
+            color: ann.votes.userVote === 1 ? 'var(--chrome-bg)' : 'var(--chrome-text-dim)',
             border: '1px solid',
             borderColor: ann.votes.userVote === 1 ? 'var(--vote-up)' : 'var(--chrome-border)',
             borderRadius: '2px',
@@ -87,7 +87,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
         <button
           style={{
             background: ann.votes.userVote === -1 ? 'var(--vote-down)' : 'transparent',
-            color: ann.votes.userVote === -1 ? '#fff' : 'var(--chrome-text-dim)',
+            color: ann.votes.userVote === -1 ? 'var(--chrome-bg)' : 'var(--chrome-text-dim)',
             border: '1px solid',
             borderColor: ann.votes.userVote === -1 ? 'var(--vote-down)' : 'var(--chrome-border)',
             borderRadius: '2px',

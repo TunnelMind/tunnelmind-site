@@ -106,7 +106,7 @@ export default function AuthModal({ open, onClose, onAuth }) {
                 ...MONO, flex: 1, fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase',
                 padding: '7px', border: 'none', cursor: 'pointer',
                 background: tab === t ? 'var(--accent-green)' : 'var(--chrome-bg)',
-                color: tab === t ? '#000' : 'var(--chrome-text-dim)',
+                color: tab === t ? 'var(--chrome-bg)' : 'var(--chrome-text-dim)',
               }}
             >
               {t === 'signup' ? 'Sign Up' : 'Sign In'}

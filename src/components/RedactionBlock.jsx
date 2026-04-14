@@ -31,7 +31,7 @@ export default function RedactionBlock({ sentenceId, threshold, currentVotes, us
       >
         {/* Redaction text */}
         <span style={{
-          color: '#2a2a2a',
+          color: 'var(--chrome-border)',
           fontSize: '14px',
           letterSpacing: '1px',
           lineHeight: 1.4,

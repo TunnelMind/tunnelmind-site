@@ -23,13 +23,13 @@ const S = {
     background: isApplied
       ? 'var(--accent-green-dim)'
       : netScore >= 3
-        ? 'rgba(63, 185, 80, 0.05)'
+        ? 'var(--accent-green-faint)'
         : 'var(--chrome-bg2)',
     border: '1px solid',
     borderColor: isApplied
       ? 'var(--accent-green)'
       : netScore >= 3
-        ? 'rgba(63, 185, 80, 0.3)'
+        ? 'var(--accent-green-mid)'
         : 'var(--chrome-border)',
     borderRadius: '3px',
     animation: 'fadeIn 0.2s ease',
@@ -57,7 +57,7 @@ const S = {
     width: '16px',
     height: '16px',
     background: active ? color : 'transparent',
-    color: active ? '#fff' : 'var(--chrome-text-dim)',
+    color: active ? 'var(--chrome-bg)' : 'var(--chrome-text-dim)',
     border: '1px solid',
     borderColor: active ? color : 'var(--chrome-border)',
     borderRadius: '2px',
@@ -89,7 +89,7 @@ const S = {
     alignItems: 'center',
     gap: '3px',
     padding: '1px 5px',
-    background: 'rgba(63, 185, 80, 0.15)',
+    background: 'var(--accent-green-dim)',
     border: '1px solid var(--accent-green)',
     borderRadius: '10px',
     fontSize: '8px',

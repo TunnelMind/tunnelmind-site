@@ -188,7 +188,7 @@ export default function Products() {
       />
 
       {/* Product cards */}
-      <div style={{ padding: '24px 32px 0', maxWidth: '960px', margin: '0 auto' }}>
+      <div style={{ padding: 'clamp(12px, 4vw, 32px)', paddingBottom: 0, maxWidth: '960px', margin: '0 auto' }}>
 
         {/* Public web tools */}
         <div style={{
@@ -203,7 +203,7 @@ export default function Products() {
         </div>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '10px',
           marginBottom: '32px',
         }}>
@@ -235,7 +235,7 @@ export default function Products() {
         </div>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '10px',
           marginBottom: '32px',
         }}>
@@ -356,7 +356,7 @@ export default function Products() {
           {/* Package repo one-liners */}
           <div style={{
             display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
             gap: '8px',
             marginTop: '4px',
           }}>
@@ -400,7 +400,8 @@ export default function Products() {
                     fontSize: '9px',
                     color: 'var(--accent-green)',
                     lineHeight: '1.7',
-                    whiteSpace: 'pre',
+                    whiteSpace: 'pre-wrap',
+                    overflowWrap: 'break-word',
                   }}>
                     {line}
                   </div>

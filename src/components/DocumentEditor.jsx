@@ -123,7 +123,7 @@ function PublishedView({ pageId, doc }) {
   return (
     <div>
       {doc.paragraphs.map(para => (
-        <p key={para.key} style={{ marginBottom: '18px', lineHeight: 0 }}>
+        <p key={para.key} style={{ marginBottom: '18px', lineHeight: '1.7' }}>
           {para.sentences.map((s, si) => (
             <React.Fragment key={s.key}>
               <InteractiveSentence

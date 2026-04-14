@@ -17,7 +17,9 @@
 
   /* Accent system */
   --accent-green: #4ade80;
+  --accent-green-faint: rgba(74, 222, 128, 0.05);
   --accent-green-dim: rgba(74, 222, 128, 0.15);
+  --accent-green-mid: rgba(74, 222, 128, 0.3);
   --accent-green-glow: rgba(74, 222, 128, 0.2);
   --accent-amber: #fbbf24;
   --accent-amber-dim: rgba(251, 191, 36, 0.15);
@@ -158,4 +160,16 @@ a:hover {
   height: 1px;
   background: var(--chrome-border);
   margin: 0;
+}
+
+/* ── Mobile breakpoints ── */
+@media (max-width: 768px) {
+  :root {
+    --content-max: 100%;
+    --sidebar-width: 0px;
+  }
+}
+
+@media (max-width: 390px) {
+  html { font-size: 12px; }
 }

@@ -18,8 +18,8 @@ const LIVE_TOOLS = [
     tag: 'Live · Free · Local',
   },
   {
-    name: 'Surveillance Explorer',
-    desc: '53,000+ tracker domains with surveillance scores 0–100, corporate ownership trees, and shareable URLs.',
+    name: 'NetProbe',
+    desc: 'Full domain intelligence: WHOIS, DNS records, mail security (SPF/DMARC/DKIM), SSL certificate transparency, HTTP headers, and tech stack fingerprinting — plus surveillance tracker scores and ownership data.',
     url: 'https://explore.tunnelmind.ai',
     label: 'explore.tunnelmind.ai',
     tag: 'Live · Free',

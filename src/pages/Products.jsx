@@ -20,8 +20,8 @@ const LIVE_TOOLS = [
   {
     name: 'NetProbe',
     desc: 'Full domain intelligence: WHOIS, DNS records, mail security (SPF/DMARC/DKIM), SSL certificate transparency, HTTP headers, and tech stack fingerprinting — plus surveillance tracker scores and ownership data.',
-    url: 'https://explore.tunnelmind.ai',
-    label: 'explore.tunnelmind.ai',
+    url: 'https://netprobe.tunnelmind.ai',
+    label: 'netprobe.tunnelmind.ai',
     tag: 'Live · Free',
   },
   {

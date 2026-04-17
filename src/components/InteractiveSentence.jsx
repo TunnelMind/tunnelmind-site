@@ -17,7 +17,7 @@ const S = {
   },
   sentence: (hovered, selected, applied) => ({
     fontFamily: 'var(--font-serif)',
-    fontSize: '17px',
+    fontSize: '19px',
     lineHeight: '1.75',
     color: applied ? 'var(--accent-green)' : 'var(--doc-text)',
     backgroundColor: hovered ? 'var(--hover-overlay)' : selected ? 'var(--selected-overlay)' : 'transparent',
@@ -49,7 +49,7 @@ const S = {
     border: '1px solid',
     borderColor: active ? color : 'var(--chrome-border)',
     borderRadius: '2px',
-    fontSize: '9px',
+    fontSize: '11px',
     cursor: 'pointer',
     transition: 'all var(--transition)',
     lineHeight: 1,
@@ -57,7 +57,7 @@ const S = {
     fontFamily: 'var(--font-mono)',
   }),
   score: (score) => ({
-    fontSize: '10px',
+    fontSize: '12px',
     fontFamily: 'var(--font-mono)',
     color: score > 0 ? 'var(--accent-green)' : score < 0 ? 'var(--accent-red)' : 'var(--chrome-text-dim)',
     minWidth: '16px',
@@ -73,7 +73,7 @@ const S = {
     border: '1px solid',
     borderColor: hasCorrectionThread ? 'var(--accent-amber)' : 'var(--chrome-border)',
     borderRadius: '2px',
-    fontSize: '10px',
+    fontSize: '12px',
     cursor: 'pointer',
     transition: 'all var(--transition)',
     fontFamily: 'var(--font-mono)',
@@ -88,7 +88,7 @@ const S = {
     border: '1px solid',
     borderColor: hasAnnotations ? 'var(--accent-red)' : 'var(--chrome-border)',
     borderRadius: '2px',
-    fontSize: '10px',
+    fontSize: '12px',
     cursor: 'pointer',
     transition: 'all var(--transition)',
     fontFamily: 'var(--font-mono)',
@@ -102,7 +102,7 @@ const S = {
     borderRadius: '7px',
     backgroundColor: 'var(--accent-amber)',
     color: 'var(--chrome-bg)',
-    fontSize: '8px',
+    fontSize: '10px',
     fontFamily: 'var(--font-mono)',
     fontWeight: 600,
     padding: '0 3px',
@@ -121,7 +121,7 @@ const S = {
     borderRadius: '3px',
     color: 'var(--doc-text)',
     fontFamily: 'var(--font-serif)',
-    fontSize: '14px',
+    fontSize: '16px',
     padding: '6px 8px',
     resize: 'vertical',
     outline: 'none',
@@ -139,7 +139,7 @@ const S = {
     color: 'var(--accent-green)',
     border: '1px solid var(--accent-green)',
     borderRadius: '2px',
-    fontSize: '10px',
+    fontSize: '12px',
     fontFamily: 'var(--font-mono)',
     cursor: 'pointer',
   },
@@ -149,7 +149,7 @@ const S = {
     color: 'var(--chrome-text-dim)',
     border: '1px solid var(--chrome-border)',
     borderRadius: '2px',
-    fontSize: '10px',
+    fontSize: '12px',
     fontFamily: 'var(--font-mono)',
     cursor: 'pointer',
   },
@@ -233,7 +233,7 @@ export default function InteractiveSentence({ sentenceId, content, isRedacted = 
         </span>
         {isRevealing && (
           <span style={{
-            fontSize: '9px',
+            fontSize: '11px',
             fontFamily: 'var(--font-mono)',
             color: 'var(--accent-green)',
             marginLeft: '6px',
@@ -290,7 +290,7 @@ export default function InteractiveSentence({ sentenceId, content, isRedacted = 
       {correctionOpen && (
         <span style={{ display: 'block', marginTop: '6px', marginBottom: '6px' }}>
           <span style={S.correctionInline}>
-            <div style={{ fontSize: '10px', color: 'var(--chrome-text-dim)', marginBottom: '4px', fontFamily: 'var(--font-mono)' }}>
+            <div style={{ fontSize: '12px', color: 'var(--chrome-text-dim)', marginBottom: '4px', fontFamily: 'var(--font-mono)' }}>
               PROPOSE CORRECTION — original text will be preserved until author accepts
             </div>
             <textarea

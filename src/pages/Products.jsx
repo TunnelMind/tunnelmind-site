@@ -133,7 +133,7 @@ function ProductCard({ tool }) {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
         <span style={{
           fontFamily: 'var(--font-mono)',
-          fontSize: '11px',
+          fontSize: '13px',
           fontWeight: 600,
           color: 'var(--chrome-text-bright)',
         }}>
@@ -141,7 +141,7 @@ function ProductCard({ tool }) {
         </span>
         <span style={{
           fontFamily: 'var(--font-mono)',
-          fontSize: '8px',
+          fontSize: '10px',
           color: tagColor,
           border: `1px solid ${tagColor}`,
           borderRadius: '2px',
@@ -156,7 +156,7 @@ function ProductCard({ tool }) {
 
       <p style={{
         fontFamily: 'var(--font-serif)',
-        fontSize: '13px',
+        fontSize: '17px',
         lineHeight: '1.6',
         color: 'var(--doc-text)',
         margin: 0,
@@ -167,7 +167,7 @@ function ProductCard({ tool }) {
       {tool.label && (
         <span style={{
           fontFamily: 'var(--font-mono)',
-          fontSize: '9px',
+          fontSize: '11px',
           color: 'var(--accent-blue)',
           marginTop: 'auto',
         }}>
@@ -193,7 +193,7 @@ export default function Products() {
         {/* Public web tools */}
         <div style={{
           fontFamily: 'var(--font-mono)',
-          fontSize: '9px',
+          fontSize: '11px',
           color: 'var(--accent-green)',
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
@@ -216,7 +216,7 @@ export default function Products() {
         <div style={{ height: '1px', background: 'var(--chrome-border)', marginBottom: '24px' }} />
         <div style={{
           fontFamily: 'var(--font-mono)',
-          fontSize: '9px',
+          fontSize: '11px',
           color: 'var(--accent-blue)',
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
@@ -226,7 +226,7 @@ export default function Products() {
         </div>
         <div style={{
           fontFamily: 'var(--font-serif)',
-          fontSize: '12px',
+          fontSize: '14px',
           color: 'var(--doc-text)',
           marginBottom: '14px',
           lineHeight: '1.6',
@@ -249,7 +249,7 @@ export default function Products() {
         {/* NetShell */}
         <div style={{
           fontFamily: 'var(--font-mono)',
-          fontSize: '9px',
+          fontSize: '11px',
           color: 'var(--accent-amber)',
           letterSpacing: '0.12em',
           textTransform: 'uppercase',
@@ -269,12 +269,12 @@ export default function Products() {
           gap: '10px',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', fontWeight: 600, color: 'var(--chrome-text-bright)' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--chrome-text-bright)' }}>
               NetShell
             </span>
             <span style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: '8px',
+              fontSize: '10px',
               color: 'var(--accent-amber)',
               border: '1px solid var(--accent-amber)',
               borderRadius: '2px',
@@ -287,13 +287,13 @@ export default function Products() {
             </span>
           </div>
 
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text)', margin: 0 }}>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '17px', lineHeight: '1.6', color: 'var(--doc-text)', margin: 0 }}>
             SSH/Telnet/Serial terminal built for network engineers. Multi-tab sessions, encrypted credential vault, broadcast commands to multiple devices simultaneously, compliance scanning (CIS/STIG), AI-assisted troubleshooting, topology discovery via LLDP, TFTP file transfer, GitOps config drift detection, and session recording with Ed25519 audit signatures. Connects to SSH, Telnet, Serial, Cisco Meraki, gNMI, Kubernetes, and AWS SSM.
           </p>
 
           <div style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
+            fontSize: '11px',
             color: 'var(--chrome-text-dim)',
             lineHeight: '1.6',
             padding: '6px 8px',
@@ -321,7 +321,7 @@ export default function Products() {
                   border: '1px solid var(--chrome-border)',
                   borderRadius: '2px',
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '9px',
+                  fontSize: '11px',
                   color: 'var(--accent-amber)',
                   textDecoration: 'none',
                   transition: 'border-color 150ms ease',
@@ -344,7 +344,7 @@ export default function Products() {
                 border: '1px solid var(--chrome-border)',
                 borderRadius: '2px',
                 fontFamily: 'var(--font-mono)',
-                fontSize: '9px',
+                fontSize: '11px',
                 color: 'var(--chrome-text-dim)',
                 textDecoration: 'none',
               }}
@@ -386,7 +386,7 @@ export default function Products() {
               }}>
                 <div style={{
                   fontFamily: 'var(--font-mono)',
-                  fontSize: '8px',
+                  fontSize: '10px',
                   color: 'var(--chrome-text-dim)',
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
@@ -397,7 +397,7 @@ export default function Products() {
                 {lines.map((line, i) => (
                   <div key={i} style={{
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '9px',
+                    fontSize: '11px',
                     color: 'var(--accent-green)',
                     lineHeight: '1.7',
                     whiteSpace: 'pre-wrap',

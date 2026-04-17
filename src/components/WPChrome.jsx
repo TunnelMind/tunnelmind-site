@@ -54,7 +54,7 @@ export function Ruler({ page, classification }) {
           position: 'absolute',
           right: '8px',
           bottom: '3px',
-          fontSize: '8px',
+          fontSize: '10px',
           fontFamily: 'var(--font-mono)',
           color: 'var(--accent-red)',
           letterSpacing: '0.08em',
@@ -103,7 +103,7 @@ export function StatusBar({ page }) {
       paddingRight: '8px',
       gap: '0',
       fontFamily: 'var(--font-mono)',
-      fontSize: '9px',
+      fontSize: '11px',
       color: 'var(--chrome-text-dim)',
       userSelect: 'none',
       flexShrink: 0,
@@ -146,8 +146,8 @@ function StatusCell({ label, value, valueColor }) {
       gap: '4px',
       padding: '0 8px',
     }}>
-      <span style={{ color: 'var(--chrome-text-dim)', fontSize: '8px' }}>{label}:</span>
-      <span style={{ color: valueColor || 'var(--chrome-text-bright)', fontSize: '9px' }}>
+      <span style={{ color: 'var(--chrome-text-dim)', fontSize: '10px' }}>{label}:</span>
+      <span style={{ color: valueColor || 'var(--chrome-text-bright)', fontSize: '11px' }}>
         {value}
       </span>
     </div>

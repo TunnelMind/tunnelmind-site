@@ -15,12 +15,12 @@ import { calculateScore } from '../lib/scoring.js'
 const API_BASE = '/api/stripe'
 
 const MONO = { fontFamily: 'var(--font-mono)' }
-const DIM  = { ...MONO, fontSize: '9px', color: 'var(--chrome-text-dim)' }
-const BRIGHT = { ...MONO, fontSize: '10px', color: 'var(--chrome-text-bright)' }
+const DIM  = { ...MONO, fontSize: '11px', color: 'var(--chrome-text-dim)' }
+const BRIGHT = { ...MONO, fontSize: '12px', color: 'var(--chrome-text-bright)' }
 
 function Label({ children }) {
   return (
-    <div style={{ ...MONO, fontSize: '9px', color: 'var(--chrome-text-dim)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>
+    <div style={{ ...MONO, fontSize: '11px', color: 'var(--chrome-text-dim)', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: '10px' }}>
       {children}
     </div>
   )
@@ -32,7 +32,7 @@ function ActionButton({ onClick, disabled, children, color = 'var(--accent-green
       onClick={onClick}
       disabled={disabled}
       style={{
-        ...MONO, fontSize: '10px', color: disabled ? 'var(--chrome-text-dim)' : color,
+        ...MONO, fontSize: '12px', color: disabled ? 'var(--chrome-text-dim)' : color,
         background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)',
         borderRadius: '3px', padding: '8px 16px', cursor: disabled ? 'default' : 'pointer',
         letterSpacing: '0.06em',
@@ -140,7 +140,7 @@ function Eligible({ balance_cents, score, tier }) {
           { label: 'Tier',       value: tier },
         ].map(cell => (
           <div key={cell.label} style={{ padding: '10px 12px', background: 'var(--chrome-bg2)', textAlign: 'center' }}>
-            <div style={{ ...MONO, fontSize: '13px', fontWeight: 600, color: 'var(--accent-green)', marginBottom: '3px' }}>{cell.value}</div>
+            <div style={{ ...MONO, fontSize: '17px', fontWeight: 600, color: 'var(--accent-green)', marginBottom: '3px' }}>{cell.value}</div>
             <div style={{ ...DIM }}>{cell.label}</div>
           </div>
         ))}

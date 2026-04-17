@@ -11,7 +11,7 @@ export default function PageDesc({ title, desc }) {
     }}>
       <span style={{
         fontFamily: 'var(--font-mono)',
-        fontSize: '10px',
+        fontSize: '12px',
         fontWeight: 600,
         color: 'var(--accent-green)',
         whiteSpace: 'nowrap',
@@ -21,7 +21,7 @@ export default function PageDesc({ title, desc }) {
       </span>
       <span style={{
         fontFamily: 'var(--font-mono)',
-        fontSize: '10px',
+        fontSize: '12px',
         color: 'var(--chrome-text-bright)',
         lineHeight: '1.5',
       }}>

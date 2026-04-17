@@ -31,7 +31,7 @@ function EmptyState({ authorMode }) {
       minHeight: '40vh',
       color: 'var(--chrome-text-dim)',
       fontFamily: 'var(--font-mono)',
-      fontSize: '11px',
+      fontSize: '13px',
       gap: '12px',
       textAlign: 'center',
     }}>
@@ -56,7 +56,7 @@ function AuthorToolbar({ published, onPublish, onUnpublish, hasContent }) {
       marginBottom: '24px',
     }}>
       <span style={{
-        fontSize: '9px',
+        fontSize: '11px',
         fontFamily: 'var(--font-mono)',
         color: 'var(--accent-amber)',
         letterSpacing: '0.1em',
@@ -75,7 +75,7 @@ function AuthorToolbar({ published, onPublish, onUnpublish, hasContent }) {
             border: '1px solid',
             borderColor: hasContent ? 'var(--accent-green)' : 'var(--chrome-border)',
             borderRadius: '2px',
-            fontSize: '10px',
+            fontSize: '12px',
             fontFamily: 'var(--font-mono)',
             cursor: hasContent ? 'pointer' : 'default',
             letterSpacing: '0.05em',
@@ -88,7 +88,7 @@ function AuthorToolbar({ published, onPublish, onUnpublish, hasContent }) {
       ) : (
         <>
           <span style={{
-            fontSize: '9px',
+            fontSize: '11px',
             fontFamily: 'var(--font-mono)',
             color: 'var(--accent-green)',
           }}>
@@ -101,7 +101,7 @@ function AuthorToolbar({ published, onPublish, onUnpublish, hasContent }) {
               color: 'var(--chrome-text-dim)',
               border: '1px solid var(--chrome-border)',
               borderRadius: '2px',
-              fontSize: '10px',
+              fontSize: '12px',
               fontFamily: 'var(--font-mono)',
               cursor: 'pointer',
             }}
@@ -241,7 +241,7 @@ export default function DocumentEditor({ pageId }) {
             border: 'none',
             outline: 'none',
             fontFamily: 'var(--font-serif)',
-            fontSize: '18px',
+            fontSize: '20px',
             lineHeight: '1.85',
             color: 'var(--doc-text)',
             resize: 'none',

@@ -15,16 +15,16 @@ import { signUp, signIn, signInWithGitHub } from '../lib/auth.js'
 import { isPhase2 } from '../lib/supabase.js'
 
 const MONO = { fontFamily: 'var(--font-mono)' }
-const DIM  = { ...MONO, fontSize: '9px',  color: 'var(--chrome-text-dim)' }
-const LABEL = { ...MONO, fontSize: '9px', color: 'var(--chrome-text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }
+const DIM  = { ...MONO, fontSize: '11px',  color: 'var(--chrome-text-dim)' }
+const LABEL = { ...MONO, fontSize: '11px', color: 'var(--chrome-text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '6px' }
 const INPUT_STYLE = {
-  ...MONO, fontSize: '11px', color: 'var(--chrome-text-bright)',
+  ...MONO, fontSize: '13px', color: 'var(--chrome-text-bright)',
   background: 'var(--chrome-bg)', border: '1px solid var(--chrome-border)',
   borderRadius: '3px', padding: '8px 10px', width: '100%', boxSizing: 'border-box',
   outline: 'none',
 }
 const BTN = (disabled, color = 'var(--accent-green)') => ({
-  ...MONO, fontSize: '10px', color: disabled ? 'var(--chrome-text-dim)' : color,
+  ...MONO, fontSize: '12px', color: disabled ? 'var(--chrome-text-dim)' : color,
   background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)',
   borderRadius: '3px', padding: '8px 20px', cursor: disabled ? 'default' : 'pointer',
   letterSpacing: '0.06em', width: '100%',
@@ -90,10 +90,10 @@ export default function AuthModal({ open, onClose, onAuth }) {
       }}>
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <span style={{ ...MONO, fontSize: '11px', color: 'var(--chrome-text-bright)', letterSpacing: '0.1em' }}>
+          <span style={{ ...MONO, fontSize: '13px', color: 'var(--chrome-text-bright)', letterSpacing: '0.1em' }}>
             {tab === 'signup' ? 'CREATE ACCOUNT' : 'SIGN IN'}
           </span>
-          <button onClick={onClose} style={{ ...MONO, fontSize: '14px', color: 'var(--chrome-text-dim)', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1 }}>×</button>
+          <button onClick={onClose} style={{ ...MONO, fontSize: '16px', color: 'var(--chrome-text-dim)', background: 'none', border: 'none', cursor: 'pointer', lineHeight: 1 }}>×</button>
         </div>
 
         {/* Tab switcher */}
@@ -103,7 +103,7 @@ export default function AuthModal({ open, onClose, onAuth }) {
               key={t}
               onClick={() => { setTab(t); setMessage(null) }}
               style={{
-                ...MONO, flex: 1, fontSize: '9px', letterSpacing: '0.1em', textTransform: 'uppercase',
+                ...MONO, flex: 1, fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase',
                 padding: '7px', border: 'none', cursor: 'pointer',
                 background: tab === t ? 'var(--accent-green)' : 'var(--chrome-bg)',
                 color: tab === t ? 'var(--chrome-bg)' : 'var(--chrome-text-dim)',

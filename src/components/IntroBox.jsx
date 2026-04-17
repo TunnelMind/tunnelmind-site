@@ -43,12 +43,12 @@ export default function IntroBox() {
               background: 'var(--accent-green)',
               display: 'inline-block',
             }} />
-            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
+            <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase' }}>
               TunnelMind — Collaborative Intelligence Platform
             </span>
           </div>
           <button
-            style={{ background: 'transparent', border: 'none', color: 'var(--chrome-text-dim)', cursor: 'pointer', fontSize: '18px', lineHeight: 1, padding: '0 4px' }}
+            style={{ background: 'transparent', border: 'none', color: 'var(--chrome-text-dim)', cursor: 'pointer', fontSize: '20px', lineHeight: 1, padding: '0 4px' }}
             onClick={() => dispatch({ type: 'DISMISS_INTRO' })}
           >×</button>
         </div>
@@ -57,7 +57,7 @@ export default function IntroBox() {
         <div style={{ padding: '24px' }}>
           <div style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: '20px',
+            fontSize: '22px',
             color: 'var(--doc-text)',
             marginBottom: '12px',
             lineHeight: 1.3,
@@ -67,7 +67,7 @@ export default function IntroBox() {
 
           <div style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: '14px',
+            fontSize: '16px',
             lineHeight: '1.7',
             color: 'var(--doc-text-dim)',
             marginBottom: '20px',
@@ -78,7 +78,7 @@ export default function IntroBox() {
           {/* How it works */}
           <div style={{
             fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
+            fontSize: '11px',
             color: 'var(--chrome-text-dim)',
             borderTop: '1px solid var(--chrome-border)',
             paddingTop: '16px',
@@ -108,7 +108,7 @@ export default function IntroBox() {
               { label: 'Data API ↗', href: 'https://data.tunnelmind.ai' },
             ].map(t => (
               <a key={t.href} href={t.href} target="_blank" rel="noopener noreferrer" style={{
-                fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)',
+                fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-green)',
                 textDecoration: 'none', padding: '3px 8px',
                 border: '1px solid var(--accent-green)', borderRadius: '2px',
               }}>
@@ -127,7 +127,7 @@ export default function IntroBox() {
           alignItems: 'center',
           justifyContent: 'space-between',
         }}>
-          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', lineHeight: '1.7' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)', lineHeight: '1.7' }}>
             <div>Account required to contribute · Contributors tracked for future compensation</div>
             <div>No investors, just collaborators</div>
           </div>
@@ -139,7 +139,7 @@ export default function IntroBox() {
               borderRadius: '2px',
               color: 'var(--accent-green)',
               fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
+              fontSize: '12px',
               fontWeight: 600,
               cursor: 'pointer',
             }}

@@ -127,14 +127,14 @@ const S = {
     alignItems: 'center',
     padding: '0 12px',
     gap: '8px',
-    fontSize: '9px',
+    fontSize: '11px',
     color: 'var(--chrome-text-dim)',
     fontFamily: 'var(--font-mono)',
     flexShrink: 0,
   },
   heading: {
     fontFamily: 'var(--font-mono)',
-    fontSize: '11px',
+    fontSize: '13px',
     letterSpacing: '0.2em',
     color: 'var(--chrome-text-dim)',
     textTransform: 'uppercase',
@@ -142,7 +142,7 @@ const S = {
   },
   subheading: {
     fontFamily: 'var(--font-mono)',
-    fontSize: '12px',
+    fontSize: '14px',
     color: 'var(--doc-text-dim)',
     lineHeight: 1.7,
     marginBottom: '24px',
@@ -155,7 +155,7 @@ const S = {
     borderRadius: '3px',
     color: 'var(--doc-text)',
     fontFamily: 'var(--font-mono)',
-    fontSize: '11px',
+    fontSize: '13px',
     padding: '12px',
     resize: 'vertical',
     outline: 'none',
@@ -173,7 +173,7 @@ const S = {
     border: '1px solid var(--accent-green)',
     color: 'var(--accent-green)',
     fontFamily: 'var(--font-mono)',
-    fontSize: '10px',
+    fontSize: '12px',
     letterSpacing: '0.1em',
     padding: '7px 18px',
     cursor: 'pointer',
@@ -185,7 +185,7 @@ const S = {
     border: '1px solid var(--chrome-border)',
     color: 'var(--chrome-text-dim)',
     fontFamily: 'var(--font-mono)',
-    fontSize: '10px',
+    fontSize: '12px',
     letterSpacing: '0.08em',
     padding: '7px 18px',
     cursor: 'pointer',
@@ -210,7 +210,7 @@ const S = {
   },
   receiptTitle: {
     fontFamily: 'var(--font-mono)',
-    fontSize: '10px',
+    fontSize: '12px',
     letterSpacing: '0.22em',
     color: 'var(--chrome-text-dim)',
     marginBottom: '4px',
@@ -218,7 +218,7 @@ const S = {
   },
   receiptStats: {
     fontFamily: 'var(--font-mono)',
-    fontSize: '12px',
+    fontSize: '14px',
     color: 'var(--doc-text-dim)',
   },
   itemRow: {
@@ -228,7 +228,7 @@ const S = {
     padding: '5px 14px',
     borderBottom: '1px solid rgba(255,255,255,0.03)',
     fontFamily: 'var(--font-mono)',
-    fontSize: '12px',
+    fontSize: '14px',
     cursor: 'pointer',
   },
   totalsSection: {
@@ -239,7 +239,7 @@ const S = {
     display: 'flex',
     justifyContent: 'space-between',
     fontFamily: 'var(--font-mono)',
-    fontSize: '12px',
+    fontSize: '14px',
     lineHeight: 2.0,
     color: 'var(--doc-text-dim)',
   },
@@ -250,7 +250,7 @@ const S = {
     border: '1px solid var(--chrome-border)',
     borderRadius: '3px',
     fontFamily: 'var(--font-mono)',
-    fontSize: '10px',
+    fontSize: '12px',
     color: 'var(--doc-text-dim)',
     lineHeight: 1.9,
   },
@@ -402,7 +402,7 @@ export default function Receipt() {
             border: '1px solid var(--accent-green)',
             borderRadius: '3px',
             fontFamily: 'var(--font-mono)',
-            fontSize: '11px',
+            fontSize: '13px',
           }}>
             <div>
               <span style={{ color: 'var(--accent-green)', fontWeight: 600 }}>
@@ -473,7 +473,7 @@ export default function Receipt() {
                   <strong style={{ color: 'var(--accent-red)' }}>{fmt(receipt.totalValue)}</strong>
                   {' extracted'}
                 </div>
-                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
+                <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)' }}>
                   {receipt.domainCount} domain{receipt.domainCount !== 1 ? 's' : ''} analysed · {receipt.generatedAt}
                 </div>
               </div>
@@ -489,7 +489,7 @@ export default function Receipt() {
                       }}
                       onClick={() => toggleExpand(item.company)}
                     >
-                      <span style={{ color: 'var(--chrome-text-dim)', minWidth: '22px', fontSize: '11px' }}>
+                      <span style={{ color: 'var(--chrome-text-dim)', minWidth: '22px', fontSize: '13px' }}>
                         {i + 1}.
                       </span>
                       <span style={{
@@ -498,12 +498,12 @@ export default function Receipt() {
                         textOverflow: 'ellipsis',
                         whiteSpace: 'nowrap',
                         color: 'var(--doc-text-dim)',
-                        fontSize: '13px',
+                        fontSize: '17px',
                       }}>
                         {item.company}
                       </span>
                       <span style={{
-                        fontSize: '10px',
+                        fontSize: '12px',
                         color: 'var(--chrome-text-dim)',
                         minWidth: '72px',
                         textAlign: 'right',
@@ -516,12 +516,12 @@ export default function Receipt() {
                         textAlign: 'right',
                         color: item.value > 0 ? 'var(--accent-amber)' : 'var(--chrome-text-dim)',
                         fontWeight: item.value > 0 ? 600 : 400,
-                        fontSize: '12px',
+                        fontSize: '14px',
                         flexShrink: 0,
                       }}>
                         {fmt(item.value)}
                       </span>
-                      <span style={{ color: 'var(--chrome-text-dim)', fontSize: '9px', width: '10px' }}>
+                      <span style={{ color: 'var(--chrome-text-dim)', fontSize: '11px', width: '10px' }}>
                         {expanded[item.company] ? '▲' : '▼'}
                       </span>
                     </div>
@@ -529,7 +529,7 @@ export default function Receipt() {
                       <div style={{
                         padding: '6px 14px 8px 52px',
                         fontFamily: 'var(--font-mono)',
-                        fontSize: '10px',
+                        fontSize: '12px',
                         color: 'var(--chrome-text-dim)',
                         lineHeight: 1.9,
                         background: 'rgba(255,255,255,0.02)',
@@ -538,7 +538,7 @@ export default function Receipt() {
                         <div>industry: <span style={{ color: 'var(--doc-text-dim)' }}>{item.industry}</span></div>
                         <div>contacts: <span style={{ color: 'var(--doc-text-dim)' }}>{item.count}</span></div>
                         <div>data collected: <span style={{ color: 'var(--doc-text-dim)' }}>{item.category}</span></div>
-                        <div style={{ color: 'var(--chrome-text-dim)', fontSize: '9px', marginTop: '2px' }}>
+                        <div style={{ color: 'var(--chrome-text-dim)', fontSize: '11px', marginTop: '2px' }}>
                           domains: {item.domains.slice(0, 5).join(' · ')}{item.domains.length > 5 ? ` +${item.domains.length - 5} more` : ''}
                         </div>
                         {!item.is_known && (
@@ -554,7 +554,7 @@ export default function Receipt() {
                   <div style={{
                     padding: '6px 14px',
                     fontFamily: 'var(--font-mono)',
-                    fontSize: '11px',
+                    fontSize: '13px',
                     color: 'var(--chrome-text-dim)',
                     textAlign: 'center',
                     borderTop: '1px solid rgba(255,255,255,0.03)',
@@ -576,7 +576,7 @@ export default function Receipt() {
                 </div>
                 <div style={{
                   ...S.totRow,
-                  fontSize: '13px',
+                  fontSize: '17px',
                   fontWeight: 700,
                   borderTop: '1px solid var(--chrome-border)',
                   marginTop: '4px',
@@ -608,17 +608,17 @@ export default function Receipt() {
         {/* Methodology */}
         {showMethod && (
           <div style={S.methodSection}>
-            <div style={{ color: 'var(--doc-text)', fontWeight: 600, marginBottom: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '9px' }}>
+            <div style={{ color: 'var(--doc-text)', fontWeight: 600, marginBottom: '8px', letterSpacing: '0.1em', textTransform: 'uppercase', fontSize: '11px' }}>
               Methodology
             </div>
             <div style={{ marginBottom: '6px' }}>
               <strong style={{ color: 'var(--doc-text-dim)' }}>Formula:</strong>{' '}
               value = floor( contacts × CPM × category_multiplier / 1000, 4 decimal places )
             </div>
-            <div style={{ marginBottom: '12px', color: 'var(--chrome-text-dim)', fontSize: '9px' }}>
+            <div style={{ marginBottom: '12px', color: 'var(--chrome-text-dim)', fontSize: '11px' }}>
               We always round down. Unknown trackers = $0.0000, shown explicitly.
             </div>
-            <div style={{ color: 'var(--doc-text-dim)', marginBottom: '4px', textTransform: 'uppercase', fontSize: '9px', letterSpacing: '0.08em' }}>
+            <div style={{ color: 'var(--doc-text-dim)', marginBottom: '4px', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.08em' }}>
               CPM Benchmarks (USD per 1,000 contacts)
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '2px 16px', marginBottom: '12px' }}>
@@ -629,7 +629,7 @@ export default function Receipt() {
                 </div>
               ))}
             </div>
-            <div style={{ color: 'var(--doc-text-dim)', marginBottom: '4px', textTransform: 'uppercase', fontSize: '9px', letterSpacing: '0.08em' }}>
+            <div style={{ color: 'var(--doc-text-dim)', marginBottom: '4px', textTransform: 'uppercase', fontSize: '11px', letterSpacing: '0.08em' }}>
               Data Category Multipliers
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))', gap: '2px 16px', marginBottom: '12px' }}>
@@ -640,7 +640,7 @@ export default function Receipt() {
                 </div>
               ))}
             </div>
-            <div style={{ color: 'var(--chrome-text-dim)', fontSize: '9px' }}>
+            <div style={{ color: 'var(--chrome-text-dim)', fontSize: '11px' }}>
               Sources: DuckDuckGo Tracker Radar · Disconnect.me · IAB/eMarketer CPM benchmarks
             </div>
           </div>
@@ -650,7 +650,7 @@ export default function Receipt() {
         <div style={{
           marginTop: '32px',
           fontFamily: 'var(--font-mono)',
-          fontSize: '10px',
+          fontSize: '12px',
           color: 'var(--chrome-text-dim)',
           lineHeight: 1.8,
           borderTop: '1px solid var(--chrome-border)',

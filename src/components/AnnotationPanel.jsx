@@ -29,17 +29,17 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
             background: 'var(--accent-purple-dim)',
             border: '1px solid var(--accent-purple)',
             borderRadius: '10px',
-            fontSize: '8px',
+            fontSize: '10px',
             color: 'var(--accent-purple)',
             fontFamily: 'var(--font-mono)',
             fontWeight: 700,
             letterSpacing: '0.05em',
           }}>AUTHOR</span>
         )}
-        <span style={{ fontSize: '10px', fontFamily: 'var(--font-mono)', color: ann.isAuthor ? 'var(--accent-purple)' : 'var(--chrome-text)' }}>
+        <span style={{ fontSize: '12px', fontFamily: 'var(--font-mono)', color: ann.isAuthor ? 'var(--accent-purple)' : 'var(--chrome-text)' }}>
           {ann.author || 'Anonymous'}
         </span>
-        <span style={{ fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
+        <span style={{ fontSize: '11px', color: 'var(--chrome-text-dim)' }}>
           {timeAgo(ann.ts)}
         </span>
       </div>
@@ -47,7 +47,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
       {/* Content */}
       <div style={{
         fontFamily: 'var(--font-serif)',
-        fontSize: '14px',
+        fontSize: '16px',
         lineHeight: '1.6',
         color: ann.isAuthor ? 'var(--accent-purple)' : 'var(--doc-text)',
         marginBottom: '6px',
@@ -68,7 +68,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
             borderRadius: '2px',
             width: '16px',
             height: '16px',
-            fontSize: '8px',
+            fontSize: '10px',
             cursor: 'pointer',
             padding: 0,
             lineHeight: 1,
@@ -77,7 +77,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
         >▲</button>
 
         <span style={{
-          fontSize: '10px',
+          fontSize: '12px',
           fontFamily: 'var(--font-mono)',
           color: netScore > 0 ? 'var(--accent-green)' : netScore < 0 ? 'var(--accent-red)' : 'var(--chrome-text-dim)',
         }}>
@@ -93,7 +93,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
             borderRadius: '2px',
             width: '16px',
             height: '16px',
-            fontSize: '8px',
+            fontSize: '10px',
             cursor: 'pointer',
             padding: 0,
             lineHeight: 1,
@@ -106,7 +106,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
             background: 'transparent',
             color: 'var(--chrome-text-dim)',
             border: 'none',
-            fontSize: '9px',
+            fontSize: '11px',
             fontFamily: 'var(--font-mono)',
             cursor: 'pointer',
             padding: 0,
@@ -129,7 +129,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
               borderRadius: '3px',
               color: 'var(--doc-text)',
               fontFamily: 'var(--font-serif)',
-              fontSize: '13px',
+              fontSize: '17px',
               padding: '6px 8px',
               resize: 'vertical',
               outline: 'none',
@@ -157,7 +157,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
                 color: 'var(--accent-green)',
                 border: '1px solid var(--accent-green)',
                 borderRadius: '2px',
-                fontSize: '9px',
+                fontSize: '11px',
                 fontFamily: 'var(--font-mono)',
                 cursor: 'pointer',
               }}
@@ -176,7 +176,7 @@ function AnnotationItem({ ann, depth = 0, sentenceId, onVote, onReply, authorMod
                 color: 'var(--chrome-text-dim)',
                 border: '1px solid var(--chrome-border)',
                 borderRadius: '2px',
-                fontSize: '9px',
+                fontSize: '11px',
                 fontFamily: 'var(--font-mono)',
                 cursor: 'pointer',
               }}
@@ -256,7 +256,7 @@ export default function AnnotationPanel({ open }) {
         minHeight: '38px',
       }}>
         <span style={{
-          fontSize: '9px',
+          fontSize: '11px',
           fontFamily: 'var(--font-mono)',
           color: 'var(--accent-red)',
           textTransform: 'uppercase',
@@ -270,7 +270,7 @@ export default function AnnotationPanel({ open }) {
             border: 'none',
             color: 'var(--chrome-text-dim)',
             cursor: 'pointer',
-            fontSize: '16px',
+            fontSize: '18px',
             lineHeight: 1,
             padding: '0 4px',
           }}
@@ -285,7 +285,7 @@ export default function AnnotationPanel({ open }) {
           padding: '8px 12px',
           background: 'var(--doc-bg)',
           borderBottom: '1px solid var(--chrome-border)',
-          fontSize: '11px',
+          fontSize: '13px',
           fontFamily: 'var(--font-serif)',
           color: 'var(--doc-text-dim)',
           fontStyle: 'italic',
@@ -293,7 +293,7 @@ export default function AnnotationPanel({ open }) {
           maxHeight: '80px',
           overflow: 'hidden',
         }}>
-          <span style={{ color: 'var(--accent-green)', fontFamily: 'var(--font-mono)', fontSize: '9px', fontStyle: 'normal' }}>
+          <span style={{ color: 'var(--accent-green)', fontFamily: 'var(--font-mono)', fontSize: '11px', fontStyle: 'normal' }}>
             ¶ ANNOTATING:
           </span>
           {' '}
@@ -311,7 +311,7 @@ export default function AnnotationPanel({ open }) {
           <div style={{
             color: 'var(--chrome-text-dim)',
             fontFamily: 'var(--font-mono)',
-            fontSize: '10px',
+            fontSize: '12px',
             textAlign: 'center',
             marginTop: '20px',
           }}>
@@ -340,7 +340,7 @@ export default function AnnotationPanel({ open }) {
       }}>
         {state.authorMode && (
           <div style={{
-            fontSize: '8px',
+            fontSize: '10px',
             fontFamily: 'var(--font-mono)',
             color: 'var(--accent-purple)',
             marginBottom: '4px',
@@ -358,7 +358,7 @@ export default function AnnotationPanel({ open }) {
             borderRadius: '3px',
             color: 'var(--doc-text)',
             fontFamily: 'var(--font-serif)',
-            fontSize: '13px',
+            fontSize: '17px',
             padding: '6px 8px',
             resize: 'none',
             outline: 'none',
@@ -381,7 +381,7 @@ export default function AnnotationPanel({ open }) {
             border: '1px solid',
             borderColor: newText.trim() ? 'var(--accent-green)' : 'var(--chrome-border)',
             borderRadius: '2px',
-            fontSize: '10px',
+            fontSize: '12px',
             fontFamily: 'var(--font-mono)',
             cursor: newText.trim() ? 'pointer' : 'default',
             transition: 'all var(--transition)',

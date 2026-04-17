@@ -34,7 +34,7 @@ function Leaderboard() {
     <div style={{ maxWidth: 'var(--content-max)', margin: '0 auto', padding: '32px 32px 64px' }}>
       <div style={{
         fontFamily: 'var(--font-mono)',
-        fontSize: '9px',
+        fontSize: '11px',
         color: 'var(--chrome-text-dim)',
         letterSpacing: '0.15em',
         textTransform: 'uppercase',
@@ -61,10 +61,10 @@ function Leaderboard() {
           { label: 'Vote cast', pts: SCORE_WEIGHTS.vote_cast },
         ].map(w => (
           <div key={w.label} style={{ padding: '10px 12px', background: 'var(--chrome-bg2)', textAlign: 'center' }}>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--accent-green)', marginBottom: '3px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '17px', fontWeight: 600, color: 'var(--accent-green)', marginBottom: '3px' }}>
               +{w.pts}
             </div>
-            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--chrome-text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
               {w.label}
             </div>
           </div>
@@ -76,7 +76,7 @@ function Leaderboard() {
         <div style={{
           display: 'flex', alignItems: 'center', gap: '12px',
           padding: '8px 12px', background: 'var(--chrome-bg)', borderBottom: '1px solid var(--chrome-border)',
-          fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)',
+          fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)',
           letterSpacing: '0.08em', textTransform: 'uppercase',
         }}>
           <span style={{ width: '24px' }}>#</span>
@@ -88,22 +88,22 @@ function Leaderboard() {
 
         {myScore > 0 ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '10px 12px', fontFamily: 'var(--font-mono)' }}>
-            <span style={{ width: '24px', fontSize: '10px', color: 'var(--accent-amber)', fontWeight: 700 }}>#1</span>
-            <span style={{ width: '120px', fontSize: '11px', color: 'var(--chrome-text-bright)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <span style={{ width: '24px', fontSize: '12px', color: 'var(--accent-amber)', fontWeight: 700 }}>#1</span>
+            <span style={{ width: '120px', fontSize: '13px', color: 'var(--chrome-text-bright)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {state.userHandle || 'You (Anonymous)'}
             </span>
             <ScoreBar score={myScore} maxScore={totalScore} />
-            <span style={{ width: '40px', fontSize: '10px', color: 'var(--accent-green)', textAlign: 'right' }}>100%</span>
-            <span style={{ width: '50px', fontSize: '10px', color: 'var(--chrome-text)', textAlign: 'right' }}>{myScore}pt</span>
+            <span style={{ width: '40px', fontSize: '12px', color: 'var(--accent-green)', textAlign: 'right' }}>100%</span>
+            <span style={{ width: '50px', fontSize: '12px', color: 'var(--chrome-text)', textAlign: 'right' }}>{myScore}pt</span>
           </div>
         ) : (
-          <div style={{ padding: '24px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)' }}>
+          <div style={{ padding: '24px', textAlign: 'center', fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--chrome-text-dim)' }}>
             No contributions yet. Vote, annotate, or correct any sentence to appear here.
           </div>
         )}
       </div>
 
-      <div style={{ marginTop: '8px', fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
+      <div style={{ marginTop: '8px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)' }}>
         Scores are session-local until Supabase persistence is connected.
         Contributors will be compensated proportionally when the platform becomes profitable.
       </div>
@@ -113,32 +113,32 @@ function Leaderboard() {
 
       {/* Identity tiers */}
       <div style={{ marginTop: '40px' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '12px' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '12px' }}>
           Identity Tiers — Score Multiplier
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1px', background: 'var(--chrome-border)', border: '1px solid var(--chrome-border)', borderRadius: '3px', overflow: 'hidden' }}>
           {Object.values(IDENTITY_TIERS).map(tier => (
             <div key={tier.label} style={{ padding: '12px', background: 'var(--chrome-bg2)' }}>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--accent-amber)', marginBottom: '4px' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '17px', fontWeight: 600, color: 'var(--accent-amber)', marginBottom: '4px' }}>
                 ×{tier.multiplier}
               </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-bright)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-bright)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '4px' }}>
                 {tier.label}
               </div>
-              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--chrome-text-dim)' }}>
+              <div style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)' }}>
                 {tier.desc}
               </div>
             </div>
           ))}
         </div>
-        <div style={{ marginTop: '6px', fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
+        <div style={{ marginTop: '6px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)' }}>
           Multiplier is applied to your raw score at payout time. Hardware attestation = highest signal quality.
         </div>
       </div>
 
       {/* Revenue waterfall */}
       <div style={{ marginTop: '32px' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '12px' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)', letterSpacing: '0.15em', textTransform: 'uppercase', marginBottom: '12px' }}>
           Revenue Waterfall
         </div>
         <div style={{ background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderRadius: '3px', padding: '16px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px 24px' }}>
@@ -151,19 +151,19 @@ function Leaderboard() {
             { label: 'Distribution basis', value: '% of total weighted signal' },
           ].map(row => (
             <div key={row.label} style={{ display: 'flex', justifyContent: 'space-between', gap: '12px' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>{row.label}</span>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-bright)', textAlign: 'right' }}>{row.value}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)' }}>{row.label}</span>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-bright)', textAlign: 'right' }}>{row.value}</span>
             </div>
           ))}
         </div>
-        <div style={{ marginTop: '6px', fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
+        <div style={{ marginTop: '6px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)' }}>
           No investors. Surplus stays in the pool and grows with the platform. Stripe Connect handles individual payouts.
         </div>
       </div>
 
       {/* Divider + doc editor for contributor notes */}
       <div style={{ marginTop: '40px', borderTop: '1px solid var(--chrome-border)', paddingTop: '32px' }}>
-        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '16px' }}>
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)', letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '16px' }}>
           From the author
         </div>
         <DocumentEditor pageId="contributors" />
@@ -192,12 +192,12 @@ export default function Contributors() {
         <div style={{ paddingTop: '24px', flexShrink: 0 }}>
           {isAuthed ? (
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)' }}>
+              <span style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-green)' }}>
                 {state.authUser.email?.split('@')[0] || state.userHandle || 'signed in'}
               </span>
               <button
                 onClick={handleSignOut}
-                style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
+                style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)', background: 'none', border: 'none', cursor: 'pointer' }}
               >
                 sign out
               </button>
@@ -206,7 +206,7 @@ export default function Contributors() {
             <button
               onClick={() => setAuthOpen(true)}
               style={{
-                fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)',
+                fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-green)',
                 background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)',
                 borderRadius: '3px', padding: '6px 12px', cursor: 'pointer', letterSpacing: '0.08em',
               }}

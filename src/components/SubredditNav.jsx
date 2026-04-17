@@ -71,7 +71,7 @@ export default function SubredditNav({ currentPage, onNavigate }) {
       {/* TunnelMind wordmark */}
       <div style={{
         fontFamily: 'var(--font-mono)',
-        fontSize: '11px',
+        fontSize: '13px',
         fontWeight: 600,
         color: 'var(--accent-green)',
         letterSpacing: '0.12em',
@@ -101,7 +101,7 @@ export default function SubredditNav({ currentPage, onNavigate }) {
             borderRadius: '12px',
             color: 'var(--accent-green)',
             fontFamily: 'var(--font-mono)',
-            fontSize: '11px',
+            fontSize: '13px',
             fontWeight: 500,
             cursor: 'pointer',
             transition: 'all var(--transition)',
@@ -111,7 +111,7 @@ export default function SubredditNav({ currentPage, onNavigate }) {
         >
           {currentCommunity.label}
           <span style={{
-            fontSize: '8px',
+            fontSize: '10px',
             color: 'var(--chrome-text-dim)',
             transform: dropdownOpen ? 'rotate(180deg)' : 'none',
             transition: 'transform var(--transition)',
@@ -142,10 +142,10 @@ export default function SubredditNav({ currentPage, onNavigate }) {
                     alignItems: 'center',
                     gap: '6px',
                   }}>
-                    <span style={{ fontSize: '9px', color: 'var(--chrome-text-dim)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
+                    <span style={{ fontSize: '11px', color: 'var(--chrome-text-dim)', fontFamily: 'var(--font-mono)', textTransform: 'uppercase', letterSpacing: '0.08em' }}>
                       {group.label}
                     </span>
-                    <span style={{ fontSize: '9px', color: 'var(--accent-amber)' }}>↗</span>
+                    <span style={{ fontSize: '11px', color: 'var(--accent-amber)' }}>↗</span>
                   </div>
                 )}
                 {group.items.map(item => (
@@ -184,22 +184,22 @@ export default function SubredditNav({ currentPage, onNavigate }) {
                     }}>
                       <span style={{
                         fontFamily: 'var(--font-mono)',
-                        fontSize: '11px',
+                        fontSize: '13px',
                         color: item.id === currentPage ? 'var(--accent-green)' : 'var(--chrome-text-bright)',
                         fontWeight: item.id === currentPage ? 600 : 400,
                       }}>
                         {item.label}
                       </span>
                       {item.external && (
-                        <span style={{ fontSize: '9px', color: 'var(--accent-amber)' }}>↗</span>
+                        <span style={{ fontSize: '11px', color: 'var(--accent-amber)' }}>↗</span>
                       )}
                       {item.id === currentPage && (
-                        <span style={{ fontSize: '8px', color: 'var(--accent-green)' }}>●</span>
+                        <span style={{ fontSize: '10px', color: 'var(--accent-green)' }}>●</span>
                       )}
                     </div>
                     <span style={{
                       fontFamily: 'var(--font-mono)',
-                      fontSize: '9px',
+                      fontSize: '11px',
                       color: 'var(--chrome-text-dim)',
                     }}>
                       {item.desc}
@@ -215,7 +215,7 @@ export default function SubredditNav({ currentPage, onNavigate }) {
       {/* Breadcrumb */}
       <span style={{
         fontFamily: 'var(--font-mono)',
-        fontSize: '10px',
+        fontSize: '12px',
         color: 'var(--chrome-text-dim)',
         whiteSpace: 'nowrap',
         overflow: 'hidden',

@@ -32,7 +32,7 @@ export default function RedactionBlock({ sentenceId, threshold, currentVotes, us
         {/* Redaction text */}
         <span style={{
           color: 'var(--chrome-border)',
-          fontSize: '14px',
+          fontSize: '16px',
           letterSpacing: '1px',
           lineHeight: 1.4,
           fontFamily: 'var(--font-mono)',
@@ -60,7 +60,7 @@ export default function RedactionBlock({ sentenceId, threshold, currentVotes, us
           alignItems: 'center',
           gap: '6px',
           marginTop: '4px',
-          fontSize: '9px',
+          fontSize: '11px',
           color: 'var(--chrome-text-dim)',
           fontFamily: 'var(--font-mono)',
         }}>

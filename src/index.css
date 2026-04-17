@@ -4,16 +4,16 @@
   --chrome-bg: #0f172a;
   --chrome-bg2: #1e293b;
   --chrome-border: #334155;
-  --chrome-text: #94a3b8;
-  --chrome-text-dim: #475569;
+  --chrome-text: #cbd5e1;
+  --chrome-text-dim: #94a3b8;
   --chrome-text-bright: #e2e8f0;
 
   /* Document: slightly lighter slate for readable body text */
   --doc-bg: #1e293b;
   --doc-paper: #243044;
   --doc-text: #e2e8f0;
-  --doc-text-dim: #94a3b8;
-  --doc-text-faint: #64748b;
+  --doc-text-dim: #cbd5e1;
+  --doc-text-faint: #94a3b8;
 
   /* Accent system */
   --accent-green: #4ade80;
@@ -63,7 +63,7 @@ html, body {
   background: var(--chrome-bg);
   color: var(--doc-text);
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -171,5 +171,5 @@ a:hover {
 }
 
 @media (max-width: 390px) {
-  html { font-size: 12px; }
+  html { font-size: 14px; }
 }

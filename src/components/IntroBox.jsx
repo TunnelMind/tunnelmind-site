@@ -102,7 +102,7 @@ export default function IntroBox() {
             flexWrap: 'wrap',
           }}>
             {[
-              { label: 'Explorer ↗', href: 'https://explore.tunnelmind.ai' },
+              { label: 'NetProbe ↗', href: 'https://netprobe.tunnelmind.ai' },
               { label: 'Receipt ↗', href: 'https://receipt.tunnelmind.ai' },
               { label: 'Radar ↗', href: 'https://radar.tunnelmind.ai' },
               { label: 'Data API ↗', href: 'https://data.tunnelmind.ai' },

@@ -47,7 +47,7 @@ This platform exists for people who take that seriously. Read what we're buildin
   },
   roadmap: {
     title: 'What We\'re Building',
-    raw: `The current live tools — Surveillance Receipt, Surveillance Explorer, Surveillance Radar, the Tracker Data API, GhostRoute Certificate Verification, and the browser extension — are instruments in the same project: making the surveillance economy legible. All are free. None require an account.
+    raw: `The current live tools — Surveillance Receipt, NetProbe, Surveillance Radar, the Tracker Data API, GhostRoute Certificate Verification, and the browser extension — are instruments in the same project: making the surveillance economy legible. All are free. None require an account.
 
 The next layer is the personal tier. TunnelMind Personal requires an enrolled device, meaning traffic is observed at the kernel level via eBPF, not through a browser extension or proxy. The signal is real and complete. The Surveillance Map shows every actor that contacted your device, color-coded by category, updated in real time as traffic flows. Resonance shows which actors coordinate with each other through your traffic, using Pearson correlation on beacon timing patterns. Dark Mirror shows the demographic profile being bought and sold about you. Cost of You calculates what your data is worth per year, broken down by who extracts the most value.
 

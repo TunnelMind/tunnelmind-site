@@ -186,7 +186,7 @@ export default function Contributors() {
       <Ruler page="contributors" />
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', padding: '0 32px' }}>
         <PageDesc
-          title="t/contributors"
+          title="contributors"
           desc="Everyone building here gets tracked. When TunnelMind becomes profitable, contributors get paid proportionally based on their share of total community signal."
         />
         <div style={{ paddingTop: '24px', flexShrink: 0 }}>

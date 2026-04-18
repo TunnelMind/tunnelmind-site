@@ -8,7 +8,7 @@ export default function Roadmap() {
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
       <Ruler page="roadmap" />
       <PageDesc
-        title="t/roadmap"
+        title="roadmap"
         desc="Where we're headed. Vote priorities up or down, annotate with what we're missing, propose corrections to timelines."
       />
       <DocumentEditor pageId="roadmap" />

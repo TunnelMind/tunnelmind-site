@@ -2,27 +2,25 @@ import React, { useState, useRef, useEffect } from 'react'
 import { useTM } from '../lib/state.jsx'
 import { sha256hex } from '../lib/proofOfWork.js'
 
-const AUTHOR_KEY = import.meta.env.VITE_AUTHOR_KEY
-
 const COMMUNITIES = [
   {
     key: 'internal',
     items: [
-      { id: 'dialog', label: 't/dialog', desc: 'Collaborative writing space — read, annotate, vote, contribute', path: '/' },
-      { id: 'products', label: 't/products', desc: 'Live tools and products in development', path: '/products' },
-      { id: 'roadmap', label: 't/roadmap', desc: 'What we\'re building and when', path: '/roadmap' },
-      { id: 'contributors', label: 't/contributors', desc: 'Leaderboard + future compensation', path: '/contributors' },
-      { id: 'about', label: 't/about', desc: 'Origin story, philosophy, data sources', path: '/about' },
+      { id: 'dialog', label: 'dialog', desc: 'Collaborative writing space — read, annotate, vote, contribute', path: '/' },
+      { id: 'products', label: 'products', desc: 'Live tools and products in development', path: '/products' },
+      { id: 'roadmap', label: 'roadmap', desc: 'What we\'re building and when', path: '/roadmap' },
+      { id: 'contributors', label: 'contributors', desc: 'Leaderboard + future compensation', path: '/contributors' },
+      { id: 'about', label: 'about', desc: 'Origin story, philosophy, data sources', path: '/about' },
     ],
   },
   {
     key: 'tools',
     label: 'Live Tools',
     items: [
-      { id: 'explore', label: 't/probe', desc: 'WHOIS · DNS · SSL · HTTP · stack fingerprinting + surveillance scores', href: 'https://netprobe.tunnelmind.ai', external: true },
-      { id: 'receipt', label: 't/receipt', desc: 'Paste domains → dollar value invoice · fully local' },
-      { id: 'radar', label: 't/radar', desc: '704 entities, 9,786 domains — live force graph', href: 'https://radar.tunnelmind.ai', external: true },
-      { id: 'api', label: 't/api', desc: 'REST API, 50 req/day free, CORS open', href: 'https://data.tunnelmind.ai', external: true },
+      { id: 'explore', label: 'NetProbe', desc: 'WHOIS · DNS · SSL · HTTP · stack fingerprinting + surveillance scores', href: 'https://netprobe.tunnelmind.ai', external: true },
+      { id: 'receipt', label: 'receipt', desc: 'Paste domains → dollar value invoice · fully local' },
+      { id: 'radar', label: 'radar', desc: '704 entities, 9,786 domains — live force graph', href: 'https://radar.tunnelmind.ai', external: true },
+      { id: 'api', label: 'api', desc: 'REST API, 50 req/day free, CORS open', href: 'https://data.tunnelmind.ai', external: true },
     ],
   },
 ]

@@ -170,6 +170,15 @@ a:hover {
   }
 }
 
+/* ── TopNav responsive ── */
+@media (max-width: 640px) {
+  .tm-nav-desktop { display: none !important; }
+  .tm-nav-mobile-toggle { display: block !important; }
+}
+@media (min-width: 641px) {
+  .tm-nav-mobile-menu { display: none !important; }
+}
+
 @media (max-width: 390px) {
   html { font-size: 14px; }
 }

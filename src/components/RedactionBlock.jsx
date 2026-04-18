@@ -1,3 +1,4 @@
+// TODO(alloy-migration): move to alloy.tunnelmind.ai/graph
 import React from 'react'
 
 const BLOCK_CHAR = '█'

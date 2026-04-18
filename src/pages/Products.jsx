@@ -183,7 +183,7 @@ export default function Products() {
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
       <Ruler page="products" />
       <PageDesc
-        title="t/products"
+        title="products"
         desc="Tools we've built. Public web tools require no account. Personal features require an enrolled TunnelMind device — traffic observed at the kernel level, not via browser extension."
       />
 

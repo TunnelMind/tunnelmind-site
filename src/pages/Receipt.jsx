@@ -365,7 +365,7 @@ export default function Receipt() {
     <div style={S.page}>
       {/* Ruler */}
       <div style={S.ruler}>
-        <span>t/receipt</span>
+        <span>receipt</span>
         <span style={{ color: 'var(--chrome-text-dim)' }}>·</span>
         <span>surveillance receipt generator</span>
         {trackers && (

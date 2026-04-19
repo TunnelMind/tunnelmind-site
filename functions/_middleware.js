@@ -3,7 +3,7 @@
  * Runs before every /api/* function.
  */
 
-const ALLOWED_ORIGINS = ['https://tunnelmind.ai', 'http://localhost:5173']
+const ALLOWED_ORIGINS = ['https://tunnelmind.ai', 'https://alloy.tunnelmind.ai', 'http://localhost:5173', 'http://localhost:5174']
 
 export async function onRequest({ request, next, env }) {
   const origin = request.headers.get('Origin') || ''

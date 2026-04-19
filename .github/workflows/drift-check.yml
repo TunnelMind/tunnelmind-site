@@ -1,0 +1,43 @@
+name: Drift check
+
+# Fails if shared files (supabase.js, TopNav.jsx, tierDetection.js) drift
+# between tunnelmind-site and alloy-site.
+#
+# Setup required:
+#   1. Go to Settings → Secrets and variables → Actions → New repository secret
+#   2. Name: SIBLING_REPO_TOKEN
+#   3. Value: a GitHub PAT with "Contents: Read" on TunnelMind/alloy-site
+#   If the secret is absent the check is skipped with a warning (does not block PRs).
+
+on:
+  pull_request:
+    paths:
+      - 'src/lib/supabase.js'
+      - 'src/lib/tierDetection.js'
+      - 'src/components/shared/TopNav.jsx'
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out tunnelmind-site (this repo)
+        uses: actions/checkout@v4
+
+      - name: Check out alloy-site (sibling)
+        if: ${{ secrets.SIBLING_REPO_TOKEN != '' }}
+        uses: actions/checkout@v4
+        with:
+          repository: TunnelMind/alloy-site
+          token: ${{ secrets.SIBLING_REPO_TOKEN }}
+          path: sibling-alloy-site
+
+      - name: Run drift check
+        run: |
+          if [ -z "$SIBLING_TOKEN" ]; then
+            echo "::warning::SIBLING_REPO_TOKEN not configured — skipping drift check"
+            exit 0
+          fi
+          ALLOY_SITE="$GITHUB_WORKSPACE/sibling-alloy-site" \
+            bash scripts/sync-shared.sh
+        env:
+          SIBLING_TOKEN: ${{ secrets.SIBLING_REPO_TOKEN }}

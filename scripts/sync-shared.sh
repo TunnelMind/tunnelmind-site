@@ -72,7 +72,10 @@ else
   $APPLY || echo "  Run with --apply to interactively sync."
 fi
 
-# Note: auth.js and AuthContext.jsx are intentionally NOT synced here.
+# Note: auth.js is intentionally NOT synced here.
 # tunnelmind-site has GitHub OAuth + tier detection; alloy-site has a simpler
-# version. Sync those manually after reviewing the diff:
+# version. Sync manually after reviewing:
 #   diff tunnelmind-site/src/lib/auth.js alloy-site/src/lib/auth.js
+# tierDetection.js IS synced (see PAIRS above) — tier logic must stay identical.
+
+exit $(( DRIFTED > 0 ? 1 : 0 ))

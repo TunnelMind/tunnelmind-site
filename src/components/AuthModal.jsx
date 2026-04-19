@@ -12,7 +12,7 @@
 
 import React, { useState } from 'react'
 import { signUp, signIn, signInWithGitHub } from '../lib/auth.js'
-import { isPhase2 } from '../lib/supabase.js'
+import { isPhase2 } from '../lib/compat.js'
 
 const MONO = { fontFamily: 'var(--font-mono)' }
 const DIM  = { ...MONO, fontSize: '11px',  color: 'var(--chrome-text-dim)' }

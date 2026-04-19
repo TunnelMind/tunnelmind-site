@@ -5,7 +5,8 @@
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react'
 import { generateFingerprint } from './fingerprint.js'
 import { calculateScore } from './scoring.js'
-import { supabase, isPhase2 } from './supabase.js'
+import { supabase } from './supabase.js'
+import { isPhase2 } from './compat.js'
 import { onAuthStateChange, getSession, getTierFromSession } from './auth.js'
 
 const TMContext = createContext(null)

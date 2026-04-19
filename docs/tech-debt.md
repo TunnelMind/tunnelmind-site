@@ -5,6 +5,6 @@ Target removal: 2026-Q3
 Call sites at last count: 7
 Owner: Josh
 
-The `isPhase2` export in `src/lib/supabase.js` is an alias for `isLive`.
-The alias predates the `isLive` rename. Migrate all callers and delete the export.
+The `isPhase2` shim lives in `src/lib/compat.js` (not synced to alloy-site).
+`supabase.js` is clean. To finish: update 3 callers to import `isLive` directly, delete `compat.js`.
 Files to update: `src/lib/state.jsx`, `src/pages/Contributors.jsx`, `src/components/AuthModal.jsx`.

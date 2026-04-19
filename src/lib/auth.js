@@ -5,6 +5,7 @@
  */
 
 import { supabase } from './supabase.js'
+export { getTierFromSession, getTierMultiplier } from './tierDetection.js'
 
 const STUB_ERR = { user: null, session: null, error: { message: 'Auth requires Supabase (Phase 2)' } }
 
@@ -76,18 +77,4 @@ export async function getSession() {
 }
 
 // ── Identity tier derivation ──────────────────────────────────────────────────
-
-/**
- * Determine identity tier from a Supabase session.
- * - GitHub OAuth → 'verified'
- * - Confirmed email → 'email'
- * - TunnelMind desktop attestation (checked via user_metadata) → 'atap'
- */
-export function getTierFromSession(session) {
-  if (!session?.user) return 'email'
-  const user = session.user
-  if (user.user_metadata?.atap_verified) return 'atap'
-  if (user.app_metadata?.provider === 'github') return 'verified'
-  if (user.email_confirmed_at) return 'email'
-  return 'email'
-}
+// Logic lives in tierDetection.js (synced to alloy-site). Re-exported above.

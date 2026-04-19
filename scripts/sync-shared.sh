@@ -18,8 +18,11 @@ if [[ ! -d "$ALLOY_ROOT" ]]; then
 fi
 
 # Files that should stay in sync (source: tunnelmind-site, dest: alloy-site)
+# tierDetection.js is actively synced — drift here corrupts ledger scoring.
+# auth.js is intentionally NOT here: alloy-site has a simpler version (no GitHub OAuth yet).
 declare -A PAIRS=(
   ["src/lib/supabase.js"]="src/lib/supabase.js"
+  ["src/lib/tierDetection.js"]="src/lib/tierDetection.js"
   ["src/components/shared/TopNav.jsx"]="src/components/shared/TopNav.jsx"
 )
 

@@ -37,7 +37,7 @@ export default function Footer() {
           fontSize: '9px',
           color: 'var(--chrome-text-dim)',
         }}>
-          Cabot, Arkansas · © {new Date().getFullYear()}
+          © {new Date().getFullYear()}
         </span>
       </div>
 

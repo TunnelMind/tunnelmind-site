@@ -2,7 +2,7 @@
  * AuthModal — email/password + GitHub OAuth.
  *
  * Two tabs: Sign Up | Sign In
- * Shows "Auth requires Phase 2" message when Supabase not configured.
+ * Shows "Auth unavailable" message when Supabase not configured.
  *
  * Props:
  *   open      boolean
@@ -12,7 +12,7 @@
 
 import React, { useState } from 'react'
 import { signUp, signIn, signInWithGitHub } from '../lib/auth.js'
-import { isPhase2 } from '../lib/compat.js'
+import { isLive } from '../lib/supabase.js'
 
 const MONO = { fontFamily: 'var(--font-mono)' }
 const DIM  = { ...MONO, fontSize: '11px',  color: 'var(--chrome-text-dim)' }
@@ -42,7 +42,7 @@ export default function AuthModal({ open, onClose, onAuth }) {
 
   async function handleEmailSubmit(e) {
     e.preventDefault()
-    if (!isPhase2) {
+    if (!isLive) {
       setMessage({ type: 'err', text: 'Auth unavailable: Supabase not configured (Phase 2)' })
       return
     }
@@ -67,7 +67,7 @@ export default function AuthModal({ open, onClose, onAuth }) {
   }
 
   async function handleGitHub() {
-    if (!isPhase2) {
+    if (!isLive) {
       setMessage({ type: 'err', text: 'Auth unavailable: Supabase not configured (Phase 2)' })
       return
     }
@@ -115,7 +115,7 @@ export default function AuthModal({ open, onClose, onAuth }) {
         </div>
 
         {/* Phase 2 notice */}
-        {!isPhase2 && (
+        {!isLive && (
           <div style={{ ...DIM, background: 'var(--chrome-bg)', border: '1px solid var(--chrome-border)', borderRadius: '3px', padding: '8px 10px', marginBottom: '16px' }}>
             Auth requires Phase 2 (Supabase). Form shown for preview only.
           </div>

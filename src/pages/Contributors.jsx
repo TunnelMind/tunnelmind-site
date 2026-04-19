@@ -8,7 +8,7 @@ import { SCORE_WEIGHTS, IDENTITY_TIERS, REVENUE_WATERFALL, calculateScore } from
 import StripeConnect from '../components/StripeConnect.jsx'
 import AuthModal from '../components/AuthModal.jsx'
 import { signOut } from '../lib/auth.js'
-import { isPhase2 } from '../lib/compat.js'
+import { isLive } from '../lib/supabase.js'
 
 function ScoreBar({ score, maxScore }) {
   const pct = maxScore > 0 ? Math.min((score / maxScore) * 100, 100) : 0

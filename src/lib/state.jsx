@@ -1,12 +1,8 @@
-/**
- * TunnelMind Global State
- * Phase 1: in-memory + localStorage (no Supabase yet)
- */
+// TunnelMind Global State
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react'
 import { generateFingerprint } from './fingerprint.js'
 import { calculateScore } from './scoring.js'
-import { supabase } from './supabase.js'
-import { isPhase2 } from './compat.js'
+import { supabase, isLive } from './supabase.js'
 import { onAuthStateChange, getSession, getTierFromSession } from './auth.js'
 
 const TMContext = createContext(null)
@@ -449,7 +445,7 @@ export function TMProvider({ children }) {
 
   // Phase 2: subscribe to Supabase auth state
   useEffect(() => {
-    if (!isPhase2) return
+    if (!isLive) return
 
     // Load initial session
     getSession().then(session => {
@@ -471,7 +467,7 @@ export function TMProvider({ children }) {
 
   // Phase 2: flush new ledger entries to Supabase when authenticated
   useEffect(() => {
-    if (!isPhase2 || !state.authUser || !state.authSession) return
+    if (!isLive || !state.authUser || !state.authSession) return
 
     const currentLen = state.contributionLedger.length
     if (currentLen <= ledgerLengthRef.current) {

@@ -1,0 +1,16 @@
+{
+  "entity": "TunnelMind AI, LLC",
+  "canary_version": 1,
+  "as_of": "2026-04-24",
+  "statements": [
+    "TunnelMind AI, LLC has not received any National Security Letters.",
+    "TunnelMind AI, LLC has not received any FISA court orders.",
+    "TunnelMind AI, LLC has not received any gag orders that would prevent disclosure of surveillance requests.",
+    "TunnelMind AI, LLC has not been compelled to install any backdoors or intentional vulnerabilities in its systems.",
+    "TunnelMind AI, LLC has not been compelled to modify its cryptographic systems to enable monitoring."
+  ],
+  "update_schedule": "This canary is reviewed and updated monthly. Absence of an update by the stated date should be treated as a canary failure.",
+  "next_update_by": "2026-05-24",
+  "contact": "legal@tunnelmind.ai",
+  "pgp_note": "A PGP-signed version of this canary is available at https://tunnelmind.ai/canary.asc"
+}

@@ -8,6 +8,16 @@ const LINKS = [
   { label: 'Pricing',              href: '/#/pricing' },
 ]
 
+const LEGAL_LINKS = [
+  { label: 'Privacy Policy',       href: '/#/privacy' },
+  { label: 'Terms of Service',     href: '/#/terms' },
+  { label: 'Transparency',         href: '/#/transparency' },
+  { label: 'Law Enforcement',      href: '/#/law-enforcement' },
+  { label: 'Abuse Policy',         href: '/#/abuse' },
+  { label: 'Account Risk',         href: '/#/account-risk' },
+  { label: 'Warrant Canary',       href: '/canary.json', external: true },
+]
+
 export default function Footer() {
   return (
     <footer style={{
@@ -41,26 +51,37 @@ export default function Footer() {
         </span>
       </div>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 16px', alignItems: 'center' }}>
-        {LINKS.map(({ label, href }) => (
-          <a
-            key={href}
-            href={href}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              textDecoration: 'none',
-              transition: 'color var(--transition)',
-            }}
-            onMouseEnter={e => e.currentTarget.style.color = 'var(--chrome-text-bright)'}
-            onMouseLeave={e => e.currentTarget.style.color = 'var(--chrome-text-dim)'}
-          >
-            {label}
-          </a>
-        ))}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 16px', alignItems: 'center' }}>
+          {LINKS.map(({ label, href }) => (
+            <a
+              key={href}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', textDecoration: 'none', transition: 'color var(--transition)' }}
+              onMouseEnter={e => e.currentTarget.style.color = 'var(--chrome-text-bright)'}
+              onMouseLeave={e => e.currentTarget.style.color = 'var(--chrome-text-dim)'}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 12px', alignItems: 'center' }}>
+          {LEGAL_LINKS.map(({ label, href, external }) => (
+            <a
+              key={href}
+              href={href}
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noopener noreferrer' : undefined}
+              style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'var(--chrome-text-dim)', textDecoration: 'none', transition: 'color var(--transition)', opacity: 0.7 }}
+              onMouseEnter={e => { e.currentTarget.style.color = 'var(--chrome-text-bright)'; e.currentTarget.style.opacity = '1' }}
+              onMouseLeave={e => { e.currentTarget.style.color = 'var(--chrome-text-dim)'; e.currentTarget.style.opacity = '0.7' }}
+            >
+              {label}
+            </a>
+          ))}
+        </div>
       </div>
     </footer>
   )

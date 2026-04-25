@@ -20,6 +20,12 @@ import Products from './pages/Products.jsx'
 import Roadmap from './pages/Roadmap.jsx'
 import Contributors from './pages/Contributors.jsx'
 import Receipt from './pages/Receipt.jsx'
+import PrivacyPolicy from './pages/legal/PrivacyPolicy.jsx'
+import TermsOfService from './pages/legal/TermsOfService.jsx'
+import LawEnforcementPolicy from './pages/legal/LawEnforcementPolicy.jsx'
+import AbusePolicy from './pages/legal/AbusePolicy.jsx'
+import TransparencyReport from './pages/legal/TransparencyReport.jsx'
+import AccountRiskDisclosure from './pages/legal/AccountRiskDisclosure.jsx'
 
 // ── Hash Router ────────────────────────────────────────────────────
 function getPageFromHash() {
@@ -63,6 +69,12 @@ function AppInner() {
     pricing:      <Pricing />,
     extension:    <Extension />,
     receipt:      <Receipt />,
+    privacy:      <PrivacyPolicy />,
+    terms:        <TermsOfService />,
+    'law-enforcement': <LawEnforcementPolicy />,
+    abuse:        <AbusePolicy />,
+    transparency: <TransparencyReport />,
+    'account-risk': <AccountRiskDisclosure />,
     // Legacy community pages — still accessible by hash
     dialog:       <Dialog onNavigate={handleNavigate} />,
     products:     <Products />,

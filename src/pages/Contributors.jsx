@@ -178,7 +178,9 @@ export default function Contributors() {
   const isAuthed = !!state.authUser
 
   function handleSignOut() {
-    signOut().then(() => dispatch({ type: 'SET_AUTH_SESSION', session: null, tier: 'email' }))
+    signOut()
+      .then(() => dispatch({ type: 'SET_AUTH_SESSION', session: null, tier: 'email' }))
+      .catch(() => dispatch({ type: 'SET_AUTH_SESSION', session: null, tier: 'email' }))
   }
 
   return (

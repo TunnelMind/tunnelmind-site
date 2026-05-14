@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "build": "npm run build:oai && vite build",
+    "build:oai": "node scripts/build-oai-page.js",
+    "preview": "vite preview",
+    "seed:oai": "node scripts/generate-oai-seed.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.103.0",
@@ -16,6 +18,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
+    "marked": "^18.0.3",
     "vite": "^5.4.11"
   }
 }

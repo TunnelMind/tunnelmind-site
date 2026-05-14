@@ -4,6 +4,7 @@ const NAV_ITEMS = {
   tunnelmind: [
     { label: 'Tools',        page: 'tools' },
     { label: 'API',          page: 'api' },
+    { label: 'Standards',    href: '/oai/standard' },
     { label: 'ReCenter',     page: 'recenter' },
     { label: 'Whitepapers',  page: 'whitepapers' },
     { label: 'Pricing',      page: 'pricing' },
@@ -78,30 +79,43 @@ export default function TopNav({ site = 'tunnelmind', currentPage, onNavigate })
         minWidth: 0,
       }} className="tm-nav-desktop">
         {items.map(item => {
-          const active = currentPage === item.page
+          const active = item.page && currentPage === item.page
+          const sharedStyle = {
+            padding: '4px 10px',
+            background: active ? 'var(--selected-overlay)' : 'transparent',
+            border: 'none',
+            borderRadius: '3px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            fontWeight: active ? 600 : 400,
+            color: active ? 'var(--accent-green)' : 'var(--chrome-text)',
+            cursor: 'pointer',
+            whiteSpace: 'nowrap',
+            textDecoration: 'none',
+            transition: 'color var(--transition), background var(--transition)',
+          }
+          const handleEnter = e => { if (!active) e.currentTarget.style.color = 'var(--chrome-text-bright)' }
+          const handleLeave = e => { if (!active) e.currentTarget.style.color = 'var(--chrome-text)' }
+          if (item.href) {
+            return (
+              <a
+                key={item.label}
+                href={item.href}
+                style={sharedStyle}
+                onMouseEnter={handleEnter}
+                onMouseLeave={handleLeave}
+              >
+                {item.label}
+              </a>
+            )
+          }
           return (
             <button
               key={item.page}
               onClick={() => handleNav(item.page)}
-              style={{
-                padding: '4px 10px',
-                background: active ? 'var(--selected-overlay)' : 'transparent',
-                border: 'none',
-                borderRadius: '3px',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '10px',
-                fontWeight: active ? 600 : 400,
-                color: active ? 'var(--accent-green)' : 'var(--chrome-text)',
-                cursor: 'pointer',
-                whiteSpace: 'nowrap',
-                transition: 'color var(--transition), background var(--transition)',
-              }}
-              onMouseEnter={e => {
-                if (!active) e.currentTarget.style.color = 'var(--chrome-text-bright)'
-              }}
-              onMouseLeave={e => {
-                if (!active) e.currentTarget.style.color = 'var(--chrome-text)'
-              }}
+              style={sharedStyle}
+              onMouseEnter={handleEnter}
+              onMouseLeave={handleLeave}
             >
               {item.label}
             </button>
@@ -174,27 +188,34 @@ export default function TopNav({ site = 'tunnelmind', currentPage, onNavigate })
           zIndex: 200,
           animation: 'fadeIn 0.12s ease',
         }} className="tm-nav-mobile-menu">
-          {items.map(item => (
-            <button
-              key={item.page}
-              onClick={() => handleNav(item.page)}
-              style={{
-                display: 'block',
-                width: '100%',
-                textAlign: 'left',
-                padding: '12px 16px',
-                background: 'transparent',
-                border: 'none',
-                borderBottom: '1px solid var(--chrome-border)',
-                fontFamily: 'var(--font-mono)',
-                fontSize: '11px',
-                color: currentPage === item.page ? 'var(--accent-green)' : 'var(--chrome-text-bright)',
-                cursor: 'pointer',
-              }}
-            >
-              {item.label}
-            </button>
-          ))}
+          {items.map(item => {
+            const mobileStyle = {
+              display: 'block',
+              width: '100%',
+              textAlign: 'left',
+              padding: '12px 16px',
+              background: 'transparent',
+              border: 'none',
+              borderBottom: '1px solid var(--chrome-border)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+              color: item.page && currentPage === item.page ? 'var(--accent-green)' : 'var(--chrome-text-bright)',
+              cursor: 'pointer',
+              textDecoration: 'none',
+            }
+            if (item.href) {
+              return (
+                <a key={item.label} href={item.href} style={mobileStyle} onClick={() => setMenuOpen(false)}>
+                  {item.label}
+                </a>
+              )
+            }
+            return (
+              <button key={item.page} onClick={() => handleNav(item.page)} style={mobileStyle}>
+                {item.label}
+              </button>
+            )
+          })}
           <a
             href={switcher.href}
             style={{

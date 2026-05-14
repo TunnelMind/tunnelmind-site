@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OAI v1.0 — Observed Actor Identifier Standard</title>
+<meta name="description" content="OAI is an open identifier standard for entities that observe, profile, or act against users, devices, and networks. Edited by TunnelMind under the CVE model: free resolution, permanent canonical identifiers, signed observations.">
+<link rel="canonical" href="https://tunnelmind.ai/oai/standard">
+<meta property="og:title" content="OAI v1.0 — Observed Actor Identifier Standard">
+<meta property="og:description" content="Open identifier standard for trackers, fingerprinters, surveillance vendors, ad networks, data brokers, threat actors. Edited by TunnelMind. Public comment through 2026-08-12.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://tunnelmind.ai/oai/standard">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>:root {
+  --chrome-bg: #0f172a;
+  --chrome-bg2: #1e293b;
+  --chrome-border: #334155;
+  --chrome-text: #cbd5e1;
+  --chrome-text-dim: #94a3b8;
+  --chrome-text-bright: #e2e8f0;
+  --doc-bg: #1e293b;
+  --doc-paper: #243044;
+  --doc-text: #e2e8f0;
+  --doc-text-dim: #cbd5e1;
+  --accent-green: #4ade80;
+  --accent-amber: #fbbf24;
+  --accent-blue: #60a5fa;
+  --accent-cyan: #38bdf8;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--chrome-bg); color: var(--doc-text); font-family: var(--font-serif); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.banner { background: var(--chrome-bg2); border-bottom: 1px solid var(--chrome-border); padding: 14px 24px; font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.banner a { color: var(--accent-green); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 150ms ease; }
+.banner a:hover { border-bottom-color: var(--accent-green); }
+.banner .home { color: var(--accent-green); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 11px; }
+main { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+h1 { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--accent-green); letter-spacing: 0.02em; margin: 0 0 28px; line-height: 1.25; }
+h2 { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--chrome-text-bright); margin: 56px 0 18px; line-height: 1.3; padding-bottom: 8px; border-bottom: 1px solid var(--chrome-border); }
+h3 { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-cyan); margin: 36px 0 14px; }
+h4 { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--chrome-text); margin: 28px 0 10px; }
+p { margin: 0 0 18px; }
+a { color: var(--accent-blue); text-decoration: none; border-bottom: 1px solid rgba(96, 165, 250, 0.35); transition: border-color 150ms ease, color 150ms ease; }
+a:hover { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+ul, ol { margin: 0 0 18px; padding-left: 26px; }
+li { margin: 6px 0; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--chrome-bg2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 3px; border: 1px solid var(--chrome-border); }
+pre { background: var(--chrome-bg2); border: 1px solid var(--chrome-border); border-radius: 4px; padding: 16px 18px; overflow-x: auto; margin: 0 0 22px; }
+pre code { background: transparent; border: none; padding: 0; color: var(--doc-text); font-size: 13px; line-height: 1.55; }
+table { border-collapse: collapse; margin: 0 0 22px; font-size: 14px; width: 100%; font-family: var(--font-mono); }
+th, td { border: 1px solid var(--chrome-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background: var(--chrome-bg2); color: var(--chrome-text-bright); font-weight: 700; }
+td code { font-size: 0.92em; }
+hr { border: none; border-top: 1px solid var(--chrome-border); margin: 36px 0; }
+blockquote { margin: 0 0 22px; padding: 12px 18px; border-left: 3px solid var(--accent-green); background: rgba(74, 222, 128, 0.04); color: var(--chrome-text-bright); }
+strong { color: var(--chrome-text-bright); font-weight: 700; }
+em { color: var(--accent-amber); }
+::selection { background: rgba(96, 165, 250, 0.25); color: var(--doc-text); }
+.cta { background: var(--doc-paper); border: 1px solid var(--chrome-border); border-radius: 4px; padding: 20px 24px; margin: 36px 0; font-family: var(--font-mono); font-size: 13px; line-height: 1.55; }
+.cta-title { color: var(--accent-green); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+@media (max-width: 600px) {
+  main { padding: 32px 18px 64px; font-size: 16px; }
+  h1 { font-size: 22px; }
+  h2 { font-size: 17px; }
+  pre, table { font-size: 12px; }
+}</style>
+</head>
+<body>
+<div class="banner">
+  <a class="home" href="/">TunnelMind</a>
+  <div>
+    <a href="https://github.com/TunnelMind/oai">GitHub: TunnelMind/oai</a>
+    &nbsp;·&nbsp;
+    <a href="/oai/OAI-STANDARD-v1.0.md">Raw markdown</a>
+  </div>
+</div>
+<main>
+<div class="cta">
+  <div class="cta-title">v1.0 — Public comment period</div>
+  <div>Comments, objections, and proposals are open through <strong>2026-08-12</strong>.</div>
+  <div style="margin-top: 10px;">
+    Discuss on <a href="https://github.com/TunnelMind/oai/discussions">GitHub Discussions</a>
+    &nbsp;·&nbsp; file an <a href="https://github.com/TunnelMind/oai/issues">issue</a>
+    &nbsp;·&nbsp; read the <a href="/oai/OAI-STANDARD-v1.0.md">raw markdown</a>
+  </div>
+</div>
+<h1>OAI v1.0 — Observed Actor Identifier Standard</h1>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Standard</strong></td>
+<td>OAI v1.0</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>v1.0 — Public comment through 2026-08-12</td>
+</tr>
+<tr>
+<td><strong>Published</strong></td>
+<td>2026-05-14</td>
+</tr>
+<tr>
+<td><strong>Canonical URL</strong></td>
+<td><a href="https://tunnelmind.ai/oai/standard">https://tunnelmind.ai/oai/standard</a></td>
+</tr>
+<tr>
+<td><strong>Resolver</strong></td>
+<td><a href="https://tunnelmind.ai/id/%7Bid-or-alias%7D">https://tunnelmind.ai/id/{id-or-alias}</a></td>
+</tr>
+<tr>
+<td><strong>Editor</strong></td>
+<td>TunnelMind</td>
+</tr>
+<tr>
+<td><strong>License</strong></td>
+<td>CC BY 4.0</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>1. Abstract</h2>
+<p>OAI is an open identifier standard for entities that observe, profile, or act against users, devices, and networks: trackers, fingerprinters, surveillance vendors, ad networks, data brokers, threat actors, and the sensor operators that witness them. It is edited by TunnelMind — a single-operator project intended to transition to a neutral standards body once the conditions in Section 12 are met — and adopts the CVE editorial model: free resolution, permanent canonical identifiers, signed observations. The standard exists because reporting, tooling, and research about observation infrastructure currently lack a stable citation format; an <code>OAI-YYYY-NNNNNNN</code> is a stable handle that humans, agents, and downstream resolvers can all share.</p>
+<hr>
+<h2>2. Identifier format</h2>
+<p>OAI defines two identifier forms: a <strong>canonical</strong> identifier and an optional <strong>alias</strong>. Every registered entity has exactly one canonical identifier and zero or more aliases. Aliases resolve to the canonical identifier.</p>
+<h3>2.1 Canonical form</h3>
+<pre><code>OAI-YYYY-NNNNNNN
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Prefix</td>
+<td>The four-character literal <code>OAI-</code>. Uppercase. Required.</td>
+</tr>
+<tr>
+<td><code>YYYY</code></td>
+<td>Four-digit year of issuance, ISO 8601 calendar year, UTC.</td>
+</tr>
+<tr>
+<td>Separator</td>
+<td><code>-</code> (U+002D).</td>
+</tr>
+<tr>
+<td><code>NNNNNNN</code></td>
+<td>Seven-digit decimal sequence, zero-padded, monotonically increasing within <code>YYYY</code>, starting at <code>0000001</code>.</td>
+</tr>
+</tbody></table>
+<p>Formal grammar (ABNF, RFC 5234):</p>
+<pre><code class="language-abnf">oai-canonical = &quot;OAI-&quot; 4DIGIT &quot;-&quot; 7DIGIT
+DIGIT         = %x30-39
+</code></pre>
+<p>The canonical form is <strong>case-sensitive</strong>: all characters are uppercase except the literal digits. Lowercase or mixed-case canonical identifiers MUST be rejected.</p>
+<h3>2.2 Alias form</h3>
+<pre><code>oai:slug
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Prefix</td>
+<td>The four-character literal <code>oai:</code>. Lowercase. Required.</td>
+</tr>
+<tr>
+<td><code>slug</code></td>
+<td>Begins with a lowercase letter or digit; remaining characters are lowercase letters, digits, hyphen (<code>-</code>), or underscore (<code>_</code>).</td>
+</tr>
+</tbody></table>
+<p>Formal grammar:</p>
+<pre><code class="language-abnf">oai-alias = &quot;oai:&quot; alpha-num *(alpha-num / &quot;-&quot; / &quot;_&quot;)
+alpha-num = %x61-7A / DIGIT          ; a-z and 0-9
+</code></pre>
+<p>Aliases are <strong>case-sensitive</strong> and lowercase. An alias MUST NOT collide with another entity&#39;s alias. Aliases MUST NOT be reused after being retired.</p>
+<h3>2.3 Bounds</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Min length</th>
+<th>Max length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Canonical <code>OAI-YYYY-NNNNNNN</code></td>
+<td>16</td>
+<td>16</td>
+</tr>
+<tr>
+<td>Alias <code>oai:slug</code> (slug part)</td>
+<td>1</td>
+<td>64</td>
+</tr>
+</tbody></table>
+<h3>2.4 Reserved characters</h3>
+<p>The following characters MUST NOT appear in either form: whitespace, <code>/</code>, <code>?</code>, <code>#</code>, <code>&amp;</code>, <code>=</code>, <code>+</code>, <code>%</code>, any uppercase letter in the slug portion of an alias.</p>
+<hr>
+<h2>3. Scope</h2>
+<p>OAI is for entities that <strong>observe, profile, or act against users, devices, or networks</strong> in ways relevant to defensive analysis. The categories accepted in v1:</p>
+<table>
+<thead>
+<tr>
+<th>Category prefix</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>tracker.pixel.*</code></td>
+<td>Image, script, or beacon embedded in third-party context for the purpose of tracking user activity. Subcategories: <code>advertising</code>, <code>marketing</code>, <code>analytics</code>, <code>social</code>.</td>
+</tr>
+<tr>
+<td><code>tracker.fingerprinter</code></td>
+<td>A script or capability that derives a stable device or browser identifier from observable properties without persistent storage.</td>
+</tr>
+<tr>
+<td><code>surveillance.vendor</code></td>
+<td>A commercial vendor whose product line is the observation of individuals, networks, or organizations at scale.</td>
+</tr>
+<tr>
+<td><code>ad_network</code></td>
+<td>An entity operating a programmatic ad exchange, SSP, or DSP whose bid-stream telemetry constitutes user observation.</td>
+</tr>
+<tr>
+<td><code>data_broker</code></td>
+<td>An entity that aggregates, packages, or sells data about identifiable users or households.</td>
+</tr>
+<tr>
+<td><code>threat.actor</code></td>
+<td>A named adversary group, intrusion set, or campaign observed conducting hostile activity.</td>
+</tr>
+<tr>
+<td><code>threat.infrastructure</code></td>
+<td>A piece of infrastructure (botnet, C2 host class, exit-node fleet) attributable to a threat actor or campaign.</td>
+</tr>
+<tr>
+<td><code>sensor.operator</code></td>
+<td>A registered operator of attested observation sensors. See Section 9.</td>
+</tr>
+</tbody></table>
+<p>A category string is one or more dot-separated lowercase segments, each beginning with <code>[a-z]</code> and followed by <code>[a-z0-9_]*</code>. The full grammar is enforced by the v1 record schema (Section 7) at <code>pattern: &quot;^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$&quot;</code>.</p>
+<hr>
+<h2>4. Out of scope</h2>
+<p>The following are <strong>not</strong> registerable in v1. Each exclusion is deliberate; do not work around them.</p>
+<table>
+<thead>
+<tr>
+<th>Excluded</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Normal content sites</td>
+<td>OAI is for observation infrastructure, not the open web.</td>
+</tr>
+<tr>
+<td>Generic SaaS products</td>
+<td>The product&#39;s purpose is not observation.</td>
+</tr>
+<tr>
+<td>Individual humans</td>
+<td>OAI never identifies natural persons.</td>
+</tr>
+<tr>
+<td>CDN and origin infrastructure</td>
+<td>Unless the infrastructure is surveillance-coupled (the operator&#39;s product <em>is</em> observation), it is out of scope.</td>
+</tr>
+<tr>
+<td>Media, gaming, finance, e-commerce, messaging segments</td>
+<td>Insufficient signal that the entity&#39;s <em>purpose</em> is observation rather than a side effect of its business. Excluded from the v1 seed by ranking rule.</td>
+</tr>
+<tr>
+<td>Internal product names of in-scope operators</td>
+<td>Register the operator, not their product SKUs. Use <code>aliases</code> for well-known product names where helpful.</td>
+</tr>
+</tbody></table>
+<p>Out-of-scope subjects are not given OAIs even on request. Issuance of an OAI to an out-of-scope subject is grounds for retraction (Section 6).</p>
+<hr>
+<h2>5. Stability guarantees</h2>
+<p>The canonical identifier is <strong>permanent</strong>. Once issued, an OAI:</p>
+<ul>
+<li>MUST NOT be reassigned to a different entity.</li>
+<li>MUST NOT be deleted from the registry.</li>
+<li>MUST remain resolvable for as long as the registry operates.</li>
+</ul>
+<p>This is the load-bearing guarantee of the standard. External tooling, citations, and reports rely on <code>OAI-YYYY-NNNNNNN</code> being a stable handle. Repointing a canonical ID is a governance failure (see Section 12) and a versioning event.</p>
+<p>Aliases are <strong>convenience-stable</strong>: they MUST resolve to the current canonical for as long as they exist, and they MUST NOT be reassigned to a different entity. An alias MAY be retired, in which case it stops resolving. Aliases are not citation-grade and SHOULD NOT appear in long-lived reports without the canonical form alongside.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Canonical</th>
+<th>Alias</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Permanent</td>
+<td>Yes</td>
+<td>No (may be retired)</td>
+</tr>
+<tr>
+<td>Reassignable</td>
+<td>Never</td>
+<td>Never</td>
+</tr>
+<tr>
+<td>Citation-grade</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Resolution</td>
+<td>Direct</td>
+<td>301 to canonical</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>6. Deprecation policy</h2>
+<p>An OAI has one of four states:</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>active</code></td>
+<td>Currently registered and resolvable as a live entity.</td>
+</tr>
+<tr>
+<td><code>deprecated</code></td>
+<td>The entity has dissolved, ceased operation, or merged into another entity without supersession. The record remains resolvable for historical reference but is no longer current.</td>
+</tr>
+<tr>
+<td><code>superseded</code></td>
+<td>The entity has been merged into another registered entity. Callers SHOULD follow the resolver&#39;s 303 to the supersession target.</td>
+</tr>
+<tr>
+<td><code>reserved</code></td>
+<td>An identifier issued but not yet attested. Reserved records are <strong>not publicly resolvable</strong> (Section 8 specifies the response).</td>
+</tr>
+</tbody></table>
+<h3>6.1 Transitions</h3>
+<pre><code class="language-mermaid">stateDiagram-v2
+  [*] --&gt; reserved : issue_oai()
+  reserved --&gt; active : first attestation
+  active --&gt; deprecated : operator ceased / dissolved
+  active --&gt; superseded : merged into another OAI
+  deprecated --&gt; [*]
+  superseded --&gt; [*]
+</code></pre>
+<p><code>reserved</code> → <code>active</code> requires at least one attestation (Section 10). The v1 record schema enforces this with <code>if status=active then attestations.minItems=1</code>.</p>
+<p><code>active</code> → <code>superseded</code> requires the <code>superseded_by</code> column to reference a valid OAI. The registry&#39;s <code>oai_superseded_consistency</code> CHECK enforces this invariant: a row marked <code>superseded</code> MUST have a target, and a row not marked <code>superseded</code> MUST NOT.</p>
+<p>A canonical ID MUST NOT transition out of <code>deprecated</code> or <code>superseded</code>. Resurrection is forbidden in v1.</p>
+<h3>6.2 Deprecation headers</h3>
+<p>Resolvers MUST include <code>Sunset</code> (RFC 8594) on <code>deprecated</code> responses, set to the timestamp at which the record was deprecated. Resolvers MUST emit a 303 See Other on <code>superseded</code> requests, with <code>Location</code> set to the resolution URL of <code>superseded_by</code>.</p>
+<hr>
+<h2>7. Schema</h2>
+<p>The canonical record format is JSON-LD. Every OAI registry entry conforms to the v1 schema below; v1 is frozen at ship (Section 11).</p>
+<h3>7.1 JSON-LD context</h3>
+<pre><code>@context: https://tunnelmind.ai/oai/context.jsonld
+@type:    ObservedActor
+</code></pre>
+<h3>7.2 Fields</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@context</code></td>
+<td>string (URL)</td>
+<td>Yes</td>
+<td>Const <code>https://tunnelmind.ai/oai/context.jsonld</code>.</td>
+</tr>
+<tr>
+<td><code>@type</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Const <code>ObservedActor</code>.</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Canonical OAI. MUST match the row&#39;s <code>oai_id</code>.</td>
+</tr>
+<tr>
+<td><code>aliases</code></td>
+<td>array of string</td>
+<td>No</td>
+<td>Lowercase <code>oai:slug</code> form. Unique items.</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>string</td>
+<td>No</td>
+<td>Human-readable display name. 1–256 characters.</td>
+</tr>
+<tr>
+<td><code>category</code></td>
+<td>string</td>
+<td>No</td>
+<td>Dot-separated category path per Section 3.</td>
+</tr>
+<tr>
+<td><code>operator</code></td>
+<td>string</td>
+<td>No</td>
+<td>Canonical OAI of the operating entity. Free strings not permitted — issue an OAI or omit.</td>
+</tr>
+<tr>
+<td><code>first_observed</code></td>
+<td>string (date-time)</td>
+<td>No</td>
+<td>RFC 3339. Earliest observation of this entity in the corpus.</td>
+</tr>
+<tr>
+<td><code>first_observed_by</code></td>
+<td>string</td>
+<td>No</td>
+<td>Canonical OAI, OAI-SENSOR, or the literal <code>public-corpus</code>.</td>
+</tr>
+<tr>
+<td><code>last_observed</code></td>
+<td>string (date-time)</td>
+<td>No</td>
+<td>RFC 3339. Most recent observation.</td>
+</tr>
+<tr>
+<td><code>last_observed_by</code></td>
+<td>string</td>
+<td>No</td>
+<td>Canonical OAI, OAI-SENSOR, or <code>public-corpus</code>.</td>
+</tr>
+<tr>
+<td><code>domains</code></td>
+<td>array of string</td>
+<td>No</td>
+<td>Domain names associated with the entity. Subdomains and punycode permitted; raw IPs are not (use <code>threat.infrastructure</code> records, not domains).</td>
+</tr>
+<tr>
+<td><code>fingerprint_methods</code></td>
+<td>array of string</td>
+<td>No</td>
+<td>Lowercase identifiers like <code>canvas</code>, <code>webgl</code>, <code>audio_context</code>.</td>
+</tr>
+<tr>
+<td><code>data_sharing</code></td>
+<td>array of string</td>
+<td>No</td>
+<td>Canonical OAIs of entities this entity is observed to share data with.</td>
+</tr>
+<tr>
+<td><code>jurisdiction_notes</code></td>
+<td>object</td>
+<td>No</td>
+<td>Keys are lowercase ISO 3166-1 alpha-2 country codes; values are free-text strings. v2 may formalize.</td>
+</tr>
+<tr>
+<td><code>attestations</code></td>
+<td>array of object</td>
+<td>Conditional</td>
+<td>Required when <code>status=active</code>, minimum 1. See 7.3.</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>One of <code>active</code>, <code>deprecated</code>, <code>superseded</code>, <code>reserved</code>. MUST match the row&#39;s <code>status</code>.</td>
+</tr>
+<tr>
+<td><code>schema_version</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Const <code>1.0</code> for v1 records.</td>
+</tr>
+<tr>
+<td><code>issued_at</code></td>
+<td>string (date-time)</td>
+<td>Yes</td>
+<td>RFC 3339. Timestamp the OAI was issued.</td>
+</tr>
+</tbody></table>
+<h3>7.3 Attestation object</h3>
+<pre><code class="language-json">{
+  &quot;sensor&quot;: &quot;OAI-SENSOR-de-001&quot;,
+  &quot;observed_at&quot;: &quot;2026-05-10T14:32:18Z&quot;,
+  &quot;signature&quot;: &quot;ed25519:0x9f3a8b2e...&quot;,
+  &quot;log_index&quot;: 4827193
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sensor</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Canonical OAI-SENSOR identifier.</td>
+</tr>
+<tr>
+<td><code>observed_at</code></td>
+<td>string (date-time)</td>
+<td>Yes</td>
+<td>RFC 3339.</td>
+</tr>
+<tr>
+<td><code>signature</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>ed25519:0x</code> followed by hex-encoded signature.</td>
+</tr>
+<tr>
+<td><code>log_index</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td>Position in the transparency log (<code>/oai/log</code>). Implementation deferred — index values are reserved by v1, populated when the log ships.</td>
+</tr>
+</tbody></table>
+<h3>7.4 Worked example</h3>
+<pre><code class="language-json">{
+  &quot;@context&quot;: &quot;https://tunnelmind.ai/oai/context.jsonld&quot;,
+  &quot;@type&quot;: &quot;ObservedActor&quot;,
+  &quot;id&quot;: &quot;OAI-2026-0000042&quot;,
+  &quot;aliases&quot;: [&quot;oai:meta-pixel-v3&quot;],
+  &quot;name&quot;: &quot;Meta Pixel&quot;,
+  &quot;category&quot;: &quot;tracker.pixel.advertising&quot;,
+  &quot;operator&quot;: &quot;OAI-2026-0000017&quot;,
+  &quot;first_observed&quot;: &quot;2012-10-15T00:00:00Z&quot;,
+  &quot;first_observed_by&quot;: &quot;public-corpus&quot;,
+  &quot;last_observed&quot;: &quot;2026-05-10T14:32:18Z&quot;,
+  &quot;last_observed_by&quot;: &quot;OAI-SENSOR-de-001&quot;,
+  &quot;domains&quot;: [&quot;connect.facebook.net&quot;, &quot;www.facebook.com&quot;],
+  &quot;fingerprint_methods&quot;: [&quot;canvas&quot;, &quot;webgl&quot;, &quot;audio_context&quot;],
+  &quot;data_sharing&quot;: [&quot;OAI-2026-0000017&quot;, &quot;OAI-2026-0000093&quot;],
+  &quot;jurisdiction_notes&quot;: {
+    &quot;eu&quot;: &quot;GDPR enforcement actions: see CNIL-2023-IR-FR-Meta-001&quot;,
+    &quot;us&quot;: &quot;FTC consent order 2024&quot;
+  },
+  &quot;attestations&quot;: [
+    {
+      &quot;sensor&quot;: &quot;OAI-SENSOR-de-001&quot;,
+      &quot;observed_at&quot;: &quot;2026-05-10T14:32:18Z&quot;,
+      &quot;signature&quot;: &quot;ed25519:0x9f3a8b2e...&quot;,
+      &quot;log_index&quot;: 4827193
+    }
+  ],
+  &quot;status&quot;: &quot;active&quot;,
+  &quot;schema_version&quot;: &quot;1.0&quot;,
+  &quot;issued_at&quot;: &quot;2026-01-12T08:00:00Z&quot;
+}
+</code></pre>
+<p>Sequence numbers in the example are illustrative; the live registry may emit different values.</p>
+<h3>7.5 Cross-reference rule</h3>
+<p>Every cross-reference to another entity (<code>operator</code>, <code>data_sharing</code>, <code>attestations[].sensor</code>, <code>first_observed_by</code>, <code>last_observed_by</code>) MUST be a canonical OAI or, where applicable, the literal <code>public-corpus</code>. Free strings are not permitted in reference fields. If the referenced entity is not yet registered, the publishing party MUST either issue an OAI for it or omit the reference. The registry is a self-referential graph; tolerating free strings in reference fields would silently break that property.</p>
+<h3>7.6 Validation</h3>
+<p>The registry validates v1 records on insert with a JSON Schema 2020-12 CHECK constraint (see <code>supabase/migrations/005b_oai_record_schema.sql</code>). The schema enforces:</p>
+<ul>
+<li><code>additionalProperties: false</code> at the top level. v1 is frozen.</li>
+<li><code>schema_version</code> const-locked to <code>&quot;1.0&quot;</code>.</li>
+<li>Pattern-based validation on all OAI cross-references using the canonical and sensor regexes.</li>
+<li>Conditional: <code>status=active</code> requires <code>attestations.minItems=1</code>.</li>
+</ul>
+<p>Application-layer validators SHOULD also validate <code>format: date-time</code> strictly; <code>pg_jsonschema</code> enforcement of date-time is implementation-dependent.</p>
+<hr>
+<h2>8. Resolution</h2>
+<p>The resolver answers a single endpoint:</p>
+<pre><code>GET https://tunnelmind.ai/id/{id-or-alias}
+</code></pre>
+<h3>8.1 Behavior</h3>
+<table>
+<thead>
+<tr>
+<th>Input</th>
+<th>Match</th>
+<th>Response</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Canonical <code>OAI-YYYY-NNNNNNN</code></td>
+<td>Found, <code>status=active</code></td>
+<td>200 with record</td>
+</tr>
+<tr>
+<td>Canonical, <code>status=deprecated</code></td>
+<td>Found</td>
+<td>410 Gone with last known record, <code>Sunset</code> header</td>
+</tr>
+<tr>
+<td>Canonical, <code>status=superseded</code></td>
+<td>Found</td>
+<td>303 See Other → resolution URL of <code>superseded_by</code></td>
+</tr>
+<tr>
+<td>Canonical, <code>status=reserved</code></td>
+<td>Found</td>
+<td><strong>404 Not Found</strong> (indistinguishable from unknown; see 8.4)</td>
+</tr>
+<tr>
+<td>Sensor <code>OAI-SENSOR-{cc}-{seq}</code></td>
+<td>Found</td>
+<td>200 with sensor record</td>
+</tr>
+<tr>
+<td>Alias <code>oai:slug</code></td>
+<td>Found</td>
+<td>301 Moved Permanently → canonical URL</td>
+</tr>
+<tr>
+<td>Any input</td>
+<td>Not found</td>
+<td>404 Not Found</td>
+</tr>
+<tr>
+<td>Malformed input</td>
+<td>—</td>
+<td>400 Bad Request</td>
+</tr>
+</tbody></table>
+<h3>8.2 Content negotiation</h3>
+<table>
+<thead>
+<tr>
+<th>Accept</th>
+<th>Response body</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>application/ld+json</code></td>
+<td>JSON-LD record</td>
+</tr>
+<tr>
+<td><code>application/json</code></td>
+<td>JSON-LD record (same payload)</td>
+</tr>
+<tr>
+<td><code>text/html</code> or omitted</td>
+<td>Server-rendered HTML card</td>
+</tr>
+</tbody></table>
+<h3>8.3 Cache-Control</h3>
+<p>Cache directives are set per status to amplify reads at the CDN edge.</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Cache-Control</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>active</code></td>
+<td><code>public, max-age=86400, stale-while-revalidate=604800</code></td>
+</tr>
+<tr>
+<td><code>deprecated</code> (410)</td>
+<td><code>public, max-age=3600, stale-while-revalidate=86400</code></td>
+</tr>
+<tr>
+<td><code>superseded</code> (303)</td>
+<td><code>public, max-age=300, stale-while-revalidate=3600</code></td>
+</tr>
+<tr>
+<td><code>reserved</code> or <code>unknown</code> (404)</td>
+<td><code>public, max-age=60</code></td>
+</tr>
+<tr>
+<td>Malformed (400)</td>
+<td><code>public, max-age=60</code></td>
+</tr>
+</tbody></table>
+<h3>8.4 Reserved status MUST NOT leak</h3>
+<p>Reserved identifiers are pre-issued but not yet attested. Disclosing reservation state to the public — for instance, by responding 451 instead of 404 — would reveal which entities the registry is preparing to add before the operators or affected parties have been notified. Resolvers MUST return 404 for both <code>reserved</code> and unknown lookups, with identical bodies and identical cache headers. The 404 body:</p>
+<pre><code class="language-json">{
+  &quot;error&quot;: &quot;not_found&quot;,
+  &quot;queried&quot;: &quot;&lt;input&gt;&quot;,
+  &quot;standard&quot;: &quot;https://tunnelmind.ai/oai/standard&quot;
+}
+</code></pre>
+<p>Administrators with service-role access may query the underlying registry directly; the public resolver path MUST NOT distinguish reserved from unknown.</p>
+<h3>8.5 Headers</h3>
+<p>Every response MUST include:</p>
+<ul>
+<li><code>Cache-Control</code> per Section 8.3.</li>
+<li><code>Link: &lt;https://tunnelmind.ai/oai/standard&gt;; rel=&quot;describedby&quot;</code>.</li>
+<li><code>ETag</code> for client-side conditional requests.</li>
+</ul>
+<h3>8.6 Rate limiting</h3>
+<p>The resolver MUST NOT rate-limit. The resolver MUST NOT require authentication. OAI resolution is a public good and the registry pays the egress cost. This is load-bearing for adoption: a rate-limited or authenticated resolver cannot become the citation format.</p>
+<p>CDN-level caching makes the cost manageable; if a single client misbehaves, the appropriate mitigation is the CDN&#39;s automated abuse handling, not standard-level rate-limit semantics.</p>
+<h3>8.7 Resolver lookup order</h3>
+<pre><code class="language-mermaid">flowchart TD
+  A[Input] --&gt; B{match canonical regex OAI-\d{4}-\d{7}}
+  B -- yes --&gt; C[query oai_registry]
+  B -- no --&gt; D{match sensor regex OAI-SENSOR-[a-z]{2}-\d{3}}
+  D -- yes --&gt; E[query oai_sensors]
+  D -- no --&gt; F{match alias regex oai:[a-z0-9][a-z0-9_-]*}
+  F -- yes --&gt; G[query oai_registry.aliases, 301 to canonical]
+  F -- no --&gt; H[400 Bad Request]
+</code></pre>
+<h3>8.8 Ancillary routes</h3>
+<table>
+<thead>
+<tr>
+<th>Route</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /id/</code></td>
+<td>Human-facing index. Paginated, searchable.</td>
+</tr>
+<tr>
+<td><code>GET /oai/context.jsonld</code></td>
+<td>JSON-LD context document.</td>
+</tr>
+<tr>
+<td><code>GET /oai/standard</code></td>
+<td>This document, rendered as HTML.</td>
+</tr>
+<tr>
+<td><code>GET /oai/sitemap.xml</code></td>
+<td>Sitemap of all <code>active</code> records for crawlers.</td>
+</tr>
+<tr>
+<td><code>GET /oai/log</code></td>
+<td>Transparency log entrypoint. Implementation deferred — Section 10.</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>9. Sensor identifiers</h2>
+<p>Sensors are attested observation endpoints operated by humans or organizations. They live in a separate namespace from entity OAIs.</p>
+<h3>9.1 Format</h3>
+<pre><code>OAI-SENSOR-{cc}-{seq}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Prefix</td>
+<td><code>OAI-SENSOR-</code>.</td>
+</tr>
+<tr>
+<td><code>{cc}</code></td>
+<td>Lowercase ISO 3166-1 alpha-2 country code.</td>
+</tr>
+<tr>
+<td><code>{seq}</code></td>
+<td>Three-digit zero-padded sequence, per-country.</td>
+</tr>
+</tbody></table>
+<pre><code class="language-abnf">oai-sensor = &quot;OAI-SENSOR-&quot; 2(%x61-7A) &quot;-&quot; 3DIGIT
+</code></pre>
+<h3>9.2 Properties</h3>
+<ul>
+<li>The sequence is <strong>per country</strong>, beginning at <code>001</code>.</li>
+<li>Sequence numbers are <strong>never reissued, never reused</strong> across sensors, even after a sensor is decommissioned.</li>
+<li>A retired sensor retains its identifier with <code>status: retired</code>. The record remains resolvable.</li>
+<li>A retired sensor&#39;s <code>pubkey_ed25519</code> MUST NOT be accepted on new observations.</li>
+<li>A multi-region operator issues a separate sensor identifier under each jurisdiction. An operator running three sensors each in DE, US, and SG holds nine sensor identifiers.</li>
+</ul>
+<h3>9.3 Why ISO 3166-1, not airport codes</h3>
+<p>The question the sensor identifier answers is <strong>&quot;what legal regime did this observation come from.&quot;</strong> Airport codes encode physical location; ISO codes encode jurisdiction. Jurisdictions are what agents and analysts reason about: GDPR applies to a DE sensor regardless of which datacenter hosts it.</p>
+<h3>9.4 Country codes committed at launch</h3>
+<p>The registry accepts any valid ISO 3166-1 alpha-2 code. The codes TunnelMind operates sensors under at launch:</p>
+<pre><code>us  de  gb  sg  jp  br  au
+</code></pre>
+<h3>9.5 Resolver behavior</h3>
+<p>Sensor lookups follow the same flow as entity lookups (Section 8.7). The <code>oai_sensors</code> table is publicly readable on all rows by design (see migration <code>004b_oai_sensors.sql</code>): the public key is required for signature verification, and operator identity is required by the transparency model.</p>
+<hr>
+<h2>10. Attestation model</h2>
+<p>Every observation contributing to a registry record is signed by a sensor&#39;s Ed25519 keypair and chained into a transparency log.</p>
+<h3>10.1 Signature</h3>
+<p>A sensor signs the canonical-bytes encoding of the observation payload with its Ed25519 private key. The signature accompanies the observation in the <code>attestations[]</code> array of the affected registry record. The corresponding public key is the <code>pubkey_ed25519</code> of the sensor&#39;s <code>oai_sensors</code> row.</p>
+<p>Signature encoding: <code>ed25519:0x&lt;hex&gt;</code>. Verifiers fetch the public key from the resolver at <code>/id/{sensor-id}</code>.</p>
+<h3>10.2 Transparency log</h3>
+<p>The transparency log lives at:</p>
+<pre><code>https://tunnelmind.ai/oai/log
+</code></pre>
+<p>The log MUST be append-only. Each entry binds an attestation to a monotonically increasing <code>log_index</code> recorded in the corresponding <code>attestations[].log_index</code> field. The log permits any party to verify that a published record was not silently rewritten.</p>
+<p>Implementation of the log endpoint is <strong>deferred to a separate standards process</strong>. v1 reserves the URL and the <code>log_index</code> field. Consumers MUST tolerate <code>log_index</code> values that cannot yet be verified against a live log endpoint.</p>
+<h3>10.3 Promotion to active</h3>
+<p>A <code>reserved</code> record MUST NOT be promoted to <code>active</code> with zero attestations. The v1 record schema enforces this. The first attestation that meets the schema may trigger promotion; the registry operator (service-role only) performs the transition.</p>
+<hr>
+<h2>11. Versioning</h2>
+<p>OAI follows semantic versioning at the <strong>standard</strong> level, not the record level.</p>
+<table>
+<thead>
+<tr>
+<th>Change class</th>
+<th>Version impact</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Editorial clarification, no schema impact</td>
+<td>None — re-publish in place.</td>
+</tr>
+<tr>
+<td>New optional field, no breaking change</td>
+<td>Minor — v1.x.</td>
+</tr>
+<tr>
+<td>New required field, change to constraint, change to resolver semantics</td>
+<td>Major — v2.</td>
+</tr>
+</tbody></table>
+<p>v1 is <strong>frozen at ship</strong>. The record schema (Section 7) has <code>additionalProperties: false</code>, <code>schema_version: const &quot;1.0&quot;</code>. A v2 record shape requires:</p>
+<ol>
+<li>A public RFC describing the change and its migration path.</li>
+<li>A new validator gated on <code>schema_version: &quot;2.0&quot;</code>.</li>
+<li>A rewritten v1 validator gated on <code>schema_version: &quot;1.0&quot;</code> to preserve historical record validation.</li>
+</ol>
+<p>v1 records remain valid and resolvable indefinitely after v2 ships. The standard never invalidates existing canonical identifiers.</p>
+<hr>
+<h2>12. Governance</h2>
+<h3>12.1 Editor</h3>
+<p>TunnelMind edits the OAI registry while v1 stabilizes. TunnelMind is a single-operator project, not a foundation, not a consortium, and not a venture-backed entity. There is no board, no token, and no third-party investor with editorial influence. The editor&#39;s role is provisional; the conditions under which it transfers to a neutral host are defined in Section 12.4.</p>
+<h3>12.2 Conflict of interest</h3>
+<p>TunnelMind operates commercial products that consume the registry — notably defender-tier services that benefit from the existence of canonical identifiers for adversarial entities. To bound the conflict:</p>
+<ul>
+<li>Issuance order is determined by the open observation corpus, not by customer requests. A paying customer MAY <em>propose</em> registration of an entity their operations have surfaced; the proposal enters the same queue as any other and is not prioritized by payment status.</li>
+<li>Editorial decisions on category boundaries, scope exclusions (Section 4), and supersession events are public, recorded in <code>oai_issuance_log</code>, and reversible only by a versioning event (Section 11).</li>
+<li>The editor MUST NOT accept payment, sponsorship, or grant funding in exchange for issuance, supersession, or scope decisions. Funding that is not tied to specific identifiers is permissible and MUST be disclosed at <code>tunnelmind.ai/oai/funding</code>.</li>
+</ul>
+<h3>12.3 Continuity</h3>
+<p>The registry data, the schema, the issuance audit log, and the migration history are open: the spec document is licensed CC BY 4.0, and the registry payload (records, sequence state, and audit log) is dedicated to the public domain under CC0. A current Postgres dump and a snapshot of the resolver routing rules are publicly downloadable at <code>tunnelmind.ai/oai/archive/</code> and updated at least monthly.</p>
+<p>In the event the editor cannot operate the registry, the canonical resolver URL (<code>tunnelmind.ai/id/</code>) MAY be repointed to a successor neutral host with a 301 from each canonical OAI. The canonical identifier itself is unaffected by the URL move — only the resolution endpoint changes. Successor hosts MAY rebuild the registry from the public archive and serve resolution from any URL; the canonical 301 makes the legacy URL forward correctly.</p>
+<h3>12.4 Transition gate</h3>
+<p>Editorial control of the standard transitions to a neutral body when <strong>all three</strong> of the following hold for <strong>two consecutive quarters</strong>:</p>
+<ol>
+<li><strong>External adoption.</strong> Three or more independent organizations publish OAI identifiers in reporting, tooling, or research. Measured via referer logs on the resolver and via public citation scraping. TunnelMind&#39;s own products do not count toward the three.</li>
+<li><strong>Standards-track recognition.</strong> At least one of: an IETF draft referencing OAI, a W3C working-group adoption, a MITRE / CWE cross-reference, or an equivalent recognized standards body&#39;s citation.</li>
+<li><strong>Operational maturity.</strong> Resolver uptime of 99.9% or higher measured at the edge across rolling 90-day windows for two consecutive quarters, <strong>and</strong> zero canonical identifiers repointed.</li>
+</ol>
+<p>When all three conditions hold, the editor publishes a Transition RFC. The RFC describes the proposed governance structure, candidate neutral hosts, and a handover timeline. The RFC has a minimum 90-day public comment period.</p>
+<p><strong>Rationale.</strong> AND across all three, not OR — adoption without recognition is a popularity signal; recognition without adoption is a paper achievement; either without operational maturity disqualifies the registry from neutral-body acceptance. Two consecutive quarters because single-quarter spikes are artifacts and six months is the floor for credible adoption. Zero canonical repointing because stable identifiers are the load-bearing property of the standard.</p>
+<h3>12.5 Editor failure modes (solo operator)</h3>
+<p>A single-operator editor has failure modes a foundation does not. The standard names them so that downstream consumers can reason about them:</p>
+<ul>
+<li><strong>Issuance turnaround.</strong> Issuance requests are processed in batches, not in real time. The editor&#39;s published SLO for new issuance is <strong>14 calendar days</strong> from the time a complete proposal is received. Faster turnaround is not guaranteed. Resolver availability is independent of issuance turnaround; resolution operates as infrastructure.</li>
+<li><strong>Disagreement and objection.</strong> A party who disagrees with an issuance, a supersession, or a scope decision MAY submit a public objection at <code>tunnelmind.ai/oai/objections</code>. Objections are appended to the public record. The editor responds in writing within <strong>30 calendar days</strong>. Objections do not block the underlying registry record from resolving while the response is pending.</li>
+<li><strong>Capacity ceiling.</strong> If the registry&#39;s editorial workload exceeds what a solo operator can sustain — or if the editor&#39;s circumstances change such that they can no longer operate the registry impartially — the editor MUST invoke the Transition RFC ahead of the Section 12.4 gate. Premature transition is a recognized exit, not a failure.</li>
+</ul>
+<p>These constraints are honest about scale rather than aspirational about it. The standard does not promise foundation-grade operational properties from a project that does not have them.</p>
+<hr>
+<h2>13. Open questions</h2>
+<p>Questions deferred to future versions or separate standards processes:</p>
+<table>
+<thead>
+<tr>
+<th>Question</th>
+<th>Disposition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Federation across multiple registries</td>
+<td>v2.</td>
+</tr>
+<tr>
+<td>External issuance authority (delegated issuance to other registries)</td>
+<td>v2 governance work.</td>
+</tr>
+<tr>
+<td>Transparency log implementation details (Section 10.2)</td>
+<td>Separate standards process. Reserved URL and <code>log_index</code> field in v1.</td>
+</tr>
+<tr>
+<td>Sensor identifier issuance workflow</td>
+<td>Separate standards process (TunnelMind P28).</td>
+</tr>
+<tr>
+<td>GitHub-hosted schema repository for <code>context.jsonld</code> and JSON Schema</td>
+<td>Separate process (TunnelMind P27). v1 schemas resolve under <code>tunnelmind.ai/oai/</code> with <code>rel=canonical</code> headers to permit migration without breaking <code>$id</code> URLs.</td>
+</tr>
+<tr>
+<td>Formal grammar for <code>jurisdiction_notes</code> keys beyond ISO 3166-1 alpha-2</td>
+<td>v2.</td>
+</tr>
+<tr>
+<td>Multi-language record metadata</td>
+<td>v2.</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>Appendix A. References</h2>
+<ul>
+<li>RFC 5234 — Augmented BNF for Syntax Specifications: ABNF</li>
+<li>RFC 3339 — Date and Time on the Internet: Timestamps</li>
+<li>RFC 8594 — The Sunset HTTP Header Field</li>
+<li>RFC 9116 — A File Format to Aid in Security Vulnerability Disclosure (tone reference)</li>
+<li>ISO 3166-1 — Codes for the representation of names of countries and their subdivisions</li>
+<li>JSON Schema 2020-12 — <a href="https://json-schema.org/draft/2020-12/schema">https://json-schema.org/draft/2020-12/schema</a></li>
+<li>JSON-LD 1.1 — <a href="https://www.w3.org/TR/json-ld11/">https://www.w3.org/TR/json-ld11/</a></li>
+</ul>
+<h2>Appendix B. Implementation references</h2>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Registry schema</td>
+<td><code>tunnelmind-site/supabase/migrations/004_oai_registry.sql</code></td>
+</tr>
+<tr>
+<td>Sensor schema</td>
+<td><code>tunnelmind-site/supabase/migrations/004b_oai_sensors.sql</code></td>
+</tr>
+<tr>
+<td>Issuance function and audit log</td>
+<td><code>tunnelmind-site/supabase/migrations/005_oai_sequence.sql</code></td>
+</tr>
+<tr>
+<td>Record JSON Schema CHECK</td>
+<td><code>tunnelmind-site/supabase/migrations/005b_oai_record_schema.sql</code></td>
+</tr>
+<tr>
+<td>Security hardening (search_path pinning, deny-all on internal tables)</td>
+<td><code>tunnelmind-site/supabase/migrations/005c_oai_security_hardening.sql</code></td>
+</tr>
+<tr>
+<td>Seed (top-200 entities, <code>reserved</code> status)</td>
+<td><code>tunnelmind-site/supabase/migrations/006_oai_seed.sql</code></td>
+</tr>
+<tr>
+<td>Resolver</td>
+<td>Forthcoming — Cloudflare Worker at <code>tunnelmind.ai/id/*</code> and <code>tunnelmind.ai/oai/*</code>.</td>
+</tr>
+</tbody></table>
+
+<div class="cta" style="margin-top: 56px;">
+  <div class="cta-title">Comment on this standard</div>
+  <div>
+    <a href="https://github.com/TunnelMind/oai/discussions">GitHub Discussions</a> — open-ended feedback, questions, proposals.<br>
+    <a href="https://github.com/TunnelMind/oai/issues">GitHub Issues</a> — concrete defects, contradictions, broken examples.<br>
+    Formal objections per &sect;12.5 will be archived at <code>tunnelmind.ai/oai/objections</code> (forthcoming).
+  </div>
+</div>
+</main>
+</body>
+</html>

@@ -251,6 +251,10 @@ alpha-num = %x61-7A / DIGIT          ; a-z and 0-9
 <td><code>sensor.operator</code></td>
 <td>A registered operator of attested observation sensors. See Section 9.</td>
 </tr>
+<tr>
+<td><code>witness.operator</code></td>
+<td>A registered operator of an ATAP witness service (added 2026-05-14 alongside ATAP v0.1 publication; see <a href="https://tunnelmind.ai/atap/standard">https://tunnelmind.ai/atap/standard</a>).</td>
+</tr>
 </tbody></table>
 <p>A category string is one or more dot-separated lowercase segments, each beginning with <code>[a-z]</code> and followed by <code>[a-z0-9_]*</code>. The full grammar is enforced by the v1 record schema (Section 7) at <code>pattern: &quot;^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$&quot;</code>.</p>
 <hr>

@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:oai && vite build",
+    "build": "npm run build:oai && npm run build:atap && npm run build:standards && vite build",
     "build:oai": "node scripts/build-oai-page.js",
+    "build:atap": "node scripts/build-atap-page.js",
+    "build:standards": "node scripts/build-standards-index.js",
     "preview": "vite preview",
     "seed:oai": "node scripts/generate-oai-seed.js"
   },

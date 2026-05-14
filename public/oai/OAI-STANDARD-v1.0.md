@@ -91,6 +91,7 @@ OAI is for entities that **observe, profile, or act against users, devices, or n
 | `threat.actor` | A named adversary group, intrusion set, or campaign observed conducting hostile activity. |
 | `threat.infrastructure` | A piece of infrastructure (botnet, C2 host class, exit-node fleet) attributable to a threat actor or campaign. |
 | `sensor.operator` | A registered operator of attested observation sensors. See Section 9. |
+| `witness.operator` | A registered operator of an ATAP witness service (added 2026-05-14 alongside ATAP v0.1 publication; see https://tunnelmind.ai/atap/standard). |
 
 A category string is one or more dot-separated lowercase segments, each beginning with `[a-z]` and followed by `[a-z0-9_]*`. The full grammar is enforced by the v1 record schema (Section 7) at `pattern: "^[a-z][a-z0-9_]*(\\.[a-z][a-z0-9_]*)+$"`.
 

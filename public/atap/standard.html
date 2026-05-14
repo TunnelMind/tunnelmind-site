@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATAP v0.1 — Agent Trust Attestation Protocol</title>
+<meta name="description" content="ATAP is an open protocol for agent behavioral attestation: a canonical receipt format that lets the principal of an agentic system cryptographically verify what an agent actually did. Edited by TunnelMind.">
+<link rel="canonical" href="https://tunnelmind.ai/atap/standard">
+<meta property="og:title" content="ATAP v0.1 — Agent Trust Attestation Protocol">
+<meta property="og:description" content="Open protocol for agent behavioral attestation. AIT capability tokens, witness-event chains, hash-linked attestation blocks, signed compliance receipts. Edited by TunnelMind. Public comment through 2026-08-12.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://tunnelmind.ai/atap/standard">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>:root {
+  --chrome-bg: #0f172a;
+  --chrome-bg2: #1e293b;
+  --chrome-border: #334155;
+  --chrome-text: #cbd5e1;
+  --chrome-text-dim: #94a3b8;
+  --chrome-text-bright: #e2e8f0;
+  --doc-bg: #1e293b;
+  --doc-paper: #243044;
+  --doc-text: #e2e8f0;
+  --doc-text-dim: #cbd5e1;
+  --accent-green: #4ade80;
+  --accent-amber: #fbbf24;
+  --accent-blue: #60a5fa;
+  --accent-cyan: #38bdf8;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--chrome-bg); color: var(--doc-text); font-family: var(--font-serif); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.banner { background: var(--chrome-bg2); border-bottom: 1px solid var(--chrome-border); padding: 14px 24px; font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.banner a { color: var(--accent-green); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 150ms ease; }
+.banner a:hover { border-bottom-color: var(--accent-green); }
+.banner .home { color: var(--accent-green); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 11px; }
+main { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+h1 { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--accent-green); letter-spacing: 0.02em; margin: 0 0 28px; line-height: 1.25; }
+h2 { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--chrome-text-bright); margin: 56px 0 18px; line-height: 1.3; padding-bottom: 8px; border-bottom: 1px solid var(--chrome-border); }
+h3 { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-cyan); margin: 36px 0 14px; }
+h4 { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--chrome-text); margin: 28px 0 10px; }
+p { margin: 0 0 18px; }
+a { color: var(--accent-blue); text-decoration: none; border-bottom: 1px solid rgba(96, 165, 250, 0.35); transition: border-color 150ms ease, color 150ms ease; }
+a:hover { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+ul, ol { margin: 0 0 18px; padding-left: 26px; }
+li { margin: 6px 0; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--chrome-bg2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 3px; border: 1px solid var(--chrome-border); }
+pre { background: var(--chrome-bg2); border: 1px solid var(--chrome-border); border-radius: 4px; padding: 16px 18px; overflow-x: auto; margin: 0 0 22px; }
+pre code { background: transparent; border: none; padding: 0; color: var(--doc-text); font-size: 13px; line-height: 1.55; }
+table { border-collapse: collapse; margin: 0 0 22px; font-size: 14px; width: 100%; font-family: var(--font-mono); }
+th, td { border: 1px solid var(--chrome-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background: var(--chrome-bg2); color: var(--chrome-text-bright); font-weight: 700; }
+td code { font-size: 0.92em; }
+hr { border: none; border-top: 1px solid var(--chrome-border); margin: 36px 0; }
+blockquote { margin: 0 0 22px; padding: 12px 18px; border-left: 3px solid var(--accent-green); background: rgba(74, 222, 128, 0.04); color: var(--chrome-text-bright); }
+strong { color: var(--chrome-text-bright); font-weight: 700; }
+em { color: var(--accent-amber); }
+::selection { background: rgba(96, 165, 250, 0.25); color: var(--doc-text); }
+.cta { background: var(--doc-paper); border: 1px solid var(--chrome-border); border-radius: 4px; padding: 20px 24px; margin: 36px 0; font-family: var(--font-mono); font-size: 13px; line-height: 1.55; }
+.cta-title { color: var(--accent-green); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+@media (max-width: 600px) {
+  main { padding: 32px 18px 64px; font-size: 16px; }
+  h1 { font-size: 22px; }
+  h2 { font-size: 17px; }
+  pre, table { font-size: 12px; }
+}</style>
+</head>
+<body>
+<div class="banner">
+  <a class="home" href="/">TunnelMind</a>
+  <div>
+    <a href="/standards">All standards</a>
+    &nbsp;·&nbsp;
+    <a href="https://github.com/TunnelMind/atap">GitHub: TunnelMind/atap</a>
+    &nbsp;·&nbsp;
+    <a href="/atap/ATAP-v0.1.md">Raw markdown</a>
+  </div>
+</div>
+<main>
+<div class="cta">
+  <div class="cta-title">v0.1 — Public comment period</div>
+  <div>Comments, objections, and proposals are open through <strong>2026-08-12</strong>.</div>
+  <div style="margin-top: 10px;">
+    Discuss on <a href="https://github.com/TunnelMind/atap/discussions">GitHub Discussions</a>
+    &nbsp;·&nbsp; file an <a href="https://github.com/TunnelMind/atap/issues">issue</a>
+    &nbsp;·&nbsp; read the <a href="/atap/ATAP-v0.1.md">raw markdown</a>
+    &nbsp;·&nbsp; <a href="/atap/verify.sh">verify.sh</a>
+    &nbsp;·&nbsp; <a href="/atap/schemas/v0.1/">JSON Schemas</a>
+  </div>
+</div>
+<h1>ATAP v0.1 — Agent Trust Attestation Protocol</h1>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Standard</strong></td>
+<td>ATAP v0.1</td>
+</tr>
+<tr>
+<td><strong>Status</strong></td>
+<td>v0.1 — Public comment through 2026-08-12</td>
+</tr>
+<tr>
+<td><strong>Published</strong></td>
+<td>2026-05-14</td>
+</tr>
+<tr>
+<td><strong>Canonical URL</strong></td>
+<td><a href="https://tunnelmind.ai/atap/standard">https://tunnelmind.ai/atap/standard</a></td>
+</tr>
+<tr>
+<td><strong>Key publication</strong></td>
+<td><a href="https://tunnelmind.ai/atap/keys">https://tunnelmind.ai/atap/keys</a></td>
+</tr>
+<tr>
+<td><strong>Profile registry</strong></td>
+<td><a href="https://tunnelmind.ai/atap/profiles">https://tunnelmind.ai/atap/profiles</a></td>
+</tr>
+<tr>
+<td><strong>Reference verifier</strong></td>
+<td><a href="https://tunnelmind.ai/atap/verify.sh">https://tunnelmind.ai/atap/verify.sh</a></td>
+</tr>
+<tr>
+<td><strong>Editor</strong></td>
+<td>TunnelMind</td>
+</tr>
+<tr>
+<td><strong>License</strong></td>
+<td>CC BY 4.0 (spec) · MIT (reference implementations)</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>1. Abstract</h2>
+<p>ATAP is an open protocol for <strong>agent behavioral attestation</strong>: a canonical receipt format that lets the principal of an agentic system — the advertiser, the compliance officer, the regulator, the auditor — cryptographically verify what an agent actually did, in chronological order, without trusting the agent&#39;s self-report. v0.1 specifies five artifacts: the AIT capability declaration, the Witness Event record, the Attestation Block roll-up, the Receipt ZIP compliance export, and the hash-chain plus Ed25519 signature model that binds them together. ATAP is invoked from inside the agent (or a trusted dependency such as an MCP server, a verification API, or a language-model SDK wrapper) via a single <code>witness(event)</code> call. The witness service is the trusted intermediary that signs and chains every artifact — the AIT itself, every Witness Event, every Attestation Block, every Receipt. There is no kernel observer in v0.1 and none is required. The receipt format is designed so that stronger observation tiers — sidecar daemons, TEEs, kernel attestation — can be introduced in later versions without invalidating earlier receipts or breaking the reference verifier. The format is the moat.</p>
+<hr>
+<h2>2. Object identifiers</h2>
+<p>ATAP defines four canonical object types and one external reference type. Each has a fixed identifier form.</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Form</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AIT</td>
+<td><code>AIT-{uuidv7}</code></td>
+<td>Agent Identity Token. One per agent instance lifetime.</td>
+</tr>
+<tr>
+<td>Witness Event</td>
+<td><code>ATAP-WE-{uuidv7}</code></td>
+<td>One per witnessed action.</td>
+</tr>
+<tr>
+<td>Attestation Block</td>
+<td><code>ATAP-AB-{uuidv7}</code></td>
+<td>Roll-up of one or more Witness Events.</td>
+</tr>
+<tr>
+<td>Receipt</td>
+<td><code>ATAP-RCPT-{uuidv7}</code></td>
+<td>Compliance export bundle.</td>
+</tr>
+<tr>
+<td>Witness service</td>
+<td>OAI canonical</td>
+<td>Witness services are identified by canonical OAI under the <code>witness.operator</code> category (Section 9.2).</td>
+</tr>
+</tbody></table>
+<h3>2.1 Why uuidv7</h3>
+<p>uuidv7 (RFC 9562) encodes a Unix-epoch millisecond prefix, giving natural time-ordering and database-friendly insertion locality. Agent instances, events, blocks, and receipts are short-lived high-cardinality objects unsuitable for a per-year sequence like OAI: a single media-buying agent emits thousands of events per second, and any registry-issued sequence would become the system bottleneck. uuidv7 is the only identifier scheme in v0.1; v2 MAY introduce others.</p>
+<h3>2.2 Formal grammar (ABNF, RFC 5234)</h3>
+<pre><code class="language-abnf">ait        = &quot;AIT-&quot; uuidv7
+atap-we    = &quot;ATAP-WE-&quot; uuidv7
+atap-ab    = &quot;ATAP-AB-&quot; uuidv7
+atap-rcpt  = &quot;ATAP-RCPT-&quot; uuidv7
+uuidv7     = 8HEXDIG &quot;-&quot; 4HEXDIG &quot;-&quot; &quot;7&quot; 3HEXDIG &quot;-&quot; 4HEXDIG &quot;-&quot; 12HEXDIG
+HEXDIG     = DIGIT / %x61-66       ; 0-9 lowercase a-f
+DIGIT      = %x30-39
+</code></pre>
+<p>The literal <code>7</code> in the third group enforces uuidv7 at parse time; uuidv4 and other versions MUST be rejected.</p>
+<h3>2.3 Bounds</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Length</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AIT</td>
+<td>40 characters</td>
+</tr>
+<tr>
+<td>Witness Event ID</td>
+<td>45 characters</td>
+</tr>
+<tr>
+<td>Attestation Block ID</td>
+<td>45 characters</td>
+</tr>
+<tr>
+<td>Receipt ID</td>
+<td>47 characters</td>
+</tr>
+</tbody></table>
+<h3>2.4 Witness service identifier</h3>
+<p>A witness service — the surface that signs and chains all ATAP artifacts on behalf of a principal — is identified by canonical OAI under the <strong><code>witness.operator</code></strong> category, added to OAI v1.0 §3 as an editorial expansion on 2026-05-14 alongside the publication of this standard. The AIT field <code>witness</code>, the public-key lookup at <code>/atap/keys</code>, and the Receipt <code>witness</code> field all reference this OAI.</p>
+<h3>2.5 Anti-collision</h3>
+<p>A witness service MUST reject any AIT whose <code>id</code> it has previously signed under any other AIT. uuidv7&#39;s 74 bits of post-timestamp entropy make accidental collisions vanishingly improbable; rejection of seen IDs guards against deliberate impersonation by an adversary that scrapes published AITs and replays them under a different operator.</p>
+<hr>
+<h2>3. Scope</h2>
+<p>ATAP v0.1 specifies a protocol and a receipt format for the following:</p>
+<table>
+<thead>
+<tr>
+<th>In scope</th>
+<th>Definition</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Capability declaration</td>
+<td>Up-front statement of what the agent intends to do, in machine-parseable form (AIT).</td>
+</tr>
+<tr>
+<td>Per-action witnessing</td>
+<td>Record of each action the agent took, signed by a trusted witness service.</td>
+</tr>
+<tr>
+<td>Periodic roll-up</td>
+<td>Aggregation of witness events into hash-chained blocks.</td>
+</tr>
+<tr>
+<td>Compliance export</td>
+<td>Portable archive (Receipt ZIP) suitable for an auditor to verify independently.</td>
+</tr>
+<tr>
+<td>Independent verification</td>
+<td>Public reference verifier (<code>verify.sh</code>) and reference TypeScript wrapper (<code>@tunnelmind/atap</code>).</td>
+</tr>
+</tbody></table>
+<p>Application-specific extensions (the witness vocabulary for media buying, e-commerce, data brokerage, etc.) are out of scope for the base protocol and live in <strong>application profiles</strong> (Section 9). The base protocol provides the structural envelope; the profile fills it with domain-specific event types and aggregation rules.</p>
+<hr>
+<h2>4. Out of scope</h2>
+<p>The following are deliberate non-goals in v0.1. Each exclusion is load-bearing; do not work around them.</p>
+<table>
+<thead>
+<tr>
+<th>Excluded</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Kernel-level observation</td>
+<td>eBPF, syscall tracing, and TEE attestation are out of scope for v0.1 — they require a multi-engineer engineering effort that delays the protocol indefinitely. Stronger observation tiers MAY be added in later versions without breaking the receipt format.</td>
+</tr>
+<tr>
+<td>Cross-platform agent runtime</td>
+<td>ATAP does not provide an execution environment for agents. It is invoked from inside the agent&#39;s existing code.</td>
+</tr>
+<tr>
+<td>Real-time agent behavior modification</td>
+<td>ATAP records what the agent did, after the fact. It is not a policy engine and does not block actions. Policy engines MAY consume ATAP receipts as input.</td>
+</tr>
+<tr>
+<td>Identity proofing of the human operator</td>
+<td>ATAP attests to agent behavior, not operator identity. The principal verifies the agent by the witness service&#39;s signature on the AIT; KYC of the operator is the witness service&#39;s responsibility, out of scope for the protocol.</td>
+</tr>
+<tr>
+<td>User-side privacy claims</td>
+<td>ATAP receipts attest the agent&#39;s behavior toward third parties, not the privacy of any user data the agent processed. v0.1 forbids PII in the witness payload (Section 7.6) but does not enforce broader privacy properties.</td>
+</tr>
+<tr>
+<td>Generic logging</td>
+<td>Witness Events are signed, hash-chained, and structurally constrained. They are not a substitute for application logs and SHOULD NOT carry free-text or debug content.</td>
+</tr>
+</tbody></table>
+<hr>
+<h2>5. Stability guarantees</h2>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Guarantee</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Receipt ZIP layout</td>
+<td>Frozen at v0.1. The file names and directory structure in Section 7.5 do not change within v0.1.</td>
+</tr>
+<tr>
+<td>Hash construction</td>
+<td>Frozen at v0.1: SHA-256 over canonical JSON per RFC 8785 (JCS). v2 MAY add additional hash algorithms but MUST preserve the SHA-256 chain as a parallel artifact for verifier backwards compatibility.</td>
+</tr>
+<tr>
+<td>Signature algorithm</td>
+<td>Ed25519 (RFC 8032). v0.1 ships only this algorithm. v2 MAY add post-quantum signatures (e.g. ML-DSA per NIST FIPS 204) in parallel; v2 MUST NOT replace Ed25519 for v0.1 receipt verification.</td>
+</tr>
+<tr>
+<td>Public-key endpoint</td>
+<td>The URL <code>https://tunnelmind.ai/atap/keys</code> and its response shape are stable for the lifetime of v0.1.</td>
+</tr>
+<tr>
+<td>Verifier</td>
+<td><code>verify.sh</code> published under v0.1 verifies every v0.1 receipt for the lifetime of v0.1. v2 verifiers MUST also verify v0.1 receipts.</td>
+</tr>
+</tbody></table>
+<p>A receipt issued under v0.1 remains independently verifiable indefinitely. The standard never invalidates an existing receipt.</p>
+<hr>
+<h2>6. Lifecycle</h2>
+<p>An ATAP-instrumented agent traverses six states:</p>
+<pre><code class="language-mermaid">stateDiagram-v2
+  [*] --&gt; declared : operator submits AIT to witness
+  declared --&gt; witnessing : first witness(event) call accepted
+  witnessing --&gt; witnessing : subsequent events
+  witnessing --&gt; rolled_up : block_interval elapsed OR explicit flush
+  rolled_up --&gt; witnessing : agent continues
+  rolled_up --&gt; receipted : receipt(period) requested
+  receipted --&gt; [*] : AIT retired
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>declared</code></td>
+<td>The operator has submitted an AIT to the witness service. The witness has validated and signed it. No events have been witnessed yet.</td>
+</tr>
+<tr>
+<td><code>witnessing</code></td>
+<td>The agent is actively calling <code>witness(event)</code>. The witness service signs and chains each event.</td>
+</tr>
+<tr>
+<td><code>rolled_up</code></td>
+<td>The witness service has emitted at least one Attestation Block summarizing prior Witness Events. The chain head is the most recent block.</td>
+</tr>
+<tr>
+<td><code>receipted</code></td>
+<td>A Receipt covering some period has been generated. The AIT MAY continue witnessing after a Receipt is taken.</td>
+</tr>
+<tr>
+<td>Retired</td>
+<td>The AIT will accept no more events. Retirement is recorded as a final Witness Event of type <code>ait.retired</code>; the witness service MUST refuse subsequent events for this AIT.</td>
+</tr>
+</tbody></table>
+<p><code>witnessing</code> → <code>rolled_up</code> is the only periodic transition; all others are event-triggered.</p>
+<h3>6.1 AIT acceptance</h3>
+<p>The operator constructs an AIT object with all fields populated except <code>witness_signature</code>. The operator submits the AIT to the witness service. The witness validates: schema conformance, profile registration, that the AIT&#39;s <code>id</code> has not been seen before, that the <code>witness</code> field matches its own canonical OAI, and that the operator&#39;s identity satisfies the witness&#39;s onboarding policy (out of scope for v0.1). On success the witness signs the canonical bytes of the AIT minus <code>witness_signature</code> and returns the signed AIT.</p>
+<p>A signed AIT is the agent&#39;s credential. Subsequent <code>witness(event)</code> calls reference it by <code>id</code>.</p>
+<h3>6.2 Block roll-up triggers</h3>
+<p>A witness service MUST roll up pending events into a new Attestation Block when ANY of:</p>
+<ol>
+<li>The block interval declared in the AIT&#39;s <code>attestation_policy.block_interval_seconds</code> elapses since the previous block.</li>
+<li>The pending event count exceeds the witness service&#39;s configured ceiling (default 10,000; configurable per profile).</li>
+<li>The agent&#39;s principal requests a flush via <code>POST /v1/atap/flush</code>.</li>
+<li>The witness service is about to shut down or rotate keys.</li>
+</ol>
+<p>Witness services MAY roll up more frequently than the declared interval. They MUST NOT roll up less frequently.</p>
+<h3>6.3 AIT lifetime</h3>
+<p>An AIT SHOULD have a useful lifetime no longer than 90 days. An AIT MUST be retired no later than 365 days after <code>issued_at</code>. Long-lived AITs accumulate key-rotation, profile-version, and policy-drift risk. Profiles MAY specify tighter ceilings; profiles MUST NOT relax the 365-day cap.</p>
+<p>The witness service MUST refuse <code>witness(event)</code> for an AIT older than its profile&#39;s maximum lifetime or older than 365 days, whichever is shorter, even if no retirement event has been recorded.</p>
+<hr>
+<h2>7. Schemas</h2>
+<p>All four object types are JSON. The on-the-wire encoding is JSON-LD where context is required for downstream tooling; the canonical form for hashing is RFC 8785 (JSON Canonicalization Scheme).</p>
+<h3>7.1 AIT (Agent Identity Token)</h3>
+<pre><code class="language-json">{
+  &quot;@context&quot;: &quot;https://tunnelmind.ai/atap/context.jsonld&quot;,
+  &quot;@type&quot;: &quot;AgentIdentityToken&quot;,
+  &quot;id&quot;: &quot;AIT-018f3c4d-7b2a-7d8e-9f01-4a5b6c7d8e9f&quot;,
+  &quot;ait_version&quot;: &quot;0.1&quot;,
+  &quot;issued_at&quot;: &quot;2026-05-14T08:00:00Z&quot;,
+  &quot;expires_at&quot;: &quot;2026-08-12T08:00:00Z&quot;,
+  &quot;agent_type&quot;: &quot;media-buyer&quot;,
+  &quot;profile&quot;: &quot;sigil:media_buyer:v1&quot;,
+  &quot;operator&quot;: &quot;OAI-2026-0000234&quot;,
+  &quot;witness&quot;: &quot;OAI-2026-0000017&quot;,
+  &quot;capabilities&quot;: [
+    &quot;bid:submit&quot;,
+    &quot;bid:read_response&quot;,
+    &quot;supply:verify_via_sigil&quot;,
+    &quot;budget:read&quot;,
+    &quot;budget:decrement&quot;,
+    &quot;creative:select&quot;,
+    &quot;report:generate&quot;,
+    &quot;report:export_receipt&quot;
+  ],
+  &quot;constraints&quot;: {
+    &quot;max_bid_cpm&quot;: 50.00,
+    &quot;currency&quot;: &quot;USD&quot;,
+    &quot;allowed_channels&quot;: [&quot;display&quot;, &quot;video&quot;, &quot;ctv&quot;, &quot;audio&quot;],
+    &quot;blocked_domains&quot;: [&quot;example-blocked.com&quot;],
+    &quot;blocked_categories&quot;: [&quot;IAB25-3&quot;, &quot;IAB26&quot;],
+    &quot;geo_targeting&quot;: {&quot;allowed_countries&quot;: [&quot;US&quot;, &quot;CA&quot;]},
+    &quot;supply_trust_minimum&quot;: 0.7,
+    &quot;budget_daily_cap&quot;: 10000.00,
+    &quot;budget_total_cap&quot;: 150000.00
+  },
+  &quot;attestation_policy&quot;: {
+    &quot;witness_granularity&quot;: &quot;per_action&quot;,
+    &quot;block_interval_seconds&quot;: 300,
+    &quot;receipt_generation&quot;: &quot;on_demand&quot;
+  },
+  &quot;witness_signature&quot;: &quot;ed25519:0x...&quot;
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@context</code></td>
+<td>string (URL)</td>
+<td>Yes</td>
+<td>Const <code>https://tunnelmind.ai/atap/context.jsonld</code>.</td>
+</tr>
+<tr>
+<td><code>@type</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Const <code>AgentIdentityToken</code>.</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>AIT-{uuidv7}</code>.</td>
+</tr>
+<tr>
+<td><code>ait_version</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Const <code>&quot;0.1&quot;</code> for v0.1.</td>
+</tr>
+<tr>
+<td><code>issued_at</code></td>
+<td>string (date-time)</td>
+<td>Yes</td>
+<td>RFC 3339, set by the witness at signing.</td>
+</tr>
+<tr>
+<td><code>expires_at</code></td>
+<td>string (date-time)</td>
+<td>Yes</td>
+<td>RFC 3339. <code>expires_at - issued_at</code> MUST be ≤ 365 days.</td>
+</tr>
+<tr>
+<td><code>agent_type</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Free identifier, 1–64 characters; common values defined per profile.</td>
+</tr>
+<tr>
+<td><code>profile</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Application profile identifier (Section 9).</td>
+</tr>
+<tr>
+<td><code>operator</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Canonical OAI of the agent operator. Reference field; the operator does not sign.</td>
+</tr>
+<tr>
+<td><code>witness</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Canonical OAI of the witness service (<code>witness.operator</code> category).</td>
+</tr>
+<tr>
+<td><code>capabilities</code></td>
+<td>array of string</td>
+<td>Yes</td>
+<td>Declared capability set. Profile defines the vocabulary. Minimum 1, maximum 64 items. Items are 1–64 characters, pattern <code>^[a-z][a-z0-9_]*(:[a-z][a-z0-9_]*)+$</code>.</td>
+</tr>
+<tr>
+<td><code>constraints</code></td>
+<td>object</td>
+<td>No</td>
+<td>Profile-defined constraint object. Profile schemas MUST validate this object; v0.1 imposes no constraints on its shape beyond JSON-validity and a 4 KB canonical-byte ceiling.</td>
+</tr>
+<tr>
+<td><code>attestation_policy</code></td>
+<td>object</td>
+<td>Yes</td>
+<td>See 7.1.1.</td>
+</tr>
+<tr>
+<td><code>witness_signature</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Ed25519 signature by the witness service over canonical bytes of the AIT minus the <code>witness_signature</code> field. Format <code>ed25519:0x{128hex}</code>.</td>
+</tr>
+</tbody></table>
+<h4>7.1.1 attestation_policy</h4>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>witness_granularity</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>per_action</code> or <code>per_decision</code>. Profile MAY define additional values.</td>
+</tr>
+<tr>
+<td><code>block_interval_seconds</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td>Block roll-up cadence. <strong>60 ≤ value ≤ 3600.</strong> Lower values prevent meaningful aggregation; higher values widen the worst-case adversarial window. Profiles MAY specify tighter ceilings.</td>
+</tr>
+<tr>
+<td><code>receipt_generation</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>on_demand</code>, <code>per_block</code>, or <code>per_period</code>.</td>
+</tr>
+</tbody></table>
+<h3>7.2 Witness Event</h3>
+<pre><code class="language-json">{
+  &quot;@context&quot;: &quot;https://tunnelmind.ai/atap/context.jsonld&quot;,
+  &quot;@type&quot;: &quot;WitnessEvent&quot;,
+  &quot;id&quot;: &quot;ATAP-WE-018f3c4d-7b2a-7d8e-9f01-4a5b6c7d8e9f&quot;,
+  &quot;ait&quot;: &quot;AIT-018f3c4d-7b2a-7d8e-9f01-4a5b6c7d8e9f&quot;,
+  &quot;witnessed_at&quot;: &quot;2026-05-14T08:00:01.123Z&quot;,
+  &quot;event_type&quot;: &quot;bid:submitted&quot;,
+  &quot;payload&quot;: {
+    &quot;exchange&quot;: &quot;openx.com&quot;,
+    &quot;publisher_domain&quot;: &quot;example-publisher.com&quot;,
+    &quot;seller_id&quot;: &quot;12345&quot;,
+    &quot;bid_amount&quot;: 1.45,
+    &quot;creative_id&quot;: &quot;cr-abc-123&quot;,
+    &quot;sigil_token&quot;: &quot;sigil:tok:abc...&quot;,
+    &quot;supply_trust_score&quot;: 0.91
+  },
+  &quot;prev_event_hash&quot;: &quot;0x9f3a8b2e...&quot;,
+  &quot;self_hash&quot;: &quot;0xa1b2c3d4...&quot;,
+  &quot;witness_signature&quot;: &quot;ed25519:0x...&quot;
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@context</code></td>
+<td>string (URL)</td>
+<td>Yes</td>
+<td>Const.</td>
+</tr>
+<tr>
+<td><code>@type</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Const <code>WitnessEvent</code>.</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>ATAP-WE-{uuidv7}</code>.</td>
+</tr>
+<tr>
+<td><code>ait</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>AIT this event was witnessed under.</td>
+</tr>
+<tr>
+<td><code>witnessed_at</code></td>
+<td>string (date-time)</td>
+<td>Yes</td>
+<td>RFC 3339, millisecond precision. Recorded by the witness service, not the agent.</td>
+</tr>
+<tr>
+<td><code>event_type</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Colon-delimited profile-defined identifier. Pattern: <code>^[a-z][a-z0-9_]*(:[a-z][a-z0-9_]*)+$</code>.</td>
+</tr>
+<tr>
+<td><code>payload</code></td>
+<td>object</td>
+<td>Yes</td>
+<td>Profile-defined event payload. Canonical-bytes serialization MUST NOT exceed 16 KB. v0.1 imposes the constraint in Section 7.6.</td>
+</tr>
+<tr>
+<td><code>prev_event_hash</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>SHA-256 of the previous Witness Event in the chain for this AIT, hex with <code>0x</code> prefix. The first event uses the constant <code>0x</code> followed by 64 zero hex characters.</td>
+</tr>
+<tr>
+<td><code>self_hash</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>SHA-256 over canonical bytes of this event minus <code>self_hash</code> and <code>witness_signature</code>. Hex with <code>0x</code> prefix.</td>
+</tr>
+<tr>
+<td><code>witness_signature</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Ed25519 signature by the witness service over the bytes of <code>self_hash</code>. Format <code>ed25519:0x{128hex}</code>.</td>
+</tr>
+</tbody></table>
+<h4>7.2.1 Replay protection</h4>
+<p>A witness service MUST reject a <code>witness(event)</code> call whose intended <code>witnessed_at</code> would be more than 30 seconds older than the current witness clock. The witness sets <code>witnessed_at</code> itself at signing time; clock skew between the agent and the witness is the agent&#39;s problem to handle. This bounds the window during which a stolen credential could be used to back-date events.</p>
+<h3>7.3 Attestation Block</h3>
+<pre><code class="language-json">{
+  &quot;@context&quot;: &quot;https://tunnelmind.ai/atap/context.jsonld&quot;,
+  &quot;@type&quot;: &quot;AttestationBlock&quot;,
+  &quot;id&quot;: &quot;ATAP-AB-018f3c4d-7b2a-7d8e-9f01-4a5b6c7d8e9f&quot;,
+  &quot;ait&quot;: &quot;AIT-018f3c4d-7b2a-7d8e-9f01-4a5b6c7d8e9f&quot;,
+  &quot;ab_version&quot;: &quot;0.1&quot;,
+  &quot;profile&quot;: &quot;sigil:media_buyer:v1&quot;,
+  &quot;period_start&quot;: &quot;2026-05-14T08:00:00Z&quot;,
+  &quot;period_end&quot;: &quot;2026-05-14T08:05:00Z&quot;,
+  &quot;first_event&quot;: &quot;ATAP-WE-018f3c4d-7b2a-7d8e-9f01-4a5b6c7d8e9f&quot;,
+  &quot;last_event&quot;: &quot;ATAP-WE-018f3c4d-9a8b-7d8e-9f01-4a5b6c7d8e9f&quot;,
+  &quot;event_count&quot;: 1247,
+  &quot;chain_head_hash&quot;: &quot;0xa1b2c3d4...&quot;,
+  &quot;period_summary&quot;: {
+    &quot;bids_submitted&quot;: 1247,
+    &quot;bids_won&quot;: 89,
+    &quot;total_spend&quot;: 342.17,
+    &quot;unique_publishers&quot;: 34,
+    &quot;unique_exchanges&quot;: 5,
+    &quot;supply_verifications&quot;: 1247,
+    &quot;supply_rejections&quot;: 203,
+    &quot;average_trust_score&quot;: 0.84,
+    &quot;constraint_violations&quot;: 0,
+    &quot;channels_used&quot;: [&quot;display&quot;, &quot;video&quot;],
+    &quot;geos_reached&quot;: [&quot;US&quot;]
+  },
+  &quot;prev_block_hash&quot;: &quot;0x9f3a8b2e...&quot;,
+  &quot;self_hash&quot;: &quot;0xab12cd34...&quot;,
+  &quot;witness_signature&quot;: &quot;ed25519:0x...&quot;
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>@context</code></td>
+<td>string (URL)</td>
+<td>Yes</td>
+<td>Const.</td>
+</tr>
+<tr>
+<td><code>@type</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Const <code>AttestationBlock</code>.</td>
+</tr>
+<tr>
+<td><code>id</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>ATAP-AB-{uuidv7}</code>.</td>
+</tr>
+<tr>
+<td><code>ait</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>The AIT.</td>
+</tr>
+<tr>
+<td><code>ab_version</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Const <code>&quot;0.1&quot;</code>.</td>
+</tr>
+<tr>
+<td><code>profile</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Application profile identifier.</td>
+</tr>
+<tr>
+<td><code>period_start</code></td>
+<td>string (date-time)</td>
+<td>Yes</td>
+<td>RFC 3339.</td>
+</tr>
+<tr>
+<td><code>period_end</code></td>
+<td>string (date-time)</td>
+<td>Yes</td>
+<td>RFC 3339. <code>period_end &gt; period_start</code>.</td>
+</tr>
+<tr>
+<td><code>first_event</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>First Witness Event ID in the block.</td>
+</tr>
+<tr>
+<td><code>last_event</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Last Witness Event ID in the block.</td>
+</tr>
+<tr>
+<td><code>event_count</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td>Inclusive count, ≥ 1.</td>
+</tr>
+<tr>
+<td><code>chain_head_hash</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>self_hash</code> of the last event in the block.</td>
+</tr>
+<tr>
+<td><code>period_summary</code></td>
+<td>object</td>
+<td>Yes</td>
+<td>Profile-defined aggregation. v0.1 imposes only Section 7.6.</td>
+</tr>
+<tr>
+<td><code>prev_block_hash</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>self_hash</code> of the previous block, or <code>0x</code> + 64 zeros for the first block.</td>
+</tr>
+<tr>
+<td><code>self_hash</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>SHA-256 over canonical bytes minus <code>self_hash</code> and <code>witness_signature</code>.</td>
+</tr>
+<tr>
+<td><code>witness_signature</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Ed25519 signature by the witness service over <code>self_hash</code>. Format <code>ed25519:0x{128hex}</code>.</td>
+</tr>
+</tbody></table>
+<h3>7.4 Receipt</h3>
+<p>A Receipt is a metadata record that describes the contents of a Receipt ZIP. The Receipt object itself appears as <code>manifest.json</code> inside the ZIP.</p>
+<pre><code class="language-json">{
+  &quot;@context&quot;: &quot;https://tunnelmind.ai/atap/context.jsonld&quot;,
+  &quot;@type&quot;: &quot;Receipt&quot;,
+  &quot;id&quot;: &quot;ATAP-RCPT-018f3c4d-7b2a-7d8e-9f01-4a5b6c7d8e9f&quot;,
+  &quot;ait&quot;: &quot;AIT-018f3c4d-7b2a-7d8e-9f01-4a5b6c7d8e9f&quot;,
+  &quot;profile&quot;: &quot;sigil:media_buyer:v1&quot;,
+  &quot;period_start&quot;: &quot;2026-05-01T00:00:00Z&quot;,
+  &quot;period_end&quot;: &quot;2026-05-13T23:59:59Z&quot;,
+  &quot;block_count&quot;: 3744,
+  &quot;event_count&quot;: 4671293,
+  &quot;first_block&quot;: &quot;ATAP-AB-018ec7a1-...&quot;,
+  &quot;last_block&quot;: &quot;ATAP-AB-018f3c4d-...&quot;,
+  &quot;chain_head_hash&quot;: &quot;0xab12cd34...&quot;,
+  &quot;witness&quot;: &quot;OAI-2026-0000017&quot;,
+  &quot;format&quot;: &quot;full&quot;,
+  &quot;generated_at&quot;: &quot;2026-05-14T09:00:00Z&quot;,
+  &quot;verifier_url&quot;: &quot;https://tunnelmind.ai/atap/verify.sh&quot;,
+  &quot;keys_url&quot;: &quot;https://tunnelmind.ai/atap/keys&quot;,
+  &quot;files&quot;: [
+    {&quot;path&quot;: &quot;ait.json&quot;, &quot;sha256&quot;: &quot;0x...&quot;},
+    {&quot;path&quot;: &quot;attestation_chain.json&quot;, &quot;sha256&quot;: &quot;0x...&quot;},
+    {&quot;path&quot;: &quot;summary.json&quot;, &quot;sha256&quot;: &quot;0x...&quot;},
+    {&quot;path&quot;: &quot;public_keys.json&quot;, &quot;sha256&quot;: &quot;0x...&quot;},
+    {&quot;path&quot;: &quot;verify.sh&quot;, &quot;sha256&quot;: &quot;0x...&quot;},
+    {&quot;path&quot;: &quot;compliance_report.pdf&quot;, &quot;sha256&quot;: &quot;0x...&quot;},
+    {&quot;path&quot;: &quot;profile_artifacts/&quot;, &quot;sha256&quot;: null}
+  ],
+  &quot;witness_signature&quot;: &quot;ed25519:0x...&quot;
+}
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Type</th>
+<th>Required</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>ATAP-RCPT-{uuidv7}</code>.</td>
+</tr>
+<tr>
+<td><code>ait</code></td>
+<td>string</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td><code>profile</code></td>
+<td>string</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td><code>period_start</code> / <code>period_end</code></td>
+<td>string (date-time)</td>
+<td>Yes</td>
+<td>Bounds of the receipt.</td>
+</tr>
+<tr>
+<td><code>block_count</code> / <code>event_count</code></td>
+<td>integer</td>
+<td>Yes</td>
+<td></td>
+</tr>
+<tr>
+<td><code>first_block</code> / <code>last_block</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>First and last Attestation Block IDs included.</td>
+</tr>
+<tr>
+<td><code>chain_head_hash</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>self_hash</code> of <code>last_block</code>.</td>
+</tr>
+<tr>
+<td><code>witness</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Canonical OAI of the witness service.</td>
+</tr>
+<tr>
+<td><code>format</code></td>
+<td>string</td>
+<td>Yes</td>
+<td><code>full</code> or <code>summary</code>. <code>summary</code> omits the per-event chain.</td>
+</tr>
+<tr>
+<td><code>files</code></td>
+<td>array of object</td>
+<td>Yes</td>
+<td>Manifest of every file in the ZIP with SHA-256. Empty <code>sha256</code> permitted for directories.</td>
+</tr>
+<tr>
+<td><code>witness_signature</code></td>
+<td>string</td>
+<td>Yes</td>
+<td>Ed25519 signature over canonical bytes of this Receipt minus the signature field. Format <code>ed25519:0x{128hex}</code>.</td>
+</tr>
+</tbody></table>
+<h3>7.5 Receipt ZIP layout</h3>
+<pre><code>ATAP-RCPT-{uuidv7}.zip
+├── manifest.json              # The Receipt object (7.4)
+├── ait.json                   # The AIT under which the period was witnessed
+├── attestation_chain.json     # Array of AttestationBlocks, ordered, hash-chained
+├── summary.json               # Aggregated period_summary across all blocks
+├── public_keys.json           # Witness service Ed25519 public keys covering the period
+├── verify.sh                  # Reference verifier (bash + openssl + jq)
+├── compliance_report.pdf      # Optional human-readable rendering
+└── profile_artifacts/         # Profile-specific files; structure defined by profile
+    ├── sigil_tokens.json      # Example: media_buyer profile
+    └── ...
+</code></pre>
+<p>The layout is frozen for v0.1. Receipts MUST contain <code>manifest.json</code>, <code>ait.json</code>, <code>attestation_chain.json</code>, <code>public_keys.json</code>, and <code>verify.sh</code>. The other files are optional but, when present, MUST conform to this layout.</p>
+<h4>7.5.1 Why a directory for profile artifacts</h4>
+<p>The base receipt verifies the chain. The profile artifacts carry the application-specific evidence that gives the chain meaning: for media buying, the Sigil verification tokens that justify each bid; for e-commerce, the order-state attestations; for content scraping, the per-source consent records. Putting them in a sibling directory lets <code>verify.sh</code> succeed without understanding the profile, while leaving an obvious place for profile-aware tools to look.</p>
+<h3>7.6 Payload constraint: no PII</h3>
+<p>Witness Event payloads, Attestation Block summaries, and profile artifacts MUST NOT contain personally identifiable information about end users. The following are explicitly forbidden:</p>
+<table>
+<thead>
+<tr>
+<th>Forbidden</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>End-user IP addresses</td>
+<td>The IP of the user the agent acted on behalf of, or against. <strong>Third-party destination IPs (servers, ASNs, exchanges) ARE permitted</strong> — Section 3 explicitly admits them.</td>
+</tr>
+<tr>
+<td>User-agent strings</td>
+<td>Carries device, browser, and OS fingerprinting signal.</td>
+</tr>
+<tr>
+<td>Cookies, session identifiers, OAuth tokens</td>
+<td>Bearer credentials and pseudonymous identifiers.</td>
+</tr>
+<tr>
+<td>Email addresses, phone numbers, physical addresses</td>
+<td>Direct identifiers.</td>
+</tr>
+<tr>
+<td>Account IDs at consumer services</td>
+<td>Including but not limited to social-network user IDs, e-commerce account numbers, gaming-platform handles tied to natural persons.</td>
+</tr>
+<tr>
+<td>Wallet addresses tied to a natural person</td>
+<td>Cryptocurrency identifiers that are known or reasonably inferable to belong to a specific individual. Pseudonymous wallets used solely by autonomous agents are permitted.</td>
+</tr>
+<tr>
+<td>Biometric identifiers</td>
+<td>Facial geometry, fingerprints, voiceprints, gait signatures.</td>
+</tr>
+<tr>
+<td>Browser or device fingerprints</td>
+<td>Canvas, WebGL, audio-context hashes, plugin enumerations, font lists, hardware identifiers (MAC, IMEI, serial).</td>
+</tr>
+<tr>
+<td>Content of user communications</td>
+<td>Message bodies, search queries with user attribution, chat transcripts.</td>
+</tr>
+</tbody></table>
+<p>What IS in scope: destinations (domains, ASNs, server-side IP ranges, app-bundle IDs), aggregate volumes, timings, prices, capability identifiers, profile-defined trust signals, and any field whose resolution does NOT reach a natural person.</p>
+<p>Profile maintainers MUST encode this constraint in their JSON Schemas. Profiles that fail to do so MUST NOT be admitted into the registry (Section 9.3).</p>
+<h3>7.7 Canonical bytes for hashing and signing</h3>
+<p>Every <code>self_hash</code> and every signature is computed over the <strong>canonical JSON bytes</strong> of the object minus the hash and signature fields. Canonical JSON is JSON Canonicalization Scheme, RFC 8785. Implementations MUST NOT compute hashes over the raw JSON-LD as transmitted; differences in whitespace, key ordering, or numeric representation would silently invalidate signatures.</p>
+<p>The canonical procedure for a Witness Event:</p>
+<ol>
+<li>Construct the event object with all fields except <code>self_hash</code> and <code>witness_signature</code>.</li>
+<li>Serialize via RFC 8785 JCS.</li>
+<li>Compute SHA-256 → <code>self_hash</code>.</li>
+<li>Sign the bytes of <code>self_hash</code> with the witness service&#39;s Ed25519 private key → <code>witness_signature</code>.</li>
+<li>Add <code>self_hash</code> and <code>witness_signature</code> to the object for transmission and storage.</li>
+</ol>
+<p>The same procedure applies, with the corresponding field exclusions, to Attestation Blocks and Receipts.</p>
+<p>For the AIT, the procedure is identical except that the field excluded from canonicalization is <code>witness_signature</code> only (there is no <code>self_hash</code> on an AIT — the AIT is signed directly).</p>
+<p><strong>Ed25519 conventions in v0.1.</strong> Signatures are 64 bytes, hex-encoded as 128 lowercase characters with the <code>ed25519:0x</code> prefix. Public keys are 32 bytes, hex-encoded as 64 lowercase characters with the <code>0x</code> prefix.</p>
+<hr>
+<h2>8. Key publication</h2>
+<p>Public keys for witness services are published at:</p>
+<pre><code>GET https://tunnelmind.ai/atap/keys
+</code></pre>
+<h3>8.1 Response shape</h3>
+<pre><code class="language-json">{
+  &quot;keys&quot;: [
+    {
+      &quot;witness&quot;: &quot;OAI-2026-0000017&quot;,
+      &quot;key_id&quot;: &quot;k1&quot;,
+      &quot;algorithm&quot;: &quot;ed25519&quot;,
+      &quot;public_key&quot;: &quot;0x...&quot;,
+      &quot;valid_from&quot;: &quot;2026-05-01T00:00:00Z&quot;,
+      &quot;valid_until&quot;: &quot;2027-05-01T00:00:00Z&quot;,
+      &quot;status&quot;: &quot;active&quot;,
+      &quot;rotated_to&quot;: null,
+      &quot;compromise_notice&quot;: null
+    },
+    {
+      &quot;witness&quot;: &quot;OAI-2026-0000017&quot;,
+      &quot;key_id&quot;: &quot;k0&quot;,
+      &quot;algorithm&quot;: &quot;ed25519&quot;,
+      &quot;public_key&quot;: &quot;0x...&quot;,
+      &quot;valid_from&quot;: &quot;2025-05-01T00:00:00Z&quot;,
+      &quot;valid_until&quot;: &quot;2026-05-01T00:00:00Z&quot;,
+      &quot;status&quot;: &quot;rotated&quot;,
+      &quot;rotated_to&quot;: &quot;k1&quot;,
+      &quot;compromise_notice&quot;: null
+    }
+  ],
+  &quot;updated_at&quot;: &quot;2026-05-14T08:00:00Z&quot;
+}
+</code></pre>
+<p>A key per witness service:</p>
+<table>
+<thead>
+<tr>
+<th>Status</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>active</code></td>
+<td>Currently signing new events.</td>
+</tr>
+<tr>
+<td><code>rotated</code></td>
+<td>Superseded by <code>rotated_to</code>. Verifies historical events whose <code>witnessed_at</code> falls within <code>[valid_from, valid_until]</code>.</td>
+</tr>
+<tr>
+<td><code>compromised</code></td>
+<td>Withdrawn. Verifiers MUST reject signatures from this key when validating receipts whose <code>witnessed_at</code> is later than <code>compromise_notice.disclosed_at</code>. Receipts whose <code>witnessed_at</code> predates <code>disclosed_at</code> SHOULD be marked <code>unverified</code> rather than valid; downstream policy MAY treat them differently.</td>
+</tr>
+</tbody></table>
+<p>When <code>status</code> is <code>compromised</code>, the <code>compromise_notice</code> object is required:</p>
+<pre><code class="language-json">{
+  &quot;disclosed_at&quot;: &quot;2026-09-12T14:30:00Z&quot;,
+  &quot;detected_at&quot;: &quot;2026-09-12T13:45:00Z&quot;,
+  &quot;summary_url&quot;: &quot;https://tunnelmind.ai/atap/compromise/2026-09-12.html&quot;
+}
+</code></pre>
+<h3>8.2 Key selection at verification time</h3>
+<p>Given a Witness Event with <code>witnessed_at: t</code> and <code>witness_signature</code>, the verifier selects the key where:</p>
+<pre><code>key.witness     == event.ait.witness   (looked up via the AIT)
+key.valid_from  &lt;= t &lt; key.valid_until
+key.status      != &quot;compromised&quot;
+   OR (key.status == &quot;compromised&quot; AND t &lt; key.compromise_notice.disclosed_at)
+</code></pre>
+<p>There is exactly one such key at any moment per witness service. If zero or more than one key matches, the verifier MUST reject the event.</p>
+<h3>8.3 Rotation cadence</h3>
+<p>Witness services SHOULD rotate keys at least every <strong>6 months</strong> under normal operation. Witness services MUST rotate keys within <strong>1 hour</strong> of any reasonable suspicion of compromise.</p>
+<h3>8.4 Compromise disclosure</h3>
+<p>When a witness service detects key compromise:</p>
+<ol>
+<li>The witness service MUST mark the key <code>compromised</code> at <code>/atap/keys</code> within <strong>1 hour</strong> of detection. <code>disclosed_at</code> and <code>detected_at</code> MUST both be populated.</li>
+<li>The witness service MUST publish a <code>summary_url</code> describing the incident within <strong>24 hours</strong> of disclosure.</li>
+<li>The witness service MUST rotate the key (publish a successor under the same witness OAI with <code>status: active</code>) within <strong>1 hour</strong> of disclosure.</li>
+</ol>
+<p>Caching at the edge (Section 8.5) is configured to permit propagation of compromise notices in under 5 minutes globally.</p>
+<h3>8.5 Caching</h3>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Cache-Control</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/atap/keys</code> (full document)</td>
+<td><code>public, max-age=300, stale-while-revalidate=3600</code></td>
+</tr>
+</tbody></table>
+<p>Verifiers MAY pin a snapshot of <code>/atap/keys</code> for the duration of a single verification run (typically seconds to minutes). Verifiers MUST NOT pin a snapshot longer than 24 hours; a 24-hour pin is the recommended ceiling. Pinning beyond that risks treating a compromised key as valid.</p>
+<hr>
+<h2>9. Witness model and application profiles</h2>
+<h3>9.1 The witness is whoever the principal trusts</h3>
+<p>ATAP v0.1 makes one structural decision the implementation hinges on: <strong>the witness is not the agent.</strong> The witness is a service that observes the agent&#39;s actions, signs them, and chains them. The principal verifies the chain by checking the witness&#39;s signature.</p>
+<p>This is a weaker trust model than kernel attestation. The witness can be deceived by an agent that bypasses it. v0.1 accepts this trade-off because (a) bypassing the witness is detectable as a chain discontinuity, (b) a documented witness-signed chain is strictly better than today&#39;s unsigned campaign logs, and (c) the receipt format is forward-compatible with stronger observation tiers.</p>
+<p>For the v0.1 reference deployment in programmatic advertising, <strong>Sigil is the witness</strong>: the agent calls <code>sigil.verify/supply_path</code> before each bid, Sigil sees the decision, Sigil signs and chains it. No separate observer is required. Other application domains follow the same pattern: choose an interface the principal already trusts, and make it the witness.</p>
+<h3>9.2 Witness service identification</h3>
+<p>Witness services are identified by canonical OAI under the <strong><code>witness.operator</code></strong> category. This category was added to OAI v1.0 §3 as an editorial expansion on 2026-05-14 alongside the publication of this standard. Existing witness services that hold <code>sensor.operator</code> OAIs MAY continue to use them; new witness services SHOULD register under <code>witness.operator</code>.</p>
+<h3>9.3 Application profiles</h3>
+<p>A <strong>profile</strong> is a published document that defines, for a specific agent domain:</p>
+<ol>
+<li>The vocabulary of <code>event_type</code> strings the agent&#39;s witness emits.</li>
+<li>The JSON Schema for each event type&#39;s <code>payload</code>.</li>
+<li>The JSON Schema for <code>period_summary</code> aggregation.</li>
+<li>The JSON Schema for <code>constraints</code> in the AIT.</li>
+<li>The contents of <code>profile_artifacts/</code> in the Receipt ZIP.</li>
+</ol>
+<p>Profiles are identified by a colon-delimited string of the form <code>{namespace}:{domain}:v{N}</code>. Examples:</p>
+<table>
+<thead>
+<tr>
+<th>Profile</th>
+<th>Maintainer</th>
+<th>Status in v0.1</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sigil:media_buyer:v1</code></td>
+<td>TunnelMind (via Sigil)</td>
+<td>Reference profile, ships alongside v0.1.</td>
+</tr>
+<tr>
+<td><code>sigil:ecommerce_buyer:v1</code></td>
+<td>TBD</td>
+<td>Reserved.</td>
+</tr>
+<tr>
+<td><code>sigil:data_broker:v1</code></td>
+<td>TBD</td>
+<td>Reserved.</td>
+</tr>
+</tbody></table>
+<p>The profile registry is published at <code>https://tunnelmind.ai/atap/profiles</code> and the source-of-truth repository is <code>https://github.com/TunnelMind/atap-profiles</code>. Third-party profiles MAY be registered subject to the constraints in Sections 7.6 (no PII) and 9.4 (acceptance criteria).</p>
+<h3>9.4 Acceptance criteria</h3>
+<p>A profile proposal is accepted into the registry if all of the following hold:</p>
+<ol>
+<li>The proposed JSON Schemas validate as JSON Schema 2020-12.</li>
+<li>The Schemas encode the PII prohibition of Section 7.6 — verified by automated test cases the proposer includes in the PR.</li>
+<li>The proposed namespace token is not already claimed (first-comer wins).</li>
+<li>The proposal includes at least one signed example AIT, Witness Event, Attestation Block, and Receipt that round-trip through the reference verifier.</li>
+</ol>
+<p>Profile proposals are PRs to <code>github.com/TunnelMind/atap-profiles</code>. CI runs the four checks above and <strong>auto-merges</strong> PRs that pass within 7 calendar days, absent an editorial objection (Section 12.2). The editor&#39;s hand-review is reserved for scope and conflict cases.</p>
+<h3>9.5 Profile authority and collisions</h3>
+<p>The proposer of an accepted profile is its authoritative maintainer. ATAP v0.1 does <strong>not</strong> arbitrate when multiple parties want the same domain: they get separate namespaces. <code>sigil:media_buyer:v1</code> and <code>acme:media_buyer:v1</code> MAY coexist; verifiers select the profile referenced by the AIT they are verifying.</p>
+<hr>
+<h2>10. Hash chain and transparency</h2>
+<h3>10.1 The chain</h3>
+<p>ATAP maintains two parallel hash chains per AIT:</p>
+<pre><code class="language-mermaid">flowchart LR
+  subgraph Event chain
+    E0[WE-0\nprev=0x00] --&gt; E1[WE-1\nprev=hash E0] --&gt; E2[WE-2\nprev=hash E1] --&gt; Edots[...]
+  end
+  subgraph Block chain
+    B0[AB-0\nprev=0x00\nhead=hash E_n] --&gt; B1[AB-1\nprev=hash B0\nhead=hash E_m]
+  end
+  E2 -.-&gt;|chain_head_hash| B0
+</code></pre>
+<ul>
+<li>The <strong>event chain</strong> binds Witness Events in monotone order. Every event&#39;s <code>prev_event_hash</code> is the previous event&#39;s <code>self_hash</code>.</li>
+<li>The <strong>block chain</strong> binds Attestation Blocks. Every block&#39;s <code>prev_block_hash</code> is the previous block&#39;s <code>self_hash</code>.</li>
+<li>A block&#39;s <code>chain_head_hash</code> references the <code>self_hash</code> of the last event it covers, binding the block chain to the event chain.</li>
+</ul>
+<p>A break in either chain is a verification failure.</p>
+<h3>10.2 Genesis</h3>
+<p>The first Witness Event and the first Attestation Block for an AIT use the constant <code>prev_event_hash</code> and <code>prev_block_hash</code> of <code>0x0000000000000000000000000000000000000000000000000000000000000000</code> (32 zero bytes, hex-encoded — <code>0x</code> followed by 64 zero characters).</p>
+<h3>10.3 Hash algorithm</h3>
+<p>SHA-256 over canonical JSON bytes (RFC 8785). v0.1 ships only SHA-256. The signed quantity for each Witness Event, Attestation Block, and Receipt is the raw 32-byte hash; the wire form prefixes <code>0x</code>.</p>
+<h3>10.4 Transparency log (deferred to v1.x)</h3>
+<p>A public append-only log of Attestation Block heads, modelled on Certificate Transparency (RFC 6962), is the strongest near-term addition to the trust model. v0.1 reserves the URL <code>https://tunnelmind.ai/atap/log</code> and the optional Attestation Block field <code>log_index</code>. Verifiers MUST tolerate <code>log_index</code> values that cannot yet be checked against a live log endpoint; the absence of a log does not invalidate a v0.1 receipt.</p>
+<p>The transparency log is on the v1.x roadmap, scheduled to land once ATAP has measurable external adoption (see Section 12.1). It is not a v2 deliverable; v2 work (post-quantum, federation) is downstream of it.</p>
+<h3>10.5 What the chain proves</h3>
+<p>The chain proves:</p>
+<ul>
+<li><strong>Append-only.</strong> No event was inserted, removed, or reordered after the next event was signed.</li>
+<li><strong>Witness attribution.</strong> Each event, each block, and the AIT itself was signed by the declared witness service.</li>
+<li><strong>Period coverage.</strong> A receipt&#39;s chain head matches the last block in <code>attestation_chain.json</code>; if any block was omitted, the chain head will not match.</li>
+</ul>
+<p>The chain does NOT prove:</p>
+<ul>
+<li>That the agent did not perform actions outside the witness&#39;s view. (Mitigated in later versions by stronger observation tiers.)</li>
+<li>That the witness&#39;s signed events accurately reflect reality. (Mitigated by witness reputation, witness-OAI registry, the transparency log when shipped, and out-of-band evidence.)</li>
+</ul>
+<p>These limits are honest; the standard does not promise what its trust model cannot deliver.</p>
+<hr>
+<h2>11. Verification</h2>
+<h3>11.1 The reference verifier</h3>
+<p><code>verify.sh</code> is a single-file bash script using <code>openssl</code> and <code>jq</code>, intended to be readable in one sitting. It is published at:</p>
+<pre><code>https://tunnelmind.ai/atap/verify.sh
+</code></pre>
+<p>and is included verbatim in every Receipt ZIP. The verifier:</p>
+<ol>
+<li>Parses <code>manifest.json</code> and validates the SHA-256 of every other file matches the manifest entry.</li>
+<li>Validates the AIT&#39;s structure against the v0.1 schema and verifies its <code>witness_signature</code> against the appropriate public key.</li>
+<li>Walks the event chain in <code>attestation_chain.json</code> (or the block chain in <code>summary</code> format), verifying each block&#39;s <code>self_hash</code>, <code>prev_block_hash</code>, <code>chain_head_hash</code>, and <code>witness_signature</code> against the keys in <code>public_keys.json</code>.</li>
+<li>Reports per-block status to stdout; exits 0 if every block verifies, 1 otherwise.</li>
+</ol>
+<h3>11.2 Reference TypeScript wrapper</h3>
+<p>A TypeScript implementation of <code>witness(event)</code> is published as:</p>
+<pre><code>npm: @tunnelmind/atap
+source: https://github.com/TunnelMind/atap/tree/main/packages/atap-js
+</code></pre>
+<p>The wrapper is non-normative; it is provided to lower the cost of correctly integrating ATAP. Implementations in other languages are welcomed and need only conform to Section 7 and Section 10.</p>
+<h3>11.3 Verification environments</h3>
+<p><code>verify.sh</code> runs anywhere bash 4+, <code>openssl</code> 1.1+, and <code>jq</code> 1.6+ are present. The reference TypeScript wrapper targets Node 20+ and ESM. No managed runtime, no specific cloud provider, no vendor dependency. This is load-bearing for adoption: a verifier that requires the principal to trust a specific cloud cannot become the citation format.</p>
+<hr>
+<h2>12. Governance</h2>
+<h3>12.1 Editor</h3>
+<p>TunnelMind edits ATAP v0.1. TunnelMind is a single-operator project, not a foundation, not a consortium, and not a venture-backed entity. There is no board, no token, and no third-party investor with editorial influence. The editor&#39;s role is provisional; the conditions under which it transfers to a neutral host mirror those in OAI v1.0 §12.4 — external adoption (three or more independent organizations publishing ATAP receipts), standards-track recognition (IETF / W3C / MITRE citation), and operational maturity (99.9% key endpoint uptime, zero canonical-URL breaks) sustained over two consecutive quarters.</p>
+<h3>12.2 Conflict of interest</h3>
+<p>TunnelMind operates Sigil, a commercial witness service for media buying that consumes ATAP. To bound the conflict:</p>
+<ul>
+<li>Profile acceptance follows the published automated criteria in Section 9.4 and is not influenced by whether the proposing party is a customer, partner, or competitor of TunnelMind&#39;s commercial products. The CI checks are public and reproducible; their pass/fail decision is not subject to editor override on technical grounds, only on scope grounds.</li>
+<li>Editorial decisions on scope, schema constraints, and out-of-scope exclusions (Section 4) are public and reversible only by a versioning event (Section 13).</li>
+<li>The editor MUST NOT accept payment, sponsorship, or grant funding in exchange for profile acceptance or schema changes. Funding not tied to specific schemas or profiles is permissible and MUST be disclosed at <code>tunnelmind.ai/atap/funding</code>.</li>
+</ul>
+<h3>12.3 Automated workflow</h3>
+<p>The editor&#39;s stated commitment is to <strong>not be a bottleneck</strong>. To that end:</p>
+<table>
+<thead>
+<tr>
+<th>Channel</th>
+<th>Automation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>Profile proposals</strong></td>
+<td>PR to <code>github.com/TunnelMind/atap-profiles</code>. CI validates Section 9.4 checks. Schema-conformant PRs auto-merge within <strong>7 calendar days</strong> absent an editorial objection.</td>
+</tr>
+<tr>
+<td><strong>Schema bug reports</strong></td>
+<td>Issue on <code>github.com/TunnelMind/atap</code>. Automated acknowledgment within 24 hours. Editor triage within 7 calendar days.</td>
+</tr>
+<tr>
+<td><strong>Objections</strong></td>
+<td>Issue on <code>github.com/TunnelMind/atap-profiles</code> with <code>objection</code> label. Automated acknowledgment within 24 hours. Editor written response within <strong>14 calendar days</strong>. Auto-acknowledgment is not a substantive response.</td>
+</tr>
+<tr>
+<td><strong>Compromise disclosures</strong></td>
+<td>Direct contact (security email TBD) plus public posting at <code>/atap/compromise/</code>. Section 8.4 sets SLOs.</td>
+</tr>
+</tbody></table>
+<p>These SLOs are tighter than OAI&#39;s because the automation makes them feasible; OAI&#39;s longer windows reflect manual issuance decisions that ATAP does not require.</p>
+<h3>12.4 Continuity</h3>
+<p>The protocol spec, the JSON Schemas, the reference verifier, and the reference TypeScript wrapper are open: the spec is licensed CC BY 4.0 and the code artifacts are MIT-licensed. A current snapshot of the spec, schemas, profile registry, and public-key archive is publicly downloadable at <code>tunnelmind.ai/atap/archive/</code> and updated at least monthly.</p>
+<p>In the event the editor cannot operate the standard, the canonical URLs (<code>/atap/standard</code>, <code>/atap/keys</code>, <code>/atap/verify.sh</code>, <code>/atap/profiles</code>) MAY be repointed to a successor neutral host with a 301. Receipts issued under v0.1 continue to verify against the archived public keys regardless of editor identity.</p>
+<h3>12.5 Editor failure modes</h3>
+<p>A single-operator editor has failure modes a foundation does not. Even with automation:</p>
+<ul>
+<li><strong>Profile review hand-cases.</strong> Conflicts between proposals competing for the same scope, or proposals raising novel PII or scope concerns, require editor judgment. The 7-day auto-merge SLO does not apply when the editor opens a hand-review on a PR. Hand-reviews target 14 calendar days.</li>
+<li><strong>Capacity ceiling.</strong> If editorial workload exceeds what the automation plus the solo editor can sustain, the editor invokes the Transition RFC ahead of the standard-transfer gate. Premature transition is a recognized exit, not a failure.</li>
+</ul>
+<p>These constraints are honest about scale rather than aspirational about it.</p>
+<hr>
+<h2>13. Versioning</h2>
+<p>ATAP follows semantic versioning at the <strong>standard</strong> level, not the receipt level.</p>
+<table>
+<thead>
+<tr>
+<th>Change class</th>
+<th>Version impact</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Editorial clarification, no schema impact</td>
+<td>None — re-publish in place.</td>
+</tr>
+<tr>
+<td>New optional field on AIT, Witness Event, Attestation Block, or Receipt</td>
+<td>Minor — v0.1.x.</td>
+</tr>
+<tr>
+<td>New required field, change to hash construction, change to signature algorithm, change to ZIP layout</td>
+<td>Major — v0.2 (pre-v1) or v1 (first stable).</td>
+</tr>
+<tr>
+<td>Promotion to v1</td>
+<td>Requires the conditions in Section 12.1 plus a 90-day public comment period on the v1 RFC.</td>
+</tr>
+</tbody></table>
+<p>v0.1 is <strong>pre-stable</strong>. The schemas in Section 7 may evolve through v0.1.x without breaking already-issued receipts. Once v1 is published, the v1 schemas are frozen at <code>additionalProperties: false</code> for the lifetime of v1.</p>
+<p>A v2 verifier MUST verify v0.1 and v1 receipts.</p>
+<hr>
+<h2>14. Locked positions and forward-looking work</h2>
+<p>This section records decisions that v0.1 commits to, distinguishing them from items genuinely deferred. Public comment on the locked positions is welcomed; the editor&#39;s prior is that they hold for v1.</p>
+<h3>14.1 Receipt revocation: LOCKED — immutability</h3>
+<p>Signed-and-shipped receipts are <strong>immutable</strong>. There is no protocol-level revocation. The only remediation path is witness-key compromise (Section 8.4): when a key is marked <code>compromised</code>, downstream verifiers downgrade receipts signed by it after <code>disclosed_at</code> to invalid, and receipts signed before <code>disclosed_at</code> to <code>unverified</code> (policy-dependent). Corrections to recorded reality go in a <strong>new chain</strong> under a new AIT.</p>
+<p>Rationale: a revocable receipt is not a receipt. A compliance receipt&#39;s value is that the principal can verify it without coordinating with the issuer. A retroactively editable receipt collapses to a self-report. The cost of immutability is that erroneous receipts cannot be redacted; the standard accepts this cost.</p>
+<h3>14.2 Profile-domain collisions: LOCKED — first-comer wins, no editor arbitration</h3>
+<p>Multiple parties wanting the same agent domain (e.g. two different organizations proposing competing <code>media_buyer</code> profiles) get <strong>separate namespaces</strong>: <code>partyA:media_buyer:v1</code> and <code>partyB:media_buyer:v1</code>. The editor does NOT arbitrate competing technical claims. Verifiers select the profile referenced by the AIT they are verifying.</p>
+<p>Rationale: arbitration introduces editor bias risk and a slow path. Separate namespaces are honest about disagreement and let the market converge by adoption.</p>
+<h3>14.3 Algorithm agility: LOCKED — SHA-256 + Ed25519 frozen at v0.1</h3>
+<p>v0.1 ships SHA-256 and Ed25519 exclusively. v2 MAY add (not replace) post-quantum signatures and SHA-3 hashes. During the v2 transition, every artifact will be signed and hashed in BOTH the v0.1 algorithms and the v2 algorithms, so that v0.1 verifiers continue to function. v2 receipts retire only when the surrounding cryptographic environment retires SHA-256 / Ed25519.</p>
+<h3>14.4 Witness federation: DEFERRED to v2</h3>
+<p>v0.1 binds each AIT to exactly one witness service. Multi-witness co-signing of events (a stronger-assurance pattern for high-stakes domains) is deferred to v2 governance.</p>
+<h3>14.5 Cross-AIT linking: OUT OF SCOPE for v0.1</h3>
+<p>The same operator running multiple AITs across instances, time, or business units is identified at the OAI operator level (the <code>operator</code> field). No protocol-level AIT-to-AIT linking is provided in v0.1.</p>
+<h3>14.6 Privacy-preserving aggregation (zero-knowledge attestations): RESEARCH</h3>
+<p>Zero-knowledge proofs over sensitive aggregate signals (e.g. attesting &quot;total spend was under cap X&quot; without revealing the exact value) are a research direction. They are not on the v1 roadmap. Profiles needing this capability today should structure their <code>period_summary</code> to omit sensitive values rather than mask them.</p>
+<h3>14.7 Transparency log: SCHEDULED for v1.x</h3>
+<p>The append-only log of Attestation Block heads (Section 10.4) is the highest-leverage near-term addition to the trust model and is the first v1.x priority once external adoption is measurable. URL <code>/atap/log</code> is reserved.</p>
+<hr>
+<h2>Appendix A. References</h2>
+<ul>
+<li>RFC 3339 — Date and Time on the Internet: Timestamps</li>
+<li>RFC 5234 — Augmented BNF for Syntax Specifications: ABNF</li>
+<li>RFC 6962 — Certificate Transparency (model for the future transparency log)</li>
+<li>RFC 8032 — Edwards-Curve Digital Signature Algorithm (Ed25519)</li>
+<li>RFC 8785 — JSON Canonicalization Scheme (JCS)</li>
+<li>RFC 9562 — Universally Unique IDentifiers (UUIDs), including uuidv7</li>
+<li>JSON Schema 2020-12 — <a href="https://json-schema.org/draft/2020-12/schema">https://json-schema.org/draft/2020-12/schema</a></li>
+<li>JSON-LD 1.1 — <a href="https://www.w3.org/TR/json-ld11/">https://www.w3.org/TR/json-ld11/</a></li>
+<li>NIST FIPS 204 — Module-Lattice-Based Digital Signature Standard (ML-DSA, referenced for v2 post-quantum direction)</li>
+<li>OAI v1.0 — <a href="https://tunnelmind.ai/oai/standard">https://tunnelmind.ai/oai/standard</a> (companion standard, identifier scheme for witness services)</li>
+</ul>
+<h2>Appendix B. Implementation references</h2>
+<table>
+<thead>
+<tr>
+<th>Artifact</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Spec document (this file)</td>
+<td><code>tunnelmind-site/docs/ATAP-v0.1.md</code> and <code>github.com/TunnelMind/atap/ATAP-v0.1.md</code></td>
+</tr>
+<tr>
+<td>JSON Schemas</td>
+<td><code>tunnelmind-site/public/atap/schemas/v0.1/</code></td>
+</tr>
+<tr>
+<td>JSON-LD context</td>
+<td><code>https://tunnelmind.ai/atap/context.jsonld</code></td>
+</tr>
+<tr>
+<td>Reference verifier</td>
+<td><code>tunnelmind-site/public/atap/verify.sh</code> and bundled inside every Receipt ZIP</td>
+</tr>
+<tr>
+<td>Reference TypeScript wrapper</td>
+<td><code>@tunnelmind/atap</code> on npm · source at <code>github.com/TunnelMind/atap/packages/atap-js</code></td>
+</tr>
+<tr>
+<td>Profile registry</td>
+<td><code>github.com/TunnelMind/atap-profiles</code> (rendered at <code>tunnelmind.ai/atap/profiles</code>)</td>
+</tr>
+<tr>
+<td>Public key endpoint</td>
+<td><code>https://tunnelmind.ai/atap/keys</code></td>
+</tr>
+<tr>
+<td>Reference profile: media buyer</td>
+<td>Sigil P32 — landing once the Sigil build ships</td>
+</tr>
+</tbody></table>
+
+<div class="cta" style="margin-top: 56px;">
+  <div class="cta-title">Comment on this standard</div>
+  <div>
+    <a href="https://github.com/TunnelMind/atap/discussions">GitHub Discussions</a> — open-ended feedback, questions, proposals.<br>
+    <a href="https://github.com/TunnelMind/atap/issues">GitHub Issues</a> — concrete defects, contradictions, broken examples.<br>
+    Profile proposals belong at <a href="https://github.com/TunnelMind/atap-profiles">github.com/TunnelMind/atap-profiles</a> (forthcoming).<br>
+    Formal objections per &sect;12.3 will be archived at <code>tunnelmind.ai/atap/objections</code> (forthcoming).
+  </div>
+</div>
+</main>
+</body>
+</html>

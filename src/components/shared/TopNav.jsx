@@ -4,7 +4,7 @@ const NAV_ITEMS = {
   tunnelmind: [
     { label: 'Tools',        page: 'tools' },
     { label: 'API',          page: 'api' },
-    { label: 'Standards',    href: '/oai/standard' },
+    { label: 'Standards',    href: '/standards' },
     { label: 'ReCenter',     page: 'recenter' },
     { label: 'Whitepapers',  page: 'whitepapers' },
     { label: 'Pricing',      page: 'pricing' },

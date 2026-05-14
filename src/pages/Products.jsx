@@ -1,6 +1,4 @@
 import React from 'react'
-import { Ruler } from '../components/WPChrome.jsx'
-import DocumentEditor from '../components/DocumentEditor.jsx'
 import PageDesc from '../components/PageDesc.jsx'
 
 const NETSHELL_DOWNLOADS = [
@@ -181,7 +179,6 @@ function ProductCard({ tool }) {
 export default function Products() {
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
-      <Ruler page="products" />
       <PageDesc
         title="products"
         desc="Tools we've built. Public web tools require no account. Personal features require an enrolled TunnelMind device — traffic observed at the kernel level, not via browser extension."
@@ -413,9 +410,6 @@ export default function Products() {
 
         <div style={{ height: '1px', background: 'var(--chrome-border)', marginBottom: '0' }} />
       </div>
-
-      {/* Author-written content below */}
-      <DocumentEditor pageId="products" />
     </div>
   )
 }

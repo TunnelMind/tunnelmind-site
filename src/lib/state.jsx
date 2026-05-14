@@ -1,7 +1,6 @@
 // TunnelMind Global State
 import React, { createContext, useContext, useReducer, useEffect, useRef } from 'react'
 import { generateFingerprint } from './fingerprint.js'
-import { calculateScore } from './scoring.js'
 import { supabase, isLive } from './supabase.js'
 import { onAuthStateChange, getSession, getTierFromSession } from './auth.js'
 

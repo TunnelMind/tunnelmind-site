@@ -6,7 +6,7 @@ import { onAuthStateChange, getSession, getTierFromSession } from './auth.js'
 
 const TMContext = createContext(null)
 
-// ── Paragraph parser (mirrors DocumentEditor) ──────────────────────
+// ── Paragraph parser ──────────────────────
 function parseParagraphs(raw) {
   return raw
     .split(/\n\n+/)

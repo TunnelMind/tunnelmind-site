@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ATAP application profiles — TunnelMind</title>
+<meta name="description" content="The ATAP v0.1 application profile registry. A profile defines the witness vocabulary for one agent domain — event types, payload schemas, and aggregation rules.">
+<link rel="canonical" href="https://tunnelmind.ai/atap/profiles">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>:root {
+  --chrome-bg: #0f172a;
+  --chrome-bg2: #1e293b;
+  --chrome-border: #334155;
+  --chrome-text: #cbd5e1;
+  --chrome-text-dim: #94a3b8;
+  --chrome-text-bright: #e2e8f0;
+  --doc-paper: #243044;
+  --doc-text: #e2e8f0;
+  --accent-green: #4ade80;
+  --accent-blue: #60a5fa;
+  --accent-cyan: #38bdf8;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--chrome-bg); color: var(--doc-text); font-family: var(--font-serif); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.banner { background: var(--chrome-bg2); border-bottom: 1px solid var(--chrome-border); padding: 14px 24px; font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); display: flex; justify-content: space-between; align-items: center; }
+.banner a { color: var(--accent-green); text-decoration: none; }
+.banner .home { color: var(--accent-green); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 11px; }
+main { max-width: 820px; margin: 0 auto; padding: 56px 24px 96px; }
+h1 { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--accent-green); letter-spacing: 0.02em; margin: 0 0 18px; }
+.intro { color: var(--chrome-text); margin: 0 0 16px; max-width: 660px; }
+.intro a { color: var(--accent-cyan); text-decoration: none; }
+.intro a:hover { color: var(--accent-green); }
+h2 { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--chrome-text-dim); letter-spacing: 0.06em; text-transform: uppercase; margin: 44px 0 16px; }
+.card { background: var(--doc-paper); border: 1px solid var(--chrome-border); border-radius: 6px; padding: 28px 30px; margin-bottom: 24px; transition: border-color 150ms ease; }
+.card:hover { border-color: var(--accent-green); }
+.card-head { display: flex; align-items: baseline; gap: 14px; margin-bottom: 10px; flex-wrap: wrap; }
+.card-name { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--accent-green); }
+.card-status { font-family: var(--font-mono); font-size: 11px; color: var(--accent-blue); letter-spacing: 0.04em; }
+.card-blurb { color: var(--doc-text); margin-bottom: 16px; }
+.card-meta { font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); margin-bottom: 16px; }
+.card-links { font-family: var(--font-mono); font-size: 12px; }
+.card-links a { color: var(--accent-cyan); text-decoration: none; border-bottom: 1px solid rgba(56, 189, 248, 0.3); }
+.card-links a:hover { color: var(--accent-green); border-bottom-color: var(--accent-green); }
+.card-links .sep { margin: 0 10px; color: var(--chrome-border); }
+.reserved { font-family: var(--font-mono); font-size: 13px; color: var(--chrome-text-dim); }
+.reserved code { color: var(--chrome-text); }
+@media (max-width: 600px) {
+  main { padding: 36px 18px 64px; }
+  h1 { font-size: 22px; }
+  .card { padding: 20px 18px; }
+}</style>
+</head>
+<body>
+<div class="banner">
+  <a class="home" href="/">TunnelMind</a>
+  <div>ATAP v0.1 · <a href="/atap/standard">standard</a> · <a href="/standards">all standards</a></div>
+</div>
+<main>
+  <h1>ATAP application profiles</h1>
+  <p class="intro">
+    ATAP — the <a href="/atap/standard">Agent Trust Attestation Protocol</a> — is a
+    structural envelope. An <strong>application profile</strong> fills it with the
+    domain-specific vocabulary for one class of agent: the witness event types, the
+    payload JSON Schemas, the aggregation rules, and the contents of the receipt's
+    profile artifacts (ATAP v0.1 §9).
+  </p>
+  <p class="intro">
+    The source of truth is
+    <a href="https://github.com/TunnelMind/atap-profiles">github.com/TunnelMind/atap-profiles</a>.
+    New profiles are added by pull request; CI runs the §9.4 acceptance checks and
+    auto-merges a passing PR within 7 days.
+  </p>
+
+  <h2>Published profiles</h2>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-name">sigil:media_buyer:v1</span>
+      <span class="card-status">REFERENCE PROFILE</span>
+    </div>
+    <p class="card-blurb">
+      The witness vocabulary for AI agents that buy programmatic advertising — the
+      bid lifecycle, budget movement, Sigil supply-path verification, and
+      constraint-violation detection. Witnessed by
+      <a style="color:var(--accent-cyan)" href="/atap/standard">Sigil</a>; receipts
+      grade every event as witnessed, anchored, or asserted.
+    </p>
+    <div class="card-meta">Maintainer: TunnelMind (via Sigil) &nbsp;·&nbsp; ATAP v0.1</div>
+    <div class="card-links">
+      <a href="https://github.com/TunnelMind/atap-profiles/blob/main/profiles/sigil-media-buyer-v1/profile.md">profile definition</a>
+      <span class="sep">·</span>
+      <a href="https://github.com/TunnelMind/atap-profiles/tree/main/profiles/sigil-media-buyer-v1/schemas">schemas</a>
+      <span class="sep">·</span>
+      <a href="https://github.com/TunnelMind/atap-profiles/tree/main/profiles/sigil-media-buyer-v1/examples">signed examples</a>
+    </div>
+  </div>
+
+  <h2>Reserved</h2>
+  <p class="reserved">
+    <code>sigil:ecommerce_buyer:v1</code> &nbsp;·&nbsp;
+    <code>sigil:data_broker:v1</code> &nbsp;— namespaces reserved, profiles not yet drafted.
+  </p>
+</main>
+</body>
+</html>

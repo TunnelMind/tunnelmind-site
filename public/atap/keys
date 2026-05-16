@@ -1,4 +1,14 @@
 {
-  "keys": [],
-  "updated_at": "2026-05-14T00:00:00Z"
+  "keys": [
+    {
+      "witness": "OAI-2026-0000201",
+      "key_id": "sigil-atap-2026",
+      "algorithm": "ed25519",
+      "public_key": "0x3b0e0ca949f5d4564ba4bd032a71adf84116eac9e1b84bd8b566814677175c5b",
+      "valid_from": "2026-01-01T00:00:00Z",
+      "valid_until": "2027-12-31T00:00:00Z",
+      "status": "active"
+    }
+  ],
+  "updated_at": "2026-05-16T00:00:00Z"
 }

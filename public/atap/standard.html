@@ -628,7 +628,7 @@ DIGIT      = %x30-39
 <td><code>witness_signature</code></td>
 <td>string</td>
 <td>Yes</td>
-<td>Ed25519 signature by the witness service over the bytes of <code>self_hash</code>. Format <code>ed25519:0x{128hex}</code>.</td>
+<td>Ed25519 signature by the witness service over the 32-byte SHA-256 digest that <code>self_hash</code> encodes (the raw digest, not the hex string). Format <code>ed25519:0x{128hex}</code>.</td>
 </tr>
 </tbody></table>
 <h4>7.2.1 Replay protection</h4>
@@ -768,7 +768,7 @@ DIGIT      = %x30-39
 <td><code>witness_signature</code></td>
 <td>string</td>
 <td>Yes</td>
-<td>Ed25519 signature by the witness service over <code>self_hash</code>. Format <code>ed25519:0x{128hex}</code>.</td>
+<td>Ed25519 signature by the witness service over the 32-byte SHA-256 digest that <code>self_hash</code> encodes (the raw digest, not the hex string). Format <code>ed25519:0x{128hex}</code>.</td>
 </tr>
 </tbody></table>
 <h3>7.4 Receipt</h3>
@@ -944,17 +944,17 @@ DIGIT      = %x30-39
 <p>What IS in scope: destinations (domains, ASNs, server-side IP ranges, app-bundle IDs), aggregate volumes, timings, prices, capability identifiers, profile-defined trust signals, and any field whose resolution does NOT reach a natural person.</p>
 <p>Profile maintainers MUST encode this constraint in their JSON Schemas. Profiles that fail to do so MUST NOT be admitted into the registry (Section 9.3).</p>
 <h3>7.7 Canonical bytes for hashing and signing</h3>
-<p>Every <code>self_hash</code> and every signature is computed over the <strong>canonical JSON bytes</strong> of the object minus the hash and signature fields. Canonical JSON is JSON Canonicalization Scheme, RFC 8785. Implementations MUST NOT compute hashes over the raw JSON-LD as transmitted; differences in whitespace, key ordering, or numeric representation would silently invalidate signatures.</p>
+<p>A <code>self_hash</code> is the SHA-256 of the <strong>canonical JSON bytes</strong> of the object minus its <code>self_hash</code> and <code>witness_signature</code> fields. Canonical JSON is JSON Canonicalization Scheme, RFC 8785. The witness signature on a Witness Event or an Attestation Block is computed over the <strong>32-byte SHA-256 digest</strong> that its <code>self_hash</code> encodes — the raw digest bytes, not the hex string. The witness signature on an AIT or a Receipt — neither of which carries a <code>self_hash</code> — is computed over the canonical JSON bytes of the object minus <code>witness_signature</code>. Implementations MUST NOT compute hashes over the raw JSON-LD as transmitted; differences in whitespace, key ordering, or numeric representation would silently invalidate signatures.</p>
 <p>The canonical procedure for a Witness Event:</p>
 <ol>
 <li>Construct the event object with all fields except <code>self_hash</code> and <code>witness_signature</code>.</li>
 <li>Serialize via RFC 8785 JCS.</li>
 <li>Compute SHA-256 → <code>self_hash</code>.</li>
-<li>Sign the bytes of <code>self_hash</code> with the witness service&#39;s Ed25519 private key → <code>witness_signature</code>.</li>
+<li>Sign the <strong>32-byte SHA-256 digest</strong> that <code>self_hash</code> encodes — the raw digest, not its hex-string form — with the witness service&#39;s Ed25519 private key → <code>witness_signature</code>.</li>
 <li>Add <code>self_hash</code> and <code>witness_signature</code> to the object for transmission and storage.</li>
 </ol>
-<p>The same procedure applies, with the corresponding field exclusions, to Attestation Blocks and Receipts.</p>
-<p>For the AIT, the procedure is identical except that the field excluded from canonicalization is <code>witness_signature</code> only (there is no <code>self_hash</code> on an AIT — the AIT is signed directly).</p>
+<p>The same procedure applies, with the corresponding field exclusions, to Attestation Blocks.</p>
+<p>For the AIT and the Receipt, the procedure is identical except that the only excluded field is <code>witness_signature</code>, and the signature is computed over the object&#39;s canonical bytes directly — neither carries a <code>self_hash</code>.</p>
 <p><strong>Ed25519 conventions in v0.1.</strong> Signatures are 64 bytes, hex-encoded as 128 lowercase characters with the <code>ed25519:0x</code> prefix. Public keys are 32 bytes, hex-encoded as 64 lowercase characters with the <code>0x</code> prefix.</p>
 <hr>
 <h2>8. Key publication</h2>

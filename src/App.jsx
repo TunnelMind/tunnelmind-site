@@ -5,6 +5,7 @@ import TopNav from './components/shared/TopNav.jsx'
 import Footer from './components/shared/Footer.jsx'
 import IntroBox from './components/IntroBox.jsx'
 
+import Radar from './pages/Radar.jsx'
 import Landing from './pages/Landing.jsx'
 import Tools from './pages/Tools.jsx'
 import Api from './pages/Api.jsx'
@@ -51,7 +52,8 @@ function AppInner() {
   }, [])
 
   const pageComponent = {
-    landing:      <Landing onNavigate={handleNavigate} />,
+    landing:      <Radar onNavigate={handleNavigate} />,
+    manifesto:    <Landing onNavigate={handleNavigate} />,
     tools:        <Tools onNavigate={handleNavigate} />,
     api:          <Api onNavigate={handleNavigate} />,
     recenter:     <ReCenter onNavigate={handleNavigate} />,

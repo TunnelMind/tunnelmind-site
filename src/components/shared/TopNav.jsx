@@ -9,6 +9,7 @@ const NAV_ITEMS = {
     { label: 'Whitepapers',  page: 'whitepapers' },
     { label: 'Pricing',      page: 'pricing' },
     { label: 'About',        page: 'about' },
+    { label: 'Manifesto',    page: 'manifesto' },
   ],
   alloy: [
     { label: 'Workspace',    page: 'workspace' },

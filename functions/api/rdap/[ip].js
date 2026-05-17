@@ -23,7 +23,9 @@ export async function onRequestGet(context) {
 
 // Pull the readable vCard fields (formatted name, email) out of the
 // jCard array RDAP entities carry.
-function vcard(arr) {
+// Exported for unit tests (test/rdap.test.js); Pages ignores non-handler
+// exports.
+export function vcard(arr) {
   const out = {}
   if (!Array.isArray(arr) || arr[0] !== 'vcard') return out
   for (const item of arr[1] || []) {
@@ -33,7 +35,7 @@ function vcard(arr) {
   return out
 }
 
-function trim(r) {
+export function trim(r) {
   const out = {
     handle: r.handle || null,
     name: r.name || null,

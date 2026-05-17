@@ -5,11 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:oai && npm run build:atap && npm run build:standards && vite build",
+    "build": "npm run build:oai && npm run build:atap && npm run build:standards && npm run build:og && vite build",
     "build:oai": "node scripts/build-oai-page.js",
     "build:atap": "node scripts/build-atap-page.js",
     "build:standards": "node scripts/build-standards-index.js",
+    "build:og": "node scripts/build-og-image.js",
     "preview": "vite preview",
+    "test": "vitest run",
     "seed:oai": "node scripts/generate-oai-seed.js"
   },
   "dependencies": {
@@ -23,6 +25,8 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
     "marked": "^18.0.3",
-    "vite": "^5.4.11"
+    "sharp": "^0.34.5",
+    "vite": "^5.4.11",
+    "vitest": "^4.1.6"
   }
 }

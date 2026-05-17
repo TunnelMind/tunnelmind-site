@@ -9,10 +9,12 @@
 // The only adaptations vs. html.js:
 //   - every DOM lookup is scoped to the `root` element React hands us,
 //     instead of `document` (so the radar mounts inside a <div>, not body);
-//   - the poll interval, RAF loop, and resize listener are tracked and torn
-//     down by the returned cleanup() so React unmount leaks nothing;
+//   - live data arrives over an SSE feed (/api/stream) instead of a poll
+//     loop, with a polling fallback if EventSource is missing or failing;
+//   - the SSE connection, RAF loop, and resize listener are tracked and
+//     torn down by the returned cleanup() so React unmount leaks nothing;
 //   - switching to JSON mode now repaints immediately from cached data
-//     instead of waiting up to one poll cycle.
+//     instead of waiting up to one update cycle.
 //
 // initRadar(root) -> cleanup()
 
@@ -34,6 +36,7 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
 
   let rafId = null;
   let intervalId = null;
+  let es = null;
   let destroyed = false;
 
   // ── view-mode toggle ──────────────────────────────────────────────
@@ -70,6 +73,27 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     if (stats) $('#json-stats').textContent = JSON.stringify(stats, null, 2);
   }
 
+  // Apply one corpus snapshot — shared by the SSE feed and the polling
+  // fallback. Pure DOM/state update, no fetching.
+  function applySnapshot(r, c, s) {
+    if (destroyed || !r || !c || !s) return;
+    lastRecent = r; lastCampaigns = c; stats = s;
+
+    const statsEl = $('#radarStats');
+    if (statsEl) {
+      statsEl.innerHTML =
+        '<strong>' + (s.total_observations || 0) + '</strong> obs · ' +
+        '<strong>' + (s.distinct_source_ips || 0) + '</strong> ips · ' +
+        'last 24h: <strong>' + (s.observations_last_24h || 0) + '</strong>';
+    }
+
+    if (mode === 'json') renderJson();
+
+    rebuildGraph(r, c);
+  }
+
+  // Polling fallback — drives the instant first paint, and every update
+  // if the SSE stream is unavailable.
   async function refresh() {
     try {
       const [r, c, s] = await Promise.all([
@@ -77,20 +101,7 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
         fetch('/api/campaigns?limit=20').then((x) => x.json()),
         fetch('/api/stats').then((x) => x.json()),
       ]);
-      if (destroyed) return;
-      lastRecent = r; lastCampaigns = c; stats = s;
-
-      const statsEl = $('#radarStats');
-      if (statsEl) {
-        statsEl.innerHTML =
-          '<strong>' + (s.total_observations || 0) + '</strong> obs · ' +
-          '<strong>' + (s.distinct_source_ips || 0) + '</strong> ips · ' +
-          'last 24h: <strong>' + (s.observations_last_24h || 0) + '</strong>';
-      }
-
-      if (mode === 'json') renderJson();
-
-      rebuildGraph(r, c);
+      applySnapshot(r, c, s);
     } catch (e) {
       console.error(e);
     }
@@ -367,9 +378,36 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     return Math.floor(d / 86400000) + 'd ago';
   }
 
+  // ── live updates: SSE feed, with a polling fallback ───────────────
+  function startLiveUpdates() {
+    if (typeof EventSource === 'undefined') {
+      intervalId = setInterval(refresh, pollMs);
+      return;
+    }
+    let errCount = 0;
+    es = new EventSource('/api/stream');
+    es.addEventListener('snapshot', (ev) => {
+      errCount = 0;
+      try {
+        const d = JSON.parse(ev.data);
+        applySnapshot(d.recent, d.campaigns, d.stats);
+      } catch (e) {
+        console.error(e);
+      }
+    });
+    es.addEventListener('error', () => {
+      // EventSource reconnects on its own after a transient drop; only
+      // after several consecutive failures do we give up and poll.
+      if (++errCount >= 3 && !intervalId) {
+        if (es) { es.close(); es = null; }
+        intervalId = setInterval(refresh, pollMs);
+      }
+    });
+  }
+
   // ── bootstrap ─────────────────────────────────────────────────────
-  refresh();
-  intervalId = setInterval(refresh, pollMs);
+  refresh();            // instant first paint
+  startLiveUpdates();   // live updates over SSE (falls back to polling)
   startGraphLoop();
 
   const onResize = () => drawGraph();
@@ -378,6 +416,7 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
   return function cleanup() {
     destroyed = true;
     stopGraphLoop();
+    if (es) es.close();
     if (intervalId) clearInterval(intervalId);
     window.removeEventListener('resize', onResize);
   };

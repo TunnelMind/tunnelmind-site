@@ -1,51 +1,75 @@
 import React from 'react'
 
-const TOOLS = [
+// /tools — post-pivot (P25 Phase 2). The corpus has one source of truth
+// and several surfaces onto it. This page is the index of those surfaces.
+
+const SURFACES = [
   {
-    name: 'NetProbe',
-    desc: 'Full domain intelligence — WHOIS, DNS records, SSL certificate transparency, HTTP headers, tech stack fingerprinting, plus surveillance tracker scores and corporate ownership data.',
-    href: 'https://netprobe.tunnelmind.ai',
-    label: 'netprobe.tunnelmind.ai',
-    tag: 'Beta',
+    name: 'Scry Radar',
+    desc: 'The live attacker corpus as a force-directed graph. Every dot is a real source IP a sensor watched attack something in the last hour; amber hubs are coordinated campaigns. Click any node to inspect protocols, ASN, country, and registry records.',
+    page: 'landing',
+    label: 'tunnelmind.ai',
+    tag: 'Live · Free',
+    tagColor: '--accent-green',
+  },
+  {
+    name: 'Chat',
+    desc: 'Ask the corpus in plain language. Sourced, real-time answers about IPs, networks, campaigns, and threats — grounded in signed observations, not in vibes. No account required to start.',
+    href: 'https://chat.tunnelmind.ai',
+    label: 'chat.tunnelmind.ai',
+    tag: 'Live · Free',
+    tagColor: '--accent-green',
+  },
+  {
+    name: 'Tracker Data API',
+    desc: 'REST over the same corpus the radar draws. Check a single IP, bulk-check a block list, pull recent attackers, campaigns, tools, and stats. Free tier to start; paid plans for unmetered scale.',
+    href: 'https://api.tunnelmind.ai',
+    label: 'api.tunnelmind.ai',
+    tag: 'Live · Free tier',
+    tagColor: '--accent-blue',
+  },
+  {
+    name: 'MCP Server',
+    desc: 'Wire the corpus into any AI agent. JSON-RPC 2.0 over streamable HTTP — agent-native, because the agents are the new internet. Point a Model Context Protocol client at the endpoint and the corpus becomes a tool.',
+    href: 'https://mcp.tunnelmind.ai',
+    label: 'mcp.tunnelmind.ai',
+    tag: 'Live · Free',
+    tagColor: '--accent-blue',
+  },
+  {
+    name: 'Browser Extension',
+    desc: 'Passive checks as you browse — no proxy, no DNS redirect. Third-party requests are matched against the corpus, and a real-time popup shows what the page is talking to. Firefox + Chrome.',
+    href: 'https://addons.mozilla.org/firefox/addon/tunnelmind-surveillance-receipt/',
+    label: 'Firefox · Chrome Web Store',
+    tag: 'In review',
     tagColor: '--accent-amber',
-    accentVar: '--accent-amber',
-    note: 'Some Explorer features not yet ported to the web version.',
   },
   {
-    name: 'Surveillance Receipt',
-    desc: 'Paste any domains or URLs you\'ve visited. Get a line-item invoice showing what your browsing data is worth to the surveillance economy — broken down by tracker, company, and data category. Fully local, nothing leaves your browser.',
-    page: 'receipt',
-    label: 'tunnelmind.ai/receipt',
-    tag: 'Free · Local',
-    tagColor: '--accent-green',
-    accentVar: '--accent-green',
-  },
-  {
-    name: 'Surveillance Radar',
-    desc: '704 surveillance entities and 9,786 domains rendered as an interactive force-directed graph. Click any node to explore corporate ownership chains and see which actors share infrastructure.',
-    href: 'https://radar.tunnelmind.ai',
-    label: 'radar.tunnelmind.ai',
-    tag: 'Free',
-    tagColor: '--accent-green',
-    accentVar: '--accent-green',
+    name: 'Standards & Verification',
+    desc: 'Resolve an OAI identifier, verify an ATAP attestation, or check an entity trust score. The naming and verification layers on top of the corpus — open specs, free resolution.',
+    href: '/standards',
+    label: 'tunnelmind.ai/standards',
+    tag: 'Live · Public',
+    tagColor: '--accent-cyan',
   },
 ]
 
-function ToolCard({ tool, onNavigate }) {
-  function handleLaunch() {
-    if (tool.href) window.open(tool.href, '_blank', 'noopener')
-    else if (tool.page && onNavigate) onNavigate(tool.page)
+function SurfaceCard({ tool, onNavigate }) {
+  function open() {
+    if (tool.page && onNavigate) onNavigate(tool.page)
+    else if (tool.href && tool.href.startsWith('/')) window.location.href = tool.href
+    else if (tool.href) window.open(tool.href, '_blank', 'noopener')
   }
-
+  const accent = `var(${tool.tagColor})`
   return (
     <div style={{
-      padding: '24px',
+      padding: '22px',
       background: 'var(--chrome-bg2)',
       border: '1px solid var(--chrome-border)',
       borderRadius: '4px',
       display: 'flex',
       flexDirection: 'column',
-      gap: '14px',
+      gap: '12px',
     }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
         <span style={{
@@ -59,8 +83,8 @@ function ToolCard({ tool, onNavigate }) {
         <span style={{
           fontFamily: 'var(--font-mono)',
           fontSize: '8px',
-          color: `var(${tool.tagColor})`,
-          border: `1px solid var(${tool.tagColor})`,
+          color: accent,
+          border: `1px solid ${accent}`,
           borderRadius: '2px',
           padding: '2px 6px',
           whiteSpace: 'nowrap',
@@ -70,7 +94,6 @@ function ToolCard({ tool, onNavigate }) {
           {tool.tag}
         </span>
       </div>
-
       <p style={{
         fontFamily: 'var(--font-serif)',
         fontSize: '14px',
@@ -81,34 +104,15 @@ function ToolCard({ tool, onNavigate }) {
       }}>
         {tool.desc}
       </p>
-
-      {tool.note && (
-        <div style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '9px',
-          color: 'var(--accent-amber)',
-          padding: '6px 8px',
-          background: 'var(--accent-amber-dim)',
-          borderRadius: '2px',
-          border: '1px solid rgba(251,191,36,0.2)',
-        }}>
-          ⚠ {tool.note}
-        </div>
-      )}
-
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px' }}>
-        <span style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '9px',
-          color: 'var(--chrome-text-dim)',
-        }}>
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)' }}>
           {tool.label}
         </span>
         <button
-          onClick={handleLaunch}
+          onClick={open}
           style={{
             padding: '7px 16px',
-            background: `var(${tool.accentVar})`,
+            background: accent,
             border: 'none',
             borderRadius: '3px',
             fontFamily: 'var(--font-mono)',
@@ -120,7 +124,7 @@ function ToolCard({ tool, onNavigate }) {
             flexShrink: 0,
           }}
         >
-          Launch ↗
+          Open ↗
         </button>
       </div>
     </div>
@@ -140,7 +144,7 @@ export default function Tools({ onNavigate }) {
           textTransform: 'uppercase',
           marginBottom: '12px',
         }}>
-          ● Free Tools
+          ● Surfaces
         </div>
 
         <h1 style={{
@@ -151,7 +155,7 @@ export default function Tools({ onNavigate }) {
           marginBottom: '10px',
           letterSpacing: '-0.01em',
         }}>
-          Surveillance intelligence tools
+          One corpus. Several ways in.
         </h1>
         <p style={{
           fontFamily: 'var(--font-serif)',
@@ -159,10 +163,11 @@ export default function Tools({ onNavigate }) {
           lineHeight: '1.7',
           color: 'var(--doc-text-dim)',
           marginBottom: '40px',
-          maxWidth: '560px',
+          maxWidth: '580px',
         }}>
-          Public web tools — no account required. Powered by 53K+ tracked domains
-          and 6,600+ corporate entities in the TunnelMind surveillance database.
+          The attacker corpus is one source of truth. These are the surfaces onto
+          it — pick the one that fits how you work. Every one of them is free to
+          start, and no, you don&apos;t need an account to look around.
         </p>
 
         <div style={{
@@ -170,8 +175,8 @@ export default function Tools({ onNavigate }) {
           gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
           gap: '12px',
         }}>
-          {TOOLS.map(tool => (
-            <ToolCard key={tool.name} tool={tool} onNavigate={onNavigate} />
+          {SURFACES.map(tool => (
+            <SurfaceCard key={tool.name} tool={tool} onNavigate={onNavigate} />
           ))}
         </div>
 
@@ -180,7 +185,7 @@ export default function Tools({ onNavigate }) {
           padding: '20px 24px',
           background: 'var(--chrome-bg2)',
           border: '1px solid var(--chrome-border)',
-          borderLeft: '3px solid var(--accent-blue)',
+          borderLeft: '3px solid var(--accent-green)',
           borderRadius: '4px',
           display: 'flex',
           alignItems: 'center',
@@ -192,12 +197,12 @@ export default function Tools({ onNavigate }) {
             <div style={{
               fontFamily: 'var(--font-mono)',
               fontSize: '9px',
-              color: 'var(--accent-blue)',
+              color: 'var(--accent-green)',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               marginBottom: '6px',
             }}>
-              Build on the data
+              Need the whole corpus?
             </div>
             <p style={{
               fontFamily: 'var(--font-serif)',
@@ -205,25 +210,26 @@ export default function Tools({ onNavigate }) {
               color: 'var(--doc-text-dim)',
               margin: 0,
             }}>
-              All tools run on the Tracker Data REST API — 50 free requests/day, CORS open, no key required.
+              The defender tier unlocks full campaign membership, payload
+              signatures, and unmetered lookups across every surface.
             </p>
           </div>
           <button
-            onClick={() => onNavigate && onNavigate('api')}
+            onClick={() => onNavigate && onNavigate('pricing')}
             style={{
               padding: '8px 16px',
               background: 'transparent',
-              border: '1px solid var(--accent-blue)',
+              border: '1px solid var(--accent-green)',
               borderRadius: '3px',
               fontFamily: 'var(--font-mono)',
               fontSize: '10px',
-              color: 'var(--accent-blue)',
+              color: 'var(--accent-green)',
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               flexShrink: 0,
             }}
           >
-            API docs →
+            See pricing →
           </button>
         </div>
 

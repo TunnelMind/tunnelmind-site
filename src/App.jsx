@@ -59,7 +59,7 @@ function AppInner() {
     recenter:     <ReCenter onNavigate={handleNavigate} />,
     whitepapers:  <Whitepapers />,
     about:        <About />,
-    pricing:      <Pricing />,
+    pricing:      <Pricing onNavigate={handleNavigate} />,
     extension:    <Extension />,
     receipt:      <Receipt />,
     privacy:      <PrivacyPolicy />,

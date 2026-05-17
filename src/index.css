@@ -307,6 +307,39 @@ a:hover {
   font-size: 12px; color: var(--radar-fg-dim); line-height: 1.45;
 }
 #inspector .attestation strong { color: var(--radar-accent); font-weight: 500; }
+
+/* WHOIS / RDAP click-through inside the actor inspector */
+.radar-root .whois-wrap { margin-top: 14px; }
+.radar-root .whois-btn {
+  width: 100%;
+  background: var(--radar-panel-2);
+  color: var(--radar-fg-dim);
+  border: 1px solid var(--radar-border);
+  padding: 7px 10px;
+  border-radius: 4px;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+.radar-root .whois-btn:hover:not(:disabled) {
+  color: var(--radar-accent);
+  border-color: var(--radar-accent-dim);
+}
+.radar-root .whois-btn:disabled { cursor: default; opacity: 0.7; }
+.radar-root .whois-box {
+  margin-top: 10px;
+  padding: 8px 10px;
+  background: var(--radar-panel-2);
+  border-radius: 4px;
+}
+.radar-root .whois-box .field { border-bottom-color: var(--radar-border); }
+.radar-root .whois-err {
+  margin-top: 10px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--radar-fg-muted);
+}
 #inspector .attestation a { color: var(--radar-accent); }
 
 /* JSON mode */
@@ -400,6 +433,33 @@ a:hover {
   max-width: 620px;
   margin-bottom: 26px;
 }
+/* hero live-stat strip — pulls /api/stats and counts up */
+.tm-stat-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: clamp(20px, 5vw, 44px);
+  margin: 0 0 26px;
+  padding: 18px 0;
+  border-top: 1px solid var(--chrome-border);
+  border-bottom: 1px solid var(--chrome-border);
+}
+.tm-stat { display: flex; flex-direction: column; gap: 4px; }
+.tm-stat-value {
+  font-family: var(--font-mono);
+  font-size: clamp(22px, 4vw, 30px);
+  font-weight: 600;
+  line-height: 1;
+  color: var(--accent-green);
+  font-variant-numeric: tabular-nums;
+}
+.tm-stat-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--chrome-text-dim);
+}
+
 .tm-cta-row { display: flex; gap: 10px; flex-wrap: wrap; }
 .tm-btn {
   display: inline-block;

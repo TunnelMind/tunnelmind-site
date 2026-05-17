@@ -1,20 +1,18 @@
-// Scry Radar force-graph — ported from the scry-radar Worker (html.js) for
-// P25 Phase 2 (Radar becomes the main site).
+// Scry Radar force-graph — the live attacker-corpus visualization that is
+// the TunnelMind landing page (P25 Phase 2).
 //
-// The graph algorithm, force layout, and inspector rendering are kept
-// VERBATIM from the proven scry-radar implementation — P25 hard constraint:
-// "the pre-existing radar visualization library is preserved; do not swap
-// renderers."
+// The force layout and SVG renderer are kept close to the proven
+// scry-radar Worker implementation (P25 hard constraint: do not swap
+// renderers). What this build adds on top:
 //
-// The only adaptations vs. html.js:
-//   - every DOM lookup is scoped to the `root` element React hands us,
-//     instead of `document` (so the radar mounts inside a <div>, not body);
-//   - live data arrives over an SSE feed (/api/stream) instead of a poll
-//     loop, with a polling fallback if EventSource is missing or failing;
-//   - the SSE connection, RAF loop, and resize listener are tracked and
-//     torn down by the returned cleanup() so React unmount leaks nothing;
-//   - switching to JSON mode now repaints immediately from cached data
-//     instead of waiting up to one update cycle.
+//   - geo / network enrichment in the node inspector (country + flag,
+//     ASN, org) plus a plain-language read for non-experts;
+//   - an "overview" intel panel that fills the inspector when nothing is
+//     selected — 24h pulse sparkline, protocol mix, top origin countries,
+//     a data-derived headline — so the panel is never dead space;
+//   - a live activity ticker: IPs that appear between snapshots slide in
+//     along the bottom of the graph, and brand-new nodes pulse briefly;
+//   - live data over the SSE feed (/api/stream), polling fallback intact.
 //
 // initRadar(root) -> cleanup()
 
@@ -26,13 +24,16 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
   const H = () => $('#graphArea').clientHeight;
 
   let mode = 'visual';
-  let nodes = []; // [{ id, kind, label, asn, country, conf_bucket, observations, x, y, vx, vy, r }]
+  let nodes = []; // [{ id, kind, label, ..., x, y, vx, vy, r, bornAt }]
   let edges = []; // [{ source, target }]
   let selected = null;
   let stats = null;
+  let timeseries = null;
   let campaignsByMember = new Map(); // actor_ip -> [campaign_id]
   let lastRecent = null;
   let lastCampaigns = null;
+  let knownIps = null;          // Set of source_ips seen so far (ticker diff)
+  let tickerEvents = [];        // newest-first queue of {ip, country, kind, ts}
 
   let rafId = null;
   let intervalId = null;
@@ -73,35 +74,90 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     if (stats) $('#json-stats').textContent = JSON.stringify(stats, null, 2);
   }
 
-  // Apply one corpus snapshot — shared by the SSE feed and the polling
-  // fallback. Pure DOM/state update, no fetching.
-  function applySnapshot(r, c, s) {
+  // ── snapshot application ──────────────────────────────────────────
+  // Shared by the SSE feed and the polling fallback. Pure DOM/state
+  // update, no fetching.
+  function applySnapshot(r, c, s, t) {
     if (destroyed || !r || !c || !s) return;
     lastRecent = r; lastCampaigns = c; stats = s;
+    if (t && Array.isArray(t.buckets)) timeseries = t;
 
     const statsEl = $('#radarStats');
     if (statsEl) {
       statsEl.innerHTML =
-        '<strong>' + (s.total_observations || 0) + '</strong> obs · ' +
-        '<strong>' + (s.distinct_source_ips || 0) + '</strong> ips · ' +
-        'last 24h: <strong>' + (s.observations_last_24h || 0) + '</strong>';
+        '<strong>' + fmt(s.total_observations) + '</strong> obs · ' +
+        '<strong>' + fmt(s.distinct_source_ips) + '</strong> ips · ' +
+        'last 24h <strong>' + fmt(s.observations_last_24h) + '</strong>';
     }
 
+    detectNewArrivals(r);
     if (mode === 'json') renderJson();
-
     rebuildGraph(r, c);
+    if (!selected) renderOverview();
+  }
+
+  // Diff the recent set against what we've already seen; anything new
+  // becomes a ticker event. The first snapshot only seeds the set (no
+  // ticker dump of 50 IPs at once).
+  function detectNewArrivals(recent) {
+    const list = (recent && recent.results) || [];
+    if (knownIps === null) {
+      knownIps = new Set(list.map((r) => r.source_ip));
+      return;
+    }
+    const fresh = [];
+    for (const r of list) {
+      if (!knownIps.has(r.source_ip)) {
+        knownIps.add(r.source_ip);
+        fresh.push({
+          ip: r.source_ip,
+          country: r.country || null,
+          kind: r.category === 'scanner' ? 'scanner' : 'actor',
+          ts: Date.now(),
+        });
+      }
+    }
+    if (fresh.length) {
+      tickerEvents = fresh.concat(tickerEvents).slice(0, 40);
+      renderTicker();
+    }
+    // Bound the known set so it can't grow without limit.
+    if (knownIps.size > 4000) knownIps = new Set(list.map((r) => r.source_ip));
+  }
+
+  function renderTicker() {
+    const el = $('#radarTicker');
+    if (!el) return;
+    if (!tickerEvents.length) {
+      el.innerHTML = '<span class="tk-idle">● live — watching for new activity</span>';
+      return;
+    }
+    const e = tickerEvents[0];
+    const fl = flagOf(e.country);
+    el.innerHTML =
+      '<span class="tk-dot"></span>' +
+      '<span class="tk-time">' + clock(e.ts) + '</span>' +
+      '<span class="tk-kind tk-' + e.kind + '">new ' + e.kind + '</span>' +
+      '<span class="tk-ip">' + esc(e.ip) + '</span>' +
+      (fl ? '<span class="tk-geo">' + fl + ' ' + esc(e.country) + '</span>' : '') +
+      '<span class="tk-tail">entered the corpus</span>';
+    // Restart the slide-in animation.
+    el.classList.remove('tk-in');
+    void el.offsetWidth;
+    el.classList.add('tk-in');
   }
 
   // Polling fallback — drives the instant first paint, and every update
   // if the SSE stream is unavailable.
   async function refresh() {
     try {
-      const [r, c, s] = await Promise.all([
+      const [r, c, s, t] = await Promise.all([
         fetch('/api/recent?limit=50').then((x) => x.json()),
         fetch('/api/campaigns?limit=20').then((x) => x.json()),
         fetch('/api/stats').then((x) => x.json()),
+        fetch('/api/timeseries').then((x) => x.json()).catch(() => null),
       ]);
-      applySnapshot(r, c, s);
+      applySnapshot(r, c, s, t);
     } catch (e) {
       console.error(e);
     }
@@ -115,6 +171,7 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     const prev = new Map(nodes.map((n) => [n.id, n]));
     const nextNodes = [];
     const nextEdges = [];
+    const now = Date.now();
 
     // Campaigns become hub nodes.
     for (const c of campaignList) {
@@ -127,10 +184,13 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
         protocol: c.protocol,
         member_actor_count: c.member_actor_count,
         conf_bucket: c.confidence_bucket,
-        r: 6 + Math.min(20, Math.log2((c.member_actor_count || 1) + 1) * 3),
+        first_seen_ms: c.first_seen_ms, last_seen_ms: c.last_seen_ms,
+        payload_sha256_prefix: c.payload_sha256_prefix,
+        r: 7 + Math.min(22, Math.log2((c.member_actor_count || 1) + 1) * 3),
         x: existing.x || W() / 2 + (Math.random() - 0.5) * 80,
         y: existing.y || H() / 2 + (Math.random() - 0.5) * 80,
         vx: existing.vx || 0, vy: existing.vy || 0,
+        bornAt: existing.bornAt || now,
       });
     }
 
@@ -142,14 +202,15 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
         id,
         kind: r.category === 'scanner' ? 'scanner' : 'actor',
         label: r.source_ip,
-        asn: r.asn, country: r.country,
+        asn: r.asn, country: r.country, org: r.org,
         conf_bucket: r.confidence_bucket,
         observations: r.observations,
         first_seen_ms: r.first_seen_ms, last_seen_ms: r.last_seen_ms,
-        r: 3 + Math.min(8, Math.log2((r.observations || 1) + 1)),
+        r: 3.5 + Math.min(9, Math.log2((r.observations || 1) + 1)),
         x: existing.x || Math.random() * W(),
         y: existing.y || Math.random() * H(),
         vx: existing.vx || 0, vy: existing.vy || 0,
+        bornAt: existing.bornAt || now,
       });
     }
 
@@ -241,6 +302,7 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     const svg = $('#graphSvg');
     if (!svg) return;
     const byId = new Map(nodes.map((n) => [n.id, n]));
+    const now = Date.now();
     let html = '';
     for (const e of edges) {
       const a = byId.get(e.source), b = byId.get(e.target);
@@ -251,15 +313,24 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     for (const n of nodes) {
       const fill = n.kind === 'campaign' ? 'var(--radar-node-campaign)' :
                    n.kind === 'scanner' ? 'var(--radar-node-scanner)' : 'var(--radar-node-actor)';
-      const stroke = n.id === selected ? '#fff' : (n.kind === 'campaign' ? '#fff3' : '#0006');
-      const swidth = n.id === selected ? 2 : 1;
+      const isSel = n.id === selected;
+      const stroke = isSel ? '#fff' : (n.kind === 'campaign' ? '#fff3' : '#0006');
+      const swidth = isSel ? 2 : 1;
+      // Brand-new nodes (< 6s old) get a fading pulse ring.
+      const age = now - (n.bornAt || now);
+      if (age < 6000) {
+        const p = age / 6000;
+        html += '<circle cx="' + n.x + '" cy="' + n.y + '" r="' +
+                (n.r + 3 + p * 14) + '" fill="none" stroke="' + fill +
+                '" stroke-width="1" opacity="' + (0.5 * (1 - p)).toFixed(3) + '"/>';
+      }
       html += '<circle data-id="' + escAttr(n.id) +
               '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + fill +
               '" stroke="' + stroke + '" stroke-width="' + swidth + '" style="cursor:pointer"/>';
     }
     svg.innerHTML = html;
 
-    svg.querySelectorAll('circle').forEach((c) => {
+    svg.querySelectorAll('circle[data-id]').forEach((c) => {
       c.addEventListener('click', () => selectNode(c.getAttribute('data-id')));
     });
   }
@@ -272,6 +343,150 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     else renderActorInspector(n);
   }
 
+  function clearSelection() {
+    selected = null;
+    renderOverview();
+  }
+
+  // ── overview panel (inspector default state) ──────────────────────
+  // When nothing is selected the inspector becomes a live intel summary,
+  // so the panel always carries data — for the executive skimming and
+  // the casual visitor as much as the analyst.
+  function renderOverview() {
+    const insp = $('#inspector');
+    if (!insp) return;
+    if (!stats) { insp.innerHTML = '<div class="placeholder">Loading the corpus…</div>'; return; }
+
+    const recentList = (lastRecent && lastRecent.results) || [];
+    const campaignList = (lastCampaigns && lastCampaigns.results) || [];
+
+    let html = '<div class="ov-head">' +
+      '<h3>Corpus — live</h3>' +
+      '<span class="ov-sub">last hour, hostile traffic only</span></div>';
+
+    html += '<div class="ov-headline">' + headline() + '</div>';
+
+    // 24h pulse sparkline.
+    if (timeseries && timeseries.buckets && timeseries.buckets.length > 1) {
+      const b = timeseries.buckets;
+      const peak = Math.max(...b.map((x) => x.observations || 0));
+      html += '<div class="ov-section">' +
+        '<div class="ov-label">24-hour pulse <span class="ov-peak">peak ' +
+        fmt(peak) + '/h</span></div>' +
+        sparkline(b) + '</div>';
+    }
+
+    // Protocol mix.
+    if (stats.by_protocol) {
+      const entries = Object.entries(stats.by_protocol)
+        .sort((a, b) => b[1] - a[1]).slice(0, 6);
+      const total = entries.reduce((s, [, n]) => s + n, 0) || 1;
+      html += '<div class="ov-section"><div class="ov-label">What they\'re hitting</div>';
+      for (const [proto, n] of entries) {
+        const pct = Math.round((n / total) * 100);
+        html += '<div class="ov-bar-row">' +
+          '<span class="ov-bar-name">' + esc(proto) + '</span>' +
+          '<span class="ov-bar-track"><span class="ov-bar-fill" style="width:' +
+          Math.max(2, pct) + '%"></span></span>' +
+          '<span class="ov-bar-pct">' + pct + '%</span></div>';
+      }
+      html += '</div>';
+    }
+
+    // Top origin countries — derived from the visible sample. Renders
+    // only once geo enrichment is live (otherwise country is null).
+    const byCountry = new Map();
+    for (const r of recentList) {
+      if (!r.country) continue;
+      byCountry.set(r.country, (byCountry.get(r.country) || 0) + 1);
+    }
+    if (byCountry.size) {
+      const top = [...byCountry.entries()].sort((a, b) => b[1] - a[1]).slice(0, 5);
+      html += '<div class="ov-section"><div class="ov-label">Where this sample comes from</div>' +
+        '<div class="ov-countries">';
+      for (const [cc, n] of top) {
+        html += '<span class="ov-country">' + flagOf(cc) + ' ' + esc(cc) +
+          '<span class="ov-country-n">' + n + '</span></span>';
+      }
+      html += '</div></div>';
+    }
+
+    // Sample composition.
+    const scanners = recentList.filter((r) => r.category === 'scanner').length;
+    const actors = recentList.length - scanners;
+    html += '<div class="ov-section"><div class="ov-label">In view right now</div>' +
+      '<div class="ov-mini-grid">' +
+      ovMini(actors, 'actors') +
+      ovMini(scanners, 'scanners') +
+      ovMini(campaignList.length, 'campaigns') +
+      '</div></div>';
+
+    html += '<div class="ov-hint">Click any node for the full record. ' +
+      'Switch to <strong>JSON</strong> or <strong>curl</strong> above — ' +
+      'the same data, the way an API client or an AI agent would take it.</div>';
+
+    insp.innerHTML = html;
+  }
+
+  function ovMini(value, label) {
+    return '<div class="ov-mini"><span class="ov-mini-v">' + fmt(value) +
+      '</span><span class="ov-mini-l">' + label + '</span></div>';
+  }
+
+  // A plain-language read of the corpus state, derived from stats. Serves
+  // the visitor who is not going to parse a protocol histogram.
+  function headline() {
+    if (!stats || !stats.by_protocol) return 'Watching the hostile internet in real time.';
+    const entries = Object.entries(stats.by_protocol).sort((a, b) => b[1] - a[1]);
+    if (!entries.length) return 'Watching the hostile internet in real time.';
+    const total = entries.reduce((s, [, n]) => s + n, 0) || 1;
+    const [proto, n] = entries[0];
+    const pct = Math.round((n / total) * 100);
+    const gloss = {
+      telnet: 'the unmistakable signature of IoT-botnet sweeps',
+      ssh: 'credential-stuffing against login services',
+      http: 'web-app probing and exploit scanning',
+      https: 'web-app probing over TLS',
+      mysql: 'database servers being hunted for the taking',
+      mongodb: 'unsecured databases being hunted',
+      redis: 'exposed caches being hunted',
+      smtp: 'mail infrastructure being probed for relay abuse',
+      ftp: 'legacy file servers under attack',
+      elasticsearch: 'open search clusters being raided',
+    }[proto] || 'automated attack traffic';
+    return '<strong>' + esc(proto) + '</strong> leads the corpus at <strong>' +
+      pct + '%</strong> of observed traffic — ' + gloss + '.';
+  }
+
+  // Tiny inline-SVG sparkline of hourly observation volume.
+  function sparkline(buckets) {
+    const w = 268, h = 46, pad = 2;
+    const vals = buckets.map((b) => b.observations || 0);
+    const max = Math.max(...vals, 1);
+    const n = vals.length;
+    const x = (i) => pad + (i / (n - 1)) * (w - 2 * pad);
+    const y = (v) => h - pad - (v / max) * (h - 2 * pad);
+    let line = '', area = '';
+    vals.forEach((v, i) => {
+      line += (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(v).toFixed(1) + ' ';
+    });
+    area = 'M' + x(0).toFixed(1) + ' ' + (h - pad) + ' ' +
+      line.replace(/^M/, 'L') + 'L' + x(n - 1).toFixed(1) + ' ' + (h - pad) + ' Z';
+    const lastX = x(n - 1).toFixed(1), lastY = y(vals[n - 1]).toFixed(1);
+    return '<svg class="ov-spark" viewBox="0 0 ' + w + ' ' + h + '" ' +
+      'preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">' +
+      '<path d="' + area + '" fill="var(--radar-accent)" opacity="0.12"/>' +
+      '<path d="' + line + '" fill="none" stroke="var(--radar-accent)" ' +
+      'stroke-width="1.5" vector-effect="non-scaling-stroke"/>' +
+      '<circle cx="' + lastX + '" cy="' + lastY + '" r="2.4" fill="var(--radar-accent)"/>' +
+      '</svg>';
+  }
+
+  // ── node inspectors ───────────────────────────────────────────────
+  function inspectorBackBar() {
+    return '<button class="insp-back" type="button">← corpus overview</button>';
+  }
+
   function renderActorInspector(n) {
     const insp = $('#inspector');
     const ip = n.label;
@@ -280,37 +495,81 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
       ? '<span class="badge ' + n.conf_bucket + '">' + n.conf_bucket + '</span>'
       : '<span class="badge low">unknown</span>';
     const catBadge = '<span class="badge ' + n.kind + '">' + n.kind + '</span>';
-    let html = '<h3>' + esc(ip) + '</h3>';
-    html += '<div class="field"><span class="k">category</span><span class="v">' + catBadge + '</span></div>';
-    html += '<div class="field"><span class="k">confidence</span><span class="v">' + confBadge + '</span></div>';
-    if (n.observations) html += '<div class="field"><span class="k">observations</span><span class="v">' + n.observations + '</span></div>';
-    if (n.asn) html += '<div class="field"><span class="k">ASN</span><span class="v">' + esc(n.asn) + '</span></div>';
-    if (n.country) html += '<div class="field"><span class="k">country</span><span class="v">' + esc(n.country) + '</span></div>';
-    if (n.first_seen_ms) html += '<div class="field"><span class="k">first seen</span><span class="v">' + relTime(n.first_seen_ms) + '</span></div>';
-    if (n.last_seen_ms) html += '<div class="field"><span class="k">last seen</span><span class="v">' + relTime(n.last_seen_ms) + '</span></div>';
-    if (memberCampaigns.length) {
-      html += '<div class="field"><span class="k">in campaigns</span><span class="v">' +
-              memberCampaigns.map((c) => '<code>' + esc(c.slice(0, 8)) + '…</code>').join(' ') + '</span></div>';
+
+    let html = inspectorBackBar();
+    html += '<h3 class="insp-ip">' + esc(ip) + '</h3>';
+
+    // Plain-language read — the casual / executive view.
+    html += '<div class="insp-read">' + actorRead(n, memberCampaigns) + '</div>';
+
+    html += '<div class="insp-fields">';
+    html += field('category', catBadge);
+    html += field('confidence', confBadge);
+    if (n.observations) html += field('observations', '<span class="v-num">' + fmt(n.observations) + '</span>');
+    if (n.country) {
+      html += field('origin', flagOf(n.country) + ' ' + esc(countryName(n.country)) +
+        ' <span class="v-dim">' + esc(n.country) + '</span>');
     }
+    if (n.asn) {
+      html += field('network', 'AS' + esc(n.asn) +
+        (n.org ? ' <span class="v-dim">' + esc(n.org) + '</span>' : ''));
+    }
+    if (n.first_seen_ms) html += field('first seen', relTime(n.first_seen_ms));
+    if (n.last_seen_ms) html += field('last seen', relTime(n.last_seen_ms));
+    if (memberCampaigns.length) {
+      html += field('in campaigns',
+        memberCampaigns.map((c) => '<code>' + esc(c.slice(0, 8)) + '…</code>').join(' '));
+    }
+    html += '</div>';
+
     html += '<div class="attestation">' +
-      '<strong>Attestation provenance.</strong> Every observation that contributes to this entity ' +
-      'was Ed25519-signed at the sensor and verified at the ingest endpoint. The signing key is bound to ' +
-      "the sensor's identity; signature failures cause the observation to be dropped before it reaches " +
-      'the corpus.' +
+      '<strong>Attestation provenance.</strong> Every observation behind this ' +
+      'record was Ed25519-signed at the sensor and verified at ingest. The ' +
+      'signing key is bound to the sensor identity; a bad signature is dropped ' +
+      'before it reaches the corpus.' +
       '</div>';
+
     html += '<div class="whois-wrap">' +
-      '<button class="whois-btn" type="button">Look up WHOIS / RDAP →</button>' +
+      '<button class="whois-btn" type="button">Registry record (RDAP) →</button>' +
       '<div class="whois-slot"></div>' +
       '</div>';
+
     insp.innerHTML = html;
+    wireBack(insp);
     const wb = insp.querySelector('.whois-btn');
     if (wb) wb.addEventListener('click', () => loadWhois(ip, wb, insp));
   }
 
+  // One-sentence interpretation of an actor node.
+  function actorRead(n, memberCampaigns) {
+    const where = n.country
+      ? 'A host in ' + esc(countryName(n.country))
+      : 'A host';
+    const net = n.org ? ', on ' + esc(n.org) + ',' : '';
+    const span = (n.first_seen_ms && n.last_seen_ms)
+      ? ' across ' + spanText(n.last_seen_ms - n.first_seen_ms)
+      : '';
+    if (n.kind === 'scanner') {
+      return flagOf(n.country) + ' ' + where + net +
+        ' sweeping the internet indiscriminately — ' + fmt(n.observations || 0) +
+        ' probes' + span + '. Broad reconnaissance, not a targeted operator.';
+    }
+    const camp = memberCampaigns.length
+      ? ' It moves with a known campaign — the same tool seen across multiple networks.'
+      : '';
+    const conf = n.conf_bucket === 'high'
+      ? ' High-confidence hostile.'
+      : n.conf_bucket === 'medium' ? ' Medium-confidence hostile.' : '';
+    return flagOf(n.country) + ' ' + where + net + ' running a focused attack — ' +
+      fmt(n.observations || 0) + ' hostile observations' + span + '.' + conf + camp;
+  }
+
   // ── WHOIS / RDAP click-through ────────────────────────────────────
-  // Pulls the registry record for an actor's address on demand (the
-  // /api/rdap proxy bootstraps to the responsible RIR). Deferred to a
-  // click so the radar never fans out a lookup per visible node.
+  // Secondary detail: the registry record for an actor's address. Geo
+  // and network already show inline (from the corpus); RDAP adds the
+  // registrant / abuse-contact layer. Deferred to a click so the radar
+  // never fans out a lookup per visible node, and best-effort — the
+  // public RDAP relay is occasionally slow.
   async function loadWhois(ip, btn, insp) {
     const slot = insp.querySelector('.whois-slot');
     btn.textContent = 'looking up…';
@@ -319,11 +578,15 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
       const r = await fetch('/api/rdap/' + encodeURIComponent(ip)).then((x) => x.json());
       if (!slot) return;
       if (r.error) {
-        slot.innerHTML = '<div class="whois-err">No registry record came back for this address.</div>';
+        slot.innerHTML = '<div class="whois-err">No registry record came back — ' +
+          'the public RDAP relay may be rate-limiting. Try again shortly.</div>';
+        btn.textContent = 'Retry RDAP →';
+        btn.disabled = false;
         return;
       }
       const row = (k, v) =>
-        v ? '<div class="field"><span class="k">' + k + '</span><span class="v">' + esc(v) + '</span></div>' : '';
+        v ? '<div class="field"><span class="k">' + k + '</span><span class="v">' +
+          esc(v) + '</span></div>' : '';
       slot.innerHTML =
         '<div class="whois-box">' +
         row('netblock', r.name) +
@@ -335,10 +598,11 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
         row('updated', r.updated ? r.updated.slice(0, 10) : null) +
         row('abuse', r.abuse) +
         '</div>';
+      btn.style.display = 'none';
     } catch {
       if (slot) slot.innerHTML = '<div class="whois-err">RDAP lookup failed — try again.</div>';
-    } finally {
-      btn.style.display = 'none';
+      btn.textContent = 'Retry RDAP →';
+      btn.disabled = false;
     }
   }
 
@@ -347,35 +611,95 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     const confBadge = n.conf_bucket
       ? '<span class="badge ' + n.conf_bucket + '">' + n.conf_bucket + '</span>'
       : '<span class="badge low">unknown</span>';
-    let html = '<h3>Campaign · <code>' + esc(n.label) + '</code></h3>';
-    if (n.protocol) html += '<div class="field"><span class="k">protocol</span><span class="v">' + esc(n.protocol) + '</span></div>';
-    if (n.member_actor_count != null) html += '<div class="field"><span class="k">members</span><span class="v">' + n.member_actor_count + ' actors</span></div>';
-    html += '<div class="field"><span class="k">confidence</span><span class="v">' + confBadge + '</span></div>';
+
+    let html = inspectorBackBar();
+    html += '<h3>Campaign <code class="insp-cid">' + esc(n.label) + '</code></h3>';
+
+    const members = n.member_actor_count != null ? fmt(n.member_actor_count) : 'multiple';
+    html += '<div class="insp-read">' +
+      'A coordinated cluster of <strong>' + members + ' actors</strong> running the ' +
+      'same ' + (n.protocol ? '<strong>' + esc(n.protocol) + '</strong> ' : '') +
+      'tool across separate networks — one operation, many machines.' +
+      '</div>';
+
+    html += '<div class="insp-fields">';
+    if (n.protocol) html += field('protocol', esc(n.protocol));
+    if (n.member_actor_count != null) html += field('members', fmt(n.member_actor_count) + ' actors');
+    html += field('confidence', confBadge);
+    if (n.payload_sha256_prefix) html += field('payload', '<code>' + esc(n.payload_sha256_prefix) + '…</code>');
+    if (n.first_seen_ms) html += field('first seen', relTime(n.first_seen_ms));
+    if (n.last_seen_ms) html += field('last seen', relTime(n.last_seen_ms));
+    html += '</div>';
+
     html += '<div class="attestation">' +
-      '<strong>Coordinated activity.</strong> Materialized when ≥5 actors share a tool, span ≥3 ASNs, ' +
-      'hit ≤5 dest ports, and persist for ≥1h. The full member list, payload signatures, and tool ' +
-      'fingerprints are exposed via the defender tier (coming).' +
+      '<strong>How a campaign is drawn.</strong> Materialized when ≥5 actors share a ' +
+      'tool, span ≥3 ASNs, hit ≤5 destination ports, and persist ≥1h. The full ' +
+      'member list, payload signatures, and tool fingerprints are the defender tier.' +
       '</div>';
     html += '<div class="attestation">' +
-      'For a deeper look try ' +
-      '<a href="https://chat.tunnelmind.ai" target="_blank" rel="noopener">the chat surface</a> or ' +
-      '<code>curl https://api.tunnelmind.ai/v1/campaign/' + esc(n.label) + '</code>.' +
+      'Go deeper in <a href="https://chat.tunnelmind.ai" target="_blank" rel="noopener">the chat</a> ' +
+      'or <code>curl https://api.tunnelmind.ai/v1/campaign/' + esc(n.label) + '</code>.' +
       '</div>';
+
     insp.innerHTML = html;
+    wireBack(insp);
   }
 
+  function wireBack(insp) {
+    const b = insp.querySelector('.insp-back');
+    if (b) b.addEventListener('click', clearSelection);
+  }
+
+  function field(k, v) {
+    return '<div class="field"><span class="k">' + k + '</span><span class="v">' + v + '</span></div>';
+  }
+
+  // ── small helpers ─────────────────────────────────────────────────
   function esc(s) {
     return String(s).replace(/[&<>"']/g, (c) => ({
       '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;',
     })[c]);
   }
   function escAttr(s) { return esc(s); }
+
+  function fmt(n) {
+    const v = Number(n) || 0;
+    return v.toLocaleString('en-US');
+  }
+
+  function flagOf(cc) {
+    if (!cc || typeof cc !== 'string' || cc.length !== 2 || !/^[A-Za-z]{2}$/.test(cc)) return '';
+    const base = 0x1F1E6;
+    const up = cc.toUpperCase();
+    return String.fromCodePoint(
+      base + up.charCodeAt(0) - 65, base + up.charCodeAt(1) - 65);
+  }
+
+  let regionNames = null;
+  function countryName(cc) {
+    if (!cc) return '';
+    try {
+      if (!regionNames) regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
+      return regionNames.of(cc.toUpperCase()) || cc;
+    } catch { return cc; }
+  }
+
   function relTime(ms) {
     const d = Date.now() - ms;
     if (d < 60_000) return Math.floor(d / 1000) + 's ago';
     if (d < 3_600_000) return Math.floor(d / 60000) + 'm ago';
     if (d < 86_400_000) return Math.floor(d / 3600000) + 'h ago';
     return Math.floor(d / 86400000) + 'd ago';
+  }
+  function spanText(ms) {
+    if (ms < 3_600_000) return Math.max(1, Math.round(ms / 60000)) + ' minutes';
+    if (ms < 86_400_000) return Math.max(1, Math.round(ms / 3600000)) + ' hours';
+    return Math.max(1, Math.round(ms / 86400000)) + ' days';
+  }
+  function clock(ts) {
+    const d = new Date(ts);
+    const p = (x) => String(x).padStart(2, '0');
+    return p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
   }
 
   // ── live updates: SSE feed, with a polling fallback ───────────────
@@ -390,7 +714,7 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
       errCount = 0;
       try {
         const d = JSON.parse(ev.data);
-        applySnapshot(d.recent, d.campaigns, d.stats);
+        applySnapshot(d.recent, d.campaigns, d.stats, d.timeseries);
       } catch (e) {
         console.error(e);
       }
@@ -406,6 +730,8 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
   }
 
   // ── bootstrap ─────────────────────────────────────────────────────
+  renderOverview();     // panel shows "loading" until the first snapshot
+  renderTicker();       // ticker shows its idle state
   refresh();            // instant first paint
   startLiveUpdates();   // live updates over SSE (falls back to polling)
   startGraphLoop();

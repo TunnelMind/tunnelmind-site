@@ -2,7 +2,7 @@
 //
 // Replaces the browser's 10s polling with one persistent connection: the
 // server runs the poll loop and pushes a combined { recent, campaigns,
-// stats } payload as a `snapshot` event every INTERVAL_MS.
+// stats, timeseries } payload as a `snapshot` event every INTERVAL_MS.
 //
 // The loop fetches this site's own /api/{recent,campaigns,stats}
 // endpoints — which are edge-cached — so many concurrent viewers in a
@@ -81,10 +81,11 @@ async function buildSnapshot(origin) {
     fetch(new URL(path, origin), { headers: { Accept: 'application/json' } })
       .then((r) => r.json())
 
-  const [recent, campaigns, stats] = await Promise.all([
+  const [recent, campaigns, stats, timeseries] = await Promise.all([
     get('/api/recent?limit=50'),
     get('/api/campaigns?limit=20'),
     get('/api/stats'),
+    get('/api/timeseries'),
   ])
-  return { recent, campaigns, stats }
+  return { recent, campaigns, stats, timeseries }
 }

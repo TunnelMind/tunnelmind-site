@@ -1,120 +1,194 @@
 import React, { useState } from 'react'
 
+// /api — post-pivot (P25 Phase 2). Documents the live attacker-corpus
+// API (scry-server v0.2.0 at api.tunnelmind.ai) and the MCP endpoint.
+// Endpoints + response shapes verified against the running service.
+
 const ENDPOINTS = [
   {
-    name: 'Tracker Data API',
-    base: 'https://data.tunnelmind.ai',
-    tag: 'Live · 50 req/day free',
+    name: 'Corpus API',
+    base: 'https://api.tunnelmind.ai',
+    tag: 'Live · Free tier',
     tagColor: '--accent-green',
     routes: [
       {
         method: 'GET',
-        path: '/v1/domains',
-        desc: 'List tracked surveillance domains. Supports pagination and filtering by entity.',
+        path: '/v1/check/{ip}',
+        desc: 'Look up a single IP against the corpus. Returns category, confidence bucket, protocols and ports observed, ASN, country, and observation count.',
         params: [
-          { name: 'limit', type: 'integer', desc: 'Max results (default 50, max 200)' },
-          { name: 'offset', type: 'integer', desc: 'Pagination offset' },
-          { name: 'entity_id', type: 'string', desc: 'Filter by entity UUID' },
+          { name: 'ip', type: 'path', desc: 'IPv4 or IPv6 address to check' },
         ],
-        example: `GET https://data.tunnelmind.ai/v1/domains?limit=2`,
+        example: 'GET https://api.tunnelmind.ai/v1/check/45.141.56.49',
         response: `{
-  "domains": [
-    {
-      "domain": "doubleclick.net",
-      "entity_id": "a1b2c3d4",
-      "entity_name": "Google LLC",
-      "category": "ad_tech",
-      "score": 98
-    },
-    {
-      "domain": "liveramp.com",
-      "entity_id": "e5f6a7b8",
-      "entity_name": "LiveRamp Holdings",
-      "category": "data_broker",
-      "score": 95
-    }
-  ],
-  "total": 53412,
-  "offset": 0
+  "ip": "45.141.56.49",
+  "status": "observed",
+  "category": "actor",
+  "confidence_bucket": "high",
+  "first_seen_ms": 1778288596802,
+  "last_seen_ms": 1778336268495,
+  "observation_count": 576,
+  "protocols": ["telnet"],
+  "ports": [23],
+  "asn": "213373",
+  "country": "AT"
+}`,
+      },
+      {
+        method: 'POST',
+        path: '/v1/check/bulk',
+        desc: 'Check up to 100 IPs in a single round trip — one request for a whole block list.',
+        params: [
+          { name: 'ips', type: 'string[]', desc: 'Array of IP addresses (max 100)' },
+        ],
+        example: `POST https://api.tunnelmind.ai/v1/check/bulk
+Content-Type: application/json
+
+{ "ips": ["45.141.56.49", "128.199.25.179"] }`,
+        response: `{
+  "results": [
+    { "ip": "45.141.56.49", "status": "observed",
+      "category": "actor", "confidence_bucket": "high" },
+    { "ip": "128.199.25.179", "status": "observed",
+      "category": "actor", "confidence_bucket": "high" }
+  ]
 }`,
       },
       {
         method: 'GET',
-        path: '/v1/entities',
-        desc: 'List surveillance entities (companies, data brokers, ad networks). Includes ownership links.',
+        path: '/v1/recent',
+        desc: 'Most recently observed hostile source IPs, newest first. Cursor-paginated via next_cursor_since_ms.',
         params: [
-          { name: 'limit', type: 'integer', desc: 'Max results (default 50, max 200)' },
-          { name: 'offset', type: 'integer', desc: 'Pagination offset' },
-          { name: 'category', type: 'string', desc: 'Filter: ad_tech, data_broker, analytics, cdn' },
+          { name: 'limit', type: 'integer', desc: 'Max results (default 50)' },
+          { name: 'since_ms', type: 'integer', desc: 'Cursor — only results after this timestamp' },
         ],
-        example: `GET https://data.tunnelmind.ai/v1/entities?category=data_broker&limit=2`,
+        example: "GET https://api.tunnelmind.ai/v1/recent?limit=50",
         response: `{
-  "entities": [
+  "limit": 50,
+  "filters": { "include_noise": false },
+  "results": [
     {
-      "id": "e5f6a7b8",
-      "name": "LiveRamp Holdings",
-      "category": "data_broker",
-      "domain_count": 47,
-      "parent_id": null
+      "source_ip": "128.199.25.179",
+      "category": "actor",
+      "confidence_bucket": "high",
+      "observations": 51,
+      "asn": null,
+      "country": null
     }
   ],
-  "total": 6623,
-  "offset": 0
+  "next_cursor_since_ms": 1778995391971
 }`,
       },
       {
         method: 'GET',
-        path: '/v1/search',
-        desc: 'Search domains and entities by keyword.',
+        path: '/v1/campaigns',
+        desc: 'Coordinated clusters of actors sharing a payload signature across multiple networks. Active campaigns by default.',
         params: [
-          { name: 'q', type: 'string', desc: 'Search query (domain fragment or entity name)' },
-          { name: 'type', type: 'string', desc: '"domain" | "entity" | "all" (default: all)' },
+          { name: 'limit', type: 'integer', desc: 'Max results (default 50)' },
+          { name: 'include_inactive', type: 'boolean', desc: 'Include campaigns no longer active' },
         ],
-        example: `GET https://data.tunnelmind.ai/v1/search?q=doubleclick`,
+        example: 'GET https://api.tunnelmind.ai/v1/campaigns',
+        response: `{
+  "include_inactive": false,
+  "results": [
+    {
+      "id": "c87eaae90aa8a6e9",
+      "protocol": "telnet",
+      "payload_sha256_prefix": "0693621d03183c49",
+      "member_actor_count": 2327,
+      "confidence_bucket": "low",
+      "active": true
+    }
+  ]
+}`,
+      },
+      {
+        method: 'GET',
+        path: '/v1/tools',
+        desc: 'Distinct attacker tools, identified as clusters of actors that share a payload pattern. Drill into one with /v1/tool/{id}.',
+        params: [
+          { name: 'protocol', type: 'string', desc: 'Filter by protocol (telnet, ssh, http…)' },
+          { name: 'limit', type: 'integer', desc: 'Max results (default 50)' },
+        ],
+        example: 'GET https://api.tunnelmind.ai/v1/tools',
         response: `{
   "results": [
     {
-      "type": "domain",
-      "domain": "doubleclick.net",
-      "entity_name": "Google LLC",
-      "score": 98
+      "id": "87eaae90aa8a6e9e",
+      "protocol": "telnet",
+      "actor_count": 2896,
+      "payload_sha256_prefix": "0693621d03183c49",
+      "first_seen_ms": 1778288596802,
+      "last_seen_ms": 1778994731943
     }
+  ]
+}`,
+      },
+      {
+        method: 'GET',
+        path: '/v1/stats',
+        desc: 'Corpus totals — total observations, distinct source IPs, last-24h volume, and the protocol breakdown. /v1/stats/timeseries returns the same broken out over time.',
+        params: [],
+        example: 'GET https://api.tunnelmind.ai/v1/stats',
+        response: `{
+  "total_observations": 253692,
+  "distinct_source_ips": 10191,
+  "observations_last_24h": 25306,
+  "distinct_source_ips_last_24h": 1653,
+  "by_protocol": {
+    "telnet": 180611,
+    "http": 23260,
+    "https": 15253,
+    "ssh": 14751
+  }
+}`,
+      },
+      {
+        method: 'GET',
+        path: '/v1/asn/{asn}  ·  /v1/country/{cc}  ·  /v1/top',
+        desc: 'Slice the corpus by network or geography: all observed actors in an ASN, in a country (ISO 3166-1 alpha-2), or the top actors overall by observation count.',
+        params: [
+          { name: 'asn', type: 'path', desc: 'Autonomous System Number, e.g. 213373' },
+          { name: 'cc', type: 'path', desc: 'Two-letter country code, e.g. AT' },
+        ],
+        example: 'GET https://api.tunnelmind.ai/v1/country/AT',
+        response: `{
+  "country": "AT",
+  "results": [
+    { "source_ip": "45.141.56.49", "category": "actor",
+      "confidence_bucket": "high", "observations": 576 }
   ]
 }`,
       },
     ],
   },
   {
-    name: 'GhostRoute Certificate API',
-    base: 'https://data.tunnelmind.ai',
-    tag: 'Live · Free · Public',
+    name: 'MCP — agent-native access',
+    base: 'https://mcp.tunnelmind.ai',
+    tag: 'Live · Free',
     tagColor: '--accent-cyan',
     routes: [
       {
         method: 'POST',
-        path: '/ghostroute/verify',
-        desc: 'Verify a GhostRoute Jurisdictional Routing Certificate. Returns the certificate content and confirms the Ed25519 signature is valid.',
+        path: '/mcp',
+        desc: 'The Model Context Protocol endpoint — JSON-RPC 2.0 over streamable HTTP. Point any MCP-capable agent at it and the corpus becomes a callable tool. Start with tools/list to discover what is available.',
         params: [
-          { name: 'certificate_id', type: 'string', desc: 'UUID of the certificate to verify' },
-          { name: 'content_hash', type: 'string', desc: 'SHA-256 hash of the certificate content' },
-          { name: 'signature', type: 'string', desc: 'Base64-encoded Ed25519 signature' },
+          { name: 'jsonrpc', type: 'string', desc: 'Protocol version — always "2.0"' },
+          { name: 'method', type: 'string', desc: 'JSON-RPC method, e.g. tools/list or tools/call' },
+          { name: 'id', type: 'integer', desc: 'Request identifier echoed in the response' },
         ],
-        example: `POST https://data.tunnelmind.ai/ghostroute/verify
+        example: `POST https://mcp.tunnelmind.ai/mcp
 Content-Type: application/json
 
-{
-  "certificate_id": "gr-2026-abc123",
-  "content_hash": "sha256:e3b0c44298fc...",
-  "signature": "base64:MEUCIQDxyz..."
-}`,
+{ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }`,
         response: `{
-  "valid": true,
-  "certificate_id": "gr-2026-abc123",
-  "peer_id": "peer-001",
-  "verdict": "PARTIAL",
-  "jurisdictions": ["US_FISA702", "EU_GDPR_ADEQUATE"],
-  "signed_at": "2026-04-18T12:00:00Z",
-  "signer": "ed25519:tm-2026-03"
+  "jsonrpc": "2.0",
+  "id": 1,
+  "result": {
+    "tools": [
+      { "name": "check_ip", "description": "Look up an IP in the corpus" },
+      { "name": "recent_actors", "description": "Recently observed attackers" }
+    ]
+  }
 }`,
       },
     ],
@@ -223,15 +297,6 @@ function RouteSection({ route }) {
         }}>
           {route.path}
         </code>
-        <span style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '9px',
-          color: 'var(--chrome-text-dim)',
-          display: 'none',
-          '@media(minWidth:500px)': { display: 'block' },
-        }}>
-          {route.desc.split(' ').slice(0, 6).join(' ')}…
-        </span>
         <span style={{
           fontFamily: 'var(--font-mono)',
           fontSize: '10px',
@@ -371,7 +436,7 @@ export default function Api({ onNavigate }) {
           color: 'var(--chrome-text-bright)',
           marginBottom: '10px',
         }}>
-          Build on TunnelMind's surveillance intelligence data.
+          Build on the attacker corpus.
         </h1>
         <p style={{
           fontFamily: 'var(--font-serif)',
@@ -381,9 +446,9 @@ export default function Api({ onNavigate }) {
           marginBottom: '40px',
           maxWidth: '600px',
         }}>
-          REST API powered by 53K+ tracked domains, 6,600+ corporate entities, and
-          real-time GhostRoute certificate verification. CORS open — call it directly
-          from the browser.
+          REST over the same signed corpus the radar draws — real source IPs,
+          campaigns, attacker tools, and rolling stats. JSON in, JSON out, CORS
+          open. The MCP endpoint exposes the identical corpus to AI agents.
         </p>
 
         {/* Auth + rate limits */}
@@ -417,17 +482,12 @@ export default function Api({ onNavigate }) {
               color: 'var(--doc-text-dim)',
               margin: 0,
             }}>
-              No API key required for free tier. Pass{' '}
+              No key needed for the free tier — call it straight from the
+              browser. Pass{' '}
               <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>
                 Authorization: Bearer &lt;key&gt;
               </code>{' '}
-              header for higher rate limits.{' '}
-              <span
-                onClick={() => onNavigate && onNavigate('pricing')}
-                style={{ color: 'var(--accent-blue)', cursor: 'pointer', textDecoration: 'underline' }}
-              >
-                Get an API key →
-              </span>
+              on the defender tier for unmetered access.
             </p>
           </div>
 
@@ -455,15 +515,15 @@ export default function Api({ onNavigate }) {
               color: 'var(--doc-text-dim)',
               margin: 0,
             }}>
-              <strong style={{ color: 'var(--chrome-text-bright)' }}>Free:</strong> 50 requests/day per IP.{' '}
-              <strong style={{ color: 'var(--chrome-text-bright)' }}>Paid:</strong> higher limits available —{' '}
+              <strong style={{ color: 'var(--chrome-text-bright)' }}>Free:</strong> per-IP limit,
+              plenty for evaluation and light use.{' '}
+              <strong style={{ color: 'var(--chrome-text-bright)' }}>Defender:</strong> unmetered —{' '}
               <span
                 onClick={() => onNavigate && onNavigate('pricing')}
                 style={{ color: 'var(--accent-blue)', cursor: 'pointer', textDecoration: 'underline' }}
               >
                 see pricing
               </span>.
-              {/* TODO: document exact paid tier rate limits once pricing is finalized */}
             </p>
           </div>
         </div>
@@ -471,7 +531,7 @@ export default function Api({ onNavigate }) {
         {/* Endpoint groups */}
         {ENDPOINTS.map(group => (
           <section key={group.name} style={{ marginBottom: '40px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
               <h2 style={{
                 fontFamily: 'var(--font-mono)',
                 fontSize: '12px',
@@ -536,7 +596,7 @@ export default function Api({ onNavigate }) {
               letterSpacing: '0.1em',
               marginBottom: '6px',
             }}>
-              Need more?
+              Running at scale?
             </div>
             <p style={{
               fontFamily: 'var(--font-serif)',
@@ -544,7 +604,8 @@ export default function Api({ onNavigate }) {
               color: 'var(--doc-text-dim)',
               margin: 0,
             }}>
-              Higher rate limits, bulk exports, and entity graph access are available on paid plans.
+              The defender tier removes the rate limit and unlocks full campaign
+              membership and payload signatures.
             </p>
           </div>
           <button

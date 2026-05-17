@@ -287,7 +287,48 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
       "the sensor's identity; signature failures cause the observation to be dropped before it reaches " +
       'the corpus.' +
       '</div>';
+    html += '<div class="whois-wrap">' +
+      '<button class="whois-btn" type="button">Look up WHOIS / RDAP →</button>' +
+      '<div class="whois-slot"></div>' +
+      '</div>';
     insp.innerHTML = html;
+    const wb = insp.querySelector('.whois-btn');
+    if (wb) wb.addEventListener('click', () => loadWhois(ip, wb, insp));
+  }
+
+  // ── WHOIS / RDAP click-through ────────────────────────────────────
+  // Pulls the registry record for an actor's address on demand (the
+  // /api/rdap proxy bootstraps to the responsible RIR). Deferred to a
+  // click so the radar never fans out a lookup per visible node.
+  async function loadWhois(ip, btn, insp) {
+    const slot = insp.querySelector('.whois-slot');
+    btn.textContent = 'looking up…';
+    btn.disabled = true;
+    try {
+      const r = await fetch('/api/rdap/' + encodeURIComponent(ip)).then((x) => x.json());
+      if (!slot) return;
+      if (r.error) {
+        slot.innerHTML = '<div class="whois-err">No registry record came back for this address.</div>';
+        return;
+      }
+      const row = (k, v) =>
+        v ? '<div class="field"><span class="k">' + k + '</span><span class="v">' + esc(v) + '</span></div>' : '';
+      slot.innerHTML =
+        '<div class="whois-box">' +
+        row('netblock', r.name) +
+        row('range', r.range) +
+        row('org', r.org) +
+        row('country', r.country) +
+        row('registry', r.registry) +
+        row('registered', r.registered ? r.registered.slice(0, 10) : null) +
+        row('updated', r.updated ? r.updated.slice(0, 10) : null) +
+        row('abuse', r.abuse) +
+        '</div>';
+    } catch {
+      if (slot) slot.innerHTML = '<div class="whois-err">RDAP lookup failed — try again.</div>';
+    } finally {
+      btn.style.display = 'none';
+    }
   }
 
   function renderCampaignInspector(n) {

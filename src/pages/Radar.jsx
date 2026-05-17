@@ -1,11 +1,11 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
 import { initRadar } from '../lib/radar/initRadar.js'
 
-// Radar — the main landing (P25 Phase 2). The live attacker-corpus radar is
-// the hero, but it's wrapped in a deliberate conversion frame so a cold
-// visitor still gets oriented and a next step:
+// Radar — the main landing (P25 Phase 2). The live attacker-corpus radar
+// is the hero, wrapped in a deliberate conversion frame so a cold visitor
+// gets oriented and a next step:
 //
-//   [ hero: headline + subhead + CTA row ]
+//   [ hero: headline + subhead + live stat strip + CTA row ]
 //   [ live radar  ~76vh ]
 //   [ what this is · three ways in · defender tier ]
 //
@@ -16,22 +16,22 @@ import { initRadar } from '../lib/radar/initRadar.js'
 const CURL_EXAMPLES = [
   {
     title: 'Check one IP',
-    note: 'Free, anonymous. Returns category, confidence_bucket, protocols, ports, ASN, country.',
+    note: 'Free, anonymous. Returns category, confidence bucket, protocols, ports, ASN, country.',
     cmd: 'curl -s https://api.tunnelmind.ai/v1/check/45.141.56.49',
   },
   {
     title: 'Bulk check (up to 100 IPs)',
-    note: '',
+    note: 'One round trip for a whole block list.',
     cmd: 'curl -s -X POST https://api.tunnelmind.ai/v1/check/bulk \\\n  -H "Content-Type: application/json" \\\n  -d \'{"ips":["1.2.3.4","5.6.7.8"]}\'',
   },
   {
-    title: 'Top ASNs targeting telnet (last 24h)',
-    note: '',
-    cmd: "curl -s 'https://api.tunnelmind.ai/v1/top?dimension=asn&limit=10'",
+    title: 'Corpus stats',
+    note: 'Totals, last-24h volume, and the protocol breakdown.',
+    cmd: 'curl -s https://api.tunnelmind.ai/v1/stats',
   },
   {
     title: 'Active threat campaigns',
-    note: '',
+    note: 'Coordinated clusters of actors sharing a tool.',
     cmd: 'curl -s https://api.tunnelmind.ai/v1/campaigns',
   },
   {
@@ -40,7 +40,7 @@ const CURL_EXAMPLES = [
     cmd: "curl -s 'https://api.tunnelmind.ai/v1/recent?limit=50'",
   },
   {
-    title: 'Tools detected (3+ actors sharing a payload pattern)',
+    title: 'Tools detected (actors sharing a payload pattern)',
     note: '',
     cmd: 'curl -s https://api.tunnelmind.ai/v1/tools',
   },
@@ -55,20 +55,70 @@ const CURL_EXAMPLES = [
 const SURFACES = [
   {
     name: 'Chat',
-    blurb: 'Ask in plain language. Sourced, real-time answers about domains, networks, and threats — grounded in the corpus.',
+    blurb: 'Ask in plain language. Sourced, real-time answers about domains, networks, and threats — grounded in the corpus, not in vibes.',
     href: 'https://chat.tunnelmind.ai',
   },
   {
     name: 'Tracker Data API',
-    blurb: 'Build on the corpus directly. REST endpoints over the same data the radar draws — a free tier plus paid plans for scale.',
+    blurb: 'Build on the corpus directly. REST endpoints over the same data the radar draws — free tier to start, paid plans for scale.',
     href: 'https://api.tunnelmind.ai',
   },
   {
     name: 'MCP',
-    blurb: 'Wire the corpus into any AI agent. JSON-RPC 2.0 over streamable HTTP — agent-native by design.',
+    blurb: 'Wire the corpus into any AI agent. JSON-RPC 2.0 over streamable HTTP — agent-native, because the agents are the new internet.',
     href: 'https://mcp.tunnelmind.ai',
   },
 ]
+
+// Count-up animation for the hero stat strip — ease-out cubic, ~1.1s.
+function useCountUp(target, ms = 1100) {
+  const [val, setVal] = useState(0)
+  useEffect(() => {
+    if (!target) return
+    let raf
+    let start = null
+    const step = (t) => {
+      if (start === null) start = t
+      const p = Math.min(1, (t - start) / ms)
+      const eased = 1 - Math.pow(1 - p, 3)
+      setVal(Math.round(target * eased))
+      if (p < 1) raf = requestAnimationFrame(step)
+    }
+    raf = requestAnimationFrame(step)
+    return () => cancelAnimationFrame(raf)
+  }, [target, ms])
+  return val
+}
+
+function HeroStat({ value, label }) {
+  const shown = useCountUp(value)
+  return (
+    <div className="tm-stat">
+      <span className="tm-stat-value">{value ? shown.toLocaleString() : '—'}</span>
+      <span className="tm-stat-label">{label}</span>
+    </div>
+  )
+}
+
+// Pulls /v1/stats once so the hero leads with real numbers, not adjectives.
+function HeroStats() {
+  const [stats, setStats] = useState(null)
+  useEffect(() => {
+    let live = true
+    fetch('/api/stats')
+      .then((r) => r.json())
+      .then((s) => { if (live) setStats(s) })
+      .catch(() => {})
+    return () => { live = false }
+  }, [])
+  return (
+    <div className="tm-stat-strip">
+      <HeroStat value={stats && stats.total_observations} label="signed observations" />
+      <HeroStat value={stats && stats.distinct_source_ips} label="distinct attacker IPs" />
+      <HeroStat value={stats && stats.observations_last_24h} label="seen in the last 24h" />
+    </div>
+  )
+}
 
 export default function Radar({ onNavigate }) {
   const rootRef = useRef(null)
@@ -91,10 +141,14 @@ export default function Radar({ onNavigate }) {
           <span className="tm-accent">Real attacker IPs, attested at the sensor.</span>
         </h1>
         <p>
-          Sourced, real-time answers about domains, networks, and threats —
-          grounded in public feeds and a distributed fleet of attested sensors.
-          Every observation Ed25519-signed at the source.
+          The web is filling up with traffic no human ever typed. TunnelMind
+          watches the hostile slice of it — sourced, real-time answers about
+          domains, networks, and threats, grounded in public feeds and a
+          distributed fleet of attested sensors. Every observation is
+          Ed25519-signed at the source, so the data can prove where it came
+          from.
         </p>
+        <HeroStats />
         <div className="tm-cta-row">
           <a className="tm-btn tm-btn-primary" href="https://chat.tunnelmind.ai">
             Try the chat
@@ -198,13 +252,14 @@ export default function Radar({ onNavigate }) {
         <section className="tm-block">
           <div className="tm-section-label">What you're looking at</div>
           <p className="tm-prose">
-            Every dot is a real source IP a TunnelMind sensor observed
-            attacking something in the last hour. Amber hubs are coordinated
-            campaigns — materialized when ≥5 actors share a tool across ≥3
-            networks. Nothing here is a guess: each observation is
-            cryptographically signed at the sensor before it ever reaches the
-            corpus. This is a deliberately limited public sample. It is the
-            point of the product, not a teaser around it.
+            Every dot is a real source IP a TunnelMind sensor watched attack
+            something in the last hour — and no, none of them are here to make
+            friends. Amber hubs are coordinated campaigns, materialized when a
+            cluster of actors share a tool across multiple networks. Nothing
+            here is a guess: each observation is cryptographically signed at the
+            sensor before it ever reaches the corpus. This is a deliberately
+            limited public sample. It is the point of the product, not a teaser
+            bolted onto it.
           </p>
         </section>
 
@@ -230,7 +285,7 @@ export default function Radar({ onNavigate }) {
               <p className="tm-prose" style={{ margin: 0 }}>
                 The radar samples the corpus. Defenders get the whole thing —
                 full campaign membership, payload signatures, tool
-                fingerprints, and unmetered lookups.
+                fingerprints, and unmetered lookups. Same data, no velvet rope.
               </p>
             </div>
             <button

@@ -1,158 +1,224 @@
 import React from 'react'
 
-const PRODUCT_CARDS = [
-  {
-    name: 'NetProbe',
-    desc: 'Full domain intelligence — WHOIS, DNS, SSL, HTTP headers, tech stack fingerprinting, plus surveillance tracker scores and ownership data.',
-    href: 'https://netprobe.tunnelmind.ai',
-    tag: 'Live · Free',
-    accentVar: '--accent-green',
-  },
-  {
-    name: 'Surveillance Receipt',
-    desc: 'Paste any domains you\'ve visited. Get a line-item invoice showing what your browsing data is worth to the surveillance economy. Fully local — nothing leaves your browser.',
-    page: 'receipt',
-    tag: 'Live · Free · Local',
-    accentVar: '--accent-green',
-  },
-  {
-    name: 'Surveillance Radar',
-    desc: '704 surveillance entities and 9,786 domains rendered as an interactive force-directed graph. Click any node to explore corporate ownership chains.',
-    href: 'https://radar.tunnelmind.ai',
-    tag: 'Live · Free',
-    accentVar: '--accent-green',
-  },
-]
+// The /manifesto route. Plain prose — the thesis behind the pivot
+// (P25 Phase 2): TunnelMind reframed as the observability layer for the
+// agentic internet. House voice, data-forward, a little dry.
 
-const STATS = [
-  { value: '53K+',  label: 'tracked domains' },
-  { value: '6,600+', label: 'corporate entities' },
-  { value: '704',   label: 'on Radar' },
-  { value: '9,786', label: 'ownership links' },
-]
-
-function ProductCard({ card, onNavigate }) {
-  function handleClick() {
-    if (card.href) window.open(card.href, '_blank', 'noopener')
-    else if (card.page && onNavigate) onNavigate(card.page)
-  }
-
-  return (
-    <div
-      onClick={handleClick}
-      style={{
-        padding: '20px',
-        background: 'var(--chrome-bg2)',
-        border: '1px solid var(--chrome-border)',
-        borderRadius: '4px',
-        cursor: 'pointer',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '10px',
-        transition: 'border-color var(--transition), background var(--transition)',
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.borderColor = `var(${card.accentVar})`
-        e.currentTarget.style.background = 'var(--doc-paper)'
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.borderColor = 'var(--chrome-border)'
-        e.currentTarget.style.background = 'var(--chrome-bg2)'
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px' }}>
-        <span style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '12px',
-          fontWeight: 600,
-          color: 'var(--chrome-text-bright)',
-        }}>
-          {card.name}
-        </span>
-        <span style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '8px',
-          color: `var(${card.accentVar})`,
-          border: `1px solid var(${card.accentVar})`,
-          borderRadius: '2px',
-          padding: '1px 5px',
-          whiteSpace: 'nowrap',
-          flexShrink: 0,
-          opacity: 0.85,
-        }}>
-          {card.tag}
-        </span>
-      </div>
-      <p style={{
-        fontFamily: 'var(--font-serif)',
-        fontSize: '14px',
-        lineHeight: '1.65',
-        color: 'var(--doc-text)',
-        margin: 0,
-        flex: 1,
-      }}>
-        {card.desc}
-      </p>
-      <span style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '9px',
-        color: 'var(--accent-blue)',
-        marginTop: 'auto',
-      }}>
-        {card.href || `tunnelmind.ai/${card.page}`} ↗
-      </span>
-    </div>
-  )
+const eyebrow = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: '9px',
+  color: 'var(--accent-green)',
+  letterSpacing: '0.16em',
+  textTransform: 'uppercase',
+  marginBottom: '12px',
 }
+const sectionLabel = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: '9px',
+  color: 'var(--chrome-text-dim)',
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+  marginBottom: '14px',
+}
+const prose = {
+  fontFamily: 'var(--font-serif)',
+  fontSize: '16px',
+  lineHeight: '1.85',
+  color: 'var(--doc-text-dim)',
+  marginBottom: '18px',
+  maxWidth: '620px',
+}
+const h2 = {
+  fontFamily: 'var(--font-serif)',
+  fontSize: 'clamp(20px, 3vw, 26px)',
+  fontWeight: 400,
+  lineHeight: '1.3',
+  color: 'var(--chrome-text-bright)',
+  marginBottom: '16px',
+}
+const rule = { height: '1px', background: 'var(--chrome-border)', margin: '48px 0' }
+
+const PRINCIPLES = [
+  {
+    head: 'Signed at the source',
+    body: 'Every observation in the corpus is Ed25519-signed by the sensor that made it. Data that cannot prove where it came from is an opinion, not evidence.',
+  },
+  {
+    head: 'The corpus is public',
+    body: 'The radar shows a live sample to anyone, no account. Identifiers resolve for free, forever. We charge for depth and scale — never for the right to look.',
+  },
+  {
+    head: 'Stable identifiers, not vibes',
+    body: 'Every observed actor — tracker, scanner, ad network, threat actor, sensor — gets a permanent handle (OAI). You cannot defend against an entity you cannot name.',
+  },
+  {
+    head: 'No profile poisoning, ever',
+    body: 'We make the watchers legible. We do not fabricate data, salt anyone’s feed, or fight noise with noise. Observation is the whole product.',
+  },
+  {
+    head: 'Local-first where it touches people',
+    body: 'Anything that analyzes a person’s own traffic runs on their machine. The corpus is built from hostile infrastructure, not from users.',
+  },
+]
 
 export default function Landing({ onNavigate }) {
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
-      <div style={{ maxWidth: '880px', margin: '0 auto', padding: 'clamp(32px, 6vw, 64px) clamp(16px, 4vw, 32px)' }}>
+      <div style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(32px, 6vw, 60px) clamp(16px, 4vw, 32px)' }}>
 
         {/* ── Hero ─────────────────────────────────────────────────── */}
-        <section style={{ marginBottom: '56px' }}>
-          <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--accent-green)',
-            letterSpacing: '0.16em',
-            textTransform: 'uppercase',
-            marginBottom: '16px',
-          }}>
-            ● TunnelMind — Adversarial Intelligence
-          </div>
-          <h1 style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: 'clamp(28px, 5vw, 44px)',
-            fontWeight: 400,
-            lineHeight: '1.2',
-            color: 'var(--chrome-text-bright)',
-            marginBottom: '20px',
-            letterSpacing: '-0.01em',
-          }}>
-            They've been studying you for years.
-            <br />
-            <span style={{ color: 'var(--accent-green)' }}>Now you study them.</span>
-          </h1>
-          <p style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '17px',
-            lineHeight: '1.7',
-            color: 'var(--doc-text-dim)',
-            maxWidth: '580px',
-            marginBottom: '28px',
-          }}>
-            TunnelMind exposes who's watching you online — at the kernel level, not
-            the browser level. Real signal. No proxy. No DNS redirect.
+        <div style={eyebrow}>● Manifesto</div>
+        <h1 style={{
+          fontFamily: 'var(--font-serif)',
+          fontSize: 'clamp(28px, 5vw, 44px)',
+          fontWeight: 400,
+          lineHeight: '1.2',
+          letterSpacing: '-0.01em',
+          color: 'var(--chrome-text-bright)',
+          marginBottom: '22px',
+        }}>
+          The internet is being repopulated by software that never sleeps.
+        </h1>
+        <p style={{ ...prose, fontSize: '18px' }}>
+          Most of the traffic hitting a public endpoint today was not typed by
+          a person. Crawlers, scanners, scrapers, agents, and outright attackers
+          now make up the majority of requests on the open web. The dead
+          internet theory had a point — it just got the tone wrong. The internet
+          isn&apos;t dead. It&apos;s employed.
+        </p>
+
+        <div style={rule} />
+
+        {/* ── The shift ─────────────────────────────────────────────── */}
+        <section>
+          <div style={sectionLabel}>The shift</div>
+          <h2 style={h2}>The web&apos;s consumers are becoming machines.</h2>
+          <p style={prose}>
+            For thirty years the unit of web traffic was a human with a browser.
+            Identity could stay implicit because the system mostly worked: a
+            person, a session, a reputation that accrued slowly. That assumption
+            is now false. The fastest-growing class of client is an autonomous
+            agent acting on someone&apos;s behalf — or on no one&apos;s.
           </p>
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <p style={prose}>
+            When the thing making a request is not a person, every question that
+            used to be answered by &ldquo;it&apos;s probably fine&rdquo; becomes
+            load-bearing. Who is this? What have they done elsewhere? Can the
+            claim they&apos;re making be checked? The web has no native answer
+            to any of it.
+          </p>
+        </section>
+
+        <div style={rule} />
+
+        {/* ── The problem ───────────────────────────────────────────── */}
+        <section>
+          <div style={sectionLabel}>The problem</div>
+          <h2 style={h2}>Identity is the load-bearing question, and it&apos;s unanswerable.</h2>
+          <p style={prose}>
+            The infrastructure for naming non-human actors does not exist in any
+            usable form. Threat feeds are siloed, unsigned, and contradict each
+            other. WHOIS is a guess. Reputation scores are black boxes with a
+            confidence interval of &ldquo;trust us.&rdquo; An agent that wants to
+            verify who it is talking to has nowhere to look — and a defender
+            staring at hostile traffic has no stable handle to track.
+          </p>
+          <p style={prose}>
+            You cannot fight what you cannot see, and you cannot see what you
+            cannot name. The missing layer is observability: a public, signed,
+            continuously-updated record of who is acting on the network and what
+            they have done.
+          </p>
+        </section>
+
+        <div style={rule} />
+
+        {/* ── What we're building ───────────────────────────────────── */}
+        <section>
+          <div style={sectionLabel}>What we&apos;re building</div>
+          <h2 style={h2}>The observability layer for the agentic internet.</h2>
+          <p style={prose}>
+            TunnelMind runs a distributed fleet of attested sensors and a
+            continuous clearnet recon pipeline. Together they produce a corpus of
+            hostile network activity — real source IPs, the protocols they
+            attacked, the tools they share, the campaigns they cluster into. Every
+            observation is signed at the sensor before it reaches the corpus, so
+            the data can prove its own provenance.
+          </p>
+          <p style={prose}>
+            On top of the corpus sits a naming layer (OAI — the Observed Actor
+            Identifier) and a verification layer (ATAP — the Agent Trust
+            Attestation Protocol). The first gives every observed actor a
+            permanent, free-to-resolve handle. The second lets one agent check
+            another&apos;s claims against signed evidence instead of taking them
+            on faith. Both are open standards, published for public comment
+            before the code locks.
+          </p>
+          <p style={prose}>
+            The live radar on the front page is a working sample of that corpus.
+            It is not a teaser bolted onto a sales page — the sample is the
+            product, shown honestly, at no charge.
+          </p>
+        </section>
+
+        <div style={rule} />
+
+        {/* ── Principles ────────────────────────────────────────────── */}
+        <section>
+          <div style={sectionLabel}>How we build it</div>
+          <h2 style={{ ...h2, marginBottom: '24px' }}>Five things we will not compromise.</h2>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            {PRINCIPLES.map((p, i) => (
+              <div key={p.head} style={{
+                background: 'var(--doc-paper)',
+                border: '1px solid var(--chrome-border)',
+                borderLeft: '3px solid var(--accent-green)',
+                borderRadius: '4px',
+                padding: '16px 20px',
+              }}>
+                <div style={{
+                  fontFamily: 'var(--font-mono)',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: 'var(--chrome-text-bright)',
+                  marginBottom: '6px',
+                }}>
+                  {String(i + 1).padStart(2, '0')} · {p.head}
+                </div>
+                <div style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: '14px',
+                  lineHeight: '1.7',
+                  color: 'var(--doc-text-dim)',
+                }}>
+                  {p.body}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <div style={rule} />
+
+        {/* ── Close ─────────────────────────────────────────────────── */}
+        <section>
+          <div style={sectionLabel}>Who builds it</div>
+          <p style={prose}>
+            TunnelMind is a single-operator project. There is no board, no
+            venture money, and no quarterly plan — only the order that unblocks
+            the most leverage. The corpus is open, the resolver is free, and the
+            registry payload is dedicated to the public domain. If the agentic
+            internet is going to be legible, someone has to start writing it
+            down. We started.
+          </p>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '26px' }}>
             <button
-              onClick={() => onNavigate && onNavigate('tools')}
+              type="button"
+              onClick={() => onNavigate && onNavigate('landing')}
               style={{
                 padding: '9px 20px',
                 background: 'var(--accent-green)',
-                border: 'none',
+                border: '1px solid var(--accent-green)',
                 borderRadius: '3px',
                 fontFamily: 'var(--font-mono)',
                 fontSize: '11px',
@@ -162,10 +228,11 @@ export default function Landing({ onNavigate }) {
                 letterSpacing: '0.04em',
               }}
             >
-              Explore tools
+              See the radar
             </button>
             <button
-              onClick={() => onNavigate && onNavigate('api')}
+              type="button"
+              onClick={() => onNavigate && onNavigate('roadmap')}
               style={{
                 padding: '9px 20px',
                 background: 'transparent',
@@ -177,202 +244,9 @@ export default function Landing({ onNavigate }) {
                 cursor: 'pointer',
               }}
             >
-              API docs
+              Read the roadmap
             </button>
           </div>
-        </section>
-
-        {/* ── Product cards ─────────────────────────────────────────── */}
-        <section style={{ marginBottom: '56px' }}>
-          <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--chrome-text-dim)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            marginBottom: '14px',
-          }}>
-            Free Tools
-          </div>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-            gap: '10px',
-          }}>
-            {PRODUCT_CARDS.map(card => (
-              <ProductCard key={card.name} card={card} onNavigate={onNavigate} />
-            ))}
-          </div>
-        </section>
-
-        {/* ── ReCenter feature block ────────────────────────────────── */}
-        <section style={{
-          marginBottom: '56px',
-          padding: '28px',
-          background: 'var(--chrome-bg2)',
-          border: '1px solid var(--chrome-border)',
-          borderLeft: '3px solid var(--accent-blue)',
-          borderRadius: '4px',
-          display: 'grid',
-          gridTemplateColumns: '1fr auto',
-          gap: '24px',
-          alignItems: 'center',
-        }}>
-          <div>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--accent-blue)',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              marginBottom: '10px',
-            }}>
-              ReCenter — Desktop App
-            </div>
-            <h2 style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '22px',
-              fontWeight: 400,
-              color: 'var(--chrome-text-bright)',
-              marginBottom: '10px',
-            }}>
-              Reset your online presence.
-            </h2>
-            <p style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '14px',
-              lineHeight: '1.65',
-              color: 'var(--doc-text-dim)',
-              margin: 0,
-            }}>
-              WireGuard tunnel enrollment, kernel-level eBPF traffic observation,
-              and identity management — bundled in a single native app for Linux,
-              macOS, and Windows.
-            </p>
-          </div>
-          <button
-            onClick={() => onNavigate && onNavigate('recenter')}
-            style={{
-              padding: '9px 18px',
-              background: 'transparent',
-              border: '1px solid var(--accent-blue)',
-              borderRadius: '3px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              color: 'var(--accent-blue)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              transition: 'background var(--transition)',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(96,165,250,0.08)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          >
-            Learn more →
-          </button>
-        </section>
-
-        {/* ── API callout ───────────────────────────────────────────── */}
-        <section style={{
-          marginBottom: '56px',
-          padding: '24px 28px',
-          background: 'var(--chrome-bg2)',
-          border: '1px solid var(--chrome-border)',
-          borderLeft: '3px solid var(--accent-amber)',
-          borderRadius: '4px',
-          display: 'grid',
-          gridTemplateColumns: '1fr auto',
-          gap: '24px',
-          alignItems: 'center',
-        }}>
-          <div>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--accent-amber)',
-              letterSpacing: '0.12em',
-              textTransform: 'uppercase',
-              marginBottom: '8px',
-            }}>
-              Tracker Data API
-            </div>
-            <p style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '14px',
-              lineHeight: '1.65',
-              color: 'var(--doc-text-dim)',
-              margin: 0,
-            }}>
-              Build on our surveillance intelligence data. 50 requests/day free,
-              CORS open, no API key required.{' '}
-              <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent-amber)' }}>
-                data.tunnelmind.ai
-              </code>
-            </p>
-          </div>
-          <button
-            onClick={() => onNavigate && onNavigate('api')}
-            style={{
-              padding: '9px 18px',
-              background: 'transparent',
-              border: '1px solid var(--accent-amber)',
-              borderRadius: '3px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              color: 'var(--accent-amber)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-              transition: 'background var(--transition)',
-            }}
-            onMouseEnter={e => e.currentTarget.style.background = 'rgba(251,191,36,0.08)'}
-            onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
-          >
-            API docs →
-          </button>
-        </section>
-
-        {/* ── Stats strip ───────────────────────────────────────────── */}
-        <section style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-          gap: '1px',
-          background: 'var(--chrome-border)',
-          border: '1px solid var(--chrome-border)',
-          borderRadius: '4px',
-          overflow: 'hidden',
-          marginBottom: '0',
-        }}>
-          {STATS.map(({ value, label }) => (
-            <div key={label} style={{
-              background: 'var(--chrome-bg2)',
-              padding: '20px 16px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '4px',
-              alignItems: 'center',
-              textAlign: 'center',
-            }}>
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '20px',
-                fontWeight: 700,
-                color: 'var(--accent-green)',
-                letterSpacing: '-0.02em',
-              }}>
-                {value}
-              </span>
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '8px',
-                color: 'var(--chrome-text-dim)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-              }}>
-                {label}
-              </span>
-            </div>
-          ))}
         </section>
 
       </div>

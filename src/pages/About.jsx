@@ -1,21 +1,41 @@
 import React from 'react'
 
+// /about — post-pivot (P25 Phase 2). TunnelMind is the observability
+// layer for the agentic internet; this page covers the company, how the
+// corpus is built, and what we deliberately do not do.
+
+const eyebrow = (color) => ({
+  fontFamily: 'var(--font-mono)',
+  fontSize: '9px',
+  color,
+  letterSpacing: '0.16em',
+  textTransform: 'uppercase',
+  marginBottom: '12px',
+})
+const sectionLabel = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: '9px',
+  color: 'var(--chrome-text-dim)',
+  letterSpacing: '0.12em',
+  textTransform: 'uppercase',
+  marginBottom: '16px',
+}
+const prose = {
+  fontFamily: 'var(--font-serif)',
+  fontSize: '15px',
+  lineHeight: '1.8',
+  color: 'var(--doc-text-dim)',
+  marginBottom: '14px',
+}
+const rule = { height: '1px', background: 'var(--chrome-border)', marginBottom: '48px' }
+
 export default function About() {
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: 'clamp(32px, 6vw, 56px) clamp(16px, 4vw, 32px)' }}>
 
         {/* ── Mission ──────────────────────────────────────────────── */}
-        <div style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '9px',
-          color: 'var(--accent-green)',
-          letterSpacing: '0.16em',
-          textTransform: 'uppercase',
-          marginBottom: '12px',
-        }}>
-          ● Mission
-        </div>
+        <div style={eyebrow('var(--accent-green)')}>● About</div>
         <h1 style={{
           fontFamily: 'var(--font-serif)',
           fontSize: 'clamp(24px, 4vw, 36px)',
@@ -24,96 +44,78 @@ export default function About() {
           color: 'var(--chrome-text-bright)',
           marginBottom: '20px',
         }}>
-          Work and the internet should be organized around contribution, not extraction.
+          The internet should be legible. We&apos;re building the layer that makes it so.
         </h1>
-        <p style={{
-          fontFamily: 'var(--font-serif)',
-          fontSize: '16px',
-          lineHeight: '1.8',
-          color: 'var(--doc-text-dim)',
-          marginBottom: '48px',
-          maxWidth: '600px',
-        }}>
-          The surveillance economy runs on the gap between what people know and what
-          companies know about them. TunnelMind exists to close that gap — with real
-          signal, at the kernel level, not via browser extensions or DNS proxies.
+        <p style={{ ...prose, fontSize: '16px', maxWidth: '600px', marginBottom: '48px' }}>
+          TunnelMind builds the observability layer for the agentic internet — a
+          public, signed corpus of who is acting on the network and what they
+          have done. When the consumers of the web are machines, identifying the
+          entity behind a request stops being a nicety and becomes the question
+          everything else depends on.
         </p>
 
-        <div style={{ height: '1px', background: 'var(--chrome-border)', marginBottom: '48px' }} />
+        <div style={rule} />
 
         {/* ── Company ──────────────────────────────────────────────── */}
         <section style={{ marginBottom: '48px' }}>
-          <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--chrome-text-dim)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            marginBottom: '16px',
-          }}>
-            Company
-          </div>
-          <p style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '15px',
-            lineHeight: '1.8',
-            color: 'var(--doc-text-dim)',
-            marginBottom: '14px',
-          }}>
+          <div style={sectionLabel}>Company</div>
+          <p style={prose}>
             <strong style={{ color: 'var(--chrome-text-bright)' }}>TunnelMind AI, LLC</strong> is
-            based in Cabot, Arkansas. It was founded to build privacy tools that give
-            individuals the same quality of surveillance intelligence that corporations
-            have about them.
+            based in Cabot, Arkansas. It is a single-operator project: no venture
+            funding, no board, no runway clock. Growth is measured in sensors
+            online, sources ingested, and standards shipped — not in burn.
           </p>
-          <p style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '15px',
-            lineHeight: '1.8',
-            color: 'var(--doc-text-dim)',
-            marginBottom: '0',
-          }}>
-            No venture funding. No board. The company is self-funded and structured around
-            a solo founder plus a growing network of collaborators. Growth is measured in
-            tools shipped and data collected — not runway.
+          <p style={{ ...prose, marginBottom: 0 }}>
+            The order things ship in is decided by what unblocks the most
+            leverage. Standards go public for comment before the code locks;
+            products consume the standards rather than the reverse. The roadmap
+            is published and kept current.
           </p>
         </section>
 
-        <div style={{ height: '1px', background: 'var(--chrome-border)', marginBottom: '48px' }} />
+        <div style={rule} />
 
-        {/* ── Data sources ─────────────────────────────────────────── */}
-        <section>
-          <div style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '9px',
-            color: 'var(--chrome-text-dim)',
-            letterSpacing: '0.12em',
-            textTransform: 'uppercase',
-            marginBottom: '16px',
-          }}>
-            Data sources
-          </div>
-          <p style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '15px',
-            lineHeight: '1.8',
-            color: 'var(--doc-text-dim)',
-            marginBottom: '14px',
-          }}>
-            The TunnelMind surveillance database (53K+ domains, 6,600+ corporate entities)
-            is compiled from public DNS records, certificate transparency logs, corporate
-            ownership filings, RDAP/WHOIS data, and ongoing active enumeration.
+        {/* ── How the corpus is built ──────────────────────────────── */}
+        <section style={{ marginBottom: '48px' }}>
+          <div style={sectionLabel}>How the corpus is built</div>
+          <p style={prose}>
+            Two pipelines feed the corpus.{' '}
+            <strong style={{ color: 'var(--chrome-text-bright)' }}>Familiar</strong> is a
+            distributed fleet of passive sensors — each one signs every
+            observation with an Ed25519 key before submitting it, so the data
+            carries cryptographic proof of where it came from.{' '}
+            <strong style={{ color: 'var(--chrome-text-bright)' }}>Augur</strong> is a
+            continuous clearnet recon pipeline drawing on public threat feeds:
+            URLhaus, ThreatFox, Tor exit lists, Spamhaus DROP, and certificate
+            transparency, among others.
           </p>
-          <p style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '15px',
-            lineHeight: '1.8',
-            color: 'var(--doc-text-dim)',
-            margin: 0,
-          }}>
-            No personally identifiable information is collected or stored.
-            Traffic observed via eBPF stays on-device and is used only to generate
-            your local surveillance map and dossier — it is never transmitted to
-            TunnelMind servers.
+          <p style={{ ...prose, marginBottom: 0 }}>
+            Together they produce a record of hostile network activity — real
+            source IPs, the protocols they attacked, the tools they share, the
+            campaigns they cluster into. Every observation is signed at the
+            source. Data that cannot prove its own provenance does not enter the
+            corpus.
+          </p>
+        </section>
+
+        <div style={rule} />
+
+        {/* ── What we don't do ─────────────────────────────────────── */}
+        <section>
+          <div style={sectionLabel}>What we don&apos;t do</div>
+          <p style={prose}>
+            The corpus is built from hostile infrastructure, not from people. We
+            do not collect or store personally identifying information, and we do
+            not build profiles of users. Anything that analyzes a person&apos;s
+            own traffic runs locally on their device — it is never transmitted to
+            TunnelMind.
+          </p>
+          <p style={{ ...prose, marginBottom: 0 }}>
+            We do not poison feeds, fabricate observations, or fight noise with
+            noise. The product is honest observation: naming what is real and
+            signing it so anyone can check. The radar on the front page shows a
+            live public sample of the corpus, free and with no account — because
+            the right to look should not be metered.
           </p>
         </section>
 

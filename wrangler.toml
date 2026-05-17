@@ -1,5 +1,5 @@
 name = "tunnelmind-site"
-compatibility_date = "2024-01-01"
+compatibility_date = "2024-09-23"
 
 # Cloudflare Pages configuration
 # Deploy with: npx wrangler pages deploy dist --project-name tunnelmind-site
@@ -20,3 +20,20 @@ compatibility_date = "2024-01-01"
 #     Variable name: API
 #     Service:       scry-api
 # functions/api/check/[ip].js deliberately does NOT use the binding.
+
+# ── P25 Phase 2: anonymous fresh-lookup rate limiter ─────────────────
+# functions/api/check/[ip].js enforces a 5/IP/hour ceiling via the
+# RateLimiter Durable Object (a counter, never KV — see memory:
+# feedback_no_freetier_loadbearing). The DO class is defined in
+# functions/api/_rate-limiter.js and re-exported from check/[ip].js so it
+# rides in the Pages Functions bundle. The check endpoint degrades
+# gracefully if this binding is absent, so it is safe to deploy before
+# the binding lands.
+
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["RateLimiter"]

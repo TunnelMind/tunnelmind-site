@@ -1,34 +1,22 @@
 // Shared proxy for the radar's cached corpus endpoints (P25 Phase 2).
 //
-// Replaces the scry-radar Worker's /api/* routes. The radar polls these
-// from the browser; proxying server-side keeps the corpus surface
-// (scry-api) isolated and lets us cache at the edge.
+// Replaces the scry-radar Worker's /api/* routes. The radar reads these
+// (live, via /api/stream's server-side loop); proxying server-side lets
+// us cache at the edge so concurrent viewers share corpus reads.
 //
-// Binding: when the Pages project has a Service Binding named `API` to
-// `scry-api`, we use it — that bypasses the public per-IP rate limit
-// (radar viewers behind one corporate NAT would otherwise share an IP
-// and exhaust it). Without the binding we fall back to the public
-// endpoint so the site still works before the binding is configured.
+// The corpus API (`scry-server`) runs on the VPS, reached over plain
+// HTTPS at api.tunnelmind.ai. It is not a Cloudflare Worker, so there is
+// no Service Binding — see wrangler.toml.
 //
 // Underscore-prefixed: not a route, import-only.
 
-export async function proxyToApi(context, path, cacheTtl) {
-  const { request, env } = context
-  const url = new URL(request.url)
-  const target = path + url.search
+const CORPUS_ORIGIN = 'https://api.tunnelmind.ai'
 
-  let resp
-  if (env.API && typeof env.API.fetch === 'function') {
-    resp = await env.API.fetch(
-      new Request('https://api.tunnelmind.ai' + target, {
-        headers: { Accept: 'application/json' },
-      })
-    )
-  } else {
-    resp = await fetch('https://api.tunnelmind.ai' + target, {
-      headers: { Accept: 'application/json' },
-    })
-  }
+export async function proxyToApi(context, path, cacheTtl) {
+  const url = new URL(context.request.url)
+  const resp = await fetch(CORPUS_ORIGIN + path + url.search, {
+    headers: { Accept: 'application/json' },
+  })
 
   const headers = new Headers(resp.headers)
   headers.set('Content-Type', 'application/json')

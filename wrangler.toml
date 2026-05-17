@@ -14,16 +14,13 @@ pages_build_output_dir = "dist"
 # Build-time env vars (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY,
 # VITE_TURNSTILE_SITE_KEY) are set in the Cloudflare Pages dashboard.
 
-# ── P25 Phase 2: Scry Radar Service Binding ──────────────────────────
-# functions/api/{recent,campaigns,stats}.js proxy the corpus. They use a
-# Service Binding named `API` -> the `scry-api` Worker when present, and
-# fall back to the public api.tunnelmind.ai endpoint otherwise. To enable
-# the binding (bypasses the public per-IP rate limit + isolates the corpus
-# surface), add it in the Cloudflare dashboard:
-#   Pages > tunnelmind-site > Settings > Functions > Service bindings
-#     Variable name: API
-#     Service:       scry-api
-# functions/api/check/[ip].js deliberately does NOT use the binding.
+# ── Corpus API: no Service Binding ───────────────────────────────────
+# functions/api/* reach the corpus over plain HTTPS to api.tunnelmind.ai.
+# A Service Binding is NOT possible: the corpus API is `scry-server`,
+# which the cloud-exit moved onto the VPS — it is no longer a Cloudflare
+# Worker, and Pages can only bind to Workers. (The old `scry-api` Worker
+# from Phase 0c was decommissioned.) Direct HTTPS is the architecture,
+# not a fallback.
 
 # ── P25 Phase 2: anonymous fresh-lookup rate limiter ─────────────────
 # functions/api/check/[ip].js enforces a 5/IP/hour ceiling via the

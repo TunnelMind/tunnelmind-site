@@ -8,7 +8,7 @@ const NAV_ITEMS = {
     { label: 'Roadmap',      page: 'roadmap' },
     { label: 'Pricing',      page: 'pricing' },
     { label: 'About',        page: 'about' },
-    { label: 'Manifesto',    page: 'manifesto' },
+    { label: 'Vision',       page: 'vision' },
   ],
   alloy: [
     { label: 'Workspace',    page: 'workspace' },

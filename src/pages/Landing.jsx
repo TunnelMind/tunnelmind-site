@@ -1,6 +1,6 @@
 import React from 'react'
 
-// The /manifesto route. Plain prose — the thesis behind the pivot
+// The /vision route. Plain prose — the thesis behind the pivot
 // (P25 Phase 2): TunnelMind reframed as the observability layer for the
 // agentic internet. House voice, data-forward, a little dry.
 
@@ -67,7 +67,7 @@ export default function Landing({ onNavigate }) {
       <div style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(32px, 6vw, 60px) clamp(16px, 4vw, 32px)' }}>
 
         {/* ── Hero ─────────────────────────────────────────────────── */}
-        <div style={eyebrow}>● Manifesto</div>
+        <div style={eyebrow}>● Vision</div>
         <h1 style={{
           fontFamily: 'var(--font-serif)',
           fontSize: 'clamp(28px, 5vw, 44px)',

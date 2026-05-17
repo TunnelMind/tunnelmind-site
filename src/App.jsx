@@ -28,7 +28,9 @@ import AccountRiskDisclosure from './pages/legal/AccountRiskDisclosure.jsx'
 function getPageFromHash() {
   const hash = window.location.hash.replace('#/', '').replace('#', '').trim()
   if (!hash || hash === '/') return 'landing'
-  return hash.replace(/^\//, '').replace(/\/$/, '') || 'landing'
+  const page = hash.replace(/^\//, '').replace(/\/$/, '') || 'landing'
+  // 'manifesto' was renamed to 'vision' — keep old inbound links working.
+  return page === 'manifesto' ? 'vision' : page
 }
 
 function setHash(page) {
@@ -53,7 +55,7 @@ function AppInner() {
 
   const pageComponent = {
     landing:      <Radar onNavigate={handleNavigate} />,
-    manifesto:    <Landing onNavigate={handleNavigate} />,
+    vision:       <Landing onNavigate={handleNavigate} />,
     tools:        <Tools onNavigate={handleNavigate} />,
     api:          <Api onNavigate={handleNavigate} />,
     recenter:     <ReCenter onNavigate={handleNavigate} />,

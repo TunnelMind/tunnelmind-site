@@ -1,14 +1,18 @@
 name = "tunnelmind-site"
 compatibility_date = "2024-09-23"
+pages_build_output_dir = "dist"
 
 # Cloudflare Pages configuration
-# Deploy with: npx wrangler pages deploy dist --project-name tunnelmind-site
-
-[env.production]
-# Environment variables set via Cloudflare Pages dashboard:
-# VITE_SUPABASE_URL=
-# VITE_SUPABASE_ANON_KEY=
-# VITE_TURNSTILE_SITE_KEY=
+# Deploy with: npm run build && npx wrangler pages deploy
+# pages_build_output_dir is required for Pages to honour this config file
+# (and therefore the Durable Object binding declared below).
+#
+# No [env.production] / [env.preview] blocks: named environments do NOT
+# inherit top-level bindings, so the DO binding below would silently drop
+# out of production. Top-level config applies to both Pages environments.
+#
+# Build-time env vars (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY,
+# VITE_TURNSTILE_SITE_KEY) are set in the Cloudflare Pages dashboard.
 
 # ── P25 Phase 2: Scry Radar Service Binding ──────────────────────────
 # functions/api/{recent,campaigns,stats}.js proxy the corpus. They use a
@@ -24,16 +28,15 @@ compatibility_date = "2024-09-23"
 # ── P25 Phase 2: anonymous fresh-lookup rate limiter ─────────────────
 # functions/api/check/[ip].js enforces a 5/IP/hour ceiling via the
 # RateLimiter Durable Object (a counter, never KV — see memory:
-# feedback_no_freetier_loadbearing). The DO class is defined in
-# functions/api/_rate-limiter.js and re-exported from check/[ip].js so it
-# rides in the Pages Functions bundle. The check endpoint degrades
-# gracefully if this binding is absent, so it is safe to deploy before
-# the binding lands.
+# feedback_no_freetier_loadbearing).
+#
+# Pages cannot DEFINE a Durable Object — it can only bind to one hosted
+# in a Worker. The RateLimiter class therefore lives in the dedicated
+# `tunnelmind-ratelimiter` Worker (workers/ratelimiter/), and this binding
+# references it via `script_name`. The check endpoint degrades gracefully
+# if the binding is ever absent.
 
 [[durable_objects.bindings]]
 name = "RATE_LIMITER"
 class_name = "RateLimiter"
-
-[[migrations]]
-tag = "v1"
-new_classes = ["RateLimiter"]
+script_name = "tunnelmind-ratelimiter"

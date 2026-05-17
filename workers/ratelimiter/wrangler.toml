@@ -1,0 +1,18 @@
+name = "tunnelmind-ratelimiter"
+main = "src/index.js"
+compatibility_date = "2024-09-23"
+
+# Durable-Object-only Worker. It holds the RateLimiter class so the
+# tunnelmind-site Pages project can bind RATE_LIMITER to it. Deploy with:
+#   cd workers/ratelimiter && npx wrangler deploy
+# No routes — the Worker is reached only through the Pages DO binding.
+
+[[durable_objects.bindings]]
+name = "RATE_LIMITER"
+class_name = "RateLimiter"
+
+# SQLite-backed DO — required for Durable Objects on the free plan.
+# The KV-style storage API (storage.get / storage.put) works unchanged.
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["RateLimiter"]

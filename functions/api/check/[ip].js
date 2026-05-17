@@ -13,15 +13,12 @@
 //   2. The public API's own general per-IP limit, reached via the
 //      forwarded X-Forwarded-For.
 //
-// Layer 1 degrades gracefully: if the RATE_LIMITER binding has not been
-// configured in the Pages dashboard yet, the local cap is skipped and
-// layer 2 still applies — exactly the pre-binding behaviour.
-
-import { RateLimiter } from '../_rate-limiter.js'
-
-// Re-export so the Pages Functions bundle includes the DO class — the
-// RATE_LIMITER binding's class_name must resolve inside this Worker.
-export { RateLimiter }
+// The RateLimiter Durable Object is hosted in the dedicated
+// `tunnelmind-ratelimiter` Worker (Pages cannot define a DO itself); the
+// RATE_LIMITER binding in wrangler.toml points at it via script_name.
+//
+// Layer 1 degrades gracefully: if the RATE_LIMITER binding is ever
+// absent, the local cap is skipped and layer 2 still applies.
 
 export async function onRequestGet(context) {
   const { request, params, env } = context

@@ -27,10 +27,10 @@ const TIERS = [
   },
   {
     name: 'Defender',
-    price: null,
+    price: '$49',
     period: 'month',
     color: '--accent-blue',
-    badge: 'In development',
+    badge: 'Opening soon',
     highlight: true,
     blurb: 'The whole corpus, unmetered — built for SOC teams and threat hunters.',
     features: [
@@ -47,10 +47,10 @@ const TIERS = [
   },
   {
     name: 'Team / Enterprise',
-    price: null,
-    period: '',
+    price: 'From $1,500',
+    period: 'month',
     color: '--accent-purple',
-    blurb: 'Shared keys, custom ingest, and an SLA for organisations standing on the corpus.',
+    blurb: 'Shared keys, custom ingest, and an SLA for organisations standing on the corpus. Billed annually, scoped to your team.',
     features: [
       'Everything in Defender',
       'Shared API key management',
@@ -259,9 +259,9 @@ export default function Pricing({ onNavigate }) {
             color: 'var(--doc-text-dim)',
             margin: 0,
           }}>
-            The defender tier is in active development as part of Phase 2b. Final
-            pricing will be published here when it ships — join the waitlist and
-            you&apos;ll hear first.
+            Pricing is set. Live self-serve checkout opens with Phase 2b — join
+            the Defender waitlist and your API key lands the day it ships. Team
+            / Enterprise is available now: email us to scope a contract.
           </p>
         </div>
 

@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 // /pricing — post-pivot (P25 Phase 2). Free surfaces stay free; the
 // defender tier is the paid product (Phase 2b). Stripe handles every
 // payment — no crypto, no exceptions.
-
-// Real Stripe Price IDs land here once the defender tier opens.
-const STRIPE_PRICE_DEFENDER = import.meta.env.VITE_STRIPE_PRICE_DEFENDER || null
+//
+// The Defender CTA POSTs to /api/checkout (functions/api/checkout.js). If
+// Stripe is configured on the Pages project it returns a Checkout URL and
+// we redirect; if not (503 checkout_unavailable) we fall back to the
+// waitlist email so the page is always functional.
 
 const TIERS = [
   {
@@ -30,7 +32,6 @@ const TIERS = [
     price: '$49',
     period: 'month',
     color: '--accent-blue',
-    badge: 'Opening soon',
     highlight: true,
     blurb: 'The whole corpus, unmetered — built for SOC teams and threat hunters.',
     features: [
@@ -42,8 +43,8 @@ const TIERS = [
       'ASN / country slicing at scale',
       'Priority support',
     ],
-    cta: 'Join the waitlist',
-    ctaAction: 'waitlist',
+    cta: 'Get Defender access',
+    ctaAction: 'defender',
   },
   {
     name: 'Team / Enterprise',
@@ -63,20 +64,60 @@ const TIERS = [
   },
 ]
 
+// Read the ?checkout= flag Stripe appends to the success / cancel URLs.
+// Hash routing means the query lives inside window.location.hash.
+function readCheckoutStatus() {
+  const h = window.location.hash || ''
+  const qi = h.indexOf('?')
+  if (qi === -1) return null
+  return new URLSearchParams(h.slice(qi + 1)).get('checkout')
+}
+
 function PricingCard({ tier, onNavigate }) {
+  const [busy, setBusy] = useState(false)
+
+  function emailWaitlist() {
+    window.location.href =
+      'mailto:hello@tunnelmind.ai?subject=' +
+      encodeURIComponent('TunnelMind — Defender waitlist')
+  }
+
+  async function startDefenderCheckout() {
+    setBusy(true)
+    try {
+      const resp = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: '{}',
+      })
+      const data = await resp.json().catch(() => null)
+      if (resp.ok && data && data.url) {
+        window.location.href = data.url
+        return
+      }
+      // checkout_unavailable (503) or any error — fall back to the waitlist.
+      emailWaitlist()
+    } catch {
+      emailWaitlist()
+    } finally {
+      setBusy(false)
+    }
+  }
+
   function handleCta() {
+    if (busy) return
     if (tier.ctaAction === 'free') {
       if (onNavigate) onNavigate('tools')
       return
     }
-    if (tier.ctaAction === 'waitlist' && STRIPE_PRICE_DEFENDER) {
-      // Defender checkout opens here once the tier ships (Stripe only).
-      window.alert('Defender checkout is opening soon — pricing is being finalized.')
+    if (tier.ctaAction === 'defender') {
+      startDefenderCheckout()
       return
     }
-    // Waitlist (pre-launch) and enterprise both route to email.
-    window.location.href = 'mailto:hello@tunnelmind.ai?subject=' +
-      encodeURIComponent(tier.ctaAction === 'contact' ? 'TunnelMind — Team/Enterprise' : 'TunnelMind — Defender waitlist')
+    // Team / Enterprise → email sales.
+    window.location.href =
+      'mailto:hello@tunnelmind.ai?subject=' +
+      encodeURIComponent('TunnelMind — Team/Enterprise')
   }
 
   const accent = `var(${tier.color})`
@@ -178,6 +219,7 @@ function PricingCard({ tier, onNavigate }) {
 
       <button
         onClick={handleCta}
+        disabled={busy}
         style={{
           padding: '10px',
           background: tier.ctaAction === 'free' ? accent : 'transparent',
@@ -187,16 +229,46 @@ function PricingCard({ tier, onNavigate }) {
           fontSize: '10px',
           fontWeight: tier.ctaAction === 'free' ? 700 : 400,
           color: tier.ctaAction === 'free' ? '#0f172a' : 'var(--chrome-text)',
-          cursor: 'pointer',
+          cursor: busy ? 'wait' : 'pointer',
+          opacity: busy ? 0.6 : 1,
         }}
       >
-        {tier.cta}
+        {busy ? 'Starting checkout…' : tier.cta}
       </button>
     </div>
   )
 }
 
+function CheckoutBanner({ status }) {
+  if (status !== 'success' && status !== 'cancelled') return null
+  const ok = status === 'success'
+  return (
+    <div style={{
+      padding: '16px 22px',
+      background: 'var(--chrome-bg2)',
+      border: '1px solid var(--chrome-border)',
+      borderLeft: `3px solid var(${ok ? '--accent-green' : '--accent-amber'})`,
+      borderRadius: '4px',
+      marginBottom: '24px',
+    }}>
+      <p style={{
+        fontFamily: 'var(--font-serif)',
+        fontSize: '13px',
+        lineHeight: '1.7',
+        color: 'var(--doc-text-dim)',
+        margin: 0,
+      }}>
+        {ok
+          ? 'Payment received — thank you. Your Defender API key is being issued and will arrive by email shortly. If it does not appear within a few minutes, email hello@tunnelmind.ai with your Stripe receipt.'
+          : 'Checkout was cancelled — no charge was made. The Defender tier is here whenever you are ready.'}
+      </p>
+    </div>
+  )
+}
+
 export default function Pricing({ onNavigate }) {
+  const checkoutStatus = readCheckoutStatus()
+
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto', padding: 'clamp(32px, 6vw, 56px) clamp(16px, 4vw, 32px)' }}>
@@ -233,6 +305,8 @@ export default function Pricing({ onNavigate }) {
           full corpus for the people whose job is stopping what&apos;s in it.
         </p>
 
+        <CheckoutBanner status={checkoutStatus} />
+
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
@@ -259,9 +333,10 @@ export default function Pricing({ onNavigate }) {
             color: 'var(--doc-text-dim)',
             margin: 0,
           }}>
-            Pricing is set. Live self-serve checkout opens with Phase 2b — join
-            the Defender waitlist and your API key lands the day it ships. Team
-            / Enterprise is available now: email us to scope a contract.
+            Defender is billed monthly through Stripe — pick the tier, pay, and
+            your Bearer API key is issued on the spot. Team / Enterprise is
+            contract-based and billed annually: email us to scope your access.
+            Every payment runs through Stripe; TunnelMind never sees card data.
           </p>
         </div>
 
@@ -275,7 +350,11 @@ export default function Pricing({ onNavigate }) {
           <a href="mailto:hello@tunnelmind.ai" style={{ color: 'var(--accent-blue)' }}>
             hello@tunnelmind.ai
           </a>
-          . Stripe handles every payment — TunnelMind never stores card data.
+          . Subscription terms and the refund policy are in the{' '}
+          <a href="#/terms" style={{ color: 'var(--accent-blue)' }}>
+            Terms of Service
+          </a>
+          .
         </p>
 
       </div>

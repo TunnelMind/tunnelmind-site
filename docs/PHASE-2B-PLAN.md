@@ -38,7 +38,21 @@ All behind a Bearer API key:
   full hashes/fingerprints for paid keys, `issue/revoke/list-keys.js` CLI.
   Deployed to the VPS and verified end-to-end (401 keyless, 200 keyed,
   revoke). Free tier unchanged.
-- Next: step 3 (Stripe) — **needs Josh's Stripe account**.
+- **2026-05-17 — step 5 (legal) SHIPPED + step 3 partially.** `tunnelmind-site`
+  `80008d1`: ToS rewritten for the paid corpus product (API-key terms,
+  subscriptions+refunds, corpus data license). `functions/api/checkout.js`
+  built (Stripe Checkout session, plain REST, mirrors `tunnelmind-data-api`);
+  Pricing page Defender CTA wired to it, falls back to waitlist on 503.
+- **Stripe account already exists** — `acct_1TIYF74F1SLqPO88`, restricted key
+  `rk_live_…`, the proven checkout/webhook pattern lives in
+  `tunnelmind-data-api`. See vault `TunnelMind/Credentials.md` §"Stripe".
+- **To finish step 3 / open Defender checkout:** (a) create the Defender
+  product + $49/mo recurring price in Stripe; (b) build
+  `functions/api/stripe-webhook.js` (verify sig → mint a scry-server key →
+  email it; `subscription.deleted` → revoke) — needs a key-issuance path
+  into scry-server's Postgres (an admin endpoint, or the issue-key CLI);
+  (c) set `STRIPE_SECRET_KEY` + `STRIPE_PRICE_DEFENDER` + `STRIPE_WEBHOOK_SECRET`
+  on the Pages project. Until (c), the CTA stays on the waitlist fallback.
 
 ## Task chain (dependency-ordered)
 
@@ -50,15 +64,17 @@ All behind a Bearer API key:
    auth middleware on `/v1/*`; a valid Defender key bypasses sampling + rate
    limit and unlocks the gated surface; revocation path. Keys never stored
    plaintext.
-3. **Stripe checkout + webhook** (`tunnelmind-site`) — Defender Product/Price
+3. 🟡 **Stripe checkout + webhook** (`tunnelmind-site`) — Defender Product/Price
    in Stripe (live mode); server-side Checkout Session function; webhook
    handler (verify signature → `checkout.session.completed` issues a key,
    `subscription.deleted/updated` revokes). Secrets in CF env.
+   *Checkout Session function + page wiring DONE (`80008d1`); webhook +
+   Stripe product + CF secrets remain.*
 4. **Key delivery + customer management** — email the issued key; Stripe
    Customer Portal link for self-serve cancel/update. No full account system
    for v1.
-5. **Legal** — paid-tier clause + refund policy + acceptable-use-of-data terms
-   in the ToS; decide on Stripe Tax. *Runs in parallel.*
+5. ✅ **Legal** — paid-tier clause + refund policy + acceptable-use-of-data
+   terms in the ToS (`80008d1`); decide on Stripe Tax.
 6. **Concurrent load / stress test** — prove the stack holds with everything at
    once: anonymous radar viewers (SSE + `/api/*`), free-tier callers, paid
    Defender keys on the full corpus, Team keys, the DO rate limiter. Load-test

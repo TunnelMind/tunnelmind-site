@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 
 // /pricing — post-pivot (P25 Phase 2). Free surfaces stay free; the
 // defender tier is the paid product (Phase 2b). Stripe handles every
@@ -64,13 +64,15 @@ const TIERS = [
   },
 ]
 
-// Read the ?checkout= flag Stripe appends to the success / cancel URLs.
-// Hash routing means the query lives inside window.location.hash.
-function readCheckoutStatus() {
+// Read the ?checkout= flag (and the Stripe session id) appended to the
+// success / cancel URLs. Hash routing means the query lives inside
+// window.location.hash, after the route.
+function readCheckoutParams() {
   const h = window.location.hash || ''
   const qi = h.indexOf('?')
-  if (qi === -1) return null
-  return new URLSearchParams(h.slice(qi + 1)).get('checkout')
+  if (qi === -1) return {}
+  const p = new URLSearchParams(h.slice(qi + 1))
+  return { checkout: p.get('checkout'), session: p.get('session') }
 }
 
 function PricingCard({ tier, onNavigate }) {
@@ -239,15 +241,111 @@ function PricingCard({ tier, onNavigate }) {
   )
 }
 
-function CheckoutBanner({ status }) {
+// The success banner does real work: on a successful checkout it calls
+// /api/checkout-session, which provisions the Defender key in scry-server
+// and returns it. The raw key is shown ONCE — there is no way to recover
+// it — so the banner makes copying it unmissable. The Stripe webhook is
+// the backstop if the buyer never lands here.
+function KeyReveal({ apiKey }) {
+  const [copied, setCopied] = useState(false)
+
+  function copy() {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(apiKey).then(
+        () => { setCopied(true); setTimeout(() => setCopied(false), 2500) },
+        () => {}
+      )
+    }
+  }
+
+  return (
+    <div style={{ marginTop: '12px' }}>
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        flexWrap: 'wrap',
+      }}>
+        <code style={{
+          flex: 1,
+          minWidth: '240px',
+          fontFamily: 'var(--font-mono)',
+          fontSize: '12px',
+          color: 'var(--chrome-text-bright)',
+          background: 'var(--doc-bg)',
+          border: '1px solid var(--chrome-border)',
+          borderRadius: '3px',
+          padding: '8px 10px',
+          overflowWrap: 'anywhere',
+        }}>
+          {apiKey}
+        </code>
+        <button
+          onClick={copy}
+          style={{
+            padding: '8px 12px',
+            background: 'var(--accent-green)',
+            border: '1px solid var(--accent-green)',
+            borderRadius: '3px',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '10px',
+            fontWeight: 700,
+            color: '#0f172a',
+            cursor: 'pointer',
+          }}
+        >
+          {copied ? 'Copied' : 'Copy key'}
+        </button>
+      </div>
+      <p style={{
+        fontFamily: 'var(--font-mono)',
+        fontSize: '9px',
+        color: 'var(--accent-amber)',
+        margin: '8px 0 0',
+      }}>
+        ⚠ Store this now — it is shown once and cannot be recovered.
+      </p>
+    </div>
+  )
+}
+
+function CheckoutBanner({ status, session }) {
+  // phase: 'idle' | 'loading' | 'key' | 'pending' | 'error'
+  const [phase, setPhase] = useState(status === 'success' && session ? 'loading' : 'idle')
+  const [apiKey, setApiKey] = useState('')
+
+  useEffect(() => {
+    if (status !== 'success' || !session) return
+    let live = true
+    fetch('/api/checkout-session?session=' + encodeURIComponent(session))
+      .then(r => r.json().catch(() => null))
+      .then(data => {
+        if (!live) return
+        if (data && data.status === 'paid' && data.key) {
+          setApiKey(data.key)
+          setPhase('key')
+        } else if (data && data.status === 'paid') {
+          // already_issued, key_pending, or webhook-delivered.
+          setPhase('pending')
+        } else {
+          setPhase('pending')
+        }
+      })
+      .catch(() => { if (live) setPhase('error') })
+    return () => { live = false }
+  }, [status, session])
+
   if (status !== 'success' && status !== 'cancelled') return null
+
   const ok = status === 'success'
+  const accent = ok ? '--accent-green' : '--accent-amber'
+
   return (
     <div style={{
       padding: '16px 22px',
       background: 'var(--chrome-bg2)',
       border: '1px solid var(--chrome-border)',
-      borderLeft: `3px solid var(${ok ? '--accent-green' : '--accent-amber'})`,
+      borderLeft: `3px solid var(${accent})`,
       borderRadius: '4px',
       marginBottom: '24px',
     }}>
@@ -258,16 +356,24 @@ function CheckoutBanner({ status }) {
         color: 'var(--doc-text-dim)',
         margin: 0,
       }}>
-        {ok
-          ? 'Payment received — thank you. Your Defender API key is being issued and will arrive by email shortly. If it does not appear within a few minutes, email hello@tunnelmind.ai with your Stripe receipt.'
-          : 'Checkout was cancelled — no charge was made. The Defender tier is here whenever you are ready.'}
+        {!ok &&
+          'Checkout was cancelled — no charge was made. The Defender tier is here whenever you are ready.'}
+        {ok && phase === 'loading' &&
+          'Payment received — provisioning your Defender API key…'}
+        {ok && phase === 'key' &&
+          'Payment received — thank you. Here is your Defender API key:'}
+        {ok && phase === 'pending' &&
+          'Payment received — thank you. Your Defender API key has been issued and emailed to you. If it does not arrive within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
+        {ok && (phase === 'error' || phase === 'idle') &&
+          'Payment received — thank you. Your Defender API key is being issued and will arrive by email shortly. If it does not appear within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
       </p>
+      {ok && phase === 'key' && <KeyReveal apiKey={apiKey} />}
     </div>
   )
 }
 
 export default function Pricing({ onNavigate }) {
-  const checkoutStatus = readCheckoutStatus()
+  const { checkout: checkoutStatus, session: checkoutSession } = readCheckoutParams()
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
@@ -305,7 +411,7 @@ export default function Pricing({ onNavigate }) {
           full corpus for the people whose job is stopping what&apos;s in it.
         </p>
 
-        <CheckoutBanner status={checkoutStatus} />
+        <CheckoutBanner status={checkoutStatus} session={checkoutSession} />
 
         <div style={{
           display: 'grid',

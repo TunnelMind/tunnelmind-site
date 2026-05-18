@@ -30,11 +30,22 @@ All behind a Bearer API key:
 - **Bulk export** — JSON / CSV dumps of the corpus.
 - **ASN / country slicing at scale** — the rollup endpoints, unmetered.
 
+## Status
+
+- **2026-05-17 — steps 1 + 2 SHIPPED.** scry-server `a29dbc5`: schema 004
+  `api_keys`, `apiKeyMiddleware` on `/v1/*` (60 s resolution cache), per-key
+  rate ceiling, gated `/v1/campaign/{id}/members` + `/v1/export` (JSON/CSV),
+  full hashes/fingerprints for paid keys, `issue/revoke/list-keys.js` CLI.
+  Deployed to the VPS and verified end-to-end (401 keyless, 200 keyed,
+  revoke). Free tier unchanged.
+- Next: step 3 (Stripe) — **needs Josh's Stripe account**.
+
 ## Task chain (dependency-ordered)
 
-1. **Defender-only corpus surface** (`scry-server`) — build/confirm the keyed
-   endpoints + fields above. *Gate: nothing is sellable until this is real.*
-2. **API-key entitlement system** (`scry-server`) — `api_keys` table
+1. ✅ **Defender-only corpus surface** (`scry-server`) — build/confirm the
+   keyed endpoints + fields above. *Gate: nothing is sellable until this is
+   real.*
+2. ✅ **API-key entitlement system** (`scry-server`) — `api_keys` table
    (key hash → Stripe customer/subscription → status → entitlements); Bearer
    auth middleware on `/v1/*`; a valid Defender key bypasses sampling + rate
    limit and unlocks the gated surface; revocation path. Keys never stored

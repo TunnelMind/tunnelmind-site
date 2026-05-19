@@ -678,6 +678,166 @@ a:hover {
   color: var(--radar-fg); background: #0006; padding: 1px 4px; border-radius: 3px;
 }
 
+/* persistent Corpus lookup form (sits above the inspector body) */
+.radar-root .insp-lookup {
+  margin: -2px 0 14px;
+  padding: 10px 11px;
+  background: var(--radar-panel-2);
+  border: 1px solid var(--radar-border);
+  border-radius: 6px;
+}
+.radar-root .insp-lookup-label {
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--radar-fg-muted); margin-bottom: 6px;
+}
+.radar-root .insp-lookup-row { display: flex; gap: 6px; }
+.radar-root .insp-lookup-row input {
+  flex: 1; min-width: 0;
+  background: #0c0d11;
+  border: 1px solid var(--radar-border);
+  color: var(--radar-fg);
+  font: inherit; font-size: 13px;
+  padding: 7px 9px;
+  border-radius: 4px;
+  outline: none;
+}
+.radar-root .insp-lookup-row input:focus {
+  border-color: var(--radar-accent-dim);
+}
+.radar-root .insp-lookup-row button {
+  width: 36px;
+  background: var(--radar-panel-2);
+  color: var(--radar-accent);
+  border: 1px solid var(--radar-accent-dim);
+  border-radius: 4px;
+  font: inherit; font-size: 14px;
+  cursor: pointer;
+}
+.radar-root .insp-lookup-row button:hover { background: var(--radar-accent-dim); }
+.radar-root .insp-lookup-hint {
+  margin-top: 6px;
+  font-size: 10.5px; color: var(--radar-fg-muted); line-height: 1.45;
+}
+.radar-root .insp-lookup-hint a { color: var(--radar-fg-dim); border-bottom: 1px dotted var(--radar-border); }
+.radar-root .insp-lookup-hint a:hover { color: var(--radar-accent); }
+.radar-root .insp-lookup-err {
+  margin-top: 8px; padding: 10px 12px;
+  background: var(--radar-panel-2); border-left: 2px solid var(--radar-fg-muted);
+  border-radius: 0 5px 5px 0;
+  font-size: 12.5px; color: var(--radar-fg-dim); line-height: 1.5;
+}
+.radar-root .insp-lookup-err code {
+  color: var(--radar-fg); background: #0006; padding: 1px 4px; border-radius: 3px;
+}
+
+/* Corpus lookup view — host header + tab bar + tab panel */
+.radar-root .insp-host {
+  margin: 6px 0 2px; font-size: 16px; font-family: ui-monospace, monospace;
+  color: var(--radar-fg); word-break: break-all;
+}
+.radar-root .insp-host-sub {
+  font-size: 11px; color: var(--radar-fg-muted); margin-bottom: 12px;
+}
+.radar-root .insp-tabs {
+  display: flex; gap: 4px; flex-wrap: wrap;
+  border-bottom: 1px solid var(--radar-border);
+  margin-bottom: 12px;
+}
+.radar-root .insp-tab {
+  background: transparent;
+  color: var(--radar-fg-muted);
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 7px 9px;
+  font: inherit; font-size: 11.5px;
+  letter-spacing: 0.04em; text-transform: uppercase;
+  cursor: pointer;
+  margin-bottom: -1px;
+}
+.radar-root .insp-tab:hover { color: var(--radar-fg-dim); }
+.radar-root .insp-tab.active {
+  color: var(--radar-accent);
+  border-bottom-color: var(--radar-accent);
+}
+.radar-root .insp-tab-panel { min-height: 80px; }
+.radar-root .insp-sub-label {
+  margin: 12px 0 6px;
+  font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--radar-fg-muted);
+}
+.radar-root .insp-list {
+  margin: 0; padding: 0; list-style: none;
+  font-family: ui-monospace, monospace; font-size: 12px;
+}
+.radar-root .insp-list li {
+  padding: 4px 0; border-bottom: 1px dashed var(--radar-border);
+  color: var(--radar-fg); word-break: break-all;
+}
+.radar-root .insp-list li:last-child { border-bottom: 0; }
+.radar-root .insp-cert-list { margin: 0; padding: 0; list-style: none; }
+.radar-root .insp-cert {
+  padding: 8px 0; border-bottom: 1px dashed var(--radar-border);
+}
+.radar-root .insp-cert:last-child { border-bottom: 0; }
+.radar-root .insp-cert-cn { font-size: 12.5px; word-break: break-all; }
+.radar-root .insp-cert-meta {
+  font-size: 11px; color: var(--radar-fg-dim); margin-top: 2px;
+}
+.radar-root .insp-cert-sans { font-size: 10.5px; margin-top: 2px; color: var(--radar-fg-muted); }
+.radar-root .insp-cert-sans code {
+  background: #0006; padding: 1px 4px; border-radius: 3px;
+  color: var(--radar-fg-dim); margin-right: 4px;
+}
+.radar-root .insp-empty {
+  padding: 10px 12px; background: var(--radar-panel-2);
+  border-radius: 5px; font-size: 12px; color: var(--radar-fg-muted);
+  font-style: italic;
+}
+.radar-root .insp-err {
+  padding: 10px 12px; background: var(--radar-panel-2);
+  border-left: 2px solid #d97757; border-radius: 0 5px 5px 0;
+  font-size: 12px; color: var(--radar-fg-dim);
+}
+.radar-root .insp-err-soft {
+  padding: 6px 0; font-size: 11.5px; color: var(--radar-fg-muted); font-style: italic;
+}
+.radar-root .insp-tag-row { margin-top: 8px; display: flex; gap: 5px; flex-wrap: wrap; }
+.radar-root .insp-tag {
+  font-size: 10.5px; padding: 2px 7px; border-radius: 3px;
+  background: var(--radar-panel-2); color: var(--radar-fg-dim);
+  border: 1px solid var(--radar-border);
+}
+.radar-root .insp-source {
+  margin-top: 12px;
+  font-size: 10.5px; color: var(--radar-fg-muted);
+  letter-spacing: 0.04em;
+}
+.radar-root .insp-source a { color: var(--radar-fg-dim); }
+.radar-root .insp-source a:hover { color: var(--radar-accent); }
+.radar-root .insp-deep {
+  display: inline-block; margin-top: 10px;
+  font-size: 12px; color: var(--radar-accent);
+  border-bottom: 1px solid var(--radar-accent-dim);
+  padding-bottom: 1px;
+}
+
+/* "Inspect this IP in Corpus" pivot button on the actor inspector */
+.radar-root .insp-pivot { margin-top: 14px; }
+.radar-root .insp-pivot-btn {
+  width: 100%;
+  background: var(--radar-panel-2);
+  color: var(--radar-fg-dim);
+  border: 1px dashed var(--radar-border);
+  padding: 8px 10px;
+  border-radius: 5px;
+  font: inherit; font-size: 12px;
+  cursor: pointer;
+  transition: color var(--transition), border-color var(--transition);
+}
+.radar-root .insp-pivot-btn:hover {
+  color: var(--radar-accent); border-color: var(--radar-accent-dim);
+}
+
 /* WHOIS / RDAP click-through */
 .radar-root .whois-wrap { margin-top: 14px; }
 .radar-root .whois-btn {

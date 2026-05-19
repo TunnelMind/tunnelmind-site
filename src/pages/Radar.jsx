@@ -141,12 +141,30 @@ function HeroStats() {
   )
 }
 
+// Parse ?inspect=<host> out of the hash so /#/?inspect=example.com lands
+// straight in the Corpus tab view. Used when retiring netprobe.tunnelmind.ai
+// by 301 — old links keep working, the new surface answers them.
+function inspectFromHash() {
+  if (typeof window === 'undefined') return null
+  const h = window.location.hash || ''
+  const q = h.indexOf('?')
+  if (q < 0) return null
+  try {
+    const p = new URLSearchParams(h.slice(q + 1))
+    const v = p.get('inspect')
+    return v ? v.trim() : null
+  } catch { return null }
+}
+
 export default function Radar({ onNavigate }) {
   const rootRef = useRef(null)
 
   useEffect(() => {
     if (!rootRef.current) return
-    const cleanup = initRadar(rootRef.current, { pollMs: 10000 })
+    const cleanup = initRadar(rootRef.current, {
+      pollMs: 10000,
+      initialLookup: inspectFromHash(),
+    })
     return cleanup
   }, [])
 

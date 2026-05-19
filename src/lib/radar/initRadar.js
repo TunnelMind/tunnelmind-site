@@ -16,7 +16,12 @@
 //
 // initRadar(root) -> cleanup()
 
-export function initRadar(root, { pollMs = 10000 } = {}) {
+// initRadar(root, opts) -> cleanup()
+//   pollMs        — polling interval if SSE is unavailable
+//   initialLookup — domain or IP to auto-inspect on bootstrap (deep link
+//                   target for /#/?inspect=<host>, used when retiring
+//                   netprobe.tunnelmind.ai by 301)
+export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   const $ = (sel) => root.querySelector(sel);
   const $$ = (sel) => root.querySelectorAll(sel);
 
@@ -34,6 +39,16 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
   let lastCampaigns = null;
   let knownIps = null;          // Set of source_ips seen so far (ticker diff)
   let tickerEvents = [];        // newest-first queue of {ip, country, kind, ts}
+
+  // Inspector state. `inspectorMode` decides who owns the panel body so
+  // a live snapshot does not blow away a lookup-in-progress or a node
+  // detail the user is reading.
+  //   'overview' — default; the live corpus summary, re-renders per snapshot
+  //   'node'     — a radar node is selected; written by selectNode()
+  //   'lookup'   — a host was typed into the lookup form; tabbed intel
+  let inspectorMode = 'overview';
+  let lookupHost = null;
+  const tabCache = new Map();    // `${host}:${tab}` -> trimmed payload (lazy)
 
   let rafId = null;
   let intervalId = null;
@@ -93,7 +108,7 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     detectNewArrivals(r);
     if (mode === 'json') renderJson();
     rebuildGraph(r, c);
-    if (!selected) renderOverview();
+    if (inspectorMode === 'overview') renderOverview();
   }
 
   // Diff the recent set against what we've already seen; anything new
@@ -349,13 +364,62 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     selected = id;
     const n = nodes.find((x) => x.id === id);
     if (!n) return;
+    inspectorMode = 'node';
     if (n.kind === 'campaign') renderCampaignInspector(n);
     else renderActorInspector(n);
   }
 
   function clearSelection() {
     selected = null;
+    lookupHost = null;
+    inspectorMode = 'overview';
     renderOverview();
+  }
+
+  // ── inspector shell ───────────────────────────────────────────────
+  // The right-hand panel has a persistent header (the Corpus lookup
+  // form) plus a body that the render* functions own. Wired once at
+  // bootstrap so a re-render of the body cannot lose form state — a
+  // visitor mid-type would otherwise be wiped out by the next SSE
+  // snapshot every 10 seconds.
+  function ensureInspectorShell() {
+    const insp = $('#inspector');
+    if (!insp || insp.dataset.shellWired === '1') return;
+    insp.innerHTML =
+      '<form id="inspectorLookup" class="insp-lookup" autocomplete="off">' +
+        '<div class="insp-lookup-label">Look up the corpus</div>' +
+        '<div class="insp-lookup-row">' +
+          '<input type="text" name="host" placeholder="domain or IP" ' +
+            'spellcheck="false" autocapitalize="off" autocorrect="off" ' +
+            'inputmode="url" />' +
+          '<button type="submit" aria-label="Look up">→</button>' +
+        '</div>' +
+        '<div class="insp-lookup-hint">Powers humans and agents — same data, ' +
+          'available over <a href="https://api.tunnelmind.ai">REST</a> and ' +
+          '<a href="https://mcp.tunnelmind.ai">MCP</a>.</div>' +
+      '</form>' +
+      '<div id="inspectorBody"><div class="placeholder">Loading the corpus…</div></div>';
+    insp.dataset.shellWired = '1';
+    const form = insp.querySelector('#inspectorLookup');
+    const input = form.querySelector('input[name="host"]');
+    form.addEventListener('submit', (ev) => {
+      ev.preventDefault();
+      const v = input.value.trim();
+      if (!v) return;
+      enterLookup(v);
+    });
+  }
+
+  function inspectorBody() {
+    const insp = $('#inspector');
+    return insp ? insp.querySelector('#inspectorBody') : null;
+  }
+
+  function setLookupInput(value) {
+    const f = $('#inspectorLookup');
+    if (!f) return;
+    const i = f.querySelector('input[name="host"]');
+    if (i) i.value = value;
   }
 
   // ── overview panel (inspector default state) ──────────────────────
@@ -363,9 +427,10 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
   // so the panel always carries data — for the executive skimming and
   // the casual visitor as much as the analyst.
   function renderOverview() {
-    const insp = $('#inspector');
-    if (!insp) return;
-    if (!stats) { insp.innerHTML = '<div class="placeholder">Loading the corpus…</div>'; return; }
+    ensureInspectorShell();
+    const body = inspectorBody();
+    if (!body) return;
+    if (!stats) { body.innerHTML = '<div class="placeholder">Loading the corpus…</div>'; return; }
 
     const recentList = (lastRecent && lastRecent.results) || [];
     const campaignList = (lastCampaigns && lastCampaigns.results) || [];
@@ -431,11 +496,12 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
       ovMini(campaignList.length, 'campaigns') +
       '</div></div>';
 
-    html += '<div class="ov-hint">Click any node for the full record. ' +
-      'Switch to <strong>JSON</strong> or <strong>curl</strong> above — ' +
+    html += '<div class="ov-hint">Click any node for the full record, or ' +
+      'type a domain or IP above to inspect the corpus. ' +
+      'Switch to <strong>JSON</strong> or <strong>curl</strong> above the radar — ' +
       'the same data, the way an API client or an AI agent would take it.</div>';
 
-    insp.innerHTML = html;
+    body.innerHTML = html;
   }
 
   function ovMini(value, label) {
@@ -498,7 +564,9 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
   }
 
   function renderActorInspector(n) {
-    const insp = $('#inspector');
+    ensureInspectorShell();
+    const body = inspectorBody();
+    if (!body) return;
     const ip = n.label;
     const memberCampaigns = campaignsByMember.get(ip) || [];
     const confBadge = n.conf_bucket
@@ -544,10 +612,19 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
       '<div class="whois-slot"></div>' +
       '</div>';
 
-    insp.innerHTML = html;
-    wireBack(insp);
-    const wb = insp.querySelector('.whois-btn');
-    if (wb) wb.addEventListener('click', () => loadWhois(ip, wb, insp));
+    // Pivot from a clicked actor into the full Corpus inspector for the
+    // same IP — reputation, cert appearances, reverse-DNS via the tabs.
+    html += '<div class="insp-pivot">' +
+      '<button class="insp-pivot-btn" type="button" data-host="' + escAttr(ip) + '">' +
+        'Inspect ' + esc(ip) + ' in Corpus →' +
+      '</button></div>';
+
+    body.innerHTML = html;
+    wireBack(body);
+    const wb = body.querySelector('.whois-btn');
+    if (wb) wb.addEventListener('click', () => loadWhois(ip, wb, body));
+    const pb = body.querySelector('.insp-pivot-btn');
+    if (pb) pb.addEventListener('click', () => enterLookup(pb.dataset.host));
   }
 
   // One-sentence interpretation of an actor node.
@@ -580,8 +657,8 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
   // registrant / abuse-contact layer. Deferred to a click so the radar
   // never fans out a lookup per visible node, and best-effort — the
   // public RDAP relay is occasionally slow.
-  async function loadWhois(ip, btn, insp) {
-    const slot = insp.querySelector('.whois-slot');
+  async function loadWhois(ip, btn, scope) {
+    const slot = scope.querySelector('.whois-slot');
     btn.textContent = 'looking up…';
     btn.disabled = true;
     try {
@@ -617,7 +694,9 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
   }
 
   function renderCampaignInspector(n) {
-    const insp = $('#inspector');
+    ensureInspectorShell();
+    const body = inspectorBody();
+    if (!body) return;
     const confBadge = n.conf_bucket
       ? '<span class="badge ' + n.conf_bucket + '">' + n.conf_bucket + '</span>'
       : '<span class="badge low">unknown</span>';
@@ -651,13 +730,369 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
       'or <code>curl https://api.tunnelmind.ai/v1/campaign/' + esc(n.label) + '</code>.' +
       '</div>';
 
-    insp.innerHTML = html;
-    wireBack(insp);
+    body.innerHTML = html;
+    wireBack(body);
   }
 
-  function wireBack(insp) {
-    const b = insp.querySelector('.insp-back');
+  function wireBack(scope) {
+    const b = scope.querySelector('.insp-back');
     if (b) b.addEventListener('click', clearSelection);
+  }
+
+  // ── Corpus lookup (tabbed intel for an arbitrary host) ────────────
+  // Entry point from (a) the persistent lookup form at the top of the
+  // panel, and (b) the "Inspect X in Corpus" button on a clicked actor.
+  // The body becomes a tab bar + a single tab panel; tabs load lazily
+  // through the /api/corpus/* proxies and are cached in tabCache so
+  // switching tabs is free after first hit.
+  //
+  // Each tab is a distinct upstream — RDAP is the registry, DNS is DoH,
+  // CT is crt.sh, Tracker is the tunnelmind-data-api surface, Reputation
+  // is URLhaus today. A failed tab shows its own error without poisoning
+  // the others.
+  function enterLookup(rawHost) {
+    const host = normalizeHostLocal(rawHost);
+    if (!host) {
+      renderLookupError(rawHost, 'That does not look like a domain or IP — try ' +
+        'something like <code>example.com</code> or <code>1.2.3.4</code>.');
+      return;
+    }
+    inspectorMode = 'lookup';
+    selected = null;
+    lookupHost = host;
+    setLookupInput(host);
+    renderLookup(host, defaultTabFor(host));
+  }
+
+  function defaultTabFor(host) {
+    // For domains the tracker score is the most "instantly useful" tab;
+    // for IPs there's no domain-side data, so default to RDAP.
+    return isIpLocal(host) ? 'rdap' : 'tracker';
+  }
+
+  function renderLookupError(host, msg) {
+    ensureInspectorShell();
+    const body = inspectorBody();
+    if (!body) return;
+    body.innerHTML =
+      '<button class="insp-back" type="button">← corpus overview</button>' +
+      '<div class="insp-lookup-err">' + msg + '</div>';
+    wireBack(body);
+  }
+
+  function renderLookup(host, activeTab) {
+    ensureInspectorShell();
+    const body = inspectorBody();
+    if (!body) return;
+    const ip = isIpLocal(host);
+    // Tab availability: domain-only tabs hide when the host is an IP,
+    // and vice versa.
+    const tabs = [
+      { id: 'rdap',       label: ip ? 'WHOIS · IP' : 'WHOIS', enabled: true },
+      { id: 'dns',        label: 'DNS',                       enabled: !ip },
+      { id: 'cert',       label: 'Certs',                     enabled: !ip },
+      { id: 'tracker',    label: 'Tracker',                   enabled: !ip },
+      { id: 'reputation', label: 'Reputation',                enabled: true },
+    ].filter((t) => t.enabled);
+
+    // Snap to a valid tab if the requested one isn't applicable.
+    if (!tabs.some((t) => t.id === activeTab)) activeTab = tabs[0].id;
+
+    let html = '<button class="insp-back" type="button">← corpus overview</button>';
+    html += '<h3 class="insp-host">' + esc(host) + '</h3>';
+    html += '<div class="insp-host-sub">' +
+      (ip ? 'IP address — registry &amp; reputation' :
+            'Domain — registry, DNS, certs, trackers, reputation') +
+      '</div>';
+    html += '<div class="insp-tabs" role="tablist">';
+    for (const t of tabs) {
+      html += '<button class="insp-tab' + (t.id === activeTab ? ' active' : '') +
+        '" type="button" data-tab="' + t.id + '" role="tab">' +
+        esc(t.label) + '</button>';
+    }
+    html += '</div>';
+    html += '<div class="insp-tab-panel" id="inspTabPanel">' +
+      '<div class="placeholder">Loading…</div></div>';
+
+    body.innerHTML = html;
+    wireBack(body);
+    body.querySelectorAll('.insp-tab').forEach((b) => {
+      b.addEventListener('click', () => {
+        if (lookupHost !== host) return;
+        body.querySelectorAll('.insp-tab').forEach((x) => x.classList.remove('active'));
+        b.classList.add('active');
+        loadTab(host, b.dataset.tab);
+      });
+    });
+    loadTab(host, activeTab);
+  }
+
+  // Each tab is a single upstream proxy under /api/corpus/*. The RDAP
+  // tab is the one exception — for an IP it reads the existing
+  // /api/rdap/[ip] surface (different trim than rdap-domain), and the
+  // render path dispatches on `rdap-ip` instead of `rdap`.
+  async function loadTab(host, tab) {
+    const panel = $('#inspTabPanel');
+    if (!panel) return;
+    const isIp = isIpLocal(host);
+    const renderKey = (tab === 'rdap' && isIp) ? 'rdap-ip' : tab;
+    const cacheKey = host + ':' + renderKey;
+    if (tabCache.has(cacheKey)) {
+      panel.innerHTML = renderTabHtml(renderKey, tabCache.get(cacheKey), host);
+      return;
+    }
+    panel.innerHTML = '<div class="placeholder">Loading ' + esc(tab) + '…</div>';
+    try {
+      const url = (tab === 'rdap' && isIp)
+        ? '/api/rdap/' + encodeURIComponent(host)
+        : '/api/corpus/' + endpointForTab(tab) + '/' + encodeURIComponent(host);
+      const r = await fetch(url).then((x) => x.json());
+      tabCache.set(cacheKey, r);
+      // Bail if the user navigated away mid-fetch.
+      if (lookupHost !== host || inspectorMode !== 'lookup') return;
+      panel.innerHTML = renderTabHtml(renderKey, r, host);
+    } catch {
+      panel.innerHTML = '<div class="insp-err">Lookup failed — try again.</div>';
+    }
+  }
+
+  function endpointForTab(tab) {
+    return {
+      rdap: 'rdap-domain', // domain RDAP; IP RDAP is /api/rdap above
+      dns: 'dns',
+      cert: 'cert',
+      tracker: 'tracker',
+      reputation: 'reputation',
+    }[tab];
+  }
+
+  function renderTabHtml(tab, data, host) {
+    if (data && data.error) {
+      return '<div class="insp-err">' + esc(prettyErr(data.error)) +
+        (data.status ? ' <span class="v-dim">(' + data.status + ')</span>' : '') +
+        '</div>';
+    }
+    switch (tab) {
+      case 'rdap':      return renderRdapDomain(data, host);
+      case 'rdap-ip':   return renderRdapIp(data, host);
+      case 'dns':       return renderDns(data);
+      case 'cert':      return renderCert(data);
+      case 'tracker':   return renderTracker(data);
+      case 'reputation':return renderReputation(data);
+      default:          return '<div class="insp-err">Unknown tab.</div>';
+    }
+  }
+
+  function renderRdapDomain(r, host) {
+    if (!r) return emptyTab('No registry record came back.');
+    const rows = [
+      ['registrar', r.registrar + (r.registrar_iana ? ' <span class="v-dim">IANA ' +
+        esc(r.registrar_iana) + '</span>' : '')],
+      ['registrant', r.registrant_org],
+      ['status', (r.status || []).slice(0, 4).map(esc).join(', ')],
+      ['registered', r.registered ? r.registered.slice(0, 10) : null],
+      ['updated', r.updated ? r.updated.slice(0, 10) : null],
+      ['expires', r.expires ? r.expires.slice(0, 10) : null],
+      ['DNSSEC', r.secure_dns ? 'signed' : 'not signed'],
+      ['abuse', r.abuse],
+    ];
+    let html = '<div class="insp-fields">';
+    for (const [k, v] of rows) {
+      if (v && String(v).length) html += field(k, v);
+    }
+    html += '</div>';
+    if (r.nameservers && r.nameservers.length) {
+      html += '<div class="insp-sub-label">Nameservers</div>' +
+        '<ul class="insp-list">' +
+        r.nameservers.map((ns) => '<li><code>' + esc(ns) + '</code></li>').join('') +
+        '</ul>';
+    }
+    html += sourceLink('rdap.org', `https://rdap.org/domain/${encodeURIComponent(host)}`);
+    return html;
+  }
+
+  function renderRdapIp(r, host) {
+    if (!r) return emptyTab('No registry record came back.');
+    const rows = [
+      ['netblock', r.name],
+      ['range', r.range],
+      ['org', r.org],
+      ['country', r.country],
+      ['registry', r.registry],
+      ['registered', r.registered ? r.registered.slice(0, 10) : null],
+      ['updated', r.updated ? r.updated.slice(0, 10) : null],
+      ['abuse', r.abuse],
+    ];
+    let html = '<div class="insp-fields">';
+    for (const [k, v] of rows) {
+      if (v) html += field(k, v);
+    }
+    html += '</div>';
+    html += sourceLink('rdap.org', `https://rdap.org/ip/${encodeURIComponent(host)}`);
+    return html;
+  }
+
+  function renderDns(d) {
+    if (!d || !d.records) return emptyTab('DNS lookup returned no data.');
+    let html = '';
+    for (const type of ['A', 'AAAA', 'MX', 'NS', 'TXT']) {
+      const rec = d.records[type];
+      if (!rec) continue;
+      if (rec.error) {
+        html += '<div class="insp-sub-label">' + type + '</div>' +
+          '<div class="insp-err-soft">no records (' + esc(rec.error) + ')</div>';
+        continue;
+      }
+      if (!rec.values || rec.values.length === 0) {
+        html += '<div class="insp-sub-label">' + type + '</div>' +
+          '<div class="insp-empty">none</div>';
+        continue;
+      }
+      html += '<div class="insp-sub-label">' + type +
+        ' <span class="v-dim">' + rec.values.length + '</span></div>' +
+        '<ul class="insp-list">' +
+        rec.values.slice(0, 8).map((v) =>
+          '<li><code>' + esc(v.value) + '</code>' +
+          (v.ttl ? ' <span class="v-dim">TTL ' + v.ttl + '</span>' : '') +
+          '</li>',
+        ).join('') +
+        '</ul>';
+    }
+    html += sourceLink('cloudflare-dns.com', null);
+    return html || emptyTab('No DNS records returned.');
+  }
+
+  function renderCert(c) {
+    if (!c || !Array.isArray(c.certs)) return emptyTab('No certificate transparency entries.');
+    if (c.certs.length === 0) {
+      return emptyTab('crt.sh has no entries for this domain.');
+    }
+    let html = '<div class="insp-fields">' +
+      field('total seen', '<span class="v-num">' + fmt(c.total) + '</span>') +
+      field('showing', '<span class="v-num">' + fmt(c.shown) + '</span> most recent') +
+      '</div>';
+    html += '<div class="insp-sub-label">Recent issuances</div>';
+    html += '<ul class="insp-cert-list">';
+    for (const cert of c.certs.slice(0, 10)) {
+      const dates = (cert.not_before ? cert.not_before.slice(0, 10) : '?') +
+        ' → ' + (cert.not_after ? cert.not_after.slice(0, 10) : '?');
+      html += '<li class="insp-cert">' +
+        '<div class="insp-cert-cn"><code>' + esc(cert.common_name || '—') + '</code></div>' +
+        '<div class="insp-cert-meta"><span>' + esc(cert.issuer || '—') + '</span>' +
+        ' <span class="v-dim">' + esc(dates) + '</span></div>' +
+        (cert.sans && cert.sans.length
+          ? '<div class="insp-cert-sans">SANs: ' +
+            cert.sans.map((s) => '<code>' + esc(s) + '</code>').join(' ') + '</div>'
+          : '') +
+        '</li>';
+    }
+    html += '</ul>';
+    html += sourceLink('crt.sh', `https://crt.sh/?q=${encodeURIComponent(c.domain)}`);
+    return html;
+  }
+
+  function renderTracker(t) {
+    if (!t) return emptyTab('No tracker data returned.');
+    if (t.known === false) {
+      return '<div class="insp-empty">This domain is not in the tracker corpus. ' +
+        'That does not mean it is safe — only that we have not classified it.</div>' +
+        sourceLink('data.tunnelmind.ai', null);
+    }
+    const rows = [
+      ['score', t.score == null ? null :
+        '<span class="v-num">' + t.score.toFixed(2) + '</span>' +
+        ' <span class="v-dim">(lower is less invasive)</span>'],
+      ['entity', t.entity],
+      ['categories', (t.categories || []).join(', ')],
+      ['prevalence', t.prevalence == null ? null :
+        '<span class="v-num">' + (t.prevalence * 100).toFixed(1) + '%</span> of pages'],
+      ['cookies set', t.cookies == null ? null : fmt(t.cookies)],
+      ['fingerprints', t.fingerprinting == null ? null : (t.fingerprinting ? 'yes' : 'no')],
+      ['first seen', t.first_seen ? t.first_seen.slice(0, 10) : null],
+      ['last seen', t.last_seen ? t.last_seen.slice(0, 10) : null],
+    ];
+    let html = '<div class="insp-fields">';
+    for (const [k, v] of rows) {
+      if (v) html += field(k, v);
+    }
+    html += '</div>';
+    if (t.entity_slug) {
+      html += '<a class="insp-deep" href="https://data.tunnelmind.ai/v1/entities/' +
+        encodeURIComponent(t.entity_slug) + '" target="_blank" rel="noopener">' +
+        'Walk the corporate ownership →</a>';
+    }
+    html += sourceLink('data.tunnelmind.ai', null);
+    return html;
+  }
+
+  function renderReputation(rep) {
+    if (!rep || !rep.sources) return emptyTab('Reputation lookup returned no sources.');
+    let html = '';
+    const u = rep.sources.urlhaus;
+    html += '<div class="insp-sub-label">URLhaus <span class="v-dim">abuse.ch</span></div>';
+    if (!u || u.error) {
+      html += '<div class="insp-err-soft">lookup failed</div>';
+    } else if (!u.listed) {
+      html += '<div class="insp-empty">Not listed.</div>';
+    } else {
+      html += '<div class="insp-fields">' +
+        field('URLs seen', '<span class="v-num">' + fmt(u.total_urls) + '</span>') +
+        field('online now', '<span class="v-num">' + fmt(u.online) + '</span>') +
+        (u.first_seen ? field('first seen', u.first_seen.slice(0, 10)) : '') +
+        (u.most_recent ? field('most recent', u.most_recent.slice(0, 10)) : '') +
+        '</div>';
+      if (u.tags && u.tags.length) {
+        html += '<div class="insp-tag-row">' +
+          u.tags.map((t) => '<span class="insp-tag">' + esc(t) + '</span>').join('') +
+          '</div>';
+      }
+    }
+    html += sourceLink('urlhaus-api.abuse.ch', null);
+    return html;
+  }
+
+  function emptyTab(msg) { return '<div class="insp-empty">' + esc(msg) + '</div>'; }
+
+  function sourceLink(name, href) {
+    const inner = href
+      ? '<a href="' + escAttr(href) + '" target="_blank" rel="noopener">' + esc(name) + '</a>'
+      : esc(name);
+    return '<div class="insp-source">source: ' + inner + '</div>';
+  }
+
+  function prettyErr(code) {
+    return ({
+      invalid_domain: 'That domain looks malformed.',
+      invalid_name: 'That name looks malformed.',
+      invalid_host: 'That host looks malformed.',
+      rdap_unavailable: 'The RDAP relay is unavailable right now.',
+      rdap_error: 'RDAP lookup failed.',
+      crtsh_unavailable: 'crt.sh is unavailable right now.',
+      crtsh_bad_payload: 'crt.sh returned an unexpected payload.',
+      crtsh_error: 'crt.sh lookup failed.',
+      tracker_unavailable: 'The tracker corpus is unavailable right now.',
+      tracker_error: 'Tracker lookup failed.',
+    })[code] || 'Lookup failed.';
+  }
+
+  // Local validators mirror functions/api/corpus/_lib.js so the client
+  // can reject obvious garbage without a round-trip. Intentionally
+  // duplicated rather than imported — initRadar.js is loaded into the
+  // browser, _lib.js runs at the edge.
+  const _DOMAIN_RE = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/;
+  const _IPV4_RE = /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
+  const _IPV6_RE = /^[0-9a-f:]+$/;
+  function isIpLocal(s) {
+    if (typeof s !== 'string') return false;
+    const v = s.trim().toLowerCase();
+    if (_IPV4_RE.test(v)) return true;
+    return v.includes(':') && _IPV6_RE.test(v) && v.length <= 39;
+  }
+  function normalizeHostLocal(raw) {
+    if (typeof raw !== 'string') return null;
+    const s = raw.trim().toLowerCase().replace(/\.$/, '').replace(/^https?:\/\//, '').split('/')[0];
+    if (isIpLocal(s)) return s;
+    return _DOMAIN_RE.test(s) ? s : null;
   }
 
   function field(k, v) {
@@ -740,11 +1175,16 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
   }
 
   // ── bootstrap ─────────────────────────────────────────────────────
+  ensureInspectorShell(); // lookup form + body div, wired once
   renderOverview();     // panel shows "loading" until the first snapshot
   renderTicker();       // ticker shows its idle state
   refresh();            // instant first paint
   startLiveUpdates();   // live updates over SSE (falls back to polling)
   startGraphLoop();
+
+  // Deep-link: /#/?inspect=<host> lands directly in the Corpus tab view.
+  // Runs after renderOverview so a bad host falls back cleanly to it.
+  if (initialLookup) enterLookup(initialLookup);
 
   const onResize = () => drawGraph();
   window.addEventListener('resize', onResize);

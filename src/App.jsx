@@ -16,7 +16,6 @@ import Pricing from './pages/Pricing.jsx'
 import Extension from './pages/Extension.jsx'
 import Products from './pages/Products.jsx'
 import Roadmap from './pages/Roadmap.jsx'
-import Receipt from './pages/Receipt.jsx'
 import PrivacyPolicy from './pages/legal/PrivacyPolicy.jsx'
 import TermsOfService from './pages/legal/TermsOfService.jsx'
 import LawEnforcementPolicy from './pages/legal/LawEnforcementPolicy.jsx'
@@ -63,7 +62,6 @@ function AppInner() {
     about:        <About />,
     pricing:      <Pricing onNavigate={handleNavigate} />,
     extension:    <Extension />,
-    receipt:      <Receipt />,
     privacy:      <PrivacyPolicy />,
     terms:        <TermsOfService />,
     'law-enforcement': <LawEnforcementPolicy />,

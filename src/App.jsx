@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react'
-import { TMProvider } from './lib/state.jsx'
 
 import TopNav from './components/shared/TopNav.jsx'
 import Footer from './components/shared/Footer.jsx'
-import IntroBox from './components/IntroBox.jsx'
 
 import Radar from './pages/Radar.jsx'
 import Landing from './pages/Landing.jsx'
@@ -23,7 +21,10 @@ import AccountRiskDisclosure from './pages/legal/AccountRiskDisclosure.jsx'
 
 // ── Hash Router ────────────────────────────────────────────────────
 function getPageFromHash() {
-  const hash = window.location.hash.replace('#/', '').replace('#', '').trim()
+  // Strip any ?-query suffix (e.g. /#/?inspect=example.com is the Radar
+  // page with a deep-link parameter the Radar component reads itself).
+  let hash = window.location.hash.split('?')[0]
+  hash = hash.replace('#/', '').replace('#', '').trim()
   if (!hash || hash === '/') return 'landing'
   const page = hash.replace(/^\//, '').replace(/\/$/, '') || 'landing'
   // 'manifesto' was renamed to 'vision' — keep old inbound links working.
@@ -34,8 +35,8 @@ function setHash(page) {
   window.location.hash = page === 'landing' ? '/' : `/${page}`
 }
 
-// ── Inner App (needs TMProvider context) ─────────────────────────
-function AppInner() {
+// ── App ────────────────────────────────────────────────────────────
+export default function App() {
   const [page, setPage] = useState(getPageFromHash)
 
   useEffect(() => {
@@ -90,17 +91,6 @@ function AppInner() {
       </div>
 
       <Footer />
-
-      <IntroBox />
     </div>
-  )
-}
-
-// ── Root App ───────────────────────────────────────────────────────
-export default function App() {
-  return (
-    <TMProvider>
-      <AppInner />
-    </TMProvider>
   )
 }

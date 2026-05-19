@@ -1,25 +1,31 @@
-// functions/api/checkout-session.js — provision + reveal the key after checkout.
+// functions/api/checkout-session.js — credit + reveal the key after checkout.
 //
 // GET /api/checkout-session?session=cs_xxx
 //
 // The Stripe success URL redirects the buyer back to
 // /#/pricing?checkout=success&session={CHECKOUT_SESSION_ID}. The pricing
 // page calls this endpoint with that id; we retrieve the session from
-// Stripe, confirm it is paid, provision the Defender key in scry-server
-// (idempotent — the webhook may also do this), and return the raw key so
-// the page can display it ONCE.
+// Stripe, confirm it is paid, credit the purchased blocks' calls to the
+// buyer's key in scry-server (idempotent on the session id — the webhook
+// may also do this), and return the key + balance so the page can show
+// the raw key ONCE on a first purchase.
 //
 // The session id (cs_…) is an unguessable, single-purpose token known only
-// to the buyer's browser and Stripe — the same trust model the data-api
-// success page uses. We still gate on status === 'complete' && paid.
+// to the buyer's browser and Stripe. We still gate on status === 'complete'
+// && payment_status === 'paid'.
 //
 // Response shapes:
-//   { status:'paid', key, prefix, tier }            — fresh key, show it
-//   { status:'paid', already_issued:true, prefix }  — key already delivered
-//   { status:'pending' }                            — not paid yet
-//   503 { error:'checkout_unavailable' }             — Stripe not configured
+//   { status:'paid', key, prefix, calls_credited, calls_remaining }
+//        — first purchase: a freshly-minted key, show it once
+//   { status:'paid', topped_up:true, prefix, calls_credited, calls_remaining }
+//        — repeat purchase: calls added to an existing key, no raw key
+//   { status:'paid', key_pending:true, message }
+//        — paid, but crediting failed; the webhook is the backstop
+//   { status:'pending' }                  — not paid yet
+//   503 { error:'checkout_unavailable' }   — Stripe not configured
 
-import { issueScryKey } from './_scry-keys.js'
+import { creditScryCalls } from './_scry-keys.js'
+import { blocksFromSession, priorSpendUsd, callsForPurchase } from './_blocks.js'
 
 export async function onRequestGet(context) {
   const { request, env } = context
@@ -57,49 +63,64 @@ export async function onRequestGet(context) {
     return json({ status: 'pending' }, 200)
   }
 
-  const tier = (session.metadata && session.metadata.tier) || 'defender'
+  const blocks = blocksFromSession(session)
+  if (blocks < 1) {
+    return json(
+      { status: 'paid', key_pending: true, message: 'Your purchase is being processed — check your email shortly.' },
+      200
+    )
+  }
+
   const email =
     (session.customer_details && session.customer_details.email) ||
     session.customer_email ||
     null
-  const stripeSubscription =
-    typeof session.subscription === 'string'
-      ? session.subscription
-      : session.subscription?.id || null
   const stripeCustomer =
     typeof session.customer === 'string'
       ? session.customer
       : session.customer?.id || null
 
-  const result = await issueScryKey(env, {
-    tier,
-    label: email,
+  const priorSpend = await priorSpendUsd(secret, stripeCustomer, session.amount_total)
+  const calls = callsForPurchase(blocks, priorSpend)
+
+  const result = await creditScryCalls(env, {
     stripeCustomer,
-    stripeSubscription,
+    label: email,
+    calls,
+    idempotencyKey: session.id,
   })
 
   if (!result.ok) {
-    // Payment succeeded but provisioning failed — the webhook is the
-    // backstop. Tell the page the payment landed but the key is delayed.
+    // Payment succeeded but crediting failed — the webhook is the backstop.
     return json(
-      { status: 'paid', key_pending: true, message: 'Your key is being issued — check your email shortly.' },
+      { status: 'paid', key_pending: true, message: 'Your calls are being credited — check your email shortly.' },
       200
     )
   }
 
   if (result.key) {
-    return json({ status: 'paid', key: result.key, prefix: result.prefix, tier: result.tier }, 200)
+    // First purchase — a freshly-minted key, shown once.
+    return json(
+      {
+        status: 'paid',
+        key: result.key,
+        prefix: result.prefix,
+        calls_credited: calls,
+        calls_remaining: result.calls_remaining ?? calls,
+      },
+      200
+    )
   }
 
-  // already_issued — the webhook (or an earlier page load) beat us to it.
-  // The raw key cannot be recovered; point the buyer at their email.
+  // A top-up (or an idempotent replay): the raw key cannot be recovered,
+  // but the buyer already has it. Report the new balance.
   return json(
     {
       status: 'paid',
-      already_issued: true,
+      topped_up: true,
       prefix: result.prefix,
-      tier: result.tier,
-      message: 'Your key has already been issued — check your email, or contact support@tunnelmind.ai.',
+      calls_credited: result.already_credited ? 0 : calls,
+      calls_remaining: result.calls_remaining ?? null,
     },
     200
   )

@@ -1,26 +1,28 @@
-// functions/api/stripe-webhook.js — Stripe subscription lifecycle receiver.
+// functions/api/stripe-webhook.js — Stripe block-purchase receiver.
 //
 // POST /api/stripe-webhook   (set this exact URL in the Stripe dashboard)
 //
 // Stripe signs every webhook. We verify the v1 HMAC-SHA256 signature
 // against STRIPE_WEBHOOK_SECRET before trusting a single byte of the body.
-// The verification + handler shape mirrors the proven pattern in
-// tunnelmind-data-api/api/routes/stripe_webhook.js.
 //
 // Handled events:
-//   checkout.session.completed     — provision a Defender key, email it
-//   customer.subscription.deleted  — revoke the key for that subscription
-// All other event types: acknowledged with 200 and ignored.
+//   checkout.session.completed  (mode=payment) — credit the purchased
+//     blocks' calls to the buyer's key, minting the key on a first
+//     purchase and emailing it.
+// All other event types: acknowledged with 200 and ignored. The retired
+// subscription tiers (Defender/Team) are gone — subscription events are
+// no longer handled.
 //
 // We return 200 even on handler errors. A non-2xx makes Stripe retry the
 // same event; we only want that for genuine bad-request cases (bad
 // signature, malformed body), which DO return 4xx.
 //
-// Key provisioning is idempotent on the Stripe subscription id: the
-// checkout success page (functions/api/checkout-session.js) races this
-// webhook to issue the same key, and scry-server mints only one.
+// Crediting is idempotent on the Stripe Checkout Session id: the success
+// page (functions/api/checkout-session.js) races this webhook to credit
+// the same purchase, and scry-server credits it only once.
 
-import { issueScryKey, revokeScryKey } from './_scry-keys.js'
+import { creditScryCalls } from './_scry-keys.js'
+import { blocksFromSession, priorSpendUsd, callsForPurchase } from './_blocks.js'
 import { sendKeyEmail } from './_email.js'
 
 // ── Stripe v1 signature verification (HMAC-SHA256) ───────────────────────
@@ -60,54 +62,74 @@ async function verifyStripeSignature(rawBody, sigHeader, secret) {
   return signatures.includes(expected)
 }
 
-// ── Event handlers ────────────────────────────────────────────────────────
+// ── Event handler ─────────────────────────────────────────────────────────
 
 async function handleCheckoutCompleted(session, env) {
-  // Only subscription checkouts provision keys.
-  if (session.mode && session.mode !== 'subscription') return
-  // Subscription mode: the key is provisioned once the first invoice is paid.
+  // Block purchases are one-time payments. Ignore anything else.
+  if (session.mode && session.mode !== 'payment') return
   if (session.payment_status && session.payment_status !== 'paid') {
     console.log(`webhook: checkout ${session.id} not paid (${session.payment_status}) — skipped`)
     return
   }
 
-  const tier = (session.metadata && session.metadata.tier) || 'defender'
+  const blocks = blocksFromSession(session)
+  if (blocks < 1) {
+    console.error(`webhook: checkout ${session.id} resolved to 0 blocks — skipped`)
+    return
+  }
+
   const email =
     (session.customer_details && session.customer_details.email) ||
     session.customer_email ||
     null
-  const stripeSubscription =
-    typeof session.subscription === 'string'
-      ? session.subscription
-      : session.subscription?.id || null
   const stripeCustomer =
     typeof session.customer === 'string'
       ? session.customer
       : session.customer?.id || null
 
-  const result = await issueScryKey(env, {
-    tier,
-    label: email,
+  // Rate the purchase against the buyer's spend before this checkout.
+  const priorSpend = await priorSpendUsd(
+    env.STRIPE_SECRET_KEY,
     stripeCustomer,
-    stripeSubscription,
+    session.amount_total
+  )
+  const calls = callsForPurchase(blocks, priorSpend)
+
+  const result = await creditScryCalls(env, {
+    stripeCustomer,
+    label: email,
+    calls,
+    idempotencyKey: session.id,
   })
 
   if (!result.ok) {
-    console.error(`webhook: key issuance failed for ${session.id} — ${result.error || result.status}`)
+    console.error(`webhook: credit failed for ${session.id} — ${result.error || result.status}`)
     return
   }
-  if (result.already_issued || !result.key) {
-    // The success page already provisioned + displayed this key.
-    console.log(`webhook: ${session.id} already provisioned (${result.prefix}) — no email`)
+  if (result.already_credited) {
+    console.log(`webhook: ${session.id} already credited (${result.prefix}) — no email`)
+    return
+  }
+  if (!result.key) {
+    // A top-up of an existing key — the buyer already has the raw key, so
+    // there is nothing secret to deliver.
+    console.log(
+      `webhook: ${session.id} credited ${calls} calls to existing key ` +
+        `${result.prefix} (balance ${result.calls_remaining})`
+    )
     return
   }
 
-  // The webhook won the race (rare — the browser redirect is faster). The
-  // raw key exists only here, so email it. If email is unconfigured, log
-  // the prefix so support can revoke + reissue on request.
-  const mail = await sendKeyEmail(env, { to: email, key: result.key, prefix: result.prefix, tier })
+  // First purchase — the raw key exists only here. The webhook usually
+  // loses the race to the browser redirect; when it wins, email the key.
+  const mail = await sendKeyEmail(env, {
+    to: email,
+    key: result.key,
+    prefix: result.prefix,
+    calls: result.calls_remaining ?? calls,
+  })
   if (mail.ok) {
-    console.log(`webhook: issued ${result.prefix} and emailed ${email}`)
+    console.log(`webhook: issued ${result.prefix} (${calls} calls) and emailed ${email}`)
   } else if (mail.skipped) {
     console.warn(
       `webhook: issued ${result.prefix} for ${email} but RESEND_API_KEY is unset — ` +
@@ -115,17 +137,6 @@ async function handleCheckoutCompleted(session, env) {
     )
   } else {
     console.error(`webhook: issued ${result.prefix} but email send failed — ${mail.error}`)
-  }
-}
-
-async function handleSubscriptionDeleted(subscription, env) {
-  const subId = subscription.id
-  if (!subId) return
-  const result = await revokeScryKey(env, subId)
-  if (result.ok) {
-    console.log(`webhook: subscription ${subId} deleted — revoked ${result.revoked} key(s)`)
-  } else {
-    console.error(`webhook: revoke failed for ${subId} — ${result.error || result.status}`)
   }
 }
 
@@ -157,9 +168,6 @@ export async function onRequestPost(context) {
     switch (event.type) {
       case 'checkout.session.completed':
         await handleCheckoutCompleted(event.data.object, env)
-        break
-      case 'customer.subscription.deleted':
-        await handleSubscriptionDeleted(event.data.object, env)
         break
       // All other events: acknowledged and ignored.
     }

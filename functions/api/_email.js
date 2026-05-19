@@ -14,35 +14,39 @@ function fromAddress(env) {
 }
 
 /**
- * Email a freshly-issued Defender API key to the customer.
- * Returns { ok, skipped?, status?, error? }. Never throws.
+ * Email a freshly-minted API key to the customer after a first block
+ * purchase. `calls` is the key's call balance. Returns
+ * { ok, skipped?, status?, error? }. Never throws.
  */
-export async function sendKeyEmail(env, { to, key, prefix, tier }) {
+export async function sendKeyEmail(env, { to, key, prefix, calls }) {
   const apiKey = env.RESEND_API_KEY
   if (!apiKey) return { ok: false, skipped: true }
   if (!to || !key) return { ok: false, error: 'missing_to_or_key' }
 
-  const tierName = tier === 'team' ? 'Team' : 'Defender'
-  const subject = `Your TunnelMind ${tierName} API key`
+  const callsText = Number.isFinite(calls) ? Number(calls).toLocaleString('en-US') : null
+  const subject = 'Your TunnelMind API key'
   const html = `
     <div style="font-family:ui-monospace,Menlo,Consolas,monospace;max-width:560px;margin:0 auto;color:#1e293b">
       <p style="font-size:14px;line-height:1.6">
-        Thank you for subscribing to TunnelMind <strong>${tierName}</strong>.
-        Your API key is below — it is shown once and cannot be recovered, so
-        store it somewhere safe now.
+        Thank you for your TunnelMind API block purchase. Your API key is
+        below — it is shown once and cannot be recovered, so store it
+        somewhere safe now.
       </p>
       <pre style="background:#0f172a;color:#e2e8f0;padding:16px;border-radius:6px;font-size:14px;overflow-wrap:anywhere;white-space:pre-wrap">${key}</pre>
       <p style="font-size:13px;line-height:1.6">
         Authenticate every request with the header
         <code>Authorization: Bearer ${key}</code>. The key unlocks the full
-        corpus, complete campaign membership, bulk export, and unmetered
-        access. It is tied to this subscription and is revoked if the
-        subscription ends.
+        corpus — Tracker, Scry, and Sigil endpoints — plus bulk export and
+        the MCP endpoint.${
+          callsText
+            ? ` It carries a balance of <strong>${callsText} API calls</strong>.`
+            : ''
+        }
       </p>
       <p style="font-size:13px;line-height:1.6">
-        Manage or cancel your subscription any time from the billing portal
-        linked on your receipt. Lost the key or need it rotated? Reply to
-        this email or write to support@tunnelmind.ai.
+        Blocks never expire. Buy more whenever you need them — they stack
+        onto this same key. Lost the key or need it rotated? Reply to this
+        email or write to support@tunnelmind.ai.
       </p>
       <p style="font-size:12px;color:#64748b">
         Key reference: ${prefix} · TunnelMind AI, LLC

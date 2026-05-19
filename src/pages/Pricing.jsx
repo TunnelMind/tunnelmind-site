@@ -39,15 +39,18 @@ const HUMAN_FEATURES = [
 // ── Human rail — prepaid Stripe blocks ──────────────────────────────
 function HumanCard() {
   const [busy, setBusy] = useState(false)
+  const [email, setEmail] = useState('')
   const accent = 'var(--accent-green)'
 
   async function startBlockCheckout() {
     setBusy(true)
     try {
+      // The email ties repeat purchases to one Stripe customer, so spend
+      // accumulates toward the volume rate. It is optional but encouraged.
       const resp = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ product: 'block' }),
+        body: JSON.stringify({ email: email.trim() }),
       })
       const data = await resp.json().catch(() => null)
       if (resp.ok && data && data.url) {
@@ -121,18 +124,35 @@ function HumanCard() {
       </ul>
 
       {human.checkoutEnabled ? (
-        <button
-          onClick={() => !busy && startBlockCheckout()}
-          disabled={busy}
-          style={{
-            padding: '10px', background: accent, border: `1px solid ${accent}`,
-            borderRadius: '3px', fontFamily: 'var(--font-mono)', fontSize: '10px',
-            fontWeight: 700, color: '#0f172a', cursor: busy ? 'wait' : 'pointer',
-            opacity: busy ? 0.6 : 1,
-          }}
-        >
-          {busy ? 'Starting checkout…' : `Buy a block — ${usd(human.blockPriceUsd)}`}
-        </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="you@example.com — for your receipt and the volume rate"
+            style={{
+              padding: '9px 10px', background: 'var(--doc-bg)',
+              border: '1px solid var(--chrome-border)', borderRadius: '3px',
+              fontFamily: 'var(--font-mono)', fontSize: '10px',
+              color: 'var(--chrome-text-bright)',
+            }}
+          />
+          <button
+            onClick={() => !busy && startBlockCheckout()}
+            disabled={busy}
+            style={{
+              padding: '10px', background: accent, border: `1px solid ${accent}`,
+              borderRadius: '3px', fontFamily: 'var(--font-mono)', fontSize: '10px',
+              fontWeight: 700, color: '#0f172a', cursor: busy ? 'wait' : 'pointer',
+              opacity: busy ? 0.6 : 1,
+            }}
+          >
+            {busy ? 'Starting checkout…' : `Buy blocks — from ${usd(human.blockPriceUsd)}`}
+          </button>
+          <p style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', margin: 0, lineHeight: '1.6' }}>
+            Choose how many blocks at checkout.
+          </p>
+        </div>
       ) : (
         <div>
           <button
@@ -233,7 +253,7 @@ function AgentCard() {
 // returns it. The raw key is shown ONCE — there is no way to recover it —
 // so the banner makes copying it unmissable. The Stripe webhook is the
 // backstop if the buyer never lands here.
-function KeyReveal({ apiKey }) {
+function KeyReveal({ apiKey, calls }) {
   const [copied, setCopied] = useState(false)
 
   function copy() {
@@ -247,6 +267,11 @@ function KeyReveal({ apiKey }) {
 
   return (
     <div style={{ marginTop: '12px' }}>
+      {Number.isFinite(calls) && (
+        <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--accent-green)', margin: '0 0 8px' }}>
+          {n(calls)} API calls credited to this key.
+        </p>
+      )}
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
         <code style={{
           flex: 1, minWidth: '240px', fontFamily: 'var(--font-mono)', fontSize: '12px',
@@ -276,9 +301,10 @@ function KeyReveal({ apiKey }) {
 }
 
 function CheckoutBanner({ status, session }) {
-  // phase: 'idle' | 'loading' | 'key' | 'pending' | 'error'
+  // phase: 'idle' | 'loading' | 'key' | 'topup' | 'pending' | 'error'
   const [phase, setPhase] = useState(status === 'success' && session ? 'loading' : 'idle')
   const [apiKey, setApiKey] = useState('')
+  const [info, setInfo] = useState({})
 
   useEffect(() => {
     if (status !== 'success' || !session) return
@@ -289,9 +315,11 @@ function CheckoutBanner({ status, session }) {
         if (!live) return
         if (data && data.status === 'paid' && data.key) {
           setApiKey(data.key)
+          setInfo({ calls: data.calls_remaining })
           setPhase('key')
-        } else if (data && data.status === 'paid') {
-          setPhase('pending')
+        } else if (data && data.status === 'paid' && data.topped_up) {
+          setInfo({ prefix: data.prefix, credited: data.calls_credited, remaining: data.calls_remaining })
+          setPhase('topup')
         } else {
           setPhase('pending')
         }
@@ -313,17 +341,21 @@ function CheckoutBanner({ status, session }) {
     }}>
       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.7', color: 'var(--doc-text-dim)', margin: 0 }}>
         {!ok &&
-          'Checkout was cancelled — no charge was made. Your block is here whenever you are ready.'}
+          'Checkout was cancelled — no charge was made. Your blocks are here whenever you are ready.'}
         {ok && phase === 'loading' &&
-          'Payment received — provisioning your API key…'}
+          'Payment received — crediting your calls…'}
         {ok && phase === 'key' &&
           'Payment received — thank you. Here is your API key:'}
+        {ok && phase === 'topup' &&
+          `Payment received — thank you. ${info.credited ? n(info.credited) + ' calls were added to' : 'Your calls were credited to'} your existing key ${info.prefix || ''}${
+            Number.isFinite(info.remaining) ? ` — balance is now ${n(info.remaining)} calls` : ''
+          }. The raw key was shown only at first purchase; if you no longer have it, email support@tunnelmind.ai to rotate it.`}
         {ok && phase === 'pending' &&
-          'Payment received — thank you. Your API key has been issued and emailed to you. If it does not arrive within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
+          'Payment received — thank you. Your calls are being credited and your key will arrive by email shortly. If nothing arrives within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
         {ok && (phase === 'error' || phase === 'idle') &&
-          'Payment received — thank you. Your API key is being issued and will arrive by email shortly. If it does not appear within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
+          'Payment received — thank you. Your calls are being credited and your key will arrive by email shortly. If nothing appears within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
       </p>
-      {ok && phase === 'key' && <KeyReveal apiKey={apiKey} />}
+      {ok && phase === 'key' && <KeyReveal apiKey={apiKey} calls={info.calls} />}
     </div>
   )
 }

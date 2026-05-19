@@ -6,7 +6,6 @@ const LINKS = [
   { label: 'API',                  href: '/#/api' },
   { label: 'Roadmap',              href: '/#/roadmap' },
   { label: 'Whitepapers',          href: '/#/whitepapers' },
-  { label: 'Extension',            href: '/#/extension' },
   { label: 'Pricing',              href: '/#/pricing' },
 ]
 

@@ -37,14 +37,6 @@ const SURFACES = [
     tagColor: '--accent-blue',
   },
   {
-    name: 'Browser Extension',
-    desc: 'Passive checks as you browse — no proxy, no DNS redirect. Third-party requests are matched against the corpus, and a real-time popup shows what the page is talking to. Firefox + Chrome.',
-    href: 'https://addons.mozilla.org/firefox/addon/tunnelmind-surveillance-receipt/',
-    label: 'Firefox · Chrome Web Store',
-    tag: 'In review',
-    tagColor: '--accent-amber',
-  },
-  {
     name: 'Standards & Verification',
     desc: 'Resolve an OAI identifier, verify an ATAP attestation, or check an entity trust score. The naming and verification layers on top of the corpus — open specs, free resolution.',
     href: '/standards',

@@ -58,13 +58,6 @@ const GROUPS = [
         label: 'mcp.tunnelmind.ai',
         tag: 'Live · Free',
       },
-      {
-        name: 'Browser Extension',
-        desc: 'Passive checks as you browse — third-party requests matched against the corpus, no proxy and no DNS redirect. Firefox + Chrome.',
-        url: 'https://addons.mozilla.org/firefox/addon/tunnelmind-surveillance-receipt/',
-        label: 'Firefox · Chrome Web Store',
-        tag: 'In review',
-      },
     ],
   },
   {

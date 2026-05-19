@@ -13,7 +13,6 @@ import ReCenter from './pages/ReCenter.jsx'
 import Whitepapers from './pages/Whitepapers.jsx'
 import About from './pages/About.jsx'
 import Pricing from './pages/Pricing.jsx'
-import Extension from './pages/Extension.jsx'
 import Products from './pages/Products.jsx'
 import Roadmap from './pages/Roadmap.jsx'
 import PrivacyPolicy from './pages/legal/PrivacyPolicy.jsx'
@@ -61,7 +60,6 @@ function AppInner() {
     whitepapers:  <Whitepapers />,
     about:        <About />,
     pricing:      <Pricing onNavigate={handleNavigate} />,
-    extension:    <Extension />,
     privacy:      <PrivacyPolicy />,
     terms:        <TermsOfService />,
     'law-enforcement': <LawEnforcementPolicy />,

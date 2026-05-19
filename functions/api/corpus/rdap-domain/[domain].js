@@ -18,8 +18,8 @@ export async function onRequestGet(context) {
     )
     if (!resp.ok) return json({ error: 'rdap_unavailable', status: resp.status }, 502)
     return json(trim(await resp.json(), domain), 200, 86400)
-  } catch {
-    return json({ error: 'rdap_error' }, 502)
+  } catch (e) {
+    return json({ error: 'rdap_error', detail: String((e && e.message) || e).slice(0, 200) }, 502)
   }
 }
 

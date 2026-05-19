@@ -26,8 +26,8 @@ export async function onRequestGet(context) {
     try { arr = JSON.parse(text) } catch { return json({ error: 'crtsh_bad_payload' }, 502) }
     if (!Array.isArray(arr)) return json({ error: 'crtsh_bad_payload' }, 502)
     return json(trim(arr, domain), 200, 3600)
-  } catch {
-    return json({ error: 'crtsh_error' }, 502)
+  } catch (e) {
+    return json({ error: 'crtsh_error', detail: String((e && e.message) || e).slice(0, 200) }, 502)
   }
 }
 

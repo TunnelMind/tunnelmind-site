@@ -2,7 +2,8 @@
 //
 // Mirrors the proven pattern in tunnelmind-data-api/api/routes/checkout.js:
 // no Stripe SDK — plain fetch against the Stripe REST API. Stripe is the
-// only payment path; there is no crypto option, by design.
+// human payment rail (prepaid API-call blocks); agents pay per query on
+// the separate x402 rail — see TunnelMind/docs/X402-SPEC.md.
 //
 // Returns { url } on success — the caller redirects the browser to it.
 // Returns 503 { error: 'checkout_unavailable' } when STRIPE_SECRET_KEY or

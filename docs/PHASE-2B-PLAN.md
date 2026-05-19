@@ -17,7 +17,12 @@ selling vapor.
 | Defender | **$49 / month** | Individual security researcher / small team. Self-serve Stripe checkout. |
 | Team / Enterprise | **from $1,500 / month** | Billed annually, custom-scoped. Contact sales. |
 
-Stripe only — no crypto, ever (see memory: `feedback_no_crypto_payments`).
+> **Superseded 2026-05-18 (P34).** The Free/Defender/Team tier table above is
+> retired — pricing is now $20 prepaid call blocks (humans, Stripe) + x402
+> per-query micropayments (agents). The no-crypto decision was reversed; x402
+> is an approved rail. See `STATE-2026-05.md`, `X402-SPEC.md`, and the
+> `feedback_no_crypto_payments` memory note. This file is kept as a record of
+> the Phase 2b plan as drafted.
 
 ## What the Defender tier unlocks (the gated corpus surface)
 

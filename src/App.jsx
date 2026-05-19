@@ -9,7 +9,6 @@ import Radar from './pages/Radar.jsx'
 import Landing from './pages/Landing.jsx'
 import Tools from './pages/Tools.jsx'
 import Api from './pages/Api.jsx'
-import ReCenter from './pages/ReCenter.jsx'
 import Whitepapers from './pages/Whitepapers.jsx'
 import About from './pages/About.jsx'
 import Pricing from './pages/Pricing.jsx'
@@ -56,7 +55,6 @@ function AppInner() {
     vision:       <Landing onNavigate={handleNavigate} />,
     tools:        <Tools onNavigate={handleNavigate} />,
     api:          <Api onNavigate={handleNavigate} />,
-    recenter:     <ReCenter onNavigate={handleNavigate} />,
     whitepapers:  <Whitepapers />,
     about:        <About />,
     pricing:      <Pricing onNavigate={handleNavigate} />,

@@ -330,9 +330,19 @@ export function initRadar(root, { pollMs = 10000 } = {}) {
     }
     svg.innerHTML = html;
 
-    svg.querySelectorAll('circle[data-id]').forEach((c) => {
-      c.addEventListener('click', () => selectNode(c.getAttribute('data-id')));
-    });
+    // Click is delegated to the persistent <svg>, wired exactly once.
+    // The force loop rebuilds svg.innerHTML every frame, so per-circle
+    // listeners never survive between a user's mousedown and mouseup —
+    // the circle they pressed is a different DOM node by mouseup, so the
+    // `click` event never fires. The <svg> itself persists, so one
+    // delegated listener on it is stable across every redraw.
+    if (!svg.dataset.clickWired) {
+      svg.dataset.clickWired = '1';
+      svg.addEventListener('click', (ev) => {
+        const circle = ev.target.closest('circle[data-id]');
+        if (circle) selectNode(circle.getAttribute('data-id'));
+      });
+    }
   }
 
   function selectNode(id) {

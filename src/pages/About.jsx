@@ -61,7 +61,7 @@ export default function About() {
           <div style={sectionLabel}>Company</div>
           <p style={prose}>
             <strong style={{ color: 'var(--chrome-text-bright)' }}>TunnelMind AI, LLC</strong> is
-            based in Cabot, Arkansas. It is a single-operator project: no venture
+            a single-operator project: no venture
             funding, no board, no runway clock. Growth is measured in sensors
             online, sources ingested, and standards shipped — not in burn.
           </p>

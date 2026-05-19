@@ -6,13 +6,16 @@
 // registry, trim the deeply-nested payload to the fields the inspector
 // renders, cache 1 day at the edge.
 
-import { normalizeDomain, json, fetchWithTimeout } from '../_lib.js'
+import { normalizeDomain, json, fetchFollowRedirects } from '../_lib.js'
 
 export async function onRequestGet(context) {
   const domain = normalizeDomain(context.params.domain)
   if (!domain) return json({ error: 'invalid_domain' }, 400)
   try {
-    const resp = await fetchWithTimeout(
+    // Manual redirect chain — rdap.org always 302s to the responsible
+    // RIR endpoint. See _lib.js fetchFollowRedirects() for why we can
+    // no longer let the Workers runtime auto-follow.
+    const resp = await fetchFollowRedirects(
       `https://rdap.org/domain/${encodeURIComponent(domain)}`,
       { headers: { Accept: 'application/rdap+json' } },
     )

@@ -8,16 +8,21 @@
 // The RDAP payload is large and deeply nested; it is trimmed server-side
 // to the handful of fields the inspector renders, and cached a day.
 
+// Follows redirects MANUALLY — see /api/corpus/_lib.js fetchFollowRedirects
+// for the rationale (Workers' auto-redirect handler started returning hard
+// CF-edge 502s instead of catchable rejections somewhere around 2025-Q4).
+import { fetchFollowRedirects } from '../corpus/_lib.js'
+
 export async function onRequestGet(context) {
   const ip = encodeURIComponent(context.params.ip)
   try {
-    const resp = await fetch(`https://rdap.org/ip/${ip}`, {
+    const resp = await fetchFollowRedirects(`https://rdap.org/ip/${ip}`, {
       headers: { Accept: 'application/rdap+json' },
     })
     if (!resp.ok) return json({ error: 'rdap_unavailable', status: resp.status }, 502)
     return json(trim(await resp.json()), 200, 86400)
-  } catch {
-    return json({ error: 'rdap_error' }, 502)
+  } catch (e) {
+    return json({ error: 'rdap_error', detail: String((e && e.message) || e).slice(0, 200) }, 502)
   }
 }
 

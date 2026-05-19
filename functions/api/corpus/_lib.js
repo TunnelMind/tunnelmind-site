@@ -58,3 +58,27 @@ export async function fetchWithTimeout(url, opts = {}, ms = 6000) {
     clearTimeout(t)
   }
 }
+
+// Like fetchWithTimeout but follows up to N redirects MANUALLY. The
+// Workers runtime auto-followed redirects until ~2025-Q4 when something
+// in the redirect handler stopped surfacing errors as catchable rejects
+// — instead a redirect chain that failed somewhere produced a hard
+// CF-edge 502 that bypassed user try/catch entirely. rdap.org is a
+// pure redirector (every domain RDAP query 302s to the responsible
+// RIR's endpoint), so /api/rdap/* and /api/corpus/rdap-domain/* both
+// hit this. Following them ourselves keeps the failure inside the
+// caller's try/catch.
+export async function fetchFollowRedirects(url, opts = {}, ms = 6000, maxRedirects = 5) {
+  let current = url
+  for (let i = 0; i <= maxRedirects; i++) {
+    const r = await fetchWithTimeout(current, { ...opts, redirect: 'manual' }, ms)
+    if (r.status >= 300 && r.status < 400 && r.headers.has('location')) {
+      const loc = r.headers.get('location')
+      // Resolve relative redirects against the current URL.
+      current = new URL(loc, current).toString()
+      continue
+    }
+    return r
+  }
+  throw new Error('too_many_redirects')
+}

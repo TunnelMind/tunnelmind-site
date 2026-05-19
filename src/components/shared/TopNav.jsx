@@ -10,27 +10,13 @@ const NAV_ITEMS = {
     { label: 'About',        page: 'about' },
     { label: 'Vision',       page: 'vision' },
   ],
-  alloy: [
-    { label: 'Workspace',    page: 'workspace' },
-    { label: 'Graph',        page: 'graph' },
-    { label: 'Build',        page: 'build' },
-    { label: 'Contribute',   page: 'contribute' },
-    { label: 'Leaderboard',  page: 'leaderboard' },
-  ],
 }
 
-const SWITCHER = {
-  tunnelmind: { label: 'Build', href: 'https://alloy.tunnelmind.ai' },
-  alloy:      { label: 'Products', href: 'https://tunnelmind.ai' },
-}
-
-// site: 'tunnelmind' | 'alloy'
 // currentPage: string (page key)
-// onNavigate: (page) => void  — only used when site=tunnelmind (hash router)
+// onNavigate: (page) => void  — hash router
 export default function TopNav({ site = 'tunnelmind', currentPage, onNavigate }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const items = NAV_ITEMS[site]
-  const switcher = SWITCHER[site]
 
   function handleNav(page) {
     setMenuOpen(false)
@@ -123,37 +109,6 @@ export default function TopNav({ site = 'tunnelmind', currentPage, onNavigate })
         })}
       </div>
 
-      {/* Site switcher */}
-      <a
-        href={switcher.href}
-        target={site === 'alloy' ? '_self' : '_blank'}
-        rel="noopener noreferrer"
-        style={{
-          marginLeft: '12px',
-          padding: '4px 10px',
-          background: 'transparent',
-          border: '1px solid var(--chrome-border)',
-          borderRadius: '3px',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '10px',
-          color: 'var(--chrome-text-dim)',
-          textDecoration: 'none',
-          whiteSpace: 'nowrap',
-          flexShrink: 0,
-          transition: 'border-color var(--transition), color var(--transition)',
-        }}
-        onMouseEnter={e => {
-          e.currentTarget.style.borderColor = 'var(--accent-green)'
-          e.currentTarget.style.color = 'var(--accent-green)'
-        }}
-        onMouseLeave={e => {
-          e.currentTarget.style.borderColor = 'var(--chrome-border)'
-          e.currentTarget.style.color = 'var(--chrome-text-dim)'
-        }}
-      >
-        {switcher.label} ↗
-      </a>
-
       {/* Mobile hamburger */}
       <button
         className="tm-nav-mobile-toggle"
@@ -216,19 +171,6 @@ export default function TopNav({ site = 'tunnelmind', currentPage, onNavigate })
               </button>
             )
           })}
-          <a
-            href={switcher.href}
-            style={{
-              display: 'block',
-              padding: '12px 16px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '11px',
-              color: 'var(--chrome-text-dim)',
-              textDecoration: 'none',
-            }}
-          >
-            {switcher.label} ↗
-          </a>
         </div>
       )}
     </nav>

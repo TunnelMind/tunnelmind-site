@@ -16,10 +16,15 @@ export async function onRequestGet(context) {
   if (!domain) return json({ error: 'invalid_domain' }, 400)
 
   try {
+    // `deduplicate=Y` collapses the per-CT-log-entry duplication crt.sh
+    // emits by default — payload shrinks 3-5×, which matters for any
+    // popular apex (a wildcard query on openai.com without dedup is
+    // megabytes and reliably times out). Keep wall-clock under the CF
+    // Pages ~10s un-catchable-502 ceiling.
     const r = await fetchWithTimeout(
-      `https://crt.sh/?q=${encodeURIComponent('%.' + domain)}&output=json`,
+      `https://crt.sh/?q=${encodeURIComponent('%.' + domain)}&output=json&deduplicate=Y`,
       { headers: { Accept: 'application/json' } },
-      10000,
+      7000,
     )
     if (!r.ok) return json({ error: 'crtsh_unavailable', status: r.status }, 502)
     const text = await r.text()

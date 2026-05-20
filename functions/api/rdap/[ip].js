@@ -11,10 +11,14 @@
 // Follows redirects MANUALLY — see /api/corpus/_lib.js fetchFollowRedirects
 // for the rationale (Workers' auto-redirect handler started returning hard
 // CF-edge 502s instead of catchable rejections somewhere around 2025-Q4).
-import { fetchFollowRedirects } from '../corpus/_lib.js'
+import { fetchFollowRedirects, normalizeIp } from '../corpus/_lib.js'
 
 export async function onRequestGet(context) {
-  const ip = encodeURIComponent(context.params.ip)
+  // Validate server-side, pass through with raw colons. encodeURIComponent
+  // on an IPv6 address turns `:` into `%3A`, which rdap.org responds to
+  // with a 400 — the colons in IPv6 are path-safe and must be preserved.
+  const ip = normalizeIp(context.params.ip)
+  if (!ip) return json({ error: 'invalid_ip' }, 400)
   try {
     const resp = await fetchFollowRedirects(`https://rdap.org/ip/${ip}`, {
       headers: { Accept: 'application/rdap+json' },

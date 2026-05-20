@@ -376,6 +376,21 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
   function selectNode(id) {
     selected = id;
+    // DIAG: surface what's happening right in the panel so we can see
+    // whether the click is firing and whether nodes.find() resolves.
+    // Remove after the click-doesn't-update bug is root-caused.
+    const diagBody = $('#inspectorBody');
+    if (diagBody) {
+      const found = nodes.find((x) => x.id === id);
+      diagBody.innerHTML =
+        '<div style="color:#6ad6c8;padding:14px;font:12px ui-monospace,monospace;line-height:1.6">' +
+        '<strong>DIAG · selectNode fired</strong><br>' +
+        'id received: <code>' + esc(id) + '</code><br>' +
+        'nodes.length: ' + nodes.length + '<br>' +
+        'sample ids: ' + nodes.slice(0, 3).map((n) => '<code>' + esc(n.id) + '</code>').join(' ') + '<br>' +
+        'found: ' + (!!found) + (found ? ' (kind=' + found.kind + ')' : '') +
+        '</div>';
+    }
     const n = nodes.find((x) => x.id === id);
     if (!n) return;
     inspectorMode = 'node';

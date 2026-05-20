@@ -68,7 +68,7 @@ export async function fetchWithTimeout(url, opts = {}, ms = 6000) {
 // RIR's endpoint), so /api/rdap/* and /api/corpus/rdap-domain/* both
 // hit this. Following them ourselves keeps the failure inside the
 // caller's try/catch.
-export async function fetchFollowRedirects(url, opts = {}, ms = 6000, maxRedirects = 5) {
+export async function fetchFollowRedirects(url, opts = {}, totalMs = 8000, maxRedirects = 5) {
   // Some upstreams (rdap.org, several smaller registry endpoints) silently
   // reject requests without a User-Agent that looks like a real client —
   // the request hard-errors at the CF edge before our catch sees it. Send
@@ -77,9 +77,16 @@ export async function fetchFollowRedirects(url, opts = {}, ms = 6000, maxRedirec
   if (!headers.has('user-agent')) {
     headers.set('user-agent', 'TunnelMindCorpus/1.0 (+https://tunnelmind.ai)')
   }
+  // Single deadline across the whole redirect chain so a slow per-hop
+  // cannot stack into a 30s wall-clock. CF Pages Functions get killed
+  // hard (un-catchable 502) somewhere past ~10s of pending fetch; stay
+  // well under that even with five hops.
+  const deadline = Date.now() + totalMs
   let current = url
   for (let i = 0; i <= maxRedirects; i++) {
-    const r = await fetchWithTimeout(current, { ...opts, headers, redirect: 'manual' }, ms)
+    const remaining = deadline - Date.now()
+    if (remaining <= 0) throw new Error('upstream_timeout')
+    const r = await fetchWithTimeout(current, { ...opts, headers, redirect: 'manual' }, remaining)
     if (r.status >= 300 && r.status < 400 && r.headers.has('location')) {
       const loc = r.headers.get('location')
       current = new URL(loc, current).toString()

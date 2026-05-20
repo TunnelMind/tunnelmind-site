@@ -108,7 +108,21 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     detectNewArrivals(r);
     if (mode === 'json') renderJson();
     rebuildGraph(r, c);
+    updateLegend();
     if (inspectorMode === 'overview') renderOverview();
+  }
+
+  // The legend is honest about the visible sample — it advertises only
+  // the kinds present in the current snapshot. The corpus right now
+  // emits exclusively `actor` observations from scry-server / Augur, so
+  // the `scanner` row would otherwise sit there forever pointing at a
+  // grey dot that never appears.
+  function updateLegend() {
+    const kinds = new Set(nodes.map((n) => n.kind));
+    for (const k of ['actor', 'scanner', 'campaign']) {
+      const el = root.querySelector('.rl-item-' + k);
+      if (el) el.style.display = kinds.has(k) ? '' : 'none';
+    }
   }
 
   // Diff the recent set against what we've already seen; anything new
@@ -378,13 +392,22 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
   // ── inspector shell ───────────────────────────────────────────────
   // The right-hand panel has a persistent header (the Corpus lookup
-  // form) plus a body that the render* functions own. Wired once at
-  // bootstrap so a re-render of the body cannot lose form state — a
-  // visitor mid-type would otherwise be wiped out by the next SSE
-  // snapshot every 10 seconds.
+  // form) plus a body that the render* functions own. The gate checks
+  // for the BODY ELEMENT, not a dataset flag — if React reconciles and
+  // wipes our children but leaves the dataset, a flag-based gate would
+  // skip the rewrite and every subsequent click would silently no-op
+  // (since render* fns bail when inspectorBody() returns null). Checking
+  // the element directly makes this self-healing.
+  //
+  // The lookup-form input value is preserved across rewrites so a
+  // visitor mid-type doesn't lose their input on a snapshot tick.
   function ensureInspectorShell() {
     const insp = $('#inspector');
-    if (!insp || insp.dataset.shellWired === '1') return;
+    if (!insp) return;
+    if (insp.querySelector('#inspectorBody') && insp.querySelector('#inspectorLookup')) return;
+    // Capture any in-progress lookup input so we can restore it after.
+    const prevInput = insp.querySelector('#inspectorLookup input[name="host"]');
+    const prevValue = prevInput ? prevInput.value : '';
     insp.innerHTML =
       '<form id="inspectorLookup" class="insp-lookup" autocomplete="off">' +
         '<div class="insp-lookup-label">Look up the corpus</div>' +
@@ -399,9 +422,9 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
           '<a href="https://mcp.tunnelmind.ai">MCP</a>.</div>' +
       '</form>' +
       '<div id="inspectorBody"><div class="placeholder">Loading the corpus…</div></div>';
-    insp.dataset.shellWired = '1';
     const form = insp.querySelector('#inspectorLookup');
     const input = form.querySelector('input[name="host"]');
+    if (prevValue) input.value = prevValue;
     form.addEventListener('submit', (ev) => {
       ev.preventDefault();
       const v = input.value.trim();

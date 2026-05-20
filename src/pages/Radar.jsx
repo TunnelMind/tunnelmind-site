@@ -240,17 +240,23 @@ export default function Radar({ onNavigate }) {
           <section id="viewVisual" className="radar-view active">
             <div id="graphArea">
               <svg id="graphSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+              {/* Per-item visibility is toggled by JS based on what's
+                  in the current snapshot — the radar shouldn't claim a
+                  category in the legend that has no dots on screen.
+                  See initRadar.js#updateLegend. */}
               <div className="radar-legend" aria-hidden="true">
-                <span className="rl-item"><i className="rl-dot rl-actor" />actor</span>
-                <span className="rl-item"><i className="rl-dot rl-scanner" />scanner</span>
-                <span className="rl-item"><i className="rl-dot rl-campaign" />campaign</span>
+                <span className="rl-item rl-item-actor"><i className="rl-dot rl-actor" />actor</span>
+                <span className="rl-item rl-item-scanner"><i className="rl-dot rl-scanner" />scanner</span>
+                <span className="rl-item rl-item-campaign"><i className="rl-dot rl-campaign" />campaign</span>
                 <span className="rl-hint">node size = observation volume</span>
               </div>
               <div id="radarTicker" className="radar-ticker"></div>
             </div>
-            <aside id="inspector">
-              <div className="placeholder">Loading the corpus…</div>
-            </aside>
+            {/* JS owns the contents of #inspector entirely — see
+                initRadar.js#ensureInspectorShell. No JSX children here,
+                because any React reconciliation pass would otherwise
+                wipe the form + body div the inspector relies on. */}
+            <aside id="inspector"></aside>
           </section>
 
           <section id="viewJson" className="radar-view">

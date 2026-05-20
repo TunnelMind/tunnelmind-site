@@ -347,8 +347,13 @@ a:hover {
   --radar-node-scanner: #6b7280;
   --radar-node-campaign: #f59e0b;
 
-  height: 78vh;
-  min-height: 520px;
+  /* The radar IS the page — give it real estate. Use the full viewport
+     height below the hero (allow ~100vh-220px so the hero peeks above
+     and the conversion frame is one scroll-flick away). Clamps the
+     bottom so an extreme-tall window doesn't stretch the graph into a
+     cartoonish balloon. */
+  height: min(calc(100vh - 220px), 1200px);
+  min-height: 620px;
   display: flex;
   flex-direction: column;
   position: relative;

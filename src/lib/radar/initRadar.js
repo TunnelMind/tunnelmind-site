@@ -368,6 +368,9 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     if (!svg.dataset.clickWired) {
       svg.dataset.clickWired = '1';
       svg.addEventListener('click', (ev) => {
+        // DIAG: every click on the SVG, regardless of target.
+        diag('svg click · target=' + (ev.target && ev.target.tagName) +
+          ' · has-data-id=' + !!(ev.target && ev.target.closest && ev.target.closest('circle[data-id]')));
         const circle = ev.target.closest('circle[data-id]');
         if (circle) selectNode(circle.getAttribute('data-id'));
       });
@@ -376,26 +379,35 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
   function selectNode(id) {
     selected = id;
-    // DIAG: surface what's happening right in the panel so we can see
-    // whether the click is firing and whether nodes.find() resolves.
-    // Remove after the click-doesn't-update bug is root-caused.
-    const diagBody = $('#inspectorBody');
-    if (diagBody) {
-      const found = nodes.find((x) => x.id === id);
-      diagBody.innerHTML =
-        '<div style="color:#6ad6c8;padding:14px;font:12px ui-monospace,monospace;line-height:1.6">' +
-        '<strong>DIAG · selectNode fired</strong><br>' +
-        'id received: <code>' + esc(id) + '</code><br>' +
-        'nodes.length: ' + nodes.length + '<br>' +
-        'sample ids: ' + nodes.slice(0, 3).map((n) => '<code>' + esc(n.id) + '</code>').join(' ') + '<br>' +
-        'found: ' + (!!found) + (found ? ' (kind=' + found.kind + ')' : '') +
-        '</div>';
-    }
+    // DIAG: a fixed banner at the very top of the viewport on every
+    // click. Bypasses the inspector entirely so we can prove whether
+    // the click is even reaching this function. Remove after the bug
+    // is root-caused.
+    diag('selectNode(' + id + ') · nodes=' + nodes.length +
+      ' · found=' + !!nodes.find((x) => x.id === id));
     const n = nodes.find((x) => x.id === id);
     if (!n) return;
     inspectorMode = 'node';
     if (n.kind === 'campaign') renderCampaignInspector(n);
     else renderActorInspector(n);
+  }
+
+  // DIAG helper — paint a hot-pink overlay banner at the top of the
+  // viewport so we can see events fire even when the inspector path
+  // is blocked. Logs to console too.
+  function diag(msg) {
+    try { console.log('[RADAR DIAG]', msg) } catch {}
+    let el = document.getElementById('__radarDiag');
+    if (!el) {
+      el = document.createElement('div');
+      el.id = '__radarDiag';
+      el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;' +
+        'background:#ff0066;color:#fff;padding:10px 14px;' +
+        'font:13px ui-monospace,monospace;line-height:1.4;' +
+        'box-shadow:0 2px 8px rgba(0,0,0,0.5)';
+      document.body.appendChild(el);
+    }
+    el.textContent = '[DIAG ' + new Date().toLocaleTimeString() + '] ' + msg;
   }
 
   function clearSelection() {

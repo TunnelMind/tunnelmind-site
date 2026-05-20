@@ -69,12 +69,19 @@ export async function fetchWithTimeout(url, opts = {}, ms = 6000) {
 // hit this. Following them ourselves keeps the failure inside the
 // caller's try/catch.
 export async function fetchFollowRedirects(url, opts = {}, ms = 6000, maxRedirects = 5) {
+  // Some upstreams (rdap.org, several smaller registry endpoints) silently
+  // reject requests without a User-Agent that looks like a real client —
+  // the request hard-errors at the CF edge before our catch sees it. Send
+  // a polite identifying UA unless the caller set one explicitly.
+  const headers = new Headers(opts.headers || {})
+  if (!headers.has('user-agent')) {
+    headers.set('user-agent', 'TunnelMindCorpus/1.0 (+https://tunnelmind.ai)')
+  }
   let current = url
   for (let i = 0; i <= maxRedirects; i++) {
-    const r = await fetchWithTimeout(current, { ...opts, redirect: 'manual' }, ms)
+    const r = await fetchWithTimeout(current, { ...opts, headers, redirect: 'manual' }, ms)
     if (r.status >= 300 && r.status < 400 && r.headers.has('location')) {
       const loc = r.headers.get('location')
-      // Resolve relative redirects against the current URL.
       current = new URL(loc, current).toString()
       continue
     }

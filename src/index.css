@@ -821,6 +821,54 @@ a:hover {
   padding-bottom: 1px;
 }
 
+/* sec-tag — pass / warn / fail badges for the Mail, HTTP-security,
+   Agent, Inject, and Opt-Out tabs. Same shape, three risk states. */
+.radar-root .sec-tag {
+  font-size: 10.5px; padding: 2px 8px; border-radius: 3px;
+  border: 1px solid var(--radar-border); background: var(--radar-panel-2);
+  font-family: ui-monospace, monospace;
+  letter-spacing: 0.02em;
+}
+.radar-root .sec-tag.sec-pass {
+  color: var(--radar-accent);
+  border-color: var(--radar-accent-dim);
+  background: rgba(106,214,200,0.08);
+}
+.radar-root .sec-tag.sec-warn {
+  color: #f5b657;
+  border-color: rgba(245,182,87,0.4);
+  background: rgba(245,182,87,0.08);
+}
+.radar-root .sec-tag.sec-fail {
+  color: #d97757;
+  border-color: rgba(217,119,87,0.4);
+  background: rgba(217,119,87,0.08);
+}
+
+/* Long mono strings (SPF / DMARC records, license URLs) wrap rather
+   than overflow the panel. */
+.radar-root .insp-mono-wrap {
+  padding: 8px 10px; background: var(--radar-panel-2); border-radius: 5px;
+  font-family: ui-monospace, monospace; font-size: 11.5px;
+  color: var(--radar-fg); word-break: break-all; line-height: 1.5;
+}
+
+/* Tighter list density for very long enumerations (Subdomains). */
+.radar-root .insp-list-tight li {
+  padding: 2px 0; font-size: 11.5px;
+}
+
+/* Prose block — short narrative paragraphs in Agent / Inject / Opt-Out
+   summary text and the AI-policy gloss in Crawlers. */
+.radar-root .insp-prose {
+  font-size: 12px; line-height: 1.55;
+  color: var(--radar-fg-dim); margin-bottom: 6px;
+}
+.radar-root .insp-prose code {
+  background: #0006; padding: 1px 4px; border-radius: 3px;
+  color: var(--radar-fg);
+}
+
 /* "Inspect this IP in Corpus" pivot button on the actor inspector */
 .radar-root .insp-pivot { margin-top: 14px; }
 .radar-root .insp-pivot-btn {

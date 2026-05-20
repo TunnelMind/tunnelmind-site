@@ -787,11 +787,25 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     const ip = isIpLocal(host);
     // Tab availability: domain-only tabs hide when the host is an IP,
     // and vice versa.
+    // Order: identity → resolution → network → content → privacy → threat.
+    // Most domain-only tabs are clustered after the resolution group, so
+    // a casual visitor's left-to-right reading order matches the natural
+    // narrative ("who is it, where does it live, what does it serve,
+    // how does it treat you, can you trust it").
     const tabs = [
       { id: 'rdap',       label: ip ? 'WHOIS · IP' : 'WHOIS', enabled: true },
       { id: 'dns',        label: 'DNS',                       enabled: !ip },
+      { id: 'mail',       label: 'Mail',                      enabled: !ip },
       { id: 'cert',       label: 'Certs',                     enabled: !ip },
+      { id: 'subdomains', label: 'Subdomains',                enabled: !ip },
+      { id: 'asn',        label: 'ASN',                       enabled: true },
+      { id: 'http',       label: 'HTTP',                      enabled: !ip },
+      { id: 'stack',      label: 'Stack',                     enabled: !ip },
       { id: 'tracker',    label: 'Tracker',                   enabled: !ip },
+      { id: 'crawlers',   label: 'Crawlers',                  enabled: !ip },
+      { id: 'agent',      label: 'Agent',                     enabled: !ip },
+      { id: 'inject',     label: 'Injection',                 enabled: !ip },
+      { id: 'optout',     label: 'Opt-Out',                   enabled: !ip },
       { id: 'reputation', label: 'Reputation',                enabled: true },
     ].filter((t) => t.enabled);
 
@@ -857,11 +871,23 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   }
 
   function endpointForTab(tab) {
+    // Maps tab id → /api/corpus/<this>/<host>. The intel/* family lives
+    // behind a single multiplexer Function (functions/api/corpus/intel/
+    // [type]/[domain].js) so all six tabs share one proxy.
     return {
-      rdap: 'rdap-domain', // domain RDAP; IP RDAP is /api/rdap above
-      dns: 'dns',
-      cert: 'cert',
-      tracker: 'tracker',
+      rdap:       'rdap-domain',  // domain RDAP; IP RDAP is /api/rdap above
+      dns:        'dns',
+      mail:       'mail',
+      cert:       'cert',
+      subdomains: 'subdomains',
+      asn:        'asn',
+      http:       'intel/http',
+      stack:      'intel/stack',
+      tracker:    'tracker',
+      crawlers:   'intel/robots',
+      agent:      'intel/agent',
+      inject:     'intel/inject',
+      optout:     'intel/optout',
       reputation: 'reputation',
     }[tab];
   }
@@ -873,13 +899,22 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
         '</div>';
     }
     switch (tab) {
-      case 'rdap':      return renderRdapDomain(data, host);
-      case 'rdap-ip':   return renderRdapIp(data, host);
-      case 'dns':       return renderDns(data);
-      case 'cert':      return renderCert(data);
-      case 'tracker':   return renderTracker(data);
-      case 'reputation':return renderReputation(data);
-      default:          return '<div class="insp-err">Unknown tab.</div>';
+      case 'rdap':       return renderRdapDomain(data, host);
+      case 'rdap-ip':    return renderRdapIp(data, host);
+      case 'dns':        return renderDns(data);
+      case 'mail':       return renderMail(data);
+      case 'cert':       return renderCert(data);
+      case 'subdomains': return renderSubdomains(data);
+      case 'asn':        return renderAsn(data, host);
+      case 'http':       return renderHttp(data);
+      case 'stack':      return renderStack(data);
+      case 'tracker':    return renderTracker(data);
+      case 'crawlers':   return renderCrawlers(data);
+      case 'agent':      return renderAgent(data);
+      case 'inject':     return renderInject(data);
+      case 'optout':     return renderOptout(data);
+      case 'reputation': return renderReputation(data);
+      default:           return '<div class="insp-err">Unknown tab.</div>';
     }
   }
 
@@ -1051,6 +1086,264 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     return html;
   }
 
+  // ── second-wave tabs (ported from netprobe.html 2026-05-19) ──────
+  // Mail / Subdomains / ASN / HTTP / Stack / Crawlers / Agent /
+  // Injection / Opt-Out. Each render fn is small and renders only what
+  // the upstream actually returned — missing fields just don't print.
+
+  function renderMail(m) {
+    if (!m) return emptyTab('Mail lookup returned no data.');
+    let html = '<div class="insp-sub-label">Posture</div>';
+    html += '<div class="insp-tag-row">' +
+      mailBadge('SPF', m.spf && m.spf.present, m.spf && m.spf.policy) +
+      mailBadge('DMARC', m.dmarc && m.dmarc.present, m.dmarc && m.dmarc.policy) +
+      mailBadge('DKIM', m.dkim && m.dkim.present,
+        m.dkim && m.dkim.selectors_found && m.dkim.selectors_found[0]) +
+      '</div>';
+    if (m.mx && m.mx.length) {
+      html += '<div class="insp-sub-label">MX</div><ul class="insp-list">' +
+        m.mx.map((r) => '<li><code>' + esc(r.preference + ' ' + r.host) + '</code></li>').join('') +
+        '</ul>';
+    } else {
+      html += '<div class="insp-sub-label">MX</div><div class="insp-empty">No MX records.</div>';
+    }
+    if (m.spf && m.spf.record) {
+      html += '<div class="insp-sub-label">SPF record</div>' +
+        '<div class="insp-mono-wrap"><code>' + esc(m.spf.record) + '</code></div>';
+    }
+    if (m.dmarc && m.dmarc.record) {
+      html += '<div class="insp-sub-label">DMARC record</div>' +
+        '<div class="insp-mono-wrap"><code>' + esc(m.dmarc.record) + '</code></div>';
+    }
+    if (m.dkim && m.dkim.selectors_found && m.dkim.selectors_found.length) {
+      html += '<div class="insp-sub-label">DKIM selectors found</div>' +
+        '<div class="insp-tag-row">' +
+        m.dkim.selectors_found.map((s) => '<span class="insp-tag">' + esc(s) + '</span>').join('') +
+        '</div>';
+    }
+    html += sourceLink('cloudflare-dns.com', null);
+    return html;
+  }
+
+  function mailBadge(label, ok, detail) {
+    const cls = ok ? 'sec-pass' : 'sec-fail';
+    const txt = label + ' · ' + (ok ? (detail || 'present') : 'missing');
+    return '<span class="sec-tag ' + cls + '">' + esc(txt) + '</span>';
+  }
+
+  function renderSubdomains(s) {
+    if (!s || !Array.isArray(s.subdomains)) return emptyTab('Subdomain lookup returned no data.');
+    if (s.subdomains.length === 0) {
+      return emptyTab('crt.sh has no subdomain entries for this apex.') +
+        sourceLink('crt.sh', null);
+    }
+    let html = '<div class="insp-fields">' +
+      field('total seen', '<span class="v-num">' + fmt(s.total) + '</span>') +
+      field('showing', '<span class="v-num">' + fmt(s.shown) + '</span>') +
+      '</div>';
+    html += '<div class="insp-sub-label">Names</div>';
+    html += '<ul class="insp-list insp-list-tight">' +
+      s.subdomains.map((n) => '<li><code>' + esc(n) + '</code></li>').join('') +
+      '</ul>';
+    html += sourceLink('crt.sh', `https://crt.sh/?q=${encodeURIComponent('%.' + s.domain)}`);
+    return html;
+  }
+
+  function renderAsn(a, host) {
+    if (!a || !Array.isArray(a.addresses)) return emptyTab('ASN lookup returned no data.');
+    if (a.addresses.length === 0) {
+      return emptyTab(a.note || 'No addresses resolved.') +
+        sourceLink('bgpview.io', null);
+    }
+    let html = '';
+    for (const addr of a.addresses) {
+      html += '<div class="insp-sub-label"><code>' + esc(addr.ip) + '</code></div>';
+      if (addr.error) {
+        html += '<div class="insp-err-soft">lookup failed</div>';
+        continue;
+      }
+      const rows = [
+        ['ASN', addr.asn != null ? 'AS' + addr.asn : null],
+        ['org', addr.org],
+        ['prefix', addr.prefix],
+        ['country', addr.country],
+        ['RIR', addr.rir],
+        ['abuse', (addr.abuse || []).join(', ') || null],
+      ];
+      html += '<div class="insp-fields">';
+      for (const [k, v] of rows) {
+        if (v) html += field(k, v);
+      }
+      html += '</div>';
+    }
+    html += sourceLink('bgpview.io', `https://bgpview.io/search/${encodeURIComponent(host)}`);
+    return html;
+  }
+
+  function renderHttp(h) {
+    if (!h) return emptyTab('HTTP probe returned no data.');
+    if (h.error) return emptyTab('HTTP fetch failed: ' + esc(h.error));
+    let html = '<div class="insp-fields">' +
+      field('URL', '<code>' + esc(h.url) + '</code>') +
+      field('status', '<span class="v-num">' + esc(String(h.status)) + '</span>') +
+      '</div>';
+    // Security-header badges — each present is good, each missing is bad.
+    if (h.security) {
+      const SEC = [
+        ['HSTS', 'hsts'], ['CSP', 'csp'], ['XFO', 'xfo'],
+        ['XCTO', 'xcto'], ['Ref-Policy', 'rp'],
+      ];
+      html += '<div class="insp-sub-label">Security headers</div>' +
+        '<div class="insp-tag-row">' +
+        SEC.map(([label, key]) => mailBadge(label, !!h.security[key], h.security[key] ? 'set' : 'missing'))
+          .join('') + '</div>';
+    }
+    if (h.redirect_chain && h.redirect_chain.length > 1) {
+      html += '<div class="insp-sub-label">Redirect chain</div><ol class="insp-list">' +
+        h.redirect_chain.map((r) =>
+          '<li><code>' + esc(r.url) + '</code>' +
+          ' <span class="v-dim">' + esc(String(r.status)) + '</span></li>').join('') +
+        '</ol>';
+    }
+    if (h.headers && Object.keys(h.headers).length) {
+      html += '<div class="insp-sub-label">Headers</div><ul class="insp-list">' +
+        Object.entries(h.headers).slice(0, 12).map(([k, v]) =>
+          '<li><span class="v-dim">' + esc(k) + ':</span> <code>' + esc(String(v)) + '</code></li>')
+          .join('') + '</ul>';
+    }
+    html += sourceLink('data.tunnelmind.ai', null);
+    return html;
+  }
+
+  function renderStack(s) {
+    if (!s) return emptyTab('Stack probe returned no data.');
+    if (s.error) return emptyTab('Stack fetch failed: ' + esc(s.error));
+    if (!s.stack || s.stack.length === 0) {
+      return emptyTab('No stack signals identified — nothing distinctive in headers or markup.') +
+        sourceLink('data.tunnelmind.ai', null);
+    }
+    let html = '';
+    const grouped = s.grouped && Object.keys(s.grouped).length
+      ? s.grouped
+      : { 'Detected': s.stack.map((t) => t.name) };
+    for (const [cat, items] of Object.entries(grouped)) {
+      html += '<div class="insp-sub-label">' + esc(cat) + '</div>' +
+        '<div class="insp-tag-row">' +
+        items.map((n) => '<span class="insp-tag">' + esc(n) + '</span>').join('') +
+        '</div>';
+    }
+    html += sourceLink('data.tunnelmind.ai', null);
+    return html;
+  }
+
+  function renderCrawlers(c) {
+    if (!c) return emptyTab('robots.txt probe returned no data.');
+    if (c.status === 404 || c.status === 0) {
+      return emptyTab('No robots.txt found at this domain.') +
+        sourceLink('data.tunnelmind.ai', null);
+    }
+    let html = '<div class="insp-fields">' +
+      field('status', '<span class="v-num">' + esc(String(c.status)) + '</span>') +
+      field('size', '<span class="v-num">' + fmt(c.size_bytes) + '</span> bytes') +
+      '</div>';
+    if (c.ai_summary) {
+      html += '<div class="insp-sub-label">AI policy</div>' +
+        '<div class="insp-prose">' + esc(c.ai_summary) + '</div>';
+    }
+    if (Array.isArray(c.agents) && c.agents.length) {
+      html += '<div class="insp-sub-label">Per-agent rules</div>' +
+        '<ul class="insp-list">' +
+        c.agents.slice(0, 20).map((a) =>
+          '<li><code>' + esc(a.agent) + '</code> ' +
+          '<span class="v-dim">' + esc(a.access || '') + '</span>' +
+          (a.paths && a.paths.length ? ' <span class="v-dim">' + a.paths.length + ' rule(s)</span>' : '') +
+          '</li>').join('') +
+        '</ul>';
+    }
+    html += sourceLink('data.tunnelmind.ai', null);
+    return html;
+  }
+
+  function renderAgent(a) {
+    if (!a) return emptyTab('Agent-surface probe returned no data.');
+    const signals = a.signals && typeof a.signals === 'object' ? a.signals : {};
+    const entries = Object.entries(signals);
+    if (entries.length === 0) {
+      return emptyTab('No agent-facing surface signals returned.') +
+        sourceLink('data.tunnelmind.ai', null);
+    }
+    let html = '<div class="insp-prose">Standards a site exposes for ' +
+      'AI agents — well-known files like <code>llms.txt</code>, ' +
+      '<code>ai.txt</code>, MCP manifests, OpenAPI specs. Found means ' +
+      'the file resolved with a 200.</div>';
+    html += '<div class="insp-tag-row">' +
+      entries.map(([k, v]) => {
+        const ok = v && v.found;
+        return '<span class="sec-tag ' + (ok ? 'sec-pass' : 'sec-fail') + '">' +
+          esc(k) + ' · ' + (ok ? 'found' : 'missing') + '</span>';
+      }).join('') + '</div>';
+    html += sourceLink('data.tunnelmind.ai', null);
+    return html;
+  }
+
+  function renderInject(j) {
+    if (!j) return emptyTab('Injection probe returned no data.');
+    if (j.fetch_error) return emptyTab('Probe could not load the page: ' + esc(j.fetch_error));
+    const score = typeof j.risk_score === 'number' ? j.risk_score : 0;
+    const scoreClass = score >= 7 ? 'sec-fail' : score >= 3 ? 'sec-warn' : 'sec-pass';
+    let html = '<div class="insp-fields">' +
+      field('risk score', '<span class="sec-tag ' + scoreClass + '">' + score + '</span>') +
+      field('page size', fmt(j.page_size) + ' bytes') +
+      '</div>';
+    if (j.summary) {
+      html += '<div class="insp-sub-label">Summary</div>' +
+        '<div class="insp-prose">' + esc(j.summary) + '</div>';
+    }
+    if (Array.isArray(j.findings) && j.findings.length) {
+      html += '<div class="insp-sub-label">Findings</div><ul class="insp-list">' +
+        j.findings.slice(0, 20).map((f) =>
+          '<li>' + (typeof f === 'string' ? esc(f) :
+            esc(f.type || 'finding') + (f.detail ? ' — <span class="v-dim">' + esc(f.detail) + '</span>' : '')) +
+          '</li>').join('') +
+        '</ul>';
+    }
+    html += sourceLink('data.tunnelmind.ai', null);
+    return html;
+  }
+
+  function renderOptout(o) {
+    if (!o) return emptyTab('Opt-out probe returned no data.');
+    const fields = [
+      ['TDM-Reservation header', o.tdm_reservation_header],
+      ['TDM policy URL',         !!o.tdm_policy_url],
+      ['X-Robots-Tag: noai',     o.x_robots_noai],
+      ['<meta noai>',            o.meta_noai],
+      ['<meta TDM-Reservation>', o.meta_tdm_reservation],
+      ['data-ai="no"',           o.data_ai_attr],
+      ['License: ai-restrictive', o.license_ai_restrictive],
+      ['robots.txt noai',        o.robots_noai],
+    ];
+    let html = '<div class="insp-prose">' + esc(o.assessment || '') + '</div>';
+    html += '<div class="insp-sub-label">Signals checked</div>';
+    html += '<div class="insp-tag-row">' +
+      fields.map(([label, ok]) =>
+        '<span class="sec-tag ' + (ok ? 'sec-pass' : 'sec-fail') + '">' +
+        esc(label) + ' · ' + (ok ? 'yes' : 'no') + '</span>').join('') +
+      '</div>';
+    if (o.tdm_policy_url) {
+      html += '<div class="insp-sub-label">TDM policy</div>' +
+        '<a class="insp-deep" href="' + escAttr(o.tdm_policy_url) + '" target="_blank" rel="noopener">' +
+        esc(o.tdm_policy_url) + ' ↗</a>';
+    }
+    if (o.license_url) {
+      html += '<div class="insp-sub-label">License</div>' +
+        '<a class="insp-deep" href="' + escAttr(o.license_url) + '" target="_blank" rel="noopener">' +
+        esc(o.license_url) + ' ↗</a>';
+    }
+    html += sourceLink('data.tunnelmind.ai', null);
+    return html;
+  }
+
   function emptyTab(msg) { return '<div class="insp-empty">' + esc(msg) + '</div>'; }
 
   function sourceLink(name, href) {
@@ -1065,13 +1358,22 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       invalid_domain: 'That domain looks malformed.',
       invalid_name: 'That name looks malformed.',
       invalid_host: 'That host looks malformed.',
+      invalid_ip: 'That IP address looks malformed.',
+      invalid_intel_type: 'Unknown intel category.',
       rdap_unavailable: 'The RDAP relay is unavailable right now.',
       rdap_error: 'RDAP lookup failed.',
       crtsh_unavailable: 'crt.sh is unavailable right now.',
       crtsh_bad_payload: 'crt.sh returned an unexpected payload.',
       crtsh_error: 'crt.sh lookup failed.',
+      subdomains_error: 'Subdomain lookup failed.',
       tracker_unavailable: 'The tracker corpus is unavailable right now.',
       tracker_error: 'Tracker lookup failed.',
+      intel_unavailable: 'The intel surface is unavailable right now.',
+      intel_error: 'Intel lookup failed.',
+      mail_error: 'Mail-record lookup failed.',
+      asn_error: 'ASN lookup failed.',
+      upstream_timeout: 'Upstream took too long to respond.',
+      too_many_redirects: 'Upstream redirected too many times.',
     })[code] || 'Lookup failed.';
   }
 

@@ -1,18 +1,17 @@
 // GET /api/corpus/reputation/:host — reputation across public feeds.
 //
-// Split contract by input kind:
-//   - IP     → /v1/check on scry-server. Returns Augur's redistributable
-//              enrichment view (URLhaus, ThreatFox, Tor exit, …) plus
-//              our own observation/actor-class state. No live third
-//              party in the request path.
-//   - domain → urlhaus (abuse.ch) live host lookup. scry-server doesn't
-//              carry domain enrichment yet, so this stays on the live
-//              upstream until Augur grows a domain index.
+// Both input kinds now proxy our own scry-server. No live third-party
+// call in the request path on either branch:
+//   - IP     → /v1/check (Augur's IP enrichment + actor_class overlay)
+//   - domain → /v1/check-domain (Augur's domain enrichment — URLhaus host
+//              extraction + ThreatFox domain IOCs, with subdomain hits
+//              counted separately so an apex query still tells you when
+//              child names are flagged)
 //
-// We used to hit urlhaus live for IPs too, but it's community-run and
-// flakes on cold workers — the "first lookup fails, retry works" UX on
-// the Reputation tab traced back to that. Mirrors the bgpview→/v1/check
-// migration shipped 2026-05-21 for the ASN tab.
+// We used to hit urlhaus-api.abuse.ch live for both, which is community-
+// run and flakes on cold workers — that was the "first lookup fails,
+// retry works" UX. Mirrors the bgpview→/v1/check migration shipped
+// 2026-05-21 for the ASN tab; same shape, both inputs now.
 //
 // Edge-cached 5 minutes so the visitor stream amortizes across viewers.
 
@@ -25,21 +24,15 @@ export async function onRequestGet(context) {
   if (!host) return json({ error: 'invalid_host' }, 400)
 
   if (normalizeIp(host)) {
-    const scry = await scryReputation(host)
+    const scry = await scryCheckIp(host)
     return json({ host, kind: 'ip', sources: { scry } }, 200, 300)
   }
 
-  const settled = await Promise.allSettled([urlhaus(host)])
-  return json({
-    host,
-    kind: 'domain',
-    sources: {
-      urlhaus: settled[0].status === 'fulfilled' ? settled[0].value : { error: 'lookup_failed' },
-    },
-  }, 200, 300)
+  const scry = await scryCheckDomain(host)
+  return json({ host, kind: 'domain', sources: { scry } }, 200, 300)
 }
 
-async function scryReputation(ip) {
+async function scryCheckIp(ip) {
   const r = await fetchWithTimeout(
     `${SCRY_BASE}/v1/check/${encodeURIComponent(ip)}`,
     { headers: { Accept: 'application/json' } },
@@ -48,6 +41,17 @@ async function scryReputation(ip) {
   if (!r.ok) return { error: 'lookup_failed' }
   const j = await r.json()
   return trimScryCheck(j)
+}
+
+async function scryCheckDomain(domain) {
+  const r = await fetchWithTimeout(
+    `${SCRY_BASE}/v1/check-domain/${encodeURIComponent(domain)}`,
+    { headers: { Accept: 'application/json' } },
+    4000,
+  )
+  if (!r.ok) return { error: 'lookup_failed' }
+  const j = await r.json()
+  return trimScryCheckDomain(j)
 }
 
 // Map /v1/check into a flat "did anyone flag this IP" view. We surface
@@ -60,6 +64,7 @@ export function trimScryCheck(j) {
   const observation_count = Number(j.observation_count || 0)
   const sources = Array.isArray(j.enrichment_sources) ? j.enrichment_sources : []
   return {
+    kind: 'ip',
     listed: enrichment_count > 0,
     enrichment_count,
     enrichment_promoted: Number(j.enrichment_promoted || 0),
@@ -74,33 +79,39 @@ export function trimScryCheck(j) {
   }
 }
 
-async function urlhaus(host) {
-  const r = await fetchWithTimeout(
-    'https://urlhaus-api.abuse.ch/v1/host/',
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: 'host=' + encodeURIComponent(host),
-    },
-  )
-  if (!r.ok) throw new Error(`urlhaus_${r.status}`)
-  const j = await r.json()
-  return trimUrlhaus(j)
-}
-
-export function trimUrlhaus(j) {
-  if (!j || j.query_status !== 'ok') {
-    return { listed: false, status: (j && j.query_status) || 'no_results' }
-  }
-  const urls = Array.isArray(j.urls) ? j.urls : []
+// Map /v1/check-domain. Two distinct signal classes the renderer treats
+// differently:
+//   - enrichment_*  → direct domain indicators (the domain IS the IoC).
+//     listed=true on this is a hard signal an agent or ad buyer can act on.
+//   - url_hosted_*  → URLs hosted on this domain were flagged but the
+//     domain itself is not an indicator. github.com, raw.githubusercontent.com,
+//     duckdns.org, etc. accumulate these without being malicious themselves.
+//     Surfaced separately so callers don't conflate "domain is malware" with
+//     "domain hosts user content, some of which is malware."
+export function trimScryCheckDomain(j) {
+  if (!j || typeof j !== 'object') return { listed: false, status: 'no_results' }
+  const enrichment_count = Number(j.enrichment_count || 0)
+  const url_hosted_count = Number(j.url_hosted_count || 0)
+  const subdomain_hits = Number(j.subdomain_hits || 0)
   return {
-    listed: urls.length > 0,
-    total_urls: urls.length,
-    online: urls.filter((u) => u && u.url_status === 'online').length,
-    tags: Array.from(new Set(
-      urls.flatMap((u) => (u && Array.isArray(u.tags) ? u.tags : []))
-    )).slice(0, 10),
-    first_seen: j.firstseen || null,
-    most_recent: urls.length ? urls[0].dateadded || null : null,
+    kind: 'domain',
+    listed: enrichment_count > 0,
+    enrichment_count,
+    enrichment_promoted: Number(j.enrichment_promoted || 0),
+    sources: Array.isArray(j.enrichment_sources) ? j.enrichment_sources : [],
+    url_hosted_count,
+    url_hosted_sources: Array.isArray(j.url_hosted_sources) ? j.url_hosted_sources : [],
+    subdomain_hits,
+    subdomain_sources: Array.isArray(j.subdomain_sources) ? j.subdomain_sources : [],
+    threat_types: Array.isArray(j.threat_types) ? j.threat_types : [],
+    tags: Array.isArray(j.tags) ? j.tags.slice(0, 20) : [],
+    status: j.status || (
+      enrichment_count > 0   ? 'listed' :
+      subdomain_hits > 0     ? 'subdomain_only' :
+      url_hosted_count > 0   ? 'url_hosting' :
+                               'not_listed'
+    ),
+    first_seen_ms: j.first_seen_ms || null,
+    last_seen_ms: j.last_seen_ms || null,
   }
 }

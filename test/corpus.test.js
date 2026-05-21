@@ -4,7 +4,7 @@ import { trim as trimRdapDomain, vcard } from '../functions/api/corpus/rdap-doma
 import { trim as trimDns } from '../functions/api/corpus/dns/[name].js'
 import { trim as trimCert } from '../functions/api/corpus/cert/[domain].js'
 import { trim as trimTracker } from '../functions/api/corpus/tracker/[domain].js'
-import { trimUrlhaus, trimScryCheck } from '../functions/api/corpus/reputation/[host].js'
+import { trimScryCheck, trimScryCheckDomain } from '../functions/api/corpus/reputation/[host].js'
 
 // These trims sit on a CSP that forces every external lookup through
 // our own edge — getting the shape right matters more than any other
@@ -160,29 +160,6 @@ describe('tracker trim', () => {
   })
 })
 
-describe('urlhaus trim', () => {
-  it('compresses URL list into counts + tags', () => {
-    const out = trimUrlhaus({
-      query_status: 'ok',
-      firstseen: '2024-01-01 00:00:00',
-      urls: [
-        { url_status: 'online', tags: ['exe', 'emotet'], dateadded: '2025-01-02 12:00:00' },
-        { url_status: 'offline', tags: ['emotet'], dateadded: '2025-01-01 12:00:00' },
-      ],
-    })
-    expect(out.listed).toBe(true)
-    expect(out.total_urls).toBe(2)
-    expect(out.online).toBe(1)
-    expect(out.tags).toEqual(expect.arrayContaining(['exe', 'emotet']))
-    expect(out.most_recent).toBe('2025-01-02 12:00:00')
-  })
-
-  it('returns not-listed for no_results', () => {
-    expect(trimUrlhaus({ query_status: 'no_results' })).toEqual({ listed: false, status: 'no_results' })
-    expect(trimUrlhaus(null)).toEqual({ listed: false, status: 'no_results' })
-  })
-})
-
 describe('scry-check trim (Reputation IP path)', () => {
   it('flattens enrichment fields + flags listed when enrichment_count > 0', () => {
     const out = trimScryCheck({
@@ -226,5 +203,73 @@ describe('scry-check trim (Reputation IP path)', () => {
   it('coerces null/garbage to a safe not-listed shape', () => {
     expect(trimScryCheck(null)).toEqual({ listed: false, status: 'no_results' })
     expect(trimScryCheck('nope')).toEqual({ listed: false, status: 'no_results' })
+  })
+})
+
+describe('scry-check-domain trim (Reputation domain path)', () => {
+  it('flattens listed-domain shape + carries url-hosted/subdomain/threat fields', () => {
+    const out = trimScryCheckDomain({
+      domain: 'evil.example',
+      status: 'listed',
+      enrichment_count: 4,
+      enrichment_promoted: 2,
+      enrichment_sources: ['threatfox'],
+      url_hosted_count: 12,
+      url_hosted_sources: ['urlhaus'],
+      subdomain_hits: 3,
+      subdomain_sources: ['threatfox'],
+      threat_types: ['malware_dl', 'phishing'],
+      tags: ['emotet', 'qakbot'],
+      first_seen_ms: 1715000000000,
+      last_seen_ms: 1716000000000,
+    })
+    expect(out.kind).toBe('domain')
+    expect(out.listed).toBe(true)
+    expect(out.enrichment_count).toBe(4)
+    expect(out.url_hosted_count).toBe(12)
+    expect(out.sources).toEqual(['threatfox'])
+    expect(out.subdomain_hits).toBe(3)
+    expect(out.threat_types).toEqual(['malware_dl', 'phishing'])
+  })
+
+  it('subdomain-only path: apex not listed but children are', () => {
+    const out = trimScryCheckDomain({
+      domain: 'example.com',
+      status: 'subdomain_only',
+      enrichment_count: 0,
+      url_hosted_count: 0,
+      subdomain_hits: 7,
+      subdomain_sources: ['urlhaus'],
+    })
+    expect(out.listed).toBe(false)
+    expect(out.subdomain_hits).toBe(7)
+    expect(out.status).toBe('subdomain_only')
+  })
+
+  it('url_hosting path: github.com case — apex not flagged but hosts flagged URLs', () => {
+    const out = trimScryCheckDomain({
+      domain: 'github.com',
+      status: 'url_hosting',
+      enrichment_count: 0,
+      enrichment_sources: [],
+      url_hosted_count: 671,
+      url_hosted_sources: ['urlhaus'],
+      subdomain_hits: 0,
+    })
+    expect(out.listed).toBe(false)
+    expect(out.status).toBe('url_hosting')
+    expect(out.url_hosted_count).toBe(671)
+    expect(out.url_hosted_sources).toEqual(['urlhaus'])
+  })
+
+  it('caps tags to 20 to avoid response bloat', () => {
+    const huge = Array.from({ length: 50 }, (_, i) => `t${i}`)
+    const out = trimScryCheckDomain({ enrichment_count: 1, tags: huge, enrichment_sources: [] })
+    expect(out.tags.length).toBe(20)
+  })
+
+  it('coerces null/garbage to a safe not-listed shape', () => {
+    expect(trimScryCheckDomain(null)).toEqual({ listed: false, status: 'no_results' })
+    expect(trimScryCheckDomain('nope')).toEqual({ listed: false, status: 'no_results' })
   })
 })

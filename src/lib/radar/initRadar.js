@@ -1335,66 +1335,89 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
   function renderReputation(rep) {
     if (!rep || !rep.sources) return emptyTab('Reputation lookup returned no sources.');
-    let html = '';
-
-    // IP path: scry-server's aggregated Augur view (URLhaus, ThreatFox,
-    // Tor exit, Spamhaus DROP, …). Replaces the urlhaus live call to
-    // avoid the "first lookup fails, retry works" UX from cold-worker
-    // upstream flake.
     const s = rep.sources.scry;
-    if (s !== undefined) {
-      html += '<div class="insp-sub-label">Augur enrichment <span class="v-dim">tunnelmind.ai</span></div>';
-      if (!s || s.error) {
-        html += '<div class="insp-err-soft">lookup failed</div>';
-      } else if (!s.listed) {
-        html += '<div class="insp-empty">Not listed in any redistributable feed.</div>';
-      } else {
-        html += '<div class="insp-fields">' +
-          field('sources flagging', '<span class="v-num">' + fmt(s.enrichment_count) + '</span>') +
-          (s.enrichment_promoted
-            ? field('≥2-source agreement', '<span class="v-num">' + fmt(s.enrichment_promoted) + '</span>')
-            : '') +
-          (s.first_seen_ms ? field('first seen', new Date(s.first_seen_ms).toISOString().slice(0, 10)) : '') +
-          (s.last_seen_ms  ? field('last seen',  new Date(s.last_seen_ms).toISOString().slice(0, 10))  : '') +
-          '</div>';
-        if (s.sources && s.sources.length) {
-          html += '<div class="insp-tag-row">' +
-            s.sources.map((src) => '<span class="insp-tag">' + esc(src) + '</span>').join('') +
-            '</div>';
-        }
-      }
-      if (s && s.actor_class_label) {
-        html += '<div class="insp-sub-label">Actor class</div>' +
-          '<div class="insp-fields">' +
-          field('class', esc(s.actor_class_label)) +
-          (s.actor_class_trust ? field('trust', esc(s.actor_class_trust)) : '') +
-          '</div>';
-      }
+    if (s === undefined) return emptyTab('Reputation lookup returned no sources.');
+
+    // Both IP and domain branches return a `scry` source — same trim
+    // shape, with domain-specific fields layered on. Replaces the
+    // urlhaus / bgpview live calls that caused "first lookup fails,
+    // retry works" on cold workers.
+    let html = '';
+    html += '<div class="insp-sub-label">Augur enrichment <span class="v-dim">tunnelmind.ai</span></div>';
+
+    if (!s || s.error) {
+      html += '<div class="insp-err-soft">lookup failed</div>';
       html += sourceLink('api.tunnelmind.ai', null);
       return html;
     }
-
-    // Domain path: urlhaus live (scry-server has no domain enrichment yet).
-    const u = rep.sources.urlhaus;
-    html += '<div class="insp-sub-label">URLhaus <span class="v-dim">abuse.ch</span></div>';
-    if (!u || u.error) {
-      html += '<div class="insp-err-soft">lookup failed</div>';
-    } else if (!u.listed) {
-      html += '<div class="insp-empty">Not listed.</div>';
+    if (!s.listed) {
+      let note;
+      if (s.kind === 'domain' && s.subdomain_hits > 0) {
+        note = 'Apex not flagged, but ' + fmt(s.subdomain_hits) + ' subdomain hit' +
+          (s.subdomain_hits === 1 ? '' : 's') + '.';
+      } else if (s.kind === 'domain' && s.url_hosted_count > 0) {
+        note = 'Domain itself is not flagged, but it hosts ' +
+          fmt(s.url_hosted_count) + ' URL' +
+          (s.url_hosted_count === 1 ? '' : 's') +
+          ' that are. Typical for user-generated-content sites — treat the host as safe to read; treat arbitrary paths with caution.';
+      } else {
+        note = 'Not listed in any redistributable feed.';
+      }
+      html += '<div class="insp-empty">' + esc(note) + '</div>';
     } else {
       html += '<div class="insp-fields">' +
-        field('URLs seen', '<span class="v-num">' + fmt(u.total_urls) + '</span>') +
-        field('online now', '<span class="v-num">' + fmt(u.online) + '</span>') +
-        (u.first_seen ? field('first seen', u.first_seen.slice(0, 10)) : '') +
-        (u.most_recent ? field('most recent', u.most_recent.slice(0, 10)) : '') +
+        field('sources flagging', '<span class="v-num">' + fmt(s.enrichment_count) + '</span>') +
+        (s.enrichment_promoted
+          ? field('≥2-source agreement', '<span class="v-num">' + fmt(s.enrichment_promoted) + '</span>')
+          : '') +
+        (s.kind === 'domain' && s.subdomain_hits
+          ? field('subdomain hits', '<span class="v-num">' + fmt(s.subdomain_hits) + '</span>')
+          : '') +
+        (s.first_seen_ms ? field('first seen', new Date(s.first_seen_ms).toISOString().slice(0, 10)) : '') +
+        (s.last_seen_ms  ? field('last seen',  new Date(s.last_seen_ms).toISOString().slice(0, 10))  : '') +
         '</div>';
-      if (u.tags && u.tags.length) {
+      if (s.sources && s.sources.length) {
         html += '<div class="insp-tag-row">' +
-          u.tags.map((t) => '<span class="insp-tag">' + esc(t) + '</span>').join('') +
+          s.sources.map((src) => '<span class="insp-tag">' + esc(src) + '</span>').join('') +
           '</div>';
       }
     }
-    html += sourceLink('urlhaus-api.abuse.ch', null);
+
+    // Domain-only: surface URL-hosted hits separately when the apex
+    // is also flagged, plus threat types + tags as chip rows so an
+    // investigator can see "phishing+malware_dl, tagged emotet" at a
+    // glance without inspecting the JSON.
+    if (s.kind === 'domain') {
+      if (s.listed && s.url_hosted_count > 0) {
+        html += '<div class="insp-sub-label">URL-hosted hits <span class="v-dim">not direct indicators</span></div>' +
+          '<div class="insp-fields">' +
+          field('URLs flagged on this host', '<span class="v-num">' + fmt(s.url_hosted_count) + '</span>') +
+          '</div>';
+      }
+      if (s.threat_types && s.threat_types.length) {
+        html += '<div class="insp-sub-label">Threat types</div>' +
+          '<div class="insp-tag-row">' +
+          s.threat_types.map((t) => '<span class="insp-tag">' + esc(t) + '</span>').join('') +
+          '</div>';
+      }
+      if (s.tags && s.tags.length) {
+        html += '<div class="insp-sub-label">Tags</div>' +
+          '<div class="insp-tag-row">' +
+          s.tags.map((t) => '<span class="insp-tag">' + esc(t) + '</span>').join('') +
+          '</div>';
+      }
+    }
+
+    // IP-only: actor_class overlay (security vendor vs. hostile, etc.)
+    if (s.kind === 'ip' && s.actor_class_label) {
+      html += '<div class="insp-sub-label">Actor class</div>' +
+        '<div class="insp-fields">' +
+        field('class', esc(s.actor_class_label)) +
+        (s.actor_class_trust ? field('trust', esc(s.actor_class_trust)) : '') +
+        '</div>';
+    }
+
+    html += sourceLink('api.tunnelmind.ai', null);
     return html;
   }
 

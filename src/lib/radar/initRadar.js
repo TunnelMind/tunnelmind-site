@@ -359,17 +359,22 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     }
     svg.innerHTML = html;
 
-    // Click is delegated to the persistent <svg>, wired exactly once.
-    // The force loop rebuilds svg.innerHTML every frame, so per-circle
-    // listeners never survive between a user's mousedown and mouseup —
-    // the circle they pressed is a different DOM node by mouseup, so the
-    // `click` event never fires. The <svg> itself persists, so one
-    // delegated listener on it is stable across every redraw.
+    // Selection is delegated to the persistent <svg>, wired exactly once,
+    // and listens on `pointerdown` rather than `click`. The force loop
+    // rebuilds svg.innerHTML every frame, so the circle a user presses on
+    // is destroyed before their mouseup — at which point the browser fires
+    // `click` on the common ancestor (the <svg>), `ev.target.closest(
+    // 'circle[data-id]')` returns null, and selectNode is never called.
+    // `pointerdown` resolves the target at press time, before the next
+    // redraw can swap it. There are no drag semantics on the radar, so
+    // promoting press → select is a behavior win, not a regression.
     if (!svg.dataset.clickWired) {
       svg.dataset.clickWired = '1';
-      svg.addEventListener('click', (ev) => {
-        // DIAG: every click on the SVG, regardless of target.
-        diag('svg click · target=' + (ev.target && ev.target.tagName) +
+      svg.addEventListener('pointerdown', (ev) => {
+        // Primary button / primary touch only — ignore right-click etc.
+        if (ev.button !== undefined && ev.button !== 0) return;
+        // DIAG: every press on the SVG, regardless of target.
+        diag('svg pointerdown · target=' + (ev.target && ev.target.tagName) +
           ' · has-data-id=' + !!(ev.target && ev.target.closest && ev.target.closest('circle[data-id]')));
         const circle = ev.target.closest('circle[data-id]');
         if (circle) selectNode(circle.getAttribute('data-id'));

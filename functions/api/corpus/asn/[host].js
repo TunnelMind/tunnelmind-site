@@ -1,37 +1,38 @@
 // GET /api/corpus/asn/:host — ASN / BGP-prefix / abuse contact.
 //
 // Single contract for IP and domain inputs:
-//   - IP   → one direct bgpview lookup
+//   - IP   → one /v1/check call against our own scry-server (iptoasn)
 //   - host → resolve A/AAAA via DoH, then bgpview each (max 4) in parallel
 //
 // Returns the same {host, kind, addresses:[...]} shape regardless of
 // input. Each address row carries asn, org, prefix, country, rir, and
 // abuse contacts so the inspector can render either form uniformly.
 //
-// bgpview.io is community-run; budget per-call 4s, cap the per-host
-// fan-out, and cache 1 hour at the edge — ASN allocations change rarely
-// and viewer traffic is bursty.
+// We used to call bgpview.io for IP inputs too, but it's community-run
+// and frequently dies on cold workers — the "first lookup fails, retry
+// works" UX traced back to that. /v1/check serves the same ASN/country/
+// org from our own iptoasn snapshot with no upstream flakiness.
+// (Domains still fan-out through bgpview until we add a /v1/asn/{ip}
+// surface; that's the next migration.)
 
 import { normalizeHost, normalizeIp, normalizeDomain, json, fetchWithTimeout } from '../_lib.js'
 
 const MAX_ADDRESSES = 4
+const SCRY_BASE = 'https://api.tunnelmind.ai'
 
 export async function onRequestGet(context) {
   const host = normalizeHost(context.params.host)
   if (!host) return json({ error: 'invalid_host' }, 400)
 
   try {
-    let ips
-    let kind
     if (normalizeIp(host)) {
-      ips = [host]
-      kind = 'ip'
-    } else {
-      kind = 'domain'
-      ips = await resolveAddrs(host)
-      if (!ips.length) {
-        return json({ host, kind, addresses: [], note: 'Domain did not resolve to any A/AAAA records.' }, 200, 300)
-      }
+      const addr = await scryCheck(host)
+      return json({ host, kind: 'ip', addresses: [addr] }, 200, 3600)
+    }
+
+    const ips = await resolveAddrs(host)
+    if (!ips.length) {
+      return json({ host, kind: 'domain', addresses: [], note: 'Domain did not resolve to any A/AAAA records.' }, 200, 300)
     }
 
     const settled = await Promise.allSettled(ips.slice(0, MAX_ADDRESSES).map(bgpview))
@@ -39,9 +40,31 @@ export async function onRequestGet(context) {
       ? s.value
       : { ip: ips[i], error: 'lookup_failed' })
 
-    return json({ host, kind, addresses }, 200, 3600)
+    return json({ host, kind: 'domain', addresses }, 200, 3600)
   } catch (e) {
     return json({ error: 'asn_error', detail: String((e && e.message) || e).slice(0, 200) }, 502)
+  }
+}
+
+// Map /v1/check's shape into the address row the inspector renders.
+// Prefix / RIR / abuse don't exist in our iptoasn snapshot — the renderer
+// already skips null fields, so the row collapses gracefully.
+async function scryCheck(ip) {
+  const r = await fetchWithTimeout(
+    `${SCRY_BASE}/v1/check/${encodeURIComponent(ip)}`,
+    { headers: { Accept: 'application/json' } },
+    4000,
+  )
+  if (!r.ok) return { ip, error: 'lookup_failed' }
+  const j = await r.json()
+  return {
+    ip,
+    asn: j.asn || null,
+    org: j.org || null,
+    country: j.country || null,
+    prefix: null,
+    rir: null,
+    abuse: [],
   }
 }
 

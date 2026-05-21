@@ -4,7 +4,7 @@ import { trim as trimRdapDomain, vcard } from '../functions/api/corpus/rdap-doma
 import { trim as trimDns } from '../functions/api/corpus/dns/[name].js'
 import { trim as trimCert } from '../functions/api/corpus/cert/[domain].js'
 import { trim as trimTracker } from '../functions/api/corpus/tracker/[domain].js'
-import { trimUrlhaus } from '../functions/api/corpus/reputation/[host].js'
+import { trimUrlhaus, trimScryCheck } from '../functions/api/corpus/reputation/[host].js'
 
 // These trims sit on a CSP that forces every external lookup through
 // our own edge — getting the shape right matters more than any other
@@ -180,5 +180,51 @@ describe('urlhaus trim', () => {
   it('returns not-listed for no_results', () => {
     expect(trimUrlhaus({ query_status: 'no_results' })).toEqual({ listed: false, status: 'no_results' })
     expect(trimUrlhaus(null)).toEqual({ listed: false, status: 'no_results' })
+  })
+})
+
+describe('scry-check trim (Reputation IP path)', () => {
+  it('flattens enrichment fields + flags listed when enrichment_count > 0', () => {
+    const out = trimScryCheck({
+      ip: '147.185.132.40',
+      status: 'observed',
+      observation_count: 12,
+      enrichment_count: 3,
+      enrichment_promoted: 2,
+      enrichment_sources: ['urlhaus', 'threatfox', 'tor_exit'],
+      actor_class: 'hostile_opportunistic',
+      actor_class_label: 'Hostile (opportunistic)',
+      actor_class_trust: 'low',
+      first_seen_ms: 1715000000000,
+      last_seen_ms: 1716000000000,
+    })
+    expect(out.listed).toBe(true)
+    expect(out.enrichment_count).toBe(3)
+    expect(out.enrichment_promoted).toBe(2)
+    expect(out.sources).toEqual(['urlhaus', 'threatfox', 'tor_exit'])
+    expect(out.actor_class_label).toBe('Hostile (opportunistic)')
+    expect(out.actor_class_trust).toBe('low')
+  })
+
+  it('returns not-listed when enrichment_count is 0', () => {
+    const out = trimScryCheck({
+      ip: '1.1.1.1',
+      status: 'not_observed',
+      observation_count: 0,
+      enrichment_count: 0,
+      enrichment_promoted: 0,
+      enrichment_sources: [],
+      asn: '13335',
+      org: 'CLOUDFLARENET',
+    })
+    expect(out.listed).toBe(false)
+    expect(out.enrichment_count).toBe(0)
+    expect(out.sources).toEqual([])
+    expect(out.status).toBe('not_observed')
+  })
+
+  it('coerces null/garbage to a safe not-listed shape', () => {
+    expect(trimScryCheck(null)).toEqual({ listed: false, status: 'no_results' })
+    expect(trimScryCheck('nope')).toEqual({ listed: false, status: 'no_results' })
   })
 })

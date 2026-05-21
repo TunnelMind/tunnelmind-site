@@ -1336,6 +1336,45 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   function renderReputation(rep) {
     if (!rep || !rep.sources) return emptyTab('Reputation lookup returned no sources.');
     let html = '';
+
+    // IP path: scry-server's aggregated Augur view (URLhaus, ThreatFox,
+    // Tor exit, Spamhaus DROP, …). Replaces the urlhaus live call to
+    // avoid the "first lookup fails, retry works" UX from cold-worker
+    // upstream flake.
+    const s = rep.sources.scry;
+    if (s !== undefined) {
+      html += '<div class="insp-sub-label">Augur enrichment <span class="v-dim">tunnelmind.ai</span></div>';
+      if (!s || s.error) {
+        html += '<div class="insp-err-soft">lookup failed</div>';
+      } else if (!s.listed) {
+        html += '<div class="insp-empty">Not listed in any redistributable feed.</div>';
+      } else {
+        html += '<div class="insp-fields">' +
+          field('sources flagging', '<span class="v-num">' + fmt(s.enrichment_count) + '</span>') +
+          (s.enrichment_promoted
+            ? field('≥2-source agreement', '<span class="v-num">' + fmt(s.enrichment_promoted) + '</span>')
+            : '') +
+          (s.first_seen_ms ? field('first seen', new Date(s.first_seen_ms).toISOString().slice(0, 10)) : '') +
+          (s.last_seen_ms  ? field('last seen',  new Date(s.last_seen_ms).toISOString().slice(0, 10))  : '') +
+          '</div>';
+        if (s.sources && s.sources.length) {
+          html += '<div class="insp-tag-row">' +
+            s.sources.map((src) => '<span class="insp-tag">' + esc(src) + '</span>').join('') +
+            '</div>';
+        }
+      }
+      if (s && s.actor_class_label) {
+        html += '<div class="insp-sub-label">Actor class</div>' +
+          '<div class="insp-fields">' +
+          field('class', esc(s.actor_class_label)) +
+          (s.actor_class_trust ? field('trust', esc(s.actor_class_trust)) : '') +
+          '</div>';
+      }
+      html += sourceLink('api.tunnelmind.ai', null);
+      return html;
+    }
+
+    // Domain path: urlhaus live (scry-server has no domain enrichment yet).
     const u = rep.sources.urlhaus;
     html += '<div class="insp-sub-label">URLhaus <span class="v-dim">abuse.ch</span></div>';
     if (!u || u.error) {

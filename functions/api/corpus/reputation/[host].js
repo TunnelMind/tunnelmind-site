@@ -1,28 +1,77 @@
 // GET /api/corpus/reputation/:host — reputation across public feeds.
 //
-// First feed: URLhaus (abuse.ch) host lookup — tells us whether the
-// name has shown up in any malware-distribution URL. Future expansions
-// (ThreatFox, Spamhaus DROP, the local Scry corpus) layer in here; the
-// inspector renders whatever sources come back.
+// Split contract by input kind:
+//   - IP     → /v1/check on scry-server. Returns Augur's redistributable
+//              enrichment view (URLhaus, ThreatFox, Tor exit, …) plus
+//              our own observation/actor-class state. No live third
+//              party in the request path.
+//   - domain → urlhaus (abuse.ch) live host lookup. scry-server doesn't
+//              carry domain enrichment yet, so this stays on the live
+//              upstream until Augur grows a domain index.
+//
+// We used to hit urlhaus live for IPs too, but it's community-run and
+// flakes on cold workers — the "first lookup fails, retry works" UX on
+// the Reputation tab traced back to that. Mirrors the bgpview→/v1/check
+// migration shipped 2026-05-21 for the ASN tab.
 //
 // Edge-cached 5 minutes so the visitor stream amortizes across viewers.
 
-import { normalizeHost, json, fetchWithTimeout } from '../_lib.js'
+import { normalizeHost, normalizeIp, json, fetchWithTimeout } from '../_lib.js'
+
+const SCRY_BASE = 'https://api.tunnelmind.ai'
 
 export async function onRequestGet(context) {
   const host = normalizeHost(context.params.host)
   if (!host) return json({ error: 'invalid_host' }, 400)
 
-  const sources = await Promise.allSettled([
-    urlhaus(host),
-  ])
+  if (normalizeIp(host)) {
+    const scry = await scryReputation(host)
+    return json({ host, kind: 'ip', sources: { scry } }, 200, 300)
+  }
 
+  const settled = await Promise.allSettled([urlhaus(host)])
   return json({
     host,
+    kind: 'domain',
     sources: {
-      urlhaus: sources[0].status === 'fulfilled' ? sources[0].value : { error: 'lookup_failed' },
+      urlhaus: settled[0].status === 'fulfilled' ? settled[0].value : { error: 'lookup_failed' },
     },
   }, 200, 300)
+}
+
+async function scryReputation(ip) {
+  const r = await fetchWithTimeout(
+    `${SCRY_BASE}/v1/check/${encodeURIComponent(ip)}`,
+    { headers: { Accept: 'application/json' } },
+    4000,
+  )
+  if (!r.ok) return { error: 'lookup_failed' }
+  const j = await r.json()
+  return trimScryCheck(j)
+}
+
+// Map /v1/check into a flat "did anyone flag this IP" view. We surface
+// enrichment_count / promoted (≥2-source agreement) / source names, plus
+// the actor_class overlay so the renderer can show "security vendor"
+// vs. "hostile" framing without a second call.
+export function trimScryCheck(j) {
+  if (!j || typeof j !== 'object') return { listed: false, status: 'no_results' }
+  const enrichment_count = Number(j.enrichment_count || 0)
+  const observation_count = Number(j.observation_count || 0)
+  const sources = Array.isArray(j.enrichment_sources) ? j.enrichment_sources : []
+  return {
+    listed: enrichment_count > 0,
+    enrichment_count,
+    enrichment_promoted: Number(j.enrichment_promoted || 0),
+    sources,
+    observation_count,
+    status: j.status || (enrichment_count > 0 ? 'listed' : 'not_listed'),
+    actor_class: j.actor_class || null,
+    actor_class_label: j.actor_class_label || null,
+    actor_class_trust: j.actor_class_trust || null,
+    first_seen_ms: j.first_seen_ms || null,
+    last_seen_ms: j.last_seen_ms || null,
+  }
 }
 
 async function urlhaus(host) {

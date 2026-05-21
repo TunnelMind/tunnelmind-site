@@ -346,6 +346,14 @@ a:hover {
   --radar-node-actor: #6ad6c8;
   --radar-node-scanner: #6b7280;
   --radar-node-campaign: #f59e0b;
+  /* vendor-aware overlay colors (actor classification):
+     - vendor: cool slate-blue for neutral, benign infrastructure
+       (Palo Alto, Shodan, Censys, generic AI/search crawlers)
+     - claude: Anthropic warm orange for the `elevate` treatment
+       (verified ClaudeBot only). Build for Claude specifically —
+       see feedback_claude_first in Claude Memory. */
+  --radar-node-vendor: #6b91d6;
+  --radar-node-claude: #cc785c;
 
   /* The radar IS the page — give it real estate. Use the full viewport
      height below the hero. The 160px buffer used to be 220px; tightening
@@ -498,6 +506,8 @@ a:hover {
 .rl-actor { background: var(--radar-node-actor); }
 .rl-scanner { background: var(--radar-node-scanner); }
 .rl-campaign { background: var(--radar-node-campaign); }
+.rl-vendor { background: var(--radar-node-vendor); }
+.rl-claude { background: var(--radar-node-claude); }
 .rl-hint {
   margin-top: 2px; padding-top: 6px;
   border-top: 1px solid var(--radar-border);
@@ -671,9 +681,40 @@ a:hover {
 .radar-root .badge.actor { background: var(--radar-accent-dim); color: var(--radar-accent); }
 .radar-root .badge.scanner { background: rgba(107,114,128,0.2); color: var(--radar-fg-dim); }
 .radar-root .badge.campaign-key { background: rgba(245,158,11,0.2); color: var(--radar-warn); }
+.radar-root .badge.vendor { background: rgba(107,145,214,0.18); color: var(--radar-node-vendor); }
+.radar-root .badge.claude { background: rgba(204,120,92,0.18); color: var(--radar-node-claude); }
 .radar-root .badge.high { background: rgba(239,68,68,0.18); color: var(--radar-err); }
 .radar-root .badge.medium { background: rgba(245,158,11,0.18); color: var(--radar-warn); }
 .radar-root .badge.low { background: rgba(107,114,128,0.18); color: var(--radar-fg-dim); }
+
+/* Vendor-aware banner above the actor inspector — the most important
+   fact about a classified IP, surfaced before everything else. The
+   `elevate` variant (verified ClaudeBot) uses the Anthropic warm-orange
+   palette; the neutral variant (Palo Alto, Shodan, etc.) uses the
+   cool slate-blue vendor palette. */
+.radar-root .vendor-banner {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px;
+  margin: 4px 0 10px;
+  background: rgba(107,145,214,0.10);
+  border: 1px solid rgba(107,145,214,0.30);
+  border-radius: 5px;
+  font-size: 12px; color: var(--radar-fg);
+}
+.radar-root .vendor-banner-elevate {
+  background: rgba(204,120,92,0.12);
+  border-color: rgba(204,120,92,0.35);
+}
+.radar-root .vendor-banner .vendor-label {
+  font-weight: 600; letter-spacing: 0.01em;
+}
+.radar-root .vendor-banner .vendor-trust {
+  font-size: 10.5px;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--radar-node-claude);
+  background: rgba(204,120,92,0.18);
+  padding: 2px 6px; border-radius: 3px;
+}
 
 #inspector .attestation {
   margin-top: 12px; padding: 9px 11px; background: var(--radar-panel-2);

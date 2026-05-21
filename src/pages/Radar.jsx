@@ -248,6 +248,8 @@ export default function Radar({ onNavigate }) {
                 <span className="rl-item rl-item-actor"><i className="rl-dot rl-actor" />actor</span>
                 <span className="rl-item rl-item-scanner"><i className="rl-dot rl-scanner" />scanner</span>
                 <span className="rl-item rl-item-campaign"><i className="rl-dot rl-campaign" />campaign</span>
+                <span className="rl-item rl-item-vendor"><i className="rl-dot rl-vendor" />vendor</span>
+                <span className="rl-item rl-item-claude"><i className="rl-dot rl-claude" />Anthropic</span>
                 <span className="rl-hint">node size = observation volume</span>
               </div>
               <div id="radarTicker" className="radar-ticker"></div>

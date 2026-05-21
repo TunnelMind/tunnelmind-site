@@ -120,7 +120,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   // grey dot that never appears.
   function updateLegend() {
     const kinds = new Set(nodes.map((n) => n.kind));
-    for (const k of ['actor', 'scanner', 'campaign']) {
+    for (const k of ['actor', 'scanner', 'campaign', 'vendor', 'claude']) {
       const el = root.querySelector('.rl-item-' + k);
       if (el) el.style.display = kinds.has(k) ? '' : 'none';
     }
@@ -228,14 +228,31 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     for (const r of recentList) {
       const id = 'ip:' + r.source_ip;
       const existing = prev.get(id) || {};
+      // Vendor-aware kind override: a non-hostile classification (Palo
+      // Alto / Shodan / Censys / ClaudeBot etc.) gets its own color and
+      // narrative so a viewer can instantly tell benign infrastructure
+      // apart from a hostile actor. `elevate` is the verified-Anthropic
+      // tier (ClaudeBot); `neutral` is every other vendor class.
+      const isClassified = r.actor_class &&
+        r.actor_class !== 'unknown' && !r.actor_class.startsWith('hostile_');
+      const kind = r.actor_class_treatment === 'elevate' ? 'claude'
+                 : isClassified ? 'vendor'
+                 : r.category === 'scanner' ? 'scanner' : 'actor';
       nextNodes.push({
         id,
-        kind: r.category === 'scanner' ? 'scanner' : 'actor',
+        kind,
         label: r.source_ip,
         asn: r.asn, country: r.country, org: r.org,
         conf_bucket: r.confidence_bucket,
         observations: r.observations,
         first_seen_ms: r.first_seen_ms, last_seen_ms: r.last_seen_ms,
+        // Actor-class overlay fields — see /v1/recent shaper in
+        // scry-server/src/routes/recent.js and the classifier in
+        // scry-server/src/lib/actor_class.js.
+        actor_class: r.actor_class || null,
+        actor_class_label: r.actor_class_label || null,
+        actor_class_trust: r.actor_class_trust || null,
+        actor_class_treatment: r.actor_class_treatment || null,
         r: 3.5 + Math.min(9, Math.log2((r.observations || 1) + 1)),
         x: existing.x || Math.random() * W(),
         y: existing.y || Math.random() * H(),
@@ -342,7 +359,10 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     }
     for (const n of nodes) {
       const fill = n.kind === 'campaign' ? 'var(--radar-node-campaign)' :
-                   n.kind === 'scanner' ? 'var(--radar-node-scanner)' : 'var(--radar-node-actor)';
+                   n.kind === 'scanner'  ? 'var(--radar-node-scanner)'  :
+                   n.kind === 'claude'   ? 'var(--radar-node-claude)'   :
+                   n.kind === 'vendor'   ? 'var(--radar-node-vendor)'   :
+                                           'var(--radar-node-actor)';
       const isSel = n.id === selected;
       const stroke = isSel ? '#fff' : (n.kind === 'campaign' ? '#fff3' : '#0006');
       const swidth = isSel ? 2 : 1;
@@ -606,6 +626,25 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     let html = inspectorBackBar();
     html += '<h3 class="insp-ip">' + esc(ip) + '</h3>';
 
+    // Vendor / verified-Anthropic banner — surfaces the most important
+    // fact about a classified IP above everything else, so a viewer
+    // can't miss that they're looking at e.g. Palo Alto's security
+    // infra rather than a hostile actor.
+    if (n.actor_class_label &&
+        n.actor_class_treatment !== 'default' &&
+        n.actor_class !== 'unknown') {
+      const trustNote = n.actor_class_trust === 'verified_anthropic'
+        ? ' <span class="vendor-trust">verified Anthropic</span>'
+        : '';
+      const banner = n.actor_class_treatment === 'elevate'
+        ? 'vendor-banner vendor-banner-elevate'
+        : 'vendor-banner';
+      html += '<div class="' + banner + '">' +
+        '<span class="vendor-label">' + esc(n.actor_class_label) + '</span>' +
+        trustNote +
+        '</div>';
+    }
+
     // Plain-language read — the casual / executive view.
     html += '<div class="insp-read">' + actorRead(n, memberCampaigns) + '</div>';
 
@@ -665,6 +704,23 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     const span = (n.first_seen_ms && n.last_seen_ms)
       ? ' across ' + spanText(n.last_seen_ms - n.first_seen_ms)
       : '';
+
+    // Class-aware override: a benign-classified actor (Palo Alto / Shodan
+    // / Censys / verified ClaudeBot) gets its own honest read instead of
+    // the hostile-actor narrative. The honeypot may have logged the
+    // connection but we know who it is and we know they're not malicious.
+    if (n.actor_class && n.actor_class !== 'unknown' &&
+        !n.actor_class.startsWith('hostile_') && n.kind !== 'scanner') {
+      const friendly = classFriendlyName(n.actor_class);
+      const trustNote = n.actor_class_trust === 'verified_anthropic'
+        ? ' Verified Anthropic crawler.'
+        : '';
+      return flagOf(n.country) + ' ' + esc(n.actor_class_label || friendly) +
+        ' — observed in our honeypots ' + fmt(n.observations || 0) +
+        ' times' + span + ', cataloged as a known ' + friendly + '.' +
+        ' Not a threat.' + trustNote;
+    }
+
     if (n.kind === 'scanner') {
       return flagOf(n.country) + ' ' + where + net +
         ' sweeping the internet indiscriminately — ' + fmt(n.observations || 0) +
@@ -678,6 +734,23 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       : n.conf_bucket === 'medium' ? ' Medium-confidence hostile.' : '';
     return flagOf(n.country) + ' ' + where + net + ' running a focused attack — ' +
       fmt(n.observations || 0) + ' hostile observations' + span + '.' + conf + camp;
+  }
+
+  // Human-readable expansion of an actor_class id, used in the narrative
+  // when no explicit actor_class_label is set. Keep in sync with the
+  // catalog entries in scry-server/src/lib/actor_class.js.
+  function classFriendlyName(c) {
+    return ({
+      crawler_ai_agent_anthropic: 'Anthropic AI agent crawler',
+      crawler_ai_agent:           'AI agent crawler',
+      crawler_search:             'search engine crawler',
+      scanner_security_vendor:    'security vendor scanner',
+      scanner_research:           'internet research scanner',
+      cdn_egress:                 'CDN egress IP',
+      tor_exit:                   'Tor exit node',
+      vpn_consumer:               'consumer VPN egress',
+      sinkhole:                   'security sinkhole',
+    })[c] || 'cataloged entity';
   }
 
   // ── WHOIS / RDAP click-through ────────────────────────────────────

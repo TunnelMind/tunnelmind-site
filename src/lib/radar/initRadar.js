@@ -48,7 +48,8 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   //   'lookup'   — a host was typed into the lookup form; tabbed intel
   let inspectorMode = 'overview';
   let lookupHost = null;
-  const tabCache = new Map();    // `${host}:${tab}` -> trimmed payload (lazy)
+  const tabCache = new Map();    // `${host}:${tab}` -> trimmed payload (lazy; success-only)
+  const tabInflight = new Map(); // `${host}:${tab}` -> Promise; dedupes simultaneous clicks
 
   let rafId = null;
   let intervalId = null;
@@ -373,9 +374,6 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       svg.addEventListener('pointerdown', (ev) => {
         // Primary button / primary touch only — ignore right-click etc.
         if (ev.button !== undefined && ev.button !== 0) return;
-        // DIAG: every press on the SVG, regardless of target.
-        diag('svg pointerdown · target=' + (ev.target && ev.target.tagName) +
-          ' · has-data-id=' + !!(ev.target && ev.target.closest && ev.target.closest('circle[data-id]')));
         const circle = ev.target.closest('circle[data-id]');
         if (circle) selectNode(circle.getAttribute('data-id'));
       });
@@ -384,35 +382,11 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
   function selectNode(id) {
     selected = id;
-    // DIAG: a fixed banner at the very top of the viewport on every
-    // click. Bypasses the inspector entirely so we can prove whether
-    // the click is even reaching this function. Remove after the bug
-    // is root-caused.
-    diag('selectNode(' + id + ') · nodes=' + nodes.length +
-      ' · found=' + !!nodes.find((x) => x.id === id));
     const n = nodes.find((x) => x.id === id);
     if (!n) return;
     inspectorMode = 'node';
     if (n.kind === 'campaign') renderCampaignInspector(n);
     else renderActorInspector(n);
-  }
-
-  // DIAG helper — paint a hot-pink overlay banner at the top of the
-  // viewport so we can see events fire even when the inspector path
-  // is blocked. Logs to console too.
-  function diag(msg) {
-    try { console.log('[RADAR DIAG]', msg) } catch {}
-    let el = document.getElementById('__radarDiag');
-    if (!el) {
-      el = document.createElement('div');
-      el.id = '__radarDiag';
-      el.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:99999;' +
-        'background:#ff0066;color:#fff;padding:10px 14px;' +
-        'font:13px ui-monospace,monospace;line-height:1.4;' +
-        'box-shadow:0 2px 8px rgba(0,0,0,0.5)';
-      document.body.appendChild(el);
-    }
-    el.textContent = '[DIAG ' + new Date().toLocaleTimeString() + '] ' + msg;
   }
 
   function clearSelection() {
@@ -759,9 +733,9 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     let html = inspectorBackBar();
     html += '<h3>Campaign <code class="insp-cid">' + esc(n.label) + '</code></h3>';
 
-    const members = n.member_actor_count != null ? fmt(n.member_actor_count) : 'multiple';
+    const totalMembers = n.member_actor_count != null ? fmt(n.member_actor_count) : 'multiple';
     html += '<div class="insp-read">' +
-      'A coordinated cluster of <strong>' + members + ' actors</strong> running the ' +
+      'A coordinated cluster of <strong>' + totalMembers + ' actors</strong> running the ' +
       'same ' + (n.protocol ? '<strong>' + esc(n.protocol) + '</strong> ' : '') +
       'tool across separate networks — one operation, many machines.' +
       '</div>';
@@ -775,6 +749,64 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     if (n.last_seen_ms) html += field('last seen', relTime(n.last_seen_ms));
     html += '</div>';
 
+    // ── Visible members ──────────────────────────────────────────
+    // The public /v1/campaigns surface doesn't expose membership (that's
+    // defender tier), but `rebuildGraph` already linked actors → campaigns
+    // by time-window overlap and stored that in campaignsByMember. So
+    // every IP whose membership list contains THIS campaign id is visible
+    // on the radar right now and is, by our heuristic, in the cluster.
+    // Listing them turns the inspector from a bare aggregate into a real
+    // hand-off into the Corpus (each row is a one-click pivot).
+    const visibleMembers = collectVisibleMembers(n.label);
+    if (visibleMembers.length) {
+      const countries = new Set();
+      const asns = new Set();
+      for (const m of visibleMembers) {
+        if (m.country) countries.add(m.country);
+        if (m.asn) asns.add(m.asn);
+      }
+      const slice = visibleMembers.slice(0, 12);
+      const totalKnown = n.member_actor_count;
+      const sliceLabel = (totalKnown && totalKnown > visibleMembers.length)
+        ? fmt(visibleMembers.length) + ' of ' + fmt(totalKnown) + ' visible in the sample'
+        : fmt(visibleMembers.length) + ' visible in the sample';
+      html += '<div class="insp-sub-label">Visible members · ' + sliceLabel + '</div>';
+      if (countries.size || asns.size) {
+        html += '<div class="insp-camp-agg">' +
+          (countries.size ? fmt(countries.size) + ' ' + (countries.size === 1 ? 'country' : 'countries') : '') +
+          (countries.size && asns.size ? ' · ' : '') +
+          (asns.size ? fmt(asns.size) + ' ' + (asns.size === 1 ? 'ASN' : 'ASNs') : '') +
+          '</div>';
+      }
+      html += '<ul class="insp-list insp-camp-members">';
+      for (const m of slice) {
+        const flag = flagOf(m.country) || '';
+        const meta = [];
+        if (m.country) meta.push(esc(m.country));
+        if (m.asn) meta.push('AS' + esc(m.asn));
+        if (m.observations) meta.push(fmt(m.observations) + ' obs');
+        html += '<li><button class="insp-camp-member" type="button" data-ip="' +
+          escAttr(m.label) + '">' +
+            '<span class="cm-flag">' + flag + '</span>' +
+            '<span class="cm-ip">' + esc(m.label) + '</span>' +
+            '<span class="cm-meta">' + meta.join(' · ') + '</span>' +
+          '</button></li>';
+      }
+      if (visibleMembers.length > slice.length) {
+        html += '<li class="insp-camp-more">+ ' +
+          fmt(visibleMembers.length - slice.length) + ' more visible on the radar</li>';
+      }
+      html += '</ul>';
+      // One-click pivot into the full Corpus lookup for a representative
+      // member — proves the corpus surface to a visitor who would
+      // otherwise just see badge fields.
+      const pivotTarget = slice[0].label;
+      html += '<div class="insp-pivot">' +
+        '<button class="insp-pivot-btn" type="button" data-host="' + escAttr(pivotTarget) + '">' +
+          'Inspect ' + esc(pivotTarget) + ' in Corpus →' +
+        '</button></div>';
+    }
+
     html += '<div class="attestation">' +
       '<strong>How a campaign is drawn.</strong> Materialized when ≥5 actors share a ' +
       'tool, span ≥3 ASNs, hit ≤5 destination ports, and persist ≥1h. The full ' +
@@ -787,6 +819,32 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
     body.innerHTML = html;
     wireBack(body);
+    body.querySelectorAll('.insp-camp-member').forEach((b) => {
+      b.addEventListener('click', () => {
+        const ip = b.dataset.ip;
+        const target = nodes.find((x) => x.id === 'ip:' + ip);
+        if (target) selectNode(target.id);
+        else enterLookup(ip);
+      });
+    });
+    const pb = body.querySelector('.insp-pivot-btn');
+    if (pb) pb.addEventListener('click', () => enterLookup(pb.dataset.host));
+  }
+
+  // Walk campaignsByMember in reverse — IP → [campaign id, …] — to find
+  // every visible actor node that the heuristic linked to this campaign.
+  // Cheap: ~50 entries on a typical radar tick. Returned actors are
+  // ordered by observation volume so the "head of the cluster" surfaces
+  // first in the inspector list.
+  function collectVisibleMembers(campaignId) {
+    const out = [];
+    for (const [ip, ids] of campaignsByMember.entries()) {
+      if (!ids.includes(campaignId)) continue;
+      const node = nodes.find((x) => x.id === 'ip:' + ip);
+      if (node) out.push(node);
+    }
+    out.sort((a, b) => (b.observations || 0) - (a.observations || 0));
+    return out;
   }
 
   function wireBack(scope) {
@@ -900,30 +958,117 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   // tab is the one exception — for an IP it reads the existing
   // /api/rdap/[ip] surface (different trim than rdap-domain), and the
   // render path dispatches on `rdap-ip` instead of `rdap`.
+  //
+  // Reliability shape:
+  //   - in-flight dedupe via tabInflight, so back-to-back clicks on the
+  //     same tab share one network request;
+  //   - one auto-retry with a short backoff for transient upstream
+  //     failures (CF Pages cold start, rdap.org / crt.sh blip, upstream
+  //     timeout) — eliminates the "Lookup failed → click again → works"
+  //     UX from the user;
+  //   - success-only caching: an error envelope is never written into
+  //     tabCache, so any later tab click naturally re-tries the upstream;
+  //   - a Retry button on the failure panel for the case where two
+  //     attempts still weren't enough.
   async function loadTab(host, tab) {
     const panel = $('#inspTabPanel');
     if (!panel) return;
     const isIp = isIpLocal(host);
     const renderKey = (tab === 'rdap' && isIp) ? 'rdap-ip' : tab;
     const cacheKey = host + ':' + renderKey;
+
+    // Cache hit — only success payloads ever land here.
     if (tabCache.has(cacheKey)) {
       panel.innerHTML = renderTabHtml(renderKey, tabCache.get(cacheKey), host);
       return;
     }
+
     panel.innerHTML = '<div class="placeholder">Loading ' + esc(tab) + '…</div>';
-    try {
+
+    // Dedupe: if this exact (host, tab) is already in-flight, await the
+    // existing promise instead of firing a second request.
+    let work = tabInflight.get(cacheKey);
+    if (!work) {
       const url = (tab === 'rdap' && isIp)
         ? '/api/rdap/' + encodeURIComponent(host)
         : '/api/corpus/' + endpointForTab(tab) + '/' + encodeURIComponent(host);
-      const r = await fetch(url).then((x) => x.json());
-      tabCache.set(cacheKey, r);
-      // Bail if the user navigated away mid-fetch.
-      if (lookupHost !== host || inspectorMode !== 'lookup') return;
-      panel.innerHTML = renderTabHtml(renderKey, r, host);
-    } catch {
-      panel.innerHTML = '<div class="insp-err">Lookup failed — try again.</div>';
+      work = fetchTabWithRetry(url);
+      tabInflight.set(cacheKey, work);
+      work.finally(() => tabInflight.delete(cacheKey));
     }
+
+    const data = await work;
+
+    // Bail if the user navigated away mid-fetch.
+    if (lookupHost !== host || inspectorMode !== 'lookup') return;
+
+    const transient = data && (data.__failed || isTransientUpstreamError(data));
+    if (transient) {
+      // Don't cache. Render a retry-able failure panel.
+      panel.innerHTML = renderTabFailureHtml(tab, data);
+      const rb = panel.querySelector('.insp-retry-btn');
+      if (rb) rb.addEventListener('click', () => loadTab(host, tab));
+      return;
+    }
+
+    // Either a clean payload or a deterministic upstream error (e.g.
+    // NXDOMAIN, invalid input). Both are stable — cache and render.
+    tabCache.set(cacheKey, data);
+    panel.innerHTML = renderTabHtml(renderKey, data, host);
   }
+
+  // Two attempts total with a short backoff between them. Handles:
+  // (a) network-layer throw, (b) non-JSON body (CF edge 502 HTML),
+  // (c) JSON envelope whose .error/.status looks transient. A
+  // deterministic upstream error (bad input, NXDOMAIN, etc.) is
+  // returned on the first attempt so the caller can cache it.
+  async function fetchTabWithRetry(url) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        const r = await fetch(url);
+        let data;
+        try { data = await r.json(); } catch { data = null; }
+        if (!data) {
+          // CF edge / proxy returned non-JSON (most often a 502 HTML
+          // page). Retry once; on the second miss, surface as transient.
+          if (attempt === 0) { await sleep(700); continue; }
+          return { __failed: true, error: 'bad_response', status: r.status };
+        }
+        if (isTransientUpstreamError(data) && attempt === 0) {
+          await sleep(700);
+          continue;
+        }
+        return data;
+      } catch {
+        if (attempt === 0) { await sleep(700); continue; }
+        return { __failed: true, error: 'network', status: 0 };
+      }
+    }
+    return { __failed: true, error: 'unknown', status: 0 };
+  }
+
+  function isTransientUpstreamError(data) {
+    if (!data || !data.error) return false;
+    const e = String(data.error).toLowerCase();
+    if (e.includes('timeout') || e.includes('upstream') ||
+        e.includes('redirect') || e.includes('aborted')) return true;
+    const s = data.status;
+    return s === 502 || s === 503 || s === 504;
+  }
+
+  function renderTabFailureHtml(tab, data) {
+    const why = (data && data.error)
+      ? prettyErr(data.error)
+      : 'Lookup did not come back';
+    return '<div class="insp-err">' +
+      esc(why) +
+      (data && data.status ? ' <span class="v-dim">(' + data.status + ')</span>' : '') +
+      '<div class="insp-retry"><button class="insp-retry-btn" type="button">Retry ' +
+        esc(tab) + ' →</button></div>' +
+      '</div>';
+  }
+
+  function sleep(ms) { return new Promise((res) => setTimeout(res, ms)); }
 
   function endpointForTab(tab) {
     // Maps tab id → /api/corpus/<this>/<host>. The intel/* family lives

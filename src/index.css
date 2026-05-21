@@ -348,16 +348,19 @@ a:hover {
   --radar-node-campaign: #f59e0b;
 
   /* The radar IS the page — give it real estate. Use the full viewport
-     height below the hero (allow ~100vh-220px so the hero peeks above
-     and the conversion frame is one scroll-flick away). Clamps the
-     bottom so an extreme-tall window doesn't stretch the graph into a
-     cartoonish balloon. */
-  height: min(calc(100vh - 220px), 1200px);
-  min-height: 620px;
+     height below the hero. The 160px buffer used to be 220px; tightening
+     it lets the radar steal more vertical space without pushing the
+     hero off-screen on a typical 1080p window (the hero is ~520px tall
+     and the user only needs its top strip to stay anchored). Ceiling
+     keeps an ultra-tall display from inflating the graph into a
+     cartoonish balloon. Floor keeps the panel readable on short
+     laptops at the cost of pushing the hero up a little. */
+  height: min(calc(100vh - 160px), 1400px);
+  min-height: 680px;
   display: flex;
   flex-direction: column;
   position: relative;
-  margin: 4px clamp(10px, 3vw, 26px) 0;
+  margin: 4px clamp(8px, 2vw, 18px) 0;
   border: 1px solid var(--radar-border);
   border-radius: 10px;
   overflow: hidden;
@@ -803,6 +806,19 @@ a:hover {
   border-left: 2px solid #d97757; border-radius: 0 5px 5px 0;
   font-size: 12px; color: var(--radar-fg-dim);
 }
+.radar-root .insp-retry { margin-top: 8px; }
+.radar-root .insp-retry-btn {
+  background: transparent;
+  color: var(--radar-fg-dim);
+  border: 1px dashed var(--radar-border);
+  border-radius: 4px;
+  padding: 5px 9px;
+  font: inherit; font-size: 11.5px;
+  cursor: pointer;
+}
+.radar-root .insp-retry-btn:hover {
+  color: var(--radar-accent); border-color: var(--radar-accent-dim);
+}
 .radar-root .insp-err-soft {
   padding: 6px 0; font-size: 11.5px; color: var(--radar-fg-muted); font-style: italic;
 }
@@ -872,6 +888,49 @@ a:hover {
 .radar-root .insp-prose code {
   background: #0006; padding: 1px 4px; border-radius: 3px;
   color: var(--radar-fg);
+}
+
+/* Campaign inspector — visible-members list. Each row is a one-click
+   hand-off to either the actor inspector (if the IP node is still on
+   screen) or the Corpus lookup tabs (if it's drifted out of the sample
+   between snapshots). */
+.radar-root .insp-camp-agg {
+  font-size: 11px; color: var(--radar-fg-muted);
+  margin: -2px 0 6px;
+}
+.radar-root .insp-camp-members { font-family: inherit; }
+.radar-root .insp-camp-members li { padding: 0; border: 0; }
+.radar-root .insp-camp-member {
+  display: grid;
+  grid-template-columns: 18px 1fr auto;
+  align-items: baseline;
+  gap: 8px;
+  width: 100%;
+  background: transparent;
+  color: var(--radar-fg);
+  border: 0;
+  border-bottom: 1px dashed var(--radar-border);
+  padding: 6px 4px;
+  font: inherit; font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+.radar-root .insp-camp-members li:last-child .insp-camp-member { border-bottom: 0; }
+.radar-root .insp-camp-member:hover { background: rgba(106,214,200,0.06); }
+.radar-root .insp-camp-member .cm-flag {
+  font-size: 13px; line-height: 1; text-align: center;
+}
+.radar-root .insp-camp-member .cm-ip {
+  font-family: ui-monospace, monospace; color: var(--radar-fg);
+  word-break: break-all;
+}
+.radar-root .insp-camp-member .cm-meta {
+  font-size: 10.5px; color: var(--radar-fg-muted);
+  letter-spacing: 0.02em; white-space: nowrap;
+}
+.radar-root .insp-camp-more {
+  padding: 6px 4px;
+  font-size: 11px; color: var(--radar-fg-muted); font-style: italic;
 }
 
 /* "Inspect this IP in Corpus" pivot button on the actor inspector */

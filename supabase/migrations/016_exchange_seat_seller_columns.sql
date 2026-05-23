@@ -11,8 +11,11 @@
 -- pre-date them. A subsequent re-crawl of all SSPs backfills the existing
 -- rows on the next upsert (idempotent on (seat_id, ssp_id)).
 --
--- seller_type is constrained to the three IAB sellers.json 1.0 values; the
--- crawler upper-cases on read so the constraint matches what gets written.
+-- seller_type is constrained to the three IAB sellers.json 1.0 values
+-- (PUBLISHER, INTERMEDIARY, BOTH). These are the sellers.json vocabulary —
+-- DISTINCT from the ads.txt vocabulary (DIRECT, RESELLER) used by the
+-- sells_through table. The crawler upper-cases on read so the constraint
+-- matches what gets written.
 --
 -- Indexed: seller_domain only — that is the join key for the
 -- owner_entity_slug resolver (against the entity_domain bridge added in
@@ -33,7 +36,7 @@ BEGIN
   ) THEN
     ALTER TABLE public.exchange_seat
       ADD CONSTRAINT exchange_seat_seller_type_check
-      CHECK (seller_type IS NULL OR seller_type IN ('DIRECT','RESELLER','BOTH'));
+      CHECK (seller_type IS NULL OR seller_type IN ('PUBLISHER','INTERMEDIARY','BOTH'));
   END IF;
 END $$;
 

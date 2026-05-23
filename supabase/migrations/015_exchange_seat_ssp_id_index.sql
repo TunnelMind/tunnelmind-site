@@ -1,0 +1,14 @@
+-- Migration 015 — exchange_seat(ssp_id) index for resells backfill pagination.
+--
+-- The composite UNIQUE (seat_id, ssp_id) is leading-column seat_id, so
+-- equality filters on ssp_id alone scan all 856K rows. The resells backfill
+-- (sigil-crawler/scripts/backfill-resells.js) pages through ssp_id eq.X with
+-- offsets, which hits the 8s statement timeout. A single-column ssp_id index
+-- brings each page to milliseconds.
+--
+-- Surfaced 2026-05-23 when the first full-fleet backfill timed out on
+-- offset=4000 of ssp_id=3. Applied to production via Supabase MCP the same
+-- session; this file reconciles disk-side migration state.
+--
+-- IF NOT EXISTS so a fresh-DB rebaseline is idempotent.
+CREATE INDEX IF NOT EXISTS idx_exchange_seat_ssp_id ON public.exchange_seat (ssp_id);

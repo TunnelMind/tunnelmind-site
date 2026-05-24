@@ -118,6 +118,31 @@ const html = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>${css}</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "ATAP v0.1 — Agent Trust Attestation Protocol",
+  "name": "ATAP v0.1",
+  "url": "https://tunnelmind.ai/atap/standard",
+  "description": "Open protocol for agent behavioral attestation: AIT capability tokens, witness-event hash chains, hash-linked attestation blocks, signed compliance receipts. Edited by TunnelMind. Public comment through 2026-08-12.",
+  "inLanguage": "en",
+  "proficiencyLevel": "Expert",
+  "audience": { "@type": "Audience", "audienceType": "SoftwareDeveloper" },
+  "isPartOf": { "@type": "WebSite", "@id": "https://tunnelmind.ai/#website" },
+  "author":    { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
+  "publisher": { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "version": "0.1",
+  "creativeWorkStatus": "Public Comment",
+  "expires": "2026-08-12",
+  "encoding": {
+    "@type": "MediaObject",
+    "contentUrl": "https://tunnelmind.ai/atap/ATAP-v0.1.md",
+    "encodingFormat": "text/markdown"
+  }
+}
+</script>
 </head>
 <body>
 <div class="banner">

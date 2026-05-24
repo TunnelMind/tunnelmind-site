@@ -115,6 +115,29 @@ const html = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>${css}</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "OAI v1.0 — Observed Actor Identifier",
+  "name": "OAI v1.0",
+  "url": "https://tunnelmind.ai/oai/standard",
+  "description": "Open standard for permanent, free-to-resolve identifiers for every observed actor on the network. Edited by TunnelMind.",
+  "inLanguage": "en",
+  "proficiencyLevel": "Expert",
+  "audience": { "@type": "Audience", "audienceType": "SoftwareDeveloper" },
+  "isPartOf": { "@type": "WebSite", "@id": "https://tunnelmind.ai/#website" },
+  "author":    { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
+  "publisher": { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
+  "license": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "version": "1.0",
+  "encoding": {
+    "@type": "MediaObject",
+    "contentUrl": "https://tunnelmind.ai/oai/OAI-STANDARD-v1.0.md",
+    "encodingFormat": "text/markdown"
+  }
+}
+</script>
 </head>
 <body>
 <div class="banner">

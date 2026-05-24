@@ -20,6 +20,85 @@
     <title>TunnelMind — observability for the agentic internet</title>
     <!-- Fonts are self-hosted via @fontsource (bundled in src/main.jsx) —
          no fonts.googleapis.com / fonts.gstatic.com requests. -->
+
+    <!-- Structured data for AI crawlers and search engines. The SPA renders
+         every route from this same shell, so an Organization-level graph in
+         the head describes the entity once for every URL. -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "https://tunnelmind.ai/#organization",
+          "name": "TunnelMind",
+          "legalName": "TunnelMind AI, LLC",
+          "url": "https://tunnelmind.ai/",
+          "logo": "https://tunnelmind.ai/favicon.svg",
+          "description": "The observability layer for the agentic internet. Three lenses (Scry, Sigil, Tracker) on one signed corpus, plus a fused cross-lens verdict no siloed incumbent can compute.",
+          "email": "agents@tunnelmind.ai",
+          "sameAs": [
+            "https://github.com/TunnelMind"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://tunnelmind.ai/#website",
+          "url": "https://tunnelmind.ai/",
+          "name": "TunnelMind",
+          "description": "Live attacker-corpus radar and cross-lens verify API for autonomous agents.",
+          "publisher": { "@id": "https://tunnelmind.ai/#organization" },
+          "inLanguage": "en"
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://tunnelmind.ai/#scry",
+          "name": "Scry",
+          "applicationCategory": "SecurityApplication",
+          "operatingSystem": "Web (HTTPS / MCP)",
+          "description": "Signed observations of hostile network actors. IPs, ASNs, behaviors, threat-feed overlap, actor classification.",
+          "url": "https://api.tunnelmind.ai",
+          "provider": { "@id": "https://tunnelmind.ai/#organization" },
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD",
+            "description": "Free identifier resolution. Paid tier via Stripe (humans) or x402 USDC micropayments (agents)."
+          }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://tunnelmind.ai/#sigil",
+          "name": "Sigil",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web (HTTPS / MCP)",
+          "description": "Programmatic-advertising supply-graph trust layer. Publishers, SSPs, DSPs, seats, OpenRTB SupplyChain, entity trust scoring.",
+          "url": "https://data.tunnelmind.ai",
+          "provider": { "@id": "https://tunnelmind.ai/#organization" }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://tunnelmind.ai/#tracker",
+          "name": "Tracker",
+          "applicationCategory": "BusinessApplication",
+          "operatingSystem": "Web (HTTPS / MCP)",
+          "description": "Surveillance-economy graph. Tracker entities, the resellers they buy from, the publishers they reach.",
+          "url": "https://data.tunnelmind.ai",
+          "provider": { "@id": "https://tunnelmind.ai/#organization" }
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://tunnelmind.ai/#cross-lens",
+          "name": "TunnelMind Cross-lens Verify",
+          "applicationCategory": "SecurityApplication",
+          "operatingSystem": "Web (HTTPS / MCP)",
+          "description": "Service-layer fusion of Scry × Sigil × Tracker. One node key returns the fused verdict, per-lens blocks, a 5-minute signed sigil_token, and an optional ATAP witness event.",
+          "url": "https://data.tunnelmind.ai/v1/verify/",
+          "provider": { "@id": "https://tunnelmind.ai/#organization" }
+        }
+      ]
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>

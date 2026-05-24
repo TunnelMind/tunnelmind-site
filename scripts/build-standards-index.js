@@ -112,6 +112,21 @@ const html = `<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>${css}</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Standards — TunnelMind",
+  "url": "https://tunnelmind.ai/standards",
+  "description": "Open standards edited by TunnelMind: OAI (Observed Actor Identifier) and ATAP (Agent Trust Attestation Protocol). Free, citation-grade, independently verifiable.",
+  "isPartOf": { "@type": "WebSite", "@id": "https://tunnelmind.ai/#website" },
+  "publisher": { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
+  "hasPart": [
+    { "@type": "TechArticle", "name": "OAI v1.0", "url": "https://tunnelmind.ai/oai/standard" },
+    { "@type": "TechArticle", "name": "ATAP v0.1", "url": "https://tunnelmind.ai/atap/standard" }
+  ]
+}
+</script>
 </head>
 <body>
 <div class="banner">

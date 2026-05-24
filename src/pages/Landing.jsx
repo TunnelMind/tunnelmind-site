@@ -37,6 +37,13 @@ const h2 = {
   marginBottom: '16px',
 }
 const rule = { height: '1px', background: 'var(--chrome-border)', margin: '48px 0' }
+const inlineMono = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: '0.88em',
+  background: 'rgba(255,255,255,0.04)',
+  padding: '1px 6px',
+  borderRadius: '2px',
+}
 
 const PRINCIPLES = [
   {
@@ -158,6 +165,58 @@ export default function Landing({ onNavigate }) {
             The live radar on the front page is a working sample of that corpus.
             It is not a teaser bolted onto a sales page — the sample is the
             product, shown honestly, at no charge.
+          </p>
+        </section>
+
+        <div style={rule} />
+
+        {/* ── The cross-lens moat ─────────────────────────────────── */}
+        <section>
+          <div style={sectionLabel}>The join</div>
+          <h2 style={h2}>Real vs. fake is a join, not a query.</h2>
+          <p style={prose}>
+            Every existing trust vendor owns one half of the graph. GreyNoise
+            and Spur can tell you which IPs scan the internet — they cannot
+            tell you which of those IPs are the egress for an SSP carrying a
+            hundred thousand publisher relationships. DoubleVerify, IAS,
+            HUMAN, and Pixalate can tell you which supply paths look
+            fraudulent — they cannot tell you which of those paths source
+            traffic from IPs your own sensors have logged scanning for
+            Log4Shell. Neither side can answer the question an agent is
+            actually asking: <em>is this real?</em>
+          </p>
+          <p style={prose}>
+            TunnelMind runs three lenses against the same observation
+            graph. <strong>Scry</strong> watches who is attacking — IPs,
+            ASNs, behaviors, threat-intel overlap.{' '}
+            <strong>Sigil</strong> watches who can be trusted —
+            publishers, SSPs, DSPs, seats, the OpenRTB SupplyChain.{' '}
+            <strong>Tracker</strong> watches who is paying whom in the
+            surveillance economy. They share a graph; the join across
+            them is the thing nobody else can compute.
+          </p>
+          <p style={prose}>
+            A worked example. An IP shows up in Scry as{' '}
+            <em>hostile_opportunistic</em>, scanning four hundred separate
+            /24s in the last twenty-four hours. The same IP, looked up in
+            Sigil, turns out to be the publishing egress for an SSP that
+            intermediates a hundred and twenty thousand sells-through
+            edges. Neither finding alone is decisive — scanners and SSPs
+            can both be benign — but the combination is a hard fail any
+            agent that bid on inventory carried through that path needs
+            to know about, immediately, with cryptographic proof.
+          </p>
+          <p style={prose}>
+            The endpoint that returns this is{' '}
+            <code style={inlineMono}>POST /v1/verify/&#123;node&#125;</code>{' '}
+            on <code style={inlineMono}>data.tunnelmind.ai</code>. One
+            call, one node key (IP, domain, ASN, or entity), three lens
+            blocks plus the fused verdict, a five-minute signed{' '}
+            <code style={inlineMono}>sigil_token</code> as portable
+            proof, and an optional ATAP witness event chained onto the
+            calling agent&apos;s identity token. The agent learns the
+            answer and leaves behind a verifiable trail in the same
+            request.
           </p>
         </section>
 

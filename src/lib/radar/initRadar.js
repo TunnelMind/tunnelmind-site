@@ -1161,7 +1161,11 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       agent:      'intel/agent',
       inject:     'intel/inject',
       optout:     'intel/optout',
-      reputation: 'reputation',
+      // A2 — the Reputation tab is the cross-lens (Scry × Sigil) verdict by
+      // default. The new proxy composes /v1/verify/{node} with the rich
+      // Scry trim so the panel still shows full Scry detail for domains
+      // until the data-api A2.v2 closes its v1 coverage gap.
+      reputation: 'cross-lens',
     }[tab];
   }
 
@@ -1333,21 +1337,125 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     return html;
   }
 
+  // A2 — Reputation tab renders the cross-lens (Scry × Sigil) verdict by
+  // default. The proxy at /api/corpus/cross-lens/<node> composes the
+  // /v1/verify/{node} response with the rich Scry trim that the old
+  // /api/corpus/reputation/ proxy returned, so no Scry-side detail is lost
+  // while the data-api A2.v2 work closes its v1 cross-lens coverage gap.
+  //
+  // Render order (top to bottom):
+  //   1. Fused verdict pill — verdict + trust_score + confidence
+  //   2. Signals chip row (per-lens evidence)
+  //   3. Recommendations list
+  //   4. "Sigil lens" detail (in_supply_graph, role, entity)
+  //   5. "Scry lens" detail (rich trim — actor class, enrichment, URL-hosted)
+  //   6. Single source-link (data.tunnelmind.ai is the cross-lens origin)
   function renderReputation(rep) {
-    if (!rep || !rep.sources) return emptyTab('Reputation lookup returned no sources.');
-    const s = rep.sources.scry;
-    if (s === undefined) return emptyTab('Reputation lookup returned no sources.');
+    if (!rep || typeof rep !== 'object') return emptyTab('Cross-lens lookup returned no data.');
 
-    // Both IP and domain branches return a `scry` source — same trim
-    // shape, with domain-specific fields layered on. Replaces the
-    // urlhaus / bgpview live calls that caused "first lookup fails,
-    // retry works" on cold workers.
     let html = '';
-    html += '<div class="insp-sub-label">Augur enrichment <span class="v-dim">tunnelmind.ai</span></div>';
+    html += renderCrossLensVerdict(rep.cross_lens);
+    html += renderSigilLens(rep.sigil);
+    html += renderScryLens(rep.scry_rich, rep.scry);
+    html += sourceLink('data.tunnelmind.ai', null);
+    return html;
+  }
 
-    if (!s || s.error) {
-      html += '<div class="insp-err-soft">lookup failed</div>';
-      html += sourceLink('api.tunnelmind.ai', null);
+  function renderCrossLensVerdict(cl) {
+    if (!cl) {
+      return '<div class="insp-sub-label">Cross-lens verdict <span class="v-dim">Scry × Sigil</span></div>' +
+        '<div class="insp-err-soft">verdict unavailable</div>';
+    }
+    const verdict = cl.verdict || 'unknown';
+    const cls = verdict === 'pass' ? 'sec-pass'
+              : verdict === 'fail' ? 'sec-fail'
+              : 'sec-warn';
+    let html = '<div class="insp-sub-label">Cross-lens verdict <span class="v-dim">Scry × Sigil</span></div>';
+    html += '<div class="insp-tag-row">' +
+      '<span class="sec-tag ' + cls + '">' + esc(verdict.toUpperCase()) + '</span>' +
+      '</div>';
+    html += '<div class="insp-fields">' +
+      (cl.trust_score != null
+        ? field('trust score', '<span class="v-num">' + esc(cl.trust_score.toFixed(2)) + '</span>')
+        : '') +
+      (typeof cl.confidence === 'number'
+        ? field('confidence',  '<span class="v-num">' + esc(cl.confidence.toFixed(2)) + '</span>' +
+            (cl.confidence < 0.6 ? ' <span class="v-dim">(single-lens — degraded)</span>' : ''))
+        : '') +
+      '</div>';
+    if (Array.isArray(cl.signals) && cl.signals.length) {
+      html += '<div class="insp-sub-label">Signals</div>' +
+        '<div class="insp-tag-row">' +
+        cl.signals.map((s) => '<span class="insp-tag">' + esc(s) + '</span>').join('') +
+        '</div>';
+    }
+    if (Array.isArray(cl.recommendations) && cl.recommendations.length) {
+      html += '<div class="insp-sub-label">Recommendations</div>' +
+        '<ul class="insp-list insp-list-tight">' +
+        cl.recommendations.map((r) => '<li>' + esc(r) + '</li>').join('') +
+        '</ul>';
+    }
+    return html;
+  }
+
+  function renderSigilLens(sig) {
+    let html = '<div class="insp-sub-label">Sigil lens <span class="v-dim">supply graph</span></div>';
+    if (!sig || sig.available === false) {
+      html += '<div class="insp-empty">' +
+        esc(sig?.reason || 'Sigil lens unavailable.') +
+        '</div>';
+      return html;
+    }
+    if (!sig.in_supply_graph) {
+      html += '<div class="insp-empty">' +
+        esc(sig.reason || 'Not present in the Sigil supply graph.') +
+        '</div>';
+      return html;
+    }
+    const roles = sig.roles || {};
+    const roleChips = Object.entries(roles)
+      .filter(([, v]) => v)
+      .map(([k]) => '<span class="insp-tag">' + esc(k) + '</span>');
+    if (roleChips.length) {
+      html += '<div class="insp-tag-row">' + roleChips.join('') + '</div>';
+    }
+    if (sig.entity) {
+      html += '<div class="insp-fields">' +
+        field('entity', esc(sig.entity.name || sig.entity.slug || '—')) +
+        (sig.entity.slug ? field('slug', '<code>' + esc(sig.entity.slug) + '</code>') : '') +
+        '</div>';
+      if (Array.isArray(sig.entity.sources) && sig.entity.sources.length) {
+        html += '<div class="insp-tag-row">' +
+          sig.entity.sources.map((s) => '<span class="insp-tag">' + esc(s) + '</span>').join('') +
+          '</div>';
+      }
+    }
+    if (sig.sell_side_presence) {
+      const p = sig.sell_side_presence;
+      html += '<div class="insp-fields">' +
+        field('SSPs observed',       '<span class="v-num">' + fmt(p.ssps_observed) + '</span>') +
+        field('publishers observed', '<span class="v-num">' + fmt(p.publishers_observed) + '</span>') +
+        (p.owns_any_seat != null ? field('owns any seat', p.owns_any_seat ? 'yes' : 'no') : '') +
+        '</div>';
+    }
+    if (sig.buy_side_presence?.dsps_observed_via_buys_through != null) {
+      html += '<div class="insp-fields">' +
+        field('observed buying', sig.buy_side_presence.dsps_observed_via_buys_through ? 'yes' : 'no') +
+        '</div>';
+    }
+    return html;
+  }
+
+  function renderScryLens(rich, lite) {
+    let html = '<div class="insp-sub-label">Scry lens <span class="v-dim">attacker intelligence</span></div>';
+    const s = rich && !rich.error ? rich : null;
+
+    if (!s) {
+      if (lite && lite.available === false) {
+        html += '<div class="insp-empty">' + esc(lite.reason || 'Scry lens unavailable.') + '</div>';
+      } else {
+        html += '<div class="insp-err-soft">lookup failed</div>';
+      }
       return html;
     }
     if (!s.listed) {
@@ -1383,10 +1491,6 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       }
     }
 
-    // Domain-only: surface URL-hosted hits separately when the apex
-    // is also flagged, plus threat types + tags as chip rows so an
-    // investigator can see "phishing+malware_dl, tagged emotet" at a
-    // glance without inspecting the JSON.
     if (s.kind === 'domain') {
       if (s.listed && s.url_hosted_count > 0) {
         html += '<div class="insp-sub-label">URL-hosted hits <span class="v-dim">not direct indicators</span></div>' +
@@ -1408,7 +1512,6 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       }
     }
 
-    // IP-only: actor_class overlay (security vendor vs. hostile, etc.)
     if (s.kind === 'ip' && s.actor_class_label) {
       html += '<div class="insp-sub-label">Actor class</div>' +
         '<div class="insp-fields">' +
@@ -1416,8 +1519,6 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
         (s.actor_class_trust ? field('trust', esc(s.actor_class_trust)) : '') +
         '</div>';
     }
-
-    html += sourceLink('api.tunnelmind.ai', null);
     return html;
   }
 

@@ -1,0 +1,54 @@
+# TunnelMind
+
+> The observability layer for the agentic internet. Three lenses (Scry / Sigil / Tracker) on one signed corpus of network observations, plus a fused cross-lens verdict no siloed incumbent can compute. Built specifically for autonomous agents.
+
+TunnelMind answers the question an agent is actually asking when it transacts with a new endpoint: *is this real?* GreyNoise and Spur can tell you which IPs scan the internet but not which of those IPs are the egress for an SSP carrying a hundred thousand publisher relationships. DoubleVerify, IAS, HUMAN and Pixalate can tell you which supply paths look fraudulent but not which of those paths source traffic from IPs the network has logged scanning for Log4Shell. We own both halves.
+
+Every observation in the corpus is Ed25519-signed at the sensor before it reaches the corpus, so the data can prove its own provenance. Every observed actor gets a permanent free-to-resolve handle (OAI). Every fused verdict ships with a 5-minute signed `sigil_token` plus an optional ATAP witness event chained onto the calling agent's identity token, so the agent leaves behind a verifiable trail in the same request.
+
+## Vision and roadmap
+
+- [The vision](https://tunnelmind.ai/vision): plain-prose thesis behind the pivot, including the cross-lens join argument
+- [The roadmap](https://tunnelmind.ai/roadmap): public order-of-operations, gated H1 / H2 / H3
+
+## Standards (free, open, citation-grade)
+
+- [OAI v1.0](https://tunnelmind.ai/oai/standard): Observed Actor Identifier — permanent, free-to-resolve handles for every actor on the network
+- [ATAP v0.1](https://tunnelmind.ai/atap/standard): Agent Trust Attestation Protocol — capability tokens, witness chains, signed receipts. Public comment through 2026-08-12.
+- [ATAP JSON-LD context](https://tunnelmind.ai/atap/context.jsonld)
+- [ATAP reference verifier](https://tunnelmind.ai/atap/verify.sh)
+
+## Live data surfaces
+
+- [The radar](https://tunnelmind.ai/): live sample of the corpus, no account required
+- [Data API (Sigil + Cross-lens)](https://data.tunnelmind.ai): `POST /v1/verify/{node}` is the fused-verdict endpoint
+- [Scry API](https://api.tunnelmind.ai): `GET /v1/check/{ip}` and `/v1/check-domain/{host}`
+- [OpenAPI 3.1 spec](https://data.tunnelmind.ai/openapi.yaml)
+
+## MCP servers (agent-native entry)
+
+- `https://mcp.tunnelmind.ai/mcp` — Data API surface (Streamable HTTP, 43 tools, auto-generated from OpenAPI)
+- `https://mcp.sigil.tunnelmind.ai/mcp` — Sigil-scoped surface (Streamable HTTP, 11 tools)
+
+The `cross_lens_verify` tool is exposed on both, with identical semantics. Use whichever you discovered first.
+
+## Discovery
+
+- [.well-known/ai-services.json](https://tunnelmind.ai/.well-known/ai-services.json): full machine-readable service card
+- [agent-manifest.json](https://tunnelmind.ai/agent-manifest.json): products, endpoints, MCP servers, pricing
+- [robots.txt](https://tunnelmind.ai/robots.txt)
+
+## Pricing for agents
+
+- All identifiers resolve for free, forever. The radar sample is public. 50 req/day free tier on the Data API.
+- Depth and scale: API key via Stripe (humans) or x402 USDC micropayments (agents). Per-endpoint pricing is in the OpenAPI `x-tunnelmind-pricing` extensions.
+
+## Operator and transparency
+
+- [Warrant canary](https://tunnelmind.ai/canary.json): monthly
+- [Code repositories](https://github.com/TunnelMind): public where possible
+- Single-operator project. No venture capital. No board. No quarterly plan.
+
+## Contact
+
+For agentic onboarding questions, autonomous-agent issues, or to request a new MCP tool: `agents@tunnelmind.ai`.

@@ -1,0 +1,160 @@
+{
+  "$schema": "https://tunnelmind.ai/agent-manifest.schema.json",
+  "manifest_version": "0.1",
+  "generated_at": "2026-05-24",
+  "operator": {
+    "name": "TunnelMind AI, LLC",
+    "homepage": "https://tunnelmind.ai",
+    "vision": "https://tunnelmind.ai/vision",
+    "roadmap": "https://tunnelmind.ai/roadmap",
+    "contact": {
+      "agents": "agents@tunnelmind.ai",
+      "api": "api@tunnelmind.ai",
+      "legal": "legal@tunnelmind.ai"
+    },
+    "single_operator": true,
+    "investor_capital_received": false,
+    "warrant_canary": "https://tunnelmind.ai/canary.json"
+  },
+
+  "thesis": "Three lenses on one signed corpus. Scry watches who is attacking; Sigil watches who can be trusted; Tracker watches who is paying whom. The join across the three is the thing no siloed incumbent can compute — and it is what an autonomous agent needs to answer the only question that matters when it transacts with a new endpoint: is this real?",
+
+  "products": [
+    {
+      "id": "scry",
+      "name": "Scry",
+      "lens": "who_is_attacking",
+      "summary": "Signed observations of hostile network actors with actor-class enrichment and threat-feed overlap.",
+      "rest_base": "https://api.tunnelmind.ai",
+      "key_endpoints": [
+        {"method": "GET", "path": "/v1/check/{ip}",        "purpose": "Per-IP reputation lookup with actor classification"},
+        {"method": "GET", "path": "/v1/check-domain/{host}", "purpose": "Per-domain reputation lookup"},
+        {"method": "GET", "path": "/v1/recent",            "purpose": "Stream of recent hostile observations"},
+        {"method": "POST","path": "/v1/check/bulk",        "purpose": "Bulk IP lookup (paid tier)"}
+      ]
+    },
+    {
+      "id": "sigil",
+      "name": "Sigil",
+      "lens": "who_can_be_trusted",
+      "summary": "Programmatic-advertising supply graph. Publishers, SSPs, DSPs, seats, OpenRTB SupplyChain, entity trust scoring.",
+      "rest_base": "https://data.tunnelmind.ai",
+      "key_endpoints": [
+        {"method": "GET", "path": "/v1/sigil/resolve/domain/{host}",         "purpose": "Resolve a domain to its sell-side presence in the supply graph"},
+        {"method": "GET", "path": "/v1/sigil/resolve/entity/{slug}",         "purpose": "Resolve an entity slug to its observed surface across the supply graph"},
+        {"method": "POST","path": "/v1/sigil/verify/supply_path",            "purpose": "Verify a SupplyChain path with a weighted-mean verdict"},
+        {"method": "POST","path": "/v1/sigil/atap/ait",                      "purpose": "Mint an ATAP capability token for the calling agent"}
+      ]
+    },
+    {
+      "id": "tracker",
+      "name": "Tracker",
+      "lens": "who_is_paying_whom",
+      "summary": "Surveillance-economy graph. Tracker entities, the resellers they buy from, the publishers they reach.",
+      "rest_base": "https://data.tunnelmind.ai",
+      "key_endpoints": [
+        {"method": "GET", "path": "/v1/tracker/resolve/{host}", "purpose": "Resolve a tracker host to its operating entity and reseller relationships"}
+      ]
+    },
+    {
+      "id": "cross_lens",
+      "name": "Cross-lens verify",
+      "lens": "is_this_real",
+      "summary": "The A2 join. Service-layer fusion of Scry × Sigil × Tracker for one node key. Returns the fused verdict, per-lens blocks, a 5-minute signed sigil_token, and an optional ATAP witness event.",
+      "rest_base": "https://data.tunnelmind.ai",
+      "key_endpoints": [
+        {"method": "POST", "path": "/v1/verify/{node}", "purpose": "Fused cross-lens verdict for an IP, domain, ASN, or entity_slug. Optional ait field wraps the verdict in an ATAP cross_lens:verified witness event."}
+      ],
+      "node_types": ["ip", "domain", "asn", "entity_slug"],
+      "response_shape": ["scry", "sigil", "cross_lens", "sigil_token", "token_signed", "token_expires_at", "witnessed_event"]
+    }
+  ],
+
+  "mcp_servers": [
+    {
+      "id": "tunnelmind-data-api",
+      "url": "https://mcp.tunnelmind.ai/mcp",
+      "transport": "streamable-http",
+      "tool_count": 43,
+      "auto_generated_from": "https://data.tunnelmind.ai/openapi.yaml",
+      "summary": "Every Data API operation surfaced as an MCP tool. Includes cross_lens_verify."
+    },
+    {
+      "id": "sigil-mcp",
+      "url": "https://mcp.sigil.tunnelmind.ai/mcp",
+      "transport": "streamable-http",
+      "tool_count": 11,
+      "summary": "Sigil-scoped MCP. Curated tool surface. Includes cross_lens_verify with identical semantics."
+    }
+  ],
+
+  "cross_product_tools": [
+    {
+      "name": "cross_lens_verify",
+      "summary": "Exposed on both MCP servers. The right answer for 'is this real?' should not depend on which MCP an agent landed at.",
+      "available_on": [
+        "https://mcp.tunnelmind.ai/mcp",
+        "https://mcp.sigil.tunnelmind.ai/mcp"
+      ]
+    }
+  ],
+
+  "standards_published": [
+    {
+      "id": "oai",
+      "name": "OAI",
+      "full_name": "Observed Actor Identifier",
+      "version": "1.0",
+      "status": "stable",
+      "spec_url": "https://tunnelmind.ai/oai/standard",
+      "markdown_url": "https://tunnelmind.ai/oai/OAI-STANDARD-v1.0.md"
+    },
+    {
+      "id": "atap",
+      "name": "ATAP",
+      "full_name": "Agent Trust Attestation Protocol",
+      "version": "0.1",
+      "status": "public_comment",
+      "public_comment_close": "2026-08-12",
+      "spec_url": "https://tunnelmind.ai/atap/standard",
+      "markdown_url": "https://tunnelmind.ai/atap/ATAP-v0.1.md",
+      "jsonld_context": "https://tunnelmind.ai/atap/context.jsonld",
+      "schemas_dir": "https://tunnelmind.ai/atap/schemas/",
+      "reference_verifier": "https://tunnelmind.ai/atap/verify.sh"
+    }
+  ],
+
+  "auth": {
+    "model": "open_free_tier_plus_paid",
+    "free_tier": {
+      "rate_limit_per_day": 50,
+      "scope": "All identifier resolution is free, forever. Radar sample is public."
+    },
+    "paid_tier": {
+      "summary": "Stripe for humans; x402 USDC micropayments for agents. Per-endpoint pricing in OpenAPI x-tunnelmind-pricing.",
+      "key_issuance": "https://tunnelmind.ai/api"
+    }
+  },
+
+  "agent_payments": {
+    "x402_enabled": true,
+    "rail": "USDC on Base",
+    "summary": "x402 is the agent-native rail. Stripe is the human rail. Pricing per endpoint lives in the OpenAPI x-tunnelmind-pricing extension."
+  },
+
+  "discovery_artifacts": {
+    "ai_services_card": "https://tunnelmind.ai/.well-known/ai-services.json",
+    "llms_txt":         "https://tunnelmind.ai/llms.txt",
+    "openapi":          "https://data.tunnelmind.ai/openapi.yaml",
+    "robots_txt":       "https://tunnelmind.ai/robots.txt",
+    "warrant_canary":   "https://tunnelmind.ai/canary.json"
+  },
+
+  "principles": [
+    {"id": "signed_at_source",      "summary": "Every observation is Ed25519-signed by the sensor that made it."},
+    {"id": "corpus_is_public",      "summary": "The radar shows a live sample to anyone, no account. Identifiers resolve for free."},
+    {"id": "stable_identifiers",    "summary": "Every observed actor gets a permanent handle (OAI)."},
+    {"id": "no_profile_poisoning",  "summary": "We make the watchers legible. We do not fabricate data."},
+    {"id": "local_first_for_people","summary": "Anything that analyzes a person's traffic runs on their machine."}
+  ]
+}

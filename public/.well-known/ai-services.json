@@ -1,0 +1,133 @@
+{
+  "$schema": "https://tunnelmind.ai/.well-known/ai-services.schema.json",
+  "version": "0.1",
+  "updated": "2026-05-24",
+
+  "service": {
+    "name": "TunnelMind",
+    "summary": "The observability layer for the agentic internet. Three lenses (Scry / Sigil / Tracker) on one signed corpus, with a fused cross-lens verdict no siloed incumbent can compute.",
+    "homepage": "https://tunnelmind.ai",
+    "vision": "https://tunnelmind.ai/vision",
+    "operator": {
+      "legal_name": "TunnelMind AI, LLC",
+      "oai": null,
+      "contact_email": "agents@tunnelmind.ai",
+      "contact_pgp": null
+    }
+  },
+
+  "products": [
+    {
+      "name": "Scry",
+      "lens": "who_is_attacking",
+      "summary": "Signed observations of hostile network actors. IPs, ASNs, behaviors, threat-feed overlap, actor classification.",
+      "rest_base": "https://api.tunnelmind.ai",
+      "rest_quickstart": "https://api.tunnelmind.ai/v1/check/8.8.8.8"
+    },
+    {
+      "name": "Sigil",
+      "lens": "who_can_be_trusted",
+      "summary": "Programmatic-advertising supply graph: publishers, SSPs, DSPs, seats, OpenRTB SupplyChain, entity trust scores.",
+      "rest_base": "https://data.tunnelmind.ai",
+      "rest_quickstart": "https://data.tunnelmind.ai/v1/sigil/resolve/domain/nytimes.com"
+    },
+    {
+      "name": "Tracker",
+      "lens": "who_is_paying_whom",
+      "summary": "Surveillance-economy graph: trackers, ad networks, data brokers and the relationships between them.",
+      "rest_base": "https://data.tunnelmind.ai",
+      "rest_quickstart": "https://data.tunnelmind.ai/v1/tracker/resolve/google-analytics.com"
+    },
+    {
+      "name": "Cross-lens verify",
+      "lens": "is_this_real",
+      "summary": "The A2 join. One node key (IP, domain, ASN, entity_slug) returns fused verdict + per-lens blocks + a signed 5-minute sigil_token. Optional ATAP witness event chained onto the calling agent's identity token.",
+      "rest_base": "https://data.tunnelmind.ai",
+      "rest_quickstart": "POST https://data.tunnelmind.ai/v1/verify/8.8.8.8"
+    }
+  ],
+
+  "mcp_servers": [
+    {
+      "name": "tunnelmind-data-api",
+      "url": "https://mcp.tunnelmind.ai/mcp",
+      "transport": "streamable-http",
+      "tool_count": 43,
+      "summary": "All Data API operations exposed as MCP tools (auto-generated from openapi.yaml). Includes cross_lens_verify."
+    },
+    {
+      "name": "sigil-mcp",
+      "url": "https://mcp.sigil.tunnelmind.ai/mcp",
+      "transport": "streamable-http",
+      "tool_count": 11,
+      "summary": "Sigil-scoped MCP surface. Includes cross_lens_verify with identical semantics to the data-api surface — agents get the right answer no matter which entry point they landed at."
+    }
+  ],
+
+  "openapi": {
+    "url": "https://data.tunnelmind.ai/openapi.yaml",
+    "version": "3.1.0"
+  },
+
+  "standards": [
+    {
+      "name": "OAI",
+      "full_name": "Observed Actor Identifier",
+      "version": "1.0",
+      "spec_url": "https://tunnelmind.ai/oai/standard",
+      "summary": "Permanent, free-to-resolve identifiers for every observed actor on the network."
+    },
+    {
+      "name": "ATAP",
+      "full_name": "Agent Trust Attestation Protocol",
+      "version": "0.1",
+      "status": "public_comment_through_2026-08-12",
+      "spec_url": "https://tunnelmind.ai/atap/standard",
+      "context_url": "https://tunnelmind.ai/atap/context.jsonld",
+      "reference_verifier": "https://tunnelmind.ai/atap/verify.sh",
+      "summary": "Capability tokens (AIT), witness-event hash chains, and signed compliance receipts let one agent verify what another agent actually did."
+    }
+  ],
+
+  "auth": {
+    "model": "open_free_tier_plus_paid",
+    "free_tier": {
+      "summary": "All identifiers resolve for free, forever. The radar sample is public.",
+      "rate_limit_per_day": 50
+    },
+    "paid_tier": {
+      "summary": "Depth and scale via API key. Stripe (humans) or x402 USDC micropayments (agents).",
+      "key_issuance": "https://tunnelmind.ai/api"
+    }
+  },
+
+  "agent_payments": {
+    "x402": {
+      "enabled": true,
+      "summary": "x402 USDC micropayments are the agent rail. See per-endpoint pricing in openapi.yaml x-tunnelmind-pricing extensions."
+    }
+  },
+
+  "discovery": {
+    "agent_manifest": "https://tunnelmind.ai/agent-manifest.json",
+    "llms_txt": "https://tunnelmind.ai/llms.txt",
+    "robots_txt": "https://tunnelmind.ai/robots.txt",
+    "canary": "https://tunnelmind.ai/canary.json",
+    "ai_services": "https://tunnelmind.ai/.well-known/ai-services.json"
+  },
+
+  "transparency": {
+    "code_repos": "https://github.com/TunnelMind",
+    "warrant_canary": "https://tunnelmind.ai/canary.json",
+    "single_operator": true,
+    "investor_capital_received": false
+  },
+
+  "principles": [
+    "signed_at_the_source",
+    "the_corpus_is_public",
+    "stable_identifiers_not_vibes",
+    "no_profile_poisoning_ever",
+    "local_first_where_it_touches_people"
+  ]
+}

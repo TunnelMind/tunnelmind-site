@@ -189,6 +189,26 @@ export default function Radar({ onNavigate }) {
           source so the data can prove where it came from. Below is a live,
           unedited window into that corpus.
         </p>
+        <div className="tm-lens-strip" aria-label="One corpus, three lenses">
+          <div className="tm-lens-caption">One corpus · Three lenses</div>
+          <div className="tm-lens-grid">
+            <div className="tm-lens">
+              <div className="tm-lens-name">Scry</div>
+              <div className="tm-lens-blurb">Signed observations of hostile network actors — IPs, ASNs, behaviors, threat-feed overlap.</div>
+            </div>
+            <div className="tm-lens">
+              <div className="tm-lens-name">Sigil</div>
+              <div className="tm-lens-blurb">Programmatic-advertising supply-graph trust — publishers, SSPs, DSPs, entity scoring.</div>
+            </div>
+            <div className="tm-lens">
+              <div className="tm-lens-name">Tracker</div>
+              <div className="tm-lens-blurb">The demand-side graph of who watches whom on the open web.</div>
+            </div>
+          </div>
+          <div className="tm-lens-kicker">
+            The moat is the <span className="tm-accent">join</span> — a fused verdict no siloed incumbent can compute.
+          </div>
+        </div>
         <HeroStats />
         <div className="tm-cta-row">
           <a className="tm-btn tm-btn-primary" href="https://chat.tunnelmind.ai">

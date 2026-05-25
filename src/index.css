@@ -251,6 +251,55 @@ a:hover {
   margin-bottom: 28px;
 }
 
+/* hero three-lens strip — frames the product as one corpus, three lenses */
+.tm-lens-strip {
+  margin: 0 0 28px;
+  padding: 22px 0 24px;
+  border-top: 1px solid var(--chrome-border);
+  border-bottom: 1px solid var(--chrome-border);
+}
+.tm-lens-caption {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--chrome-text-dim);
+  margin-bottom: 16px;
+}
+.tm-lens-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(14px, 3vw, 28px);
+}
+@media (max-width: 640px) {
+  .tm-lens-grid { grid-template-columns: 1fr; gap: 18px; }
+}
+.tm-lens {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tm-lens-name {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--accent-green);
+}
+.tm-lens-blurb {
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--doc-text-dim);
+}
+.tm-lens-kicker {
+  margin-top: 18px;
+  font-family: var(--font-serif);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--chrome-text-dim);
+}
+
 /* hero live-stat strip — pulls /api/stats and counts up */
 .tm-stat-strip {
   display: flex;

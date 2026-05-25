@@ -7,8 +7,9 @@
       "public_key": "0x3b0e0ca949f5d4564ba4bd032a71adf84116eac9e1b84bd8b566814677175c5b",
       "valid_from": "2026-01-01T00:00:00Z",
       "valid_until": "2027-12-31T00:00:00Z",
-      "status": "active"
+      "status": "active",
+      "attestation_strength": "software"
     }
   ],
-  "updated_at": "2026-05-16T00:00:00Z"
+  "updated_at": "2026-05-25T00:00:00Z"
 }

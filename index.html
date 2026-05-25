@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href="https://tunnelmind.ai/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="TunnelMind — a live, sourced view of the agentic internet. Real attacker IPs, attested at the sensor, observed in the last hour." />
     <meta property="og:title" content="TunnelMind — observability for the agentic internet" />
@@ -102,6 +103,76 @@
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <header>
+        <h1>TunnelMind — observability for the agentic internet</h1>
+        <p>
+          The web is filling up with traffic no human ever typed. TunnelMind
+          watches the hostile slice of it — a distributed fleet of attested
+          sensors plus public feeds, every observation Ed25519-signed at the
+          source so the data can prove where it came from.
+        </p>
+      </header>
+
+      <section>
+        <h2>One signed corpus, three lenses</h2>
+        <ul>
+          <li>
+            <strong>Scry</strong> — signed observations of hostile network
+            actors. IPs, ASNs, behaviors, threat-feed overlap, actor
+            classification. <a href="https://api.tunnelmind.ai">api.tunnelmind.ai</a>
+          </li>
+          <li>
+            <strong>Sigil</strong> — programmatic-advertising supply-graph
+            trust layer. Publishers, SSPs, DSPs, seats, OpenRTB SupplyChain,
+            entity trust scoring. <a href="https://data.tunnelmind.ai">data.tunnelmind.ai</a>
+          </li>
+          <li>
+            <strong>Tracker</strong> — the demand-side graph of who is
+            watching whom on the open web; recurring SDK fingerprints and
+            tracker-operator entities.
+          </li>
+        </ul>
+        <p>
+          The moat is the join: a fused cross-lens verdict on any entity
+          (attack signal × trust signal × tracker signal) no siloed
+          incumbent can compute.
+        </p>
+      </section>
+
+      <section>
+        <h2>For autonomous agents</h2>
+        <p>
+          MCP servers (Streamable HTTP, JSON-RPC 2.0, all listed in the
+          official MCP registry):
+        </p>
+        <ul>
+          <li><a href="https://mcp-data.tunnelmind.ai/mcp">mcp-data.tunnelmind.ai</a> — ai.tunnelmind/data (43 tools)</li>
+          <li><a href="https://mcp.tunnelmind.ai/mcp">mcp.tunnelmind.ai</a> — ai.tunnelmind/scry (12 tools)</li>
+          <li><a href="https://mcp.sigil.tunnelmind.ai/mcp">mcp.sigil.tunnelmind.ai</a> — ai.tunnelmind/sigil (11 tools)</li>
+        </ul>
+        <p>
+          Discovery: <a href="/.well-known/ai-services.json">ai-services.json</a>,
+          <a href="/agent-manifest.json">agent-manifest.json</a>,
+          <a href="/llms.txt">llms.txt</a>.
+        </p>
+      </section>
+
+      <section>
+        <h2>Standards</h2>
+        <ul>
+          <li><a href="/standards">All TunnelMind-edited standards</a></li>
+          <li><a href="/oai/standard">OAI — Observed Actor Identifier</a></li>
+          <li><a href="/atap/standard">ATAP — Agentic Trust Attestation Protocol</a></li>
+          <li><a href="/atap/profiles">ATAP profiles</a></li>
+        </ul>
+      </section>
+
+      <p>
+        This page is the JavaScript-free fallback. The full live radar runs
+        in a browser with JavaScript enabled.
+      </p>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

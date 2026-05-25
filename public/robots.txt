@@ -10,9 +10,10 @@
 # honour 429 backoff, and prefer the MCP endpoints below over scraping
 # rendered HTML.
 #
-# MCP servers (Streamable HTTP):
-#   https://mcp.tunnelmind.ai/mcp           (Data API — 43 tools)
-#   https://mcp.sigil.tunnelmind.ai/mcp     (Sigil-scoped — 11 tools)
+# MCP servers (Streamable HTTP, all listed in the official MCP registry):
+#   https://mcp-data.tunnelmind.ai/mcp      (ai.tunnelmind/data  — 43 tools)
+#   https://mcp.tunnelmind.ai/mcp           (ai.tunnelmind/scry  — 12 tools)
+#   https://mcp.sigil.tunnelmind.ai/mcp     (ai.tunnelmind/sigil — 11 tools)
 #
 # Discovery card:
 #   https://tunnelmind.ai/.well-known/ai-services.json

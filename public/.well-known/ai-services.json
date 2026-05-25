@@ -10,7 +10,8 @@
     "vision": "https://tunnelmind.ai/vision",
     "operator": {
       "legal_name": "TunnelMind AI, LLC",
-      "oai": null,
+      "oai": "OAI-2026-0000201",
+      "oai_resolver": "https://tunnelmind.ai/id/OAI-2026-0000201",
       "contact_email": "agents@tunnelmind.ai",
       "contact_pgp": null
     }
@@ -49,18 +50,31 @@
 
   "mcp_servers": [
     {
-      "name": "tunnelmind-data-api",
-      "url": "https://mcp.tunnelmind.ai/mcp",
+      "name": "TunnelMind Data API",
+      "registry_name": "ai.tunnelmind/data",
+      "url": "https://mcp-data.tunnelmind.ai/mcp",
+      "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
       "tool_count": 43,
-      "summary": "All Data API operations exposed as MCP tools (auto-generated from openapi.yaml). Includes cross_lens_verify."
+      "summary": "All Data API operations exposed as MCP tools (auto-generated from openapi.yaml). Tracker / Sigil / Cross-lens — the union of every REST endpoint, including cross_lens_verify."
     },
     {
-      "name": "sigil-mcp",
+      "name": "Scry",
+      "registry_name": "ai.tunnelmind/scry",
+      "url": "https://mcp.tunnelmind.ai/mcp",
+      "card_url": "https://mcp.tunnelmind.ai/.well-known/mcp.json",
+      "transport": "streamable-http",
+      "tool_count": 12,
+      "summary": "Scry-only MCP surface: free IPv4 lookups against the attacker-observation corpus. Auth: none."
+    },
+    {
+      "name": "Sigil",
+      "registry_name": "ai.tunnelmind/sigil",
       "url": "https://mcp.sigil.tunnelmind.ai/mcp",
+      "card_url": "https://mcp.sigil.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
       "tool_count": 11,
-      "summary": "Sigil-scoped MCP surface. Includes cross_lens_verify with identical semantics to the data-api surface — agents get the right answer no matter which entry point they landed at."
+      "summary": "Sigil-scoped MCP surface: supply verification + cross_lens_verify with identical semantics to the data-api surface. Agents get the right answer no matter which entry point they landed at."
     }
   ],
 

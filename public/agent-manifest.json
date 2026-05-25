@@ -4,6 +4,8 @@
   "generated_at": "2026-05-24",
   "operator": {
     "name": "TunnelMind AI, LLC",
+    "oai": "OAI-2026-0000201",
+    "oai_resolver": "https://tunnelmind.ai/id/OAI-2026-0000201",
     "homepage": "https://tunnelmind.ai",
     "vision": "https://tunnelmind.ai/vision",
     "roadmap": "https://tunnelmind.ai/roadmap",
@@ -73,27 +75,40 @@
   "mcp_servers": [
     {
       "id": "tunnelmind-data-api",
-      "url": "https://mcp.tunnelmind.ai/mcp",
+      "registry_name": "ai.tunnelmind/data",
+      "url": "https://mcp-data.tunnelmind.ai/mcp",
+      "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
       "tool_count": 43,
       "auto_generated_from": "https://data.tunnelmind.ai/openapi.yaml",
-      "summary": "Every Data API operation surfaced as an MCP tool. Includes cross_lens_verify."
+      "summary": "Every Data API operation surfaced as an MCP tool. Tracker, Sigil, and cross_lens_verify in one surface."
+    },
+    {
+      "id": "scry-mcp",
+      "registry_name": "ai.tunnelmind/scry",
+      "url": "https://mcp.tunnelmind.ai/mcp",
+      "card_url": "https://mcp.tunnelmind.ai/.well-known/mcp.json",
+      "transport": "streamable-http",
+      "tool_count": 12,
+      "summary": "Scry-only MCP. Free IPv4 lookups against the attacker-observation corpus. No auth."
     },
     {
       "id": "sigil-mcp",
+      "registry_name": "ai.tunnelmind/sigil",
       "url": "https://mcp.sigil.tunnelmind.ai/mcp",
+      "card_url": "https://mcp.sigil.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
       "tool_count": 11,
-      "summary": "Sigil-scoped MCP. Curated tool surface. Includes cross_lens_verify with identical semantics."
+      "summary": "Sigil-scoped MCP. Curated tool surface. Includes cross_lens_verify with identical semantics to the data-api surface."
     }
   ],
 
   "cross_product_tools": [
     {
       "name": "cross_lens_verify",
-      "summary": "Exposed on both MCP servers. The right answer for 'is this real?' should not depend on which MCP an agent landed at.",
+      "summary": "Exposed on both Sigil and Data API MCP servers. The right answer for 'is this real?' should not depend on which MCP an agent landed at.",
       "available_on": [
-        "https://mcp.tunnelmind.ai/mcp",
+        "https://mcp-data.tunnelmind.ai/mcp",
         "https://mcp.sigil.tunnelmind.ai/mcp"
       ]
     }

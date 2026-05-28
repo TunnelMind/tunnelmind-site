@@ -771,6 +771,21 @@ of communications. The claim set in this profile is constrained to
 for EAT.</li>
 <li>[IEEE 802.1AR] — Secure Device Identity (DevID).</li>
 </ul>
+<h3>Companion documents</h3>
+<p>This profile ships with three companion documents. They live alongside
+this spec at <code>tunnelmind.ai/docs/</code> and are versioned together with it.</p>
+<ul>
+<li><a href="./EAT-IANA-REGISTRATION-v0.1.md">EAT IANA registration draft</a> —
+the claim-allocation ledger and profile-registration template that
+goes to IANA when the profile is submitted.</li>
+<li><a href="./EAT-OAI-RESOLVER-v0.1.md">EAT OAI resolver update</a> — how the
+<code>tunnelmind.ai/id/{OAI}</code> resolver issues EAT-formatted responses on
+Accept-header negotiation, while preserving its legacy JSON path.</li>
+<li><a href="./EAT-MIGRATION-PLAN-v0.1.md">EAT migration plan for existing consumers</a> —
+the rollout sequence across Scry / Sigil / OAI endpoints, the
+backward-compatibility guarantees, and the client-side migration
+guidance.</li>
+</ul>
 <h2>Appendix A: example CWT (informative)</h2>
 <p>CDDL sketch of an outer-EAT CWT body for a Sigil supply-path
 verification:</p>

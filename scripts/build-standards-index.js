@@ -36,6 +36,17 @@ const STANDARDS = [
     github: 'https://github.com/TunnelMind/atap',
     published: '2026-05-14',
   },
+  {
+    id: 'eat-profile',
+    version: 'v0.1 (draft)',
+    name: 'EAT Profile',
+    full: 'Entity Attestation Token Profile over ATAP',
+    status: 'v0.1 — Draft, implementation gated',
+    blurb: 'IETF RATS Entity Attestation Token (RFC 9711) serialization profile for ATAP receipts plus Scry cross-lens enrichments. Six TunnelMind-specific claims layered on top of standard EAT claims; ATAP receipt rides as a submodule with its original witness signature preserved.',
+    href: '/eat/profile/v0.1',
+    github: 'https://github.com/TunnelMind/atap',
+    published: '2026-05-27',
+  },
 ]
 
 const css = `

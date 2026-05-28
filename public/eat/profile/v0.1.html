@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EAT Profile v0.1 (draft) — TunnelMind</title>
+<meta name="description" content="TunnelMind EAT Profile v0.1 — a draft IETF RATS Entity Attestation Token (RFC 9711) serialization for ATAP receipts and Scry cross-lens enrichments. CC BY 4.0.">
+<link rel="canonical" href="https://tunnelmind.ai/eat/profile/v0.1">
+<meta name="robots" content="noindex, follow">
+<meta property="og:title" content="EAT Profile v0.1 (draft) — TunnelMind">
+<meta property="og:description" content="Draft EAT (RFC 9711) profile for TunnelMind. ATAP receipt + Scry cross-lens enrichments expressed as standard EAT claims with two submodules.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://tunnelmind.ai/eat/profile/v0.1">
+<meta name="twitter:card" content="summary">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>:root {
+  --chrome-bg: #0f172a;
+  --chrome-bg2: #1e293b;
+  --chrome-border: #334155;
+  --chrome-text: #cbd5e1;
+  --chrome-text-dim: #94a3b8;
+  --chrome-text-bright: #e2e8f0;
+  --doc-bg: #1e293b;
+  --doc-paper: #243044;
+  --doc-text: #e2e8f0;
+  --doc-text-dim: #cbd5e1;
+  --accent-green: #4ade80;
+  --accent-amber: #fbbf24;
+  --accent-blue: #60a5fa;
+  --accent-cyan: #38bdf8;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--chrome-bg); color: var(--doc-text); font-family: var(--font-serif); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.banner { background: var(--chrome-bg2); border-bottom: 1px solid var(--chrome-border); padding: 14px 24px; font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.banner a { color: var(--accent-green); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 150ms ease; }
+.banner a:hover { border-bottom-color: var(--accent-green); }
+.banner .home { color: var(--accent-green); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 11px; }
+main { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+h1 { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--accent-green); letter-spacing: 0.02em; margin: 0 0 28px; line-height: 1.25; }
+h2 { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--chrome-text-bright); margin: 56px 0 18px; line-height: 1.3; padding-bottom: 8px; border-bottom: 1px solid var(--chrome-border); }
+h3 { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-cyan); margin: 36px 0 14px; }
+h4 { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--chrome-text); margin: 28px 0 10px; }
+p { margin: 0 0 18px; }
+a { color: var(--accent-blue); text-decoration: none; border-bottom: 1px solid rgba(96, 165, 250, 0.35); transition: border-color 150ms ease, color 150ms ease; }
+a:hover { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+ul, ol { margin: 0 0 18px; padding-left: 26px; }
+li { margin: 6px 0; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--chrome-bg2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 3px; border: 1px solid var(--chrome-border); }
+pre { background: var(--chrome-bg2); border: 1px solid var(--chrome-border); border-radius: 4px; padding: 16px 18px; overflow-x: auto; margin: 0 0 22px; }
+pre code { background: transparent; border: none; padding: 0; color: var(--doc-text); font-size: 13px; line-height: 1.55; }
+table { border-collapse: collapse; margin: 0 0 22px; font-size: 14px; width: 100%; font-family: var(--font-mono); }
+th, td { border: 1px solid var(--chrome-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background: var(--chrome-bg2); color: var(--chrome-text-bright); font-weight: 700; }
+td code { font-size: 0.92em; }
+hr { border: none; border-top: 1px solid var(--chrome-border); margin: 36px 0; }
+blockquote { margin: 0 0 22px; padding: 12px 18px; border-left: 3px solid var(--accent-green); background: rgba(74, 222, 128, 0.04); color: var(--chrome-text-bright); }
+strong { color: var(--chrome-text-bright); font-weight: 700; }
+em { color: var(--accent-amber); }
+::selection { background: rgba(96, 165, 250, 0.25); color: var(--doc-text); }
+.cta { background: var(--doc-paper); border: 1px solid var(--chrome-border); border-radius: 4px; padding: 20px 24px; margin: 36px 0; font-family: var(--font-mono); font-size: 13px; line-height: 1.55; }
+.cta-title { color: var(--accent-amber); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+@media (max-width: 600px) {
+  main { padding: 32px 18px 64px; font-size: 16px; }
+  h1 { font-size: 22px; }
+  h2 { font-size: 17px; }
+  pre, table { font-size: 12px; }
+}</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "TunnelMind EAT Profile v0.1 (draft)",
+  "name": "EAT Profile v0.1",
+  "url": "https://tunnelmind.ai/eat/profile/v0.1",
+  "description": "Draft IETF RATS Entity Attestation Token (RFC 9711) serialization profile for TunnelMind ATAP receipts and Scry cross-lens enrichments. CC BY 4.0.",
+  "inLanguage": "en",
+  "proficiencyLevel": "Expert",
+  "audience": { "@type": "Audience", "audienceType": "SoftwareDeveloper" },
+  "isPartOf": { "@type": "WebSite", "@id": "https://tunnelmind.ai/#website" },
+  "author":    { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
+  "publisher": { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "version": "0.1-draft",
+  "creativeWorkStatus": "Draft",
+  "encoding": {
+    "@type": "MediaObject",
+    "contentUrl": "https://tunnelmind.ai/eat/profile/EAT-PROFILE-v0.1.md",
+    "encodingFormat": "text/markdown"
+  }
+}
+</script>
+</head>
+<body>
+<div class="banner">
+  <a class="home" href="/">TunnelMind</a>
+  <div>
+    <a href="/standards">All standards</a>
+    &nbsp;·&nbsp;
+    <a href="/atap/standard">ATAP v0.1</a>
+    &nbsp;·&nbsp;
+    <a href="/eat/profile/EAT-PROFILE-v0.1.md">Raw markdown</a>
+  </div>
+</div>
+<main>
+<div class="cta">
+  <div class="cta-title">Draft — implementation gated</div>
+  <div>
+    This is a draft profile, not a published standard. Bytes-on-the-wire formats,
+    claim names, and CBOR claim keys may change. Implementations SHOULD pin the
+    URL by version (<code>/eat/profile/v0.1</code>) and re-verify against the
+    CHANGELOG when v1 publishes.
+  </div>
+  <div style="margin-top: 10px;">
+    Read the <a href="/eat/profile/EAT-PROFILE-v0.1.md">raw markdown</a>
+    &nbsp;·&nbsp; built on <a href="/atap/standard">ATAP v0.1.2</a>
+    &nbsp;·&nbsp; references <a href="https://www.rfc-editor.org/rfc/rfc9711.html">RFC 9711 (EAT)</a>
+  </div>
+</div>
+<h1>TunnelMind EAT Profile v0.1 (draft)</h1>
+<p><strong>Status:</strong> DRAFT. Not yet implemented. Awaiting Josh review before any code changes.
+<strong>Editor:</strong> TunnelMind
+<strong>Public-comment window:</strong> TBD (typically 90 days from publication).
+<strong>License:</strong> CC BY 4.0.</p>
+<p>This profile defines how a TunnelMind ATAP receipt and its cross-lens
+enrichments are conveyed as an IETF RATS Entity Attestation Token (EAT,
+[RFC 9711]). It is a <strong>serialization profile</strong>, not a replacement: ATAP
+v0.1.2 remains the canonical receipt format on <code>data.tunnelmind.ai</code>. This
+profile exists so that any relying party that already speaks EAT — every
+confidential-computing platform, TEE vendor, and enterprise security stack
+that adopts the RATS architecture — can consume a TunnelMind attestation
+natively, without learning ATAP first.</p>
+<h2>1. Status of this document</h2>
+<p>This is a draft. The bytes-on-the-wire formats, the claim names, and the
+CBOR claim keys are all subject to change. Two things will not change
+before v1:</p>
+<ol>
+<li>The set of TunnelMind-specific claims and their semantic meaning
+(§9). The claim <em>keys</em> may move during IANA registration; the <em>fields</em>
+are settled.</li>
+<li>The mapping from ATAP receipt fields to EAT claims (§10). ATAP v0.1.x
+is the source of truth; this profile is a view over it.</li>
+</ol>
+<p>If you implement against this draft, pin the spec URL with a version
+suffix (<code>/eat/profile/v0.1</code>) and re-verify against the latest CHANGELOG
+when v1 publishes.</p>
+<h2>2. Notational conventions</h2>
+<p>The key words &quot;MUST&quot;, &quot;MUST NOT&quot;, &quot;SHOULD&quot;, &quot;SHOULD NOT&quot;, &quot;MAY&quot;, and
+&quot;OPTIONAL&quot; in this document are to be interpreted as described in
+[BCP 14] ([RFC 2119], [RFC 8174]) when, and only when, they appear in
+all capitals.</p>
+<p>CBOR examples are written in the Extended Diagnostic Notation
+([RFC 8610] Appendix G). JSON examples are pretty-printed for readability;
+on-the-wire JSON is RFC-8785 canonicalized when signed.</p>
+<p>Claim identifiers are written as <code>cbor_key / &quot;json_name&quot;</code>. Private-use
+CBOR keys assigned by this profile are negative integers in the
+[-65536, -1] private-use range defined by [RFC 9711] §7.1.</p>
+<h2>3. RATS roles and TunnelMind components</h2>
+<p>[RFC 9334] defines the RATS architecture in terms of roles. This profile
+maps each role to an existing TunnelMind component so the architecture is
+operational, not abstract.</p>
+<table>
+<thead>
+<tr>
+<th>RATS role</th>
+<th>TunnelMind component</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Attester</td>
+<td>Sigil witness service in <code>tunnelmind-data-api</code></td>
+<td>Signs ATAP witness events and blocks; emits the inner attestation.</td>
+</tr>
+<tr>
+<td>Verifier</td>
+<td>Sigil + Scry verification stack on <code>data.tunnelmind.ai</code></td>
+<td>Aggregates raw evidence into an EAT token signed by a verifier key.</td>
+</tr>
+<tr>
+<td>Relying Party</td>
+<td>Any agent or principal querying the verification API</td>
+<td>Sends an EAT token, with or without a nonce; consumes claims to make a trust decision.</td>
+</tr>
+<tr>
+<td>Endorser</td>
+<td>Operator OAI registry at <code>tunnelmind.ai/id/{OAI}</code></td>
+<td>Endorses witness identity; the OAI resolver is the canonical endorsement path.</td>
+</tr>
+<tr>
+<td>Reference-Value Provider</td>
+<td><code>atap-profiles</code> repo + Scry actor-class catalog</td>
+<td>Names the values an evidence claim is expected to take.</td>
+</tr>
+</tbody></table>
+<p>In the EAT-over-ATAP composition, the <strong>inner attestation</strong> is the ATAP
+receipt (witness-signed) and the <strong>outer attestation</strong> is the EAT token
+(verifier-signed). Both signatures are reproducible end-to-end against
+the keys published at <code>tunnelmind.ai/atap/keys</code>.</p>
+<h2>4. Profile metadata</h2>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Profile name</td>
+<td><code>urn:tunnelmind:eat-profile:v0.1</code></td>
+</tr>
+<tr>
+<td>Profile URL</td>
+<td><code>https://tunnelmind.ai/eat/profile/v0.1</code></td>
+</tr>
+<tr>
+<td>Schemas</td>
+<td><code>https://tunnelmind.ai/eat/profile/v0.1/schemas/</code> (TBD)</td>
+</tr>
+<tr>
+<td>Examples</td>
+<td><code>https://github.com/TunnelMind/eat-profile</code> (TBD)</td>
+</tr>
+<tr>
+<td>Reference verifier</td>
+<td><code>verify.sh</code> + <code>@tunnelmindai/eat</code> (planned; not yet built)</td>
+</tr>
+</tbody></table>
+<p>The profile URL is the value that MUST appear in the <code>profile</code> EAT claim
+([RFC 9711] §4.2.7) of every token claiming conformance to this profile.</p>
+<h2>5. Serializations</h2>
+<p>This profile defines two serializations of the same claim set:</p>
+<ol>
+<li><strong>CBOR / CWT</strong> — the primary format. CWT ([RFC 8392]) wraps a CBOR
+map of claims, signs it with COSE_Sign1 ([RFC 9052]), and produces a
+compact binary token. CBOR is the recommended format for
+high-throughput API responses and for any path where bandwidth or
+parse cost matters.</li>
+<li><strong>JSON / JWT</strong> — the secondary format. JWT ([RFC 7519]) wraps a JSON
+map of claims, signs it with JWS ([RFC 7515]), and produces a base64
+URL-safe string. JSON is the recommended format for web integrations,
+MCP tool responses, and developer-facing debug surfaces.</li>
+</ol>
+<p>A verifier MUST be able to issue both. A relying party MAY accept either.
+Both serializations carry identical semantic claims; the wire format is
+the only difference.</p>
+<p>Signing algorithms (frozen for v0.1.x):</p>
+<ul>
+<li>CWT: COSE alg <code>EdDSA</code> over Ed25519. Identical to the curve already
+used by ATAP witness signatures.</li>
+<li>JWT: JWS alg <code>EdDSA</code> over Ed25519.</li>
+</ul>
+<p>These match the existing ATAP key material at <code>tunnelmind.ai/atap/keys</code>;
+no new key infrastructure is required.</p>
+<h2>6. Media types</h2>
+<p>Per [RFC 9782]:</p>
+<ul>
+<li><code>application/eat+cwt</code> — CBOR/CWT serialization</li>
+<li><code>application/eat+jwt</code> — JSON/JWT serialization</li>
+</ul>
+<p>When conveyed in an HTTP response, the <code>Content-Type</code> MUST be one of
+these. When conveyed inside a larger payload (a Sigil verify response,
+an OAI resolver response), it appears under a named field with the
+serialization implied by the field name (<code>eat_cwt_b64</code>, <code>eat_jwt</code>).</p>
+<h2>7. Endpoint conveyance</h2>
+<p>Existing TunnelMind endpoints add EAT representations via HTTP content
+negotiation. The legacy JSON response remains the default; an EAT token
+is returned only when the client explicitly asks for one.</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Default representation</th>
+<th>EAT representation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>GET /id/{OAI}</code></td>
+<td>JSON (OAI resolver)</td>
+<td><code>Accept: application/eat+cwt</code> → CWT body; <code>Accept: application/eat+jwt</code> → JWT body</td>
+</tr>
+<tr>
+<td><code>POST /atap/witness</code></td>
+<td>ATAP receipt JSON</td>
+<td><code>Accept: application/eat+cwt</code> → CWT wrapping the receipt as a submodule</td>
+</tr>
+<tr>
+<td><code>GET /atap/keys</code></td>
+<td>JSON key list</td>
+<td><code>Accept: application/eat+cwt</code> → CWT carrying the key bundle (each key as a UEID-anchored sub-claim)</td>
+</tr>
+<tr>
+<td><code>GET /verify/{class}/{value}</code> (Sigil)</td>
+<td>Sigil verdict JSON</td>
+<td><code>Accept: application/eat+cwt</code> → CWT carrying verdict + behavioral claims + the underlying ATAP receipt</td>
+</tr>
+</tbody></table>
+<p>A relying party MAY also include a <code>nonce</code> query parameter or
+<code>X-Eat-Nonce</code> header on any endpoint; the issued EAT token MUST carry
+that nonce in the standard <code>nonce</code> claim ([RFC 9711] §4.2.1) to anchor
+freshness.</p>
+<h2>8. Standard EAT claims used</h2>
+<p>This profile uses the following claims from the EAT claims registry
+([RFC 9711] §4):</p>
+<table>
+<thead>
+<tr>
+<th>CBOR key</th>
+<th>JSON name</th>
+<th>Source</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><code>iss</code></td>
+<td>RFC 7519</td>
+<td>Verifier&#39;s OAI, URL-form (<code>https://tunnelmind.ai/id/OAI-2026-0000201</code>).</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>sub</code></td>
+<td>RFC 7519</td>
+<td>The entity being attested. URL-form OAI for an entity; URL of a Sigil-verified object (e.g. <code>https://example.com/sellers.json</code>) for a check.</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>aud</code></td>
+<td>RFC 7519</td>
+<td>Relying party identifier when supplied by the request; otherwise omitted.</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>exp</code></td>
+<td>RFC 7519</td>
+<td>Token expiry. Default 300 seconds from issuance; tokens carrying receipts MAY extend to the receipt&#39;s <code>period_end</code> + 300 s.</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>iat</code></td>
+<td>RFC 7519</td>
+<td>Issuance time. MUST be present.</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>cti</code> / <code>jti</code></td>
+<td>RFC 7519 / RFC 8392</td>
+<td>Token ID. Uuidv7 to inherit ATAP&#39;s time-ordering convention.</td>
+</tr>
+<tr>
+<td>10</td>
+<td><code>nonce</code></td>
+<td>RFC 9711 §4.2.1</td>
+<td>Relying-party freshness anchor. Echoed verbatim when supplied.</td>
+</tr>
+<tr>
+<td>256</td>
+<td><code>ueid</code></td>
+<td>RFC 9711 §4.2.2</td>
+<td>Universal Entity ID. When the subject is an OAI-registered entity, this carries the raw OAI bytes per the OAI binary form (see §9 entity-ref).</td>
+</tr>
+<tr>
+<td>265</td>
+<td><code>profile</code></td>
+<td>RFC 9711 §4.2.7</td>
+<td>MUST be <code>urn:tunnelmind:eat-profile:v0.1</code>.</td>
+</tr>
+<tr>
+<td>-65540 (TBD)</td>
+<td><code>submods</code></td>
+<td>RFC 9711 §4.2.20</td>
+<td>Submodule map carrying the ATAP receipt and Familiar sensor evidence (§11).</td>
+</tr>
+</tbody></table>
+<p>The CBOR key <code>-65540</code> is a placeholder; submods claim uses an existing
+registered key. Final keys will be aligned at implementation time.</p>
+<h2>9. TunnelMind-specific claims</h2>
+<p>This profile introduces six new claims. CBOR keys are placeholders in
+the [RFC 9711] §7.1 private-use range pending IANA assignment.</p>
+<h3>9.1 <code>tunnelmind-attestation-strength-tier</code></h3>
+<table>
+<thead>
+<tr>
+<th>CBOR key</th>
+<th>-65531 (TBD)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JSON name</td>
+<td><code>tunnelmind-attestation-strength-tier</code></td>
+</tr>
+<tr>
+<td>Type</td>
+<td>text string</td>
+</tr>
+<tr>
+<td>Values</td>
+<td><code>&quot;self-asserted&quot;</code>, <code>&quot;software&quot;</code>, <code>&quot;tee-tpm&quot;</code>, <code>&quot;silicon-root&quot;</code></td>
+</tr>
+<tr>
+<td>Source</td>
+<td>[ATAP v0.1.2 §7.4.1] <code>receipt.attestation_strength</code>.</td>
+</tr>
+</tbody></table>
+<p>Declares the trust root the witness service ran under for the period
+covered by this attestation. Ordered weakest-to-strongest. Missing means
+<code>self-asserted</code> (the verifier MAY emit a <code>warnings</code> claim noting the
+omission). A relying party MUST refuse a token whose declared strength
+exceeds the matching key&#39;s declared strength at
+<code>tunnelmind.ai/atap/keys</code>. This is the single load-bearing field for the
+hardware upgrade path; see [ATAP v0.1.2 §14.8].</p>
+<h3>9.2 <code>tunnelmind-oai-entity-ref</code></h3>
+<table>
+<thead>
+<tr>
+<th>CBOR key</th>
+<th>-65532 (TBD)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JSON name</td>
+<td><code>tunnelmind-oai-entity-ref</code></td>
+</tr>
+<tr>
+<td>Type</td>
+<td>text string</td>
+</tr>
+<tr>
+<td>Pattern</td>
+<td><code>^OAI-[0-9]{4}-[0-9]{7}$</code></td>
+</tr>
+<tr>
+<td>Source</td>
+<td>[ATAP v0.1.2 §6] <code>receipt.witness</code> (witness OAI) or <code>ait.operator</code> (operator OAI), depending on what the EAT is attesting.</td>
+</tr>
+</tbody></table>
+<p>The canonical OAI of the entity this attestation concerns. Relying
+parties resolve the OAI via <code>https://tunnelmind.ai/id/{OAI}</code> for
+identity + endorsement detail. Distinct from <code>sub</code>: <code>sub</code> carries the
+URL form; <code>entity-ref</code> carries the bare OAI for code paths that key
+on it directly.</p>
+<h3>9.3 <code>tunnelmind-behavioral-consistency-score</code></h3>
+<table>
+<thead>
+<tr>
+<th>CBOR key</th>
+<th>-65533 (TBD)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JSON name</td>
+<td><code>tunnelmind-behavioral-consistency-score</code></td>
+</tr>
+<tr>
+<td>Type</td>
+<td>float, range [0.0, 1.0]</td>
+</tr>
+<tr>
+<td>Source</td>
+<td>Computed by Scry at verification time. NOT carried in the ATAP receipt today.</td>
+</tr>
+</tbody></table>
+<p>How consistent the entity&#39;s behavior in the observation window is with
+its historical baseline. <code>1.0</code> = perfectly consistent. <code>0.0</code> = total
+deviation. The computation algorithm is private (it lives behind the
+Sigil scoring weights, which are the paid edge). The output is open and
+auditable: every score reported in an EAT MUST be reproducible by replay
+against the same observation set.</p>
+<p>This claim is NEW signal not present in ATAP v0.1.2 today; it represents
+the cross-lens enrichment described in [[project_a2_cross_lens_join]].</p>
+<h3>9.4 <code>tunnelmind-observation-depth</code></h3>
+<table>
+<thead>
+<tr>
+<th>CBOR key</th>
+<th>-65534 (TBD)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JSON name</td>
+<td><code>tunnelmind-observation-depth</code></td>
+</tr>
+<tr>
+<td>Type</td>
+<td>map / JSON object</td>
+</tr>
+<tr>
+<td>Source</td>
+<td>Scry observation graph.</td>
+</tr>
+</tbody></table>
+<p>Tells the relying party how much history backs the attestation.</p>
+<p>Fields:</p>
+<ul>
+<li><code>first-observed</code> — RFC 3339 timestamp, first time this entity (by
+OAI or by canonical identifier) appeared in any Scry observation.</li>
+<li><code>total-sessions</code> — non-negative integer, count of distinct
+observation sessions credited to this entity.</li>
+<li><code>observation-window-days</code> — positive integer, the rolling window
+the consistency score and deviation flags are computed over. Default<ol start="90">
+<li></li>
+</ol>
+</li>
+</ul>
+<h3>9.5 <code>tunnelmind-deviation-flags</code></h3>
+<table>
+<thead>
+<tr>
+<th>CBOR key</th>
+<th>-65535 (TBD)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JSON name</td>
+<td><code>tunnelmind-deviation-flags</code></td>
+</tr>
+<tr>
+<td>Type</td>
+<td>array of text strings</td>
+</tr>
+<tr>
+<td>Source</td>
+<td>Scry deviation detector.</td>
+</tr>
+</tbody></table>
+<p>Named behavioral anomalies. Empty array = clean. Enum (extensible, but
+v0.1 SHOULD use only these names):</p>
+<ul>
+<li><code>infrastructure-change</code> — IP/ASN/domain churn beyond the entity&#39;s
+baseline.</li>
+<li><code>cadence-shift</code> — request timing pattern shifted from baseline.</li>
+<li><code>coordination-pattern</code> — proximity to other entities in a cluster
+exhibiting joint behavior.</li>
+<li><code>known-malicious-association</code> — direct edge to a Scry-flagged
+malicious entity.</li>
+<li><code>credential-rotation-anomaly</code> — signing key rotated outside the
+declared policy window from [ATAP v0.1.2 §8].</li>
+</ul>
+<p>A relying party SHOULD treat any non-empty <code>deviation-flags</code> array as
+cause to lower trust, regardless of the consistency score.</p>
+<h3>9.6 <code>tunnelmind-graph-context</code></h3>
+<table>
+<thead>
+<tr>
+<th>CBOR key</th>
+<th>-65536 (TBD)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>JSON name</td>
+<td><code>tunnelmind-graph-context</code></td>
+</tr>
+<tr>
+<td>Type</td>
+<td>map / JSON object</td>
+</tr>
+<tr>
+<td>Source</td>
+<td>Cross-lens join over Scry × Sigil × Tracker.</td>
+</tr>
+</tbody></table>
+<p>Position in the reputation graph. Fields:</p>
+<ul>
+<li><code>known-associations</code> — non-negative integer, count of distinct
+entities linked to this one (any edge type).</li>
+<li><code>malicious-adjacency-score</code> — float [0.0, 1.0], proximity to
+Scry-flagged malicious entities. <code>0.0</code> = no path within 2 hops.
+<code>1.0</code> = direct edge to a malicious cluster.</li>
+<li><code>cluster-id</code> — OPTIONAL string. Present only when the entity is a
+member of a recognized coordinated-behavior cluster; absent
+otherwise. Cluster IDs are NOT stable across verifier restarts in
+v0.1 (the clusterer is stateful; this will tighten in v0.2).</li>
+</ul>
+<h2>10. ATAP receipt mapping</h2>
+<p>When a Sigil endpoint returns an EAT for a verifiable artifact, the
+ATAP receipt fields map to EAT claims as follows:</p>
+<table>
+<thead>
+<tr>
+<th>ATAP receipt field</th>
+<th>EAT claim</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td><code>cti</code> / <code>jti</code></td>
+<td>Receipt UUID reused as token ID.</td>
+</tr>
+<tr>
+<td><code>ait</code></td>
+<td><code>tunnelmind-ait-ref</code> (TBD)</td>
+<td>Subordinate AIT identifier.</td>
+</tr>
+<tr>
+<td><code>profile</code></td>
+<td><code>tunnelmind-profile</code> (TBD)</td>
+<td>ATAP profile, e.g. <code>sigil:media_buyer:v1</code>. Distinct from the EAT <code>profile</code> claim, which is <code>urn:tunnelmind:eat-profile:v0.1</code>.</td>
+</tr>
+<tr>
+<td><code>period_start</code></td>
+<td><code>iat</code></td>
+<td>Token issuance ≈ receipt start.</td>
+</tr>
+<tr>
+<td><code>period_end</code></td>
+<td><code>exp</code> (+300 s)</td>
+<td>Token expires shortly after the receipt window.</td>
+</tr>
+<tr>
+<td><code>witness</code></td>
+<td><code>tunnelmind-oai-entity-ref</code> + <code>iss</code></td>
+<td>Witness OAI is both the verifier identifier and the entity-ref.</td>
+</tr>
+<tr>
+<td><code>attestation_strength</code></td>
+<td><code>tunnelmind-attestation-strength-tier</code></td>
+<td>Verbatim.</td>
+</tr>
+<tr>
+<td><code>chain_head_hash</code></td>
+<td><code>tunnelmind-chain-head-hash</code> (TBD)</td>
+<td>Verifiable replay anchor.</td>
+</tr>
+<tr>
+<td><code>witness_signature</code></td>
+<td>(carried inside the submodule)</td>
+<td>The original ATAP signature is preserved in the receipt submodule (§11), not flattened into the outer COSE_Sign1.</td>
+</tr>
+<tr>
+<td><code>verifier_url</code></td>
+<td><code>tunnelmind-verifier-url</code> (TBD)</td>
+<td>Where to re-run <code>verify.sh</code>.</td>
+</tr>
+<tr>
+<td><code>keys_url</code></td>
+<td><code>tunnelmind-keys-url</code> (TBD)</td>
+<td>Source of truth for the witness key.</td>
+</tr>
+</tbody></table>
+<p>Fields not listed (e.g., <code>block_count</code>, <code>event_count</code>, <code>files</code>) are
+carried verbatim inside the <code>submods[&quot;atap-receipt&quot;]</code> submodule and are
+not lifted into outer EAT claims. This keeps the outer claim set
+focused on what a relying party needs at decide-time.</p>
+<h2>11. Submodule structure</h2>
+<p>EAT submodules ([RFC 9711] §4.2.20) carry nested attestations signed by
+distinct authorities. This profile defines two:</p>
+<pre><code>Outer EAT (signed by Scry/Sigil verifier):
+  iss, sub, iat, exp, jti, nonce?, profile,
+  tunnelmind-attestation-strength-tier,
+  tunnelmind-oai-entity-ref,
+  tunnelmind-behavioral-consistency-score,
+  tunnelmind-observation-depth,
+  tunnelmind-deviation-flags,
+  tunnelmind-graph-context,
+  submods: {
+    &quot;atap-receipt&quot;: {
+      // The full ATAP receipt manifest (§10 source-of-truth fields),
+      // unmodified. Carries its own witness_signature, separately
+      // verifiable against tunnelmind.ai/atap/keys.
+    },
+    &quot;sensor-evidence&quot;: {  // OPTIONAL, present only with hardware-attested sensors (H2/H3)
+      &quot;hardware-identity&quot;: &lt;DevID per RFC 9711 Appendix C / IEEE 802.1AR&gt;,
+      &quot;measured-components&quot;: &lt;per draft-ietf-rats-eat-measured-component&gt;,
+      &quot;observation-timestamp&quot;: &lt;RFC 3339&gt;,
+      &quot;raw-observation-hash&quot;: &lt;0x{64}&gt;
+      // Signed by the Familiar sensor key, NOT the outer verifier key.
+    }
+  }
+</code></pre>
+<p>A relying party MUST verify each submodule&#39;s signature against the
+appropriate key bundle before trusting its claims. The outer signature
+attests to the <em>composition</em>; the inner signatures attest to the
+<em>contents</em>.</p>
+<p>The <code>sensor-evidence</code> submodule is reserved for v0.2+ (Familiar fleet</p>
+<ul>
+<li>hardware-anchored evidence). In v0.1, only <code>atap-receipt</code> is defined.</li>
+</ul>
+<h2>12. Verification procedure</h2>
+<p>A relying party verifying a TunnelMind EAT token MUST:</p>
+<ol>
+<li>Decode the outer envelope (COSE_Sign1 for CWT; JWS for JWT).</li>
+<li>Resolve the verifier key via the <code>iss</code> claim — fetch
+<code>{iss}/atap/keys</code> and find the active key matching the envelope&#39;s
+key ID.</li>
+<li>Verify the outer signature against that key.</li>
+<li>Reject if <code>exp</code> is in the past or <code>iat</code> is more than 60 seconds in
+the future.</li>
+<li>If a <code>nonce</code> was supplied to the request, reject if the token&#39;s
+<code>nonce</code> does not match verbatim.</li>
+<li>Compare the token&#39;s <code>tunnelmind-attestation-strength-tier</code> against
+the matching key&#39;s declared <code>attestation_strength</code> from the keys
+bundle. Reject if the token&#39;s strength exceeds the key&#39;s.</li>
+<li>For each present submodule, recurse: extract the nested signature,
+resolve the signing authority, verify. For <code>atap-receipt</code>,
+<code>verify.sh</code> MAY be used directly against the submodule payload.</li>
+<li>Surface the merged claim set to the application, including any
+<code>warnings</code> accumulated during verification.</li>
+</ol>
+<p>A reference verifier (<code>@tunnelmindai/eat</code>, planned) will encapsulate
+these steps and produce a single boolean + warnings array per call.</p>
+<h2>13. IANA considerations</h2>
+<p>This profile requests registration of:</p>
+<ul>
+<li>Profile URI <code>urn:tunnelmind:eat-profile:v0.1</code> in the EAT profiles
+registry ([RFC 9711] §10.X — placeholder).</li>
+<li>Six private-use claims (§9). CBOR keys requested in the [-65531,
+-65536] range; final values will be assigned by IANA at registration
+time.</li>
+</ul>
+<p>Until IANA assigns final values, implementations MUST use the
+placeholder CBOR keys listed in §8 and §9 and pin the spec by URL.</p>
+<h2>14. Security considerations</h2>
+<h3>14.1 Signature scope and submodule trust</h3>
+<p>The outer EAT signature attests only to the composition of claims and
+submodules. Each submodule&#39;s contents are attested by its own inner
+signature. A relying party that consumes a submodule&#39;s claims without
+verifying its inner signature is trusting only the verifier&#39;s good
+faith. This is explicit in the protocol.</p>
+<h3>14.2 Token freshness</h3>
+<p>Tokens are short-lived (default 300 s <code>exp</code>) and SHOULD carry a
+relying-party-supplied <code>nonce</code> when replay is a concern. Without a
+nonce, a token within its <code>exp</code> window is replayable to any relying
+party that does not maintain per-token state.</p>
+<h3>14.3 Attestation strength ceiling</h3>
+<p>The <code>tunnelmind-attestation-strength-tier</code> claim asserts the trust root
+the witness ran under; a relying party MUST cross-check it against the
+key&#39;s declared strength at <code>/atap/keys</code>. The key&#39;s strength is a
+ceiling — a witness running on commodity hardware cannot truthfully
+claim <code>tee-tpm</code> regardless of what the verifier writes in the outer EAT.</p>
+<h3>14.4 Behavioral score gameability</h3>
+<p>The <code>behavioral-consistency-score</code> is computed against historical
+baselines. An entity that has only just begun being observed will have
+a thin baseline and a score that is easily moved by a single anomalous
+session. Relying parties SHOULD weight scores against
+<code>observation-depth.total-sessions</code> and treat low-depth scores as low
+confidence.</p>
+<h3>14.5 Cluster ID instability</h3>
+<p><code>cluster-id</code> (§9.6) is NOT stable across verifier restarts in v0.1.
+Relying parties MUST NOT use a cluster ID as a long-term identifier or
+join key. Cluster identity stabilizes in v0.2.</p>
+<h3>14.6 No PII in claims</h3>
+<p>This profile inherits ATAP v0.1.2 §7.6: no end-user IPs, user agents,
+cookies, emails, phones, account identifiers, wallet addresses tied to
+natural persons, biometrics, browser/device fingerprints, or content
+of communications. The claim set in this profile is constrained to
+<em>entity-level</em> signal; nothing in §9 names an individual.</p>
+<h2>15. References</h2>
+<h3>Normative</h3>
+<ul>
+<li>[RFC 2119] — Key words for use in RFCs to Indicate Requirement Levels</li>
+<li>[RFC 7515] — JSON Web Signature (JWS)</li>
+<li>[RFC 7519] — JSON Web Token (JWT)</li>
+<li>[RFC 8174] — Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words</li>
+<li>[RFC 8392] — CBOR Web Token (CWT)</li>
+<li>[RFC 8610] — Concise Data Definition Language (CDDL)</li>
+<li>[RFC 8785] — JSON Canonicalization Scheme (JCS)</li>
+<li>[RFC 9052] — CBOR Object Signing and Encryption (COSE)</li>
+<li>[RFC 9334] — Remote ATtestation procedureS (RATS) Architecture</li>
+<li>[RFC 9711] — The Entity Attestation Token (EAT)</li>
+<li>[RFC 9782] — EAT Media Types</li>
+<li>[ATAP v0.1.2] — Agent Trust Attestation Protocol, <code>https://tunnelmind.ai/atap/standard</code></li>
+<li>[OAI v1] — Observed Actor Identifier, <code>https://tunnelmind.ai/oai/standard</code></li>
+</ul>
+<h3>Informative</h3>
+<ul>
+<li>[draft-ietf-rats-eat-measured-component] — Measured component claims
+for EAT.</li>
+<li>[IEEE 802.1AR] — Secure Device Identity (DevID).</li>
+</ul>
+<h2>Appendix A: example CWT (informative)</h2>
+<p>CDDL sketch of an outer-EAT CWT body for a Sigil supply-path
+verification:</p>
+<pre><code class="language-cddl">sigil-eat-cwt = {
+  1   =&gt; &quot;https://tunnelmind.ai/id/OAI-2026-0000201&quot;, ; iss
+  2   =&gt; &quot;https://example.com/sellers.json&quot;,          ; sub
+  6   =&gt; 1748400000,                                  ; iat
+  4   =&gt; 1748400300,                                  ; exp
+  7   =&gt; h&#39;018fc7a9...&#39;,                              ; cti / jti (uuidv7 bytes)
+  10  =&gt; h&#39;&lt;nonce&gt;&#39;,                                  ; nonce, if supplied
+  265 =&gt; &quot;urn:tunnelmind:eat-profile:v0.1&quot;,           ; profile
+  -65531 =&gt; &quot;software&quot;,                               ; attestation_strength_tier
+  -65532 =&gt; &quot;OAI-2026-0000201&quot;,                       ; oai_entity_ref
+  -65533 =&gt; 0.94,                                     ; behavioral_consistency_score
+  -65534 =&gt; {                                         ; observation_depth
+              &quot;first-observed&quot;: &quot;2024-12-04T...&quot;,
+              &quot;total-sessions&quot;: 438,
+              &quot;observation-window-days&quot;: 90
+            },
+  -65535 =&gt; [],                                       ; deviation_flags
+  -65536 =&gt; {                                         ; graph_context
+              &quot;known-associations&quot;: 17,
+              &quot;malicious-adjacency-score&quot;: 0.0
+            },
+  -65540 =&gt; {                                         ; submods
+              &quot;atap-receipt&quot;: { ... },
+              ; &quot;sensor-evidence&quot; absent at v0.1
+            }
+}
+</code></pre>
+<h2>Appendix B: example JWT (informative)</h2>
+<pre><code class="language-json">{
+  &quot;iss&quot;: &quot;https://tunnelmind.ai/id/OAI-2026-0000201&quot;,
+  &quot;sub&quot;: &quot;https://example.com/sellers.json&quot;,
+  &quot;iat&quot;: 1748400000,
+  &quot;exp&quot;: 1748400300,
+  &quot;jti&quot;: &quot;018fc7a9-...&quot;,
+  &quot;nonce&quot;: &quot;&lt;nonce&gt;&quot;,
+  &quot;profile&quot;: &quot;urn:tunnelmind:eat-profile:v0.1&quot;,
+  &quot;tunnelmind-attestation-strength-tier&quot;: &quot;software&quot;,
+  &quot;tunnelmind-oai-entity-ref&quot;: &quot;OAI-2026-0000201&quot;,
+  &quot;tunnelmind-behavioral-consistency-score&quot;: 0.94,
+  &quot;tunnelmind-observation-depth&quot;: {
+    &quot;first-observed&quot;: &quot;2024-12-04T11:08:33Z&quot;,
+    &quot;total-sessions&quot;: 438,
+    &quot;observation-window-days&quot;: 90
+  },
+  &quot;tunnelmind-deviation-flags&quot;: [],
+  &quot;tunnelmind-graph-context&quot;: {
+    &quot;known-associations&quot;: 17,
+    &quot;malicious-adjacency-score&quot;: 0.0
+  },
+  &quot;submods&quot;: {
+    &quot;atap-receipt&quot;: { &quot;...&quot;: &quot;ATAP v0.1.2 receipt object&quot; }
+  }
+}
+</code></pre>
+<h2>Appendix C: migration plan (informative)</h2>
+<p>This profile is purely additive. Existing consumers of
+<code>data.tunnelmind.ai</code> see no change unless they explicitly request EAT
+representations via <code>Accept</code>. The implementation work, when authorized,
+will land in three phases:</p>
+<ol>
+<li><strong>EAT library</strong> (<code>@tunnelmindai/eat</code>): pure encoder/decoder against
+this spec. Imports <code>@tunnelmindai/atap</code> for the submodule payload.
+No service dependency. Apache-2.0.</li>
+<li><strong>Verifier wiring</strong>: the Sigil verifier service in
+<code>tunnelmind-data-api</code> adds an EAT serializer. The serializer is
+conditional on an Accept-header content-negotiation step at the top
+of each endpoint. The default JSON path is untouched.</li>
+<li><strong>Reference relying-party</strong>: <code>verify-eat.sh</code> (bash + openssl + jq +
+a tiny CBOR helper) plus a worked example in <code>eat-profile</code> repo
+that fetches a token, decodes both submodules, and reports the
+final trust decision.</li>
+</ol>
+
+<div class="cta" style="margin-top: 56px;">
+  <div class="cta-title">Implementation status</div>
+  <div>
+    Spec only. No <code>@tunnelmindai/eat</code> npm package, no verifier
+    wiring, no <code>application/eat+cwt</code> on any
+    <code>data.tunnelmind.ai</code> endpoint yet. Implementation lands in
+    three phases described in Appendix C of the spec.<br><br>
+    Discuss via the standards hub at <a href="/standards">/standards</a> or
+    against <a href="https://github.com/TunnelMind/atap/discussions">ATAP Discussions</a>
+    (this profile rides on ATAP and a separate repo is not yet warranted).
+  </div>
+</div>
+</main>
+</body>
+</html>

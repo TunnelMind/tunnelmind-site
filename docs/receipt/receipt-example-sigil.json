@@ -1,0 +1,41 @@
+{
+  "receipt_version": "1.0",
+  "receipt_id": "018fc7a9-1000-7111-9234-56789abcdef0",
+  "timestamp": "2026-05-27T18:42:11Z",
+  "timestamp_proof": {
+    "method": "none"
+  },
+  "source": {
+    "lens": "sigil",
+    "endpoint": "/verify/supply_path",
+    "node_id": "OAI-2026-0000201"
+  },
+  "subject": "https://example.com/sellers.json",
+  "attestation_strength": "software",
+  "payload_hash": "0x948f7192843b6021d99d8f2dd29cb5337c1f475dded0dde32ec562ab09c9979b",
+  "payload": {
+    "object": "https://example.com/sellers.json",
+    "verdict": "verified",
+    "supply_path_valid": true,
+    "seller_id": "12345",
+    "seller_type": "PUBLISHER",
+    "ads_txt_match": true,
+    "sellers_json_match": true,
+    "behavioral_consistency_score": 0.94,
+    "atap_receipt_ref": "https://data.tunnelmind.ai/verify/ATAP-RCPT-018fc7a9-1000-7011-8012-3456789abcde",
+    "checked_at": "2026-05-27T18:42:11Z"
+  },
+  "chain": {
+    "previous_receipt_hash": null,
+    "sequence": 0
+  },
+  "extensions": {
+    "sigil_token_ttl_s": 300
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "receipt-example-55c35d78d35c",
+    "public_key": "ywRSQu9WGV8K64AKSs/je0McL2uqlGOmqiiVO+0arPM=",
+    "value": "fjKHf6ViNogAZEwUBvJlhxqlvZpHdIzEthQ/XNmGMc/AcvgWA40qhAvpA9c8kx3pETJHt9si5m7q+1qJkNNtDg=="
+  }
+}

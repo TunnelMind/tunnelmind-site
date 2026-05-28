@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tunnelmind.ai/receipt-format/v1.0/receipt-schema.json",
+  "title": "TunnelMind Receipt v1.0",
+  "description": "A signed JSON wrapper around a TunnelMind API response. See RECEIPT-FORMAT-v1.0.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "receipt_version",
+    "receipt_id",
+    "timestamp",
+    "timestamp_proof",
+    "source",
+    "attestation_strength",
+    "payload_hash",
+    "payload",
+    "chain",
+    "signature"
+  ],
+  "properties": {
+    "receipt_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "receipt_id": {
+      "type": "string",
+      "description": "uuidv7 (RFC 9562)",
+      "pattern": "^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "RFC 3339 UTC issuance time"
+    },
+    "timestamp_proof": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method"],
+      "properties": {
+        "method": { "type": "string", "enum": ["none", "rfc3161"] },
+        "tsa_url": { "type": "string", "format": "uri" },
+        "token": { "type": "string", "contentEncoding": "base64" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "method": { "const": "rfc3161" } } },
+          "then": { "required": ["tsa_url", "token"] }
+        },
+        {
+          "if": { "properties": { "method": { "const": "none" } } },
+          "then": { "not": { "anyOf": [{ "required": ["tsa_url"] }, { "required": ["token"] }] } }
+        }
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lens", "endpoint", "node_id"],
+      "properties": {
+        "lens": { "type": "string", "enum": ["scry", "sigil", "tracker", "oai"] },
+        "endpoint": { "type": "string", "minLength": 1 },
+        "node_id": {
+          "type": "string",
+          "description": "OAI of the producing node — a resolver reference, not an identity claim",
+          "pattern": "^OAI-[0-9]{4}-[0-9]{7}$"
+        }
+      }
+    },
+    "subject": {
+      "type": "string",
+      "minLength": 1,
+      "description": "OPTIONAL. Identifier of the attested object; maps to EAT `sub`."
+    },
+    "attestation_strength": {
+      "type": "string",
+      "enum": ["self-asserted", "software", "tee-tpm", "silicon-root"],
+      "description": "Declared trust root of the producing node. Verifier rejects if it exceeds the key's declared strength."
+    },
+    "payload_hash": {
+      "type": "string",
+      "description": "sha256( JCS(payload) )",
+      "pattern": "^0x[0-9a-f]{64}$"
+    },
+    "payload": {
+      "description": "The wrapped API response, verbatim. Any JSON value.",
+      "type": ["object", "array", "string", "number", "boolean", "null"]
+    },
+    "chain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["previous_receipt_hash", "sequence"],
+      "properties": {
+        "previous_receipt_hash": {
+          "description": "sha256( utf8(previous_receipt.signature.value) ), or null at genesis",
+          "anyOf": [
+            { "type": "string", "pattern": "^0x[0-9a-f]{64}$" },
+            { "type": "null" }
+          ]
+        },
+        "sequence": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "extensions": {
+      "type": "object",
+      "description": "OPTIONAL. Signed, additive free-form fields. Older verifiers ignore unknown keys.",
+      "additionalProperties": true
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "key_id", "public_key", "value"],
+      "properties": {
+        "algorithm": { "type": "string", "const": "Ed25519" },
+        "key_id": { "type": "string", "minLength": 1 },
+        "public_key": {
+          "type": "string",
+          "description": "base64 raw 32-byte Ed25519 public key",
+          "pattern": "^[A-Za-z0-9+/]{43}=$"
+        },
+        "value": {
+          "type": "string",
+          "description": "base64 Ed25519 signature over JCS(receipt without payload and without signature.value)",
+          "pattern": "^[A-Za-z0-9+/]{86}==$"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "receipt_version": "1.0",
+  "receipt_id": "018fc7a9-1000-7011-9234-56789abcdef0",
+  "timestamp": "2026-05-27T18:42:11Z",
+  "timestamp_proof": {
+    "method": "none"
+  },
+  "source": {
+    "lens": "scry",
+    "endpoint": "/v1/check/198.235.24.41",
+    "node_id": "OAI-2026-0000201"
+  },
+  "subject": "ip:198.235.24.41",
+  "attestation_strength": "software",
+  "payload_hash": "0xff5dd4fce984e376509362114878c89ce61f66ebf823d27db652bda54299b8f1",
+  "payload": {
+    "ip": "198.235.24.41",
+    "actor_class": "scanner_security_vendor",
+    "verdict": "benign_research",
+    "score": 12,
+    "first_seen": "2026-02-09T04:18:55Z",
+    "last_seen": "2026-05-27T17:55:02Z",
+    "asn": "AS54538",
+    "asn_org": "Palo Alto Networks",
+    "country": "US",
+    "sources": [
+      "scry-fleet",
+      "augur:tor_exit?no",
+      "augur:spamhaus_drop?no"
+    ],
+    "observation_count": 1184
+  },
+  "chain": {
+    "previous_receipt_hash": "0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sequence": 41
+  },
+  "signature": {
+    "algorithm": "Ed25519",
+    "key_id": "receipt-example-55c35d78d35c",
+    "public_key": "ywRSQu9WGV8K64AKSs/je0McL2uqlGOmqiiVO+0arPM=",
+    "value": "exW0L5Dc0iwxl8xIJx441MQgsf81EozNF35P0Kdfe9EFhbfLKHirfcOO1l7yx6pV0L7q+Z5L2+S6XzafiJ0BDw=="
+  }
+}

@@ -22,6 +22,7 @@ const STANDARDS = [
     status: 'v1.0 — Public comment through 2026-08-12',
     blurb: 'Open identifier standard for entities that observe, profile, or act against users, devices, and networks. Free resolution, permanent canonical identifiers, signed observations. CVE-style editorial model.',
     href: '/oai/standard',
+    overview: '/oai',
     github: 'https://github.com/TunnelMind/oai',
     published: '2026-05-14',
   },
@@ -104,7 +105,7 @@ const cards = STANDARDS.map(s => `
   <div class="card-status">${s.status} · published ${s.published}</div>
   <p class="card-blurb">${s.blurb}</p>
   <div class="card-links">
-    <a href="${s.href}">Read the standard</a>
+    ${s.overview ? `<a href="${s.overview}">Overview</a>\n    <span class="sep">·</span>\n    ` : ''}<a href="${s.href}">Read the standard</a>
     <span class="sep">·</span>
     <a href="${s.github}">GitHub</a>
   </div>

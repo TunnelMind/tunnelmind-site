@@ -62,7 +62,8 @@ h1 { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: va
   "publisher": { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
   "hasPart": [
     { "@type": "TechArticle", "name": "OAI v1.0", "url": "https://tunnelmind.ai/oai/standard" },
-    { "@type": "TechArticle", "name": "ATAP v0.1", "url": "https://tunnelmind.ai/atap/standard" }
+    { "@type": "TechArticle", "name": "ATAP v0.1", "url": "https://tunnelmind.ai/atap/standard" },
+    { "@type": "TechArticle", "name": "Signed Observation v1.0.0", "url": "https://tunnelmind.ai/standards/signed-observation/v1.json" }
   ]
 }
 </script>
@@ -108,6 +109,20 @@ h1 { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: va
     <a href="/atap/standard">Read the standard</a>
     <span class="sep">·</span>
     <a href="https://github.com/TunnelMind/atap">GitHub</a>
+  </div>
+</div>
+<div class="card">
+  <div class="card-head">
+    <div class="card-name">Signed Observation</div>
+    <div class="card-version">v1.0.0</div>
+  </div>
+  <div class="card-full">Ed25519-signed sensor observation wire contract</div>
+  <div class="card-status">v1.0.0 — Frozen 2026-05-30 (ADR-A3) · published 2026-05-30</div>
+  <p class="card-blurb">The wire shape every TunnelMind sensor speaks when submitting a first-party observation to the corpus. Compact-JSON canonicalization, Ed25519 signature over the record, producer-agnostic (Familiar today; commodity sensors, contribute-and-earn third parties, and future microkernel devices in future). Single canonical schema URL pins forward compatibility.</p>
+  <div class="card-links">
+    <a href="/standards/signed-observation/v1.json">Read the standard</a>
+    <span class="sep">·</span>
+    <a href="https://github.com/TunnelMind/scry-ingest">GitHub</a>
   </div>
 </div>
 <div class="card">

@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://tunnelmind.ai/standards/signed-observation/v1.json",
+  "title": "TunnelMind Signed Observation v1.0.0",
+  "description": "The frozen wire shape for an Ed25519-signed observation record submitted to scry-ingest. ADR-2026-05-A3 pins this contract; any incompatible change requires a MAJOR version bump and a new schema URL. Canonicalization rules: compact UTF-8 JSON of `record`, struct-declared field order, no whitespace, no trailing newline. The `signature` is Ed25519 over those canonical bytes; the `node_pubkey` is the producer identity (Familiar today; commodity Familiar / contribute-and-earn third parties / microkernel sensors in future — see ADR-2026-05-A3).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["record", "signature", "node_pubkey"],
+  "properties": {
+    "record": { "$ref": "#/$defs/ObservationRecord" },
+    "signature": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{128}$",
+      "description": "Ed25519 signature (64 bytes, hex-lowercase) over the canonical JSON of `record`."
+    },
+    "node_pubkey": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "Ed25519 public key (32 bytes, hex-lowercase) identifying the submitting node. Must be enrolled and not revoked in the registry."
+    }
+  },
+  "$defs": {
+    "ObservationRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "ts_ms",
+        "node_id",
+        "source_ip",
+        "source_port",
+        "dest_port",
+        "protocol",
+        "banner_sha256",
+        "payload_sha256",
+        "payload_len",
+        "duration_ms",
+        "tls_ja4",
+        "metadata"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "uuid",
+          "description": "Per-record UUID — opaque to the server; producer-side dedup key inside a single batch."
+        },
+        "ts_ms": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Producer-side observation timestamp in milliseconds since the Unix epoch."
+        },
+        "node_id": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Human-readable node label set by the producer. Independent of `node_pubkey`; intended for operator UIs only."
+        },
+        "source_ip": {
+          "type": "string",
+          "description": "IPv4 or IPv6 source address of the observed connection."
+        },
+        "source_port": { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "dest_port":   { "type": "integer", "minimum": 0, "maximum": 65535 },
+        "protocol": {
+          "type": "string",
+          "enum": [
+            "ssh", "http", "https", "smtp", "ftp", "telnet",
+            "redis", "mongodb", "elasticsearch", "mysql"
+          ],
+          "description": "Application protocol of the observed listener. Additive — new values are MINOR bumps."
+        },
+        "banner_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "SHA-256 (hex-lowercase) of the application banner returned by the source. Empty banner → SHA-256 of the empty string."
+        },
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "SHA-256 (hex-lowercase) of any payload the source sent. Empty → SHA-256 of the empty string."
+        },
+        "payload_len": { "type": "integer", "minimum": 0 },
+        "duration_ms": { "type": "integer", "minimum": 0 },
+        "tls_ja4": {
+          "type": ["string", "null"],
+          "description": "JA4 TLS fingerprint when TLS was observed; null when not applicable."
+        },
+        "metadata": {
+          "type": ["object", "null"],
+          "description": "Free-form forward-compatibility slot. Producers MAY include extension fields (e.g. {\"attestation\": {...}} for microkernel sensors) without bumping the wire major. Verifiers MUST treat unknown keys as opaque pass-through."
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "record": {
+        "id": "00000000-0000-4000-8000-000000000001",
+        "ts_ms": 1717000000000,
+        "node_id": "node-test-vector-001",
+        "source_ip": "203.0.113.7",
+        "source_port": 51234,
+        "dest_port": 22,
+        "protocol": "ssh",
+        "banner_sha256": "0000000000000000000000000000000000000000000000000000000000000001",
+        "payload_sha256": "0000000000000000000000000000000000000000000000000000000000000002",
+        "payload_len": 64,
+        "duration_ms": 750,
+        "tls_ja4": null,
+        "metadata": null
+      },
+      "signature": "29b68917bec4abdcedc44f93445ab9a81ed901067d535a78869a9460438722b5b38159b047d0e3c8b758ee08da4d09f49f24512b5ce88d8d992be7334469a90e",
+      "node_pubkey": "2a7459746f6dec358edbdae24dd176d2a8e8fec10ee4fbfb8c1c9b2fbf55ce99"
+    }
+  ]
+}

@@ -38,6 +38,17 @@ const STANDARDS = [
     published: '2026-05-14',
   },
   {
+    id: 'signed-observation',
+    version: 'v1.0.0',
+    name: 'Signed Observation',
+    full: 'Ed25519-signed sensor observation wire contract',
+    status: 'v1.0.0 — Frozen 2026-05-30 (ADR-A3)',
+    blurb: 'The wire shape every TunnelMind sensor speaks when submitting a first-party observation to the corpus. Compact-JSON canonicalization, Ed25519 signature over the record, producer-agnostic (Familiar today; commodity sensors, contribute-and-earn third parties, and future microkernel devices in future). Single canonical schema URL pins forward compatibility.',
+    href: '/standards/signed-observation/v1.json',
+    github: 'https://github.com/TunnelMind/scry-ingest',
+    published: '2026-05-30',
+  },
+  {
     id: 'eat-profile',
     version: 'v0.1 (draft)',
     name: 'EAT Profile',
@@ -135,7 +146,8 @@ const html = `<!DOCTYPE html>
   "publisher": { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
   "hasPart": [
     { "@type": "TechArticle", "name": "OAI v1.0", "url": "https://tunnelmind.ai/oai/standard" },
-    { "@type": "TechArticle", "name": "ATAP v0.1", "url": "https://tunnelmind.ai/atap/standard" }
+    { "@type": "TechArticle", "name": "ATAP v0.1", "url": "https://tunnelmind.ai/atap/standard" },
+    { "@type": "TechArticle", "name": "Signed Observation v1.0.0", "url": "https://tunnelmind.ai/standards/signed-observation/v1.json" }
   ]
 }
 </script>

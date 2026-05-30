@@ -116,7 +116,7 @@ Clients SHOULD warn if the server major differs from theirs; MUST refuse to send
 - **The 2,594 SSPs + 10K publishers from D1 already carry no Ed25519 signature** — they came from public crawls. This ADR explicitly does NOT apply to crawl-derived data; the signed-ingest contract is for first-party sensor evidence only.
 - **R2 archive is the audit trail** — every `{record, signature, node_pubkey}` lands in R2 keyed by `batch_id/record_id`. Every signature is replayable against the v1 verifier indefinitely.
 - **Familiar will not be rebuilt** for this ADR. The v1 freeze IS what Familiar already emits.
-- **A future ADR-A4 (extend OAI to device identity)** will define how `node_pubkey` registration may *additionally* carry an OAI claim — that is an extension on the registry side, not a wire-format change.
+- **ADR-2026-05-A4 (extend OAI to device identity)** — landed 2026-05-30 alongside this one — defines how `node_pubkey` registration may *additionally* carry an OAI claim. That is an extension on the registry side, not a wire-format change, so A4 is non-breaking by construction against this contract.
 
 ## Cross-references
 

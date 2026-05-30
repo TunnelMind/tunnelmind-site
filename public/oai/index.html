@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<!--
+  OAI explainer page. Hand-maintained (NOT generated). Counterpart to the
+  formal standard at /oai/standard, which is built from docs/OAI-STANDARD-v1.md
+  by scripts/build-oai-page.js. Edit this file directly.
+
+  The opening paragraph is an AI-authored draft pending the editor's voice
+  pass — see project_p26_oai_standard.md Phase 5: "[Josh writes this]".
+-->
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OAI — Observed Actor Identifier</title>
+<meta name="description" content="OAI is an open identifier standard for entities that observe, profile, or act against users, devices, and networks. Free resolution, permanent canonical IDs, signed observations. Edited by TunnelMind.">
+<link rel="canonical" href="https://tunnelmind.ai/oai">
+<meta property="og:title" content="OAI — Observed Actor Identifier">
+<meta property="og:description" content="CVE-style permanent identifiers for trackers, fingerprinters, ad networks, surveillance vendors, data brokers, threat actors. Edited by TunnelMind. Public comment through 2026-08-12.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://tunnelmind.ai/oai">
+<meta property="og:image" content="https://tunnelmind.ai/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+<style>:root {
+  --chrome-bg: #0f172a;
+  --chrome-bg2: #1e293b;
+  --chrome-border: #334155;
+  --chrome-text: #cbd5e1;
+  --chrome-text-dim: #94a3b8;
+  --chrome-text-bright: #e2e8f0;
+  --doc-paper: #243044;
+  --doc-text: #e2e8f0;
+  --accent-green: #4ade80;
+  --accent-amber: #fbbf24;
+  --accent-blue: #60a5fa;
+  --accent-cyan: #38bdf8;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--chrome-bg); color: var(--doc-text); font-family: var(--font-serif); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.banner { background: var(--chrome-bg2); border-bottom: 1px solid var(--chrome-border); padding: 14px 24px; font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.banner a { color: var(--accent-green); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 150ms ease; }
+.banner a:hover { border-bottom-color: var(--accent-green); }
+.banner .home { color: var(--accent-green); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 11px; }
+main { max-width: 760px; margin: 0 auto; padding: 56px 24px 96px; }
+h1 { font-family: var(--font-mono); font-size: 30px; font-weight: 700; color: var(--accent-green); letter-spacing: 0.02em; margin: 0 0 6px; line-height: 1.2; }
+.lede { font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); letter-spacing: 0.16em; text-transform: uppercase; margin: 0 0 28px; }
+h2 { font-family: var(--font-mono); font-size: 18px; font-weight: 700; color: var(--chrome-text-bright); margin: 56px 0 18px; line-height: 1.3; padding-bottom: 8px; border-bottom: 1px solid var(--chrome-border); }
+p { margin: 0 0 18px; }
+.intro { color: var(--chrome-text-bright); font-size: 18px; margin: 0 0 32px; }
+a { color: var(--accent-blue); text-decoration: none; border-bottom: 1px solid rgba(96, 165, 250, 0.35); transition: border-color 150ms ease, color 150ms ease; }
+a:hover { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+ul { margin: 0 0 18px; padding-left: 26px; }
+li { margin: 6px 0; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--chrome-bg2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 3px; border: 1px solid var(--chrome-border); }
+pre { background: var(--chrome-bg2); border: 1px solid var(--chrome-border); border-radius: 4px; padding: 16px 18px; overflow-x: auto; margin: 0 0 22px; }
+pre code { background: transparent; border: none; padding: 0; color: var(--doc-text); font-size: 13px; line-height: 1.55; }
+.format { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; font-family: var(--font-mono); font-size: 14px; margin: 0 0 26px; padding: 18px 22px; background: var(--doc-paper); border: 1px solid var(--chrome-border); border-radius: 4px; }
+.format dt { color: var(--accent-green); font-weight: 700; }
+.format dd { margin: 0; color: var(--chrome-text-bright); }
+table { border-collapse: collapse; margin: 0 0 22px; font-size: 14px; width: 100%; font-family: var(--font-mono); }
+th, td { border: 1px solid var(--chrome-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background: var(--chrome-bg2); color: var(--chrome-text-bright); font-weight: 700; }
+td code { font-size: 0.92em; }
+strong { color: var(--chrome-text-bright); font-weight: 700; }
+.cta { background: var(--doc-paper); border: 1px solid var(--chrome-border); border-radius: 4px; padding: 20px 24px; margin: 40px 0; font-family: var(--font-mono); font-size: 13px; line-height: 1.55; }
+.cta-title { color: var(--accent-green); font-weight: 700; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.note { font-family: var(--font-mono); font-size: 13px; color: var(--chrome-text-dim); margin: 26px 0; padding: 14px 18px; border-left: 3px solid var(--accent-amber); background: rgba(251, 191, 36, 0.04); }
+.note strong { color: var(--accent-amber); }
+@media (max-width: 600px) {
+  main { padding: 36px 18px 64px; font-size: 16px; }
+  h1 { font-size: 24px; }
+  h2 { font-size: 16px; }
+  .intro { font-size: 16px; }
+  pre, table { font-size: 12px; }
+  .format { grid-template-columns: 1fr; gap: 4px; }
+  .format dt { margin-top: 8px; }
+}</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "OAI — Observed Actor Identifier",
+  "url": "https://tunnelmind.ai/oai",
+  "description": "Public entry point for the OAI standard. CVE-style permanent identifiers for entities that observe, profile, or act against users, devices, and networks. Free resolution. Edited by TunnelMind.",
+  "isPartOf": { "@type": "WebSite", "@id": "https://tunnelmind.ai/#website" },
+  "about": { "@type": "TechArticle", "url": "https://tunnelmind.ai/oai/standard", "name": "OAI v1.0" },
+  "mainEntity": { "@type": "TechArticle", "@id": "https://tunnelmind.ai/oai/standard" }
+}
+</script>
+</head>
+<body>
+<div class="banner">
+  <a class="home" href="/">TunnelMind</a>
+  <div>
+    OAI v1.0 ·
+    <a href="/oai/standard">standard</a> ·
+    <a href="/oai/OAI-STANDARD-v1.0.md">raw markdown</a> ·
+    <a href="https://github.com/TunnelMind/oai">GitHub</a> ·
+    <a href="/standards">all standards</a>
+  </div>
+</div>
+<main>
+
+  <h1>OAI</h1>
+  <p class="lede">Observed Actor Identifier · v1.0</p>
+
+  <!--
+    Draft opening paragraph — author's voice pass pending (see
+    project_p26_oai_standard.md Phase 5). Three sentences: what, where,
+    what-it-is-not.
+  -->
+  <p class="intro">
+    An OAI is a CVE-style identifier for entities that watch traffic, build profiles on
+    users, or act against networks — trackers, fingerprinters, ad networks, surveillance
+    vendors, data brokers, threat actors. The identifier <code>OAI-2026-0000201</code> always
+    means the same entity; the resolver at <code>tunnelmind.ai/id/{id}</code> returns its
+    current record. It is not a reputation score, not a block list, and not a payment rail —
+    just a permanent, free-to-resolve name you can cite the way you cite a CVE.
+  </p>
+
+  <h2>What an OAI looks like</h2>
+  <dl class="format">
+    <dt>Canonical</dt>
+    <dd><code>OAI-YYYY-NNNNNNN</code> — uppercase prefix, year, 7-digit sequence. Permanent.</dd>
+    <dt>Alias</dt>
+    <dd><code>oai:slug</code> — lowercase. Redirects to the canonical form. Aliases may move; canonicals never do.</dd>
+    <dt>Sensor</dt>
+    <dd><code>OAI-SENSOR-{cc}-{seq}</code> — lowercase ISO 3166-1 alpha-2 country code, 3-digit sequence. Carries the Ed25519 public key the resolver uses to verify signed observations.</dd>
+  </dl>
+
+  <h2>How to resolve one</h2>
+  <p>
+    The resolver is a CVE-NA-style HTTP endpoint. No authentication, no rate limit,
+    no per-IP throttle. Content-negotiated — pass <code>Accept: application/json</code>
+    for the JSON-LD record, anything else for a human-readable HTML card.
+  </p>
+
+  <pre><code># Canonical lookup
+curl https://tunnelmind.ai/id/OAI-2026-0000201
+
+# Alias — 301 to the canonical
+curl -L https://tunnelmind.ai/id/oai:tunnelmind
+
+# Sensor record (separate namespace)
+curl https://tunnelmind.ai/id/OAI-SENSOR-us-001
+
+# JSON-LD context
+curl https://tunnelmind.ai/oai/context.jsonld
+
+# Sitemap of all active records (currently 1)
+curl https://tunnelmind.ai/oai/sitemap.xml</code></pre>
+
+  <h2>Status semantics</h2>
+  <p>
+    Each lookup returns one of four states. The HTTP status is part of the contract —
+    a client that handles only 200 is broken; a correct client handles all four.
+  </p>
+  <table>
+    <thead>
+      <tr><th>Status</th><th>HTTP</th><th>Meaning</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>active</code></td><td>200</td><td>Currently observed entity. Record includes ≥1 signed attestation.</td></tr>
+      <tr><td><code>deprecated</code></td><td>410 + <code>Sunset</code></td><td>Operator wound down. Last known record still returned for citation continuity.</td></tr>
+      <tr><td><code>superseded</code></td><td>303 → new ID</td><td>Rebrand / merge. The new canonical takes over; the old one redirects forever.</td></tr>
+      <tr><td><code>reserved</code> / unknown</td><td>404</td><td><strong>Indistinguishable.</strong> Reservation state must not leak — §8.4 of the standard.</td></tr>
+    </tbody>
+  </table>
+
+  <h2>A real record</h2>
+  <p>
+    The active record for <code>OAI-2026-0000201</code> (TunnelMind AI, LLC, the
+    registry editor) at the time of writing:
+  </p>
+  <pre><code>{
+  "@context": "https://tunnelmind.ai/oai/context.jsonld",
+  "@type": "ObservedActor",
+  "id": "OAI-2026-0000201",
+  "name": "TunnelMind AI, LLC",
+  "aliases": ["oai:tunnelmind", "oai:tunnelmind-ai"],
+  "category": "witness.operator",
+  "domains": ["tunnelmind.ai", "data.tunnelmind.ai", "api.tunnelmind.ai", ...],
+  "status": "active",
+  "attestations": [
+    {
+      "sensor": "OAI-SENSOR-us-001",
+      "observed_at": "2026-05-25T01:04:15.866Z",
+      "signature": "ed25519:0xd8cfd5c4192aa884..."
+    }
+  ],
+  "schema_version": "1.0"
+}</code></pre>
+
+  <div class="note">
+    <strong>Coverage:</strong> only one entity is currently resolvable to an active
+    record. The registry seeded 35 canonical IDs from a top-trackers dataset in May 2026,
+    but per the standard a record cannot promote <code>reserved</code> → <code>active</code>
+    without at least one signed sensor attestation, and reserved records are
+    indistinguishable from unknown ones to the public resolver. Coverage grows as
+    sensors come online and witness real traffic. See
+    <a href="/oai/standard#10-attestation-model">§10 of the standard</a>.
+  </div>
+
+  <h2>Citing OAI in your work</h2>
+  <p>
+    A complete citation is the canonical identifier plus the resolver URL — the same
+    shape as a CVE citation. Researchers, threat-intel publications, and tooling can
+    cite an OAI without depending on TunnelMind to be the registry forever; the
+    governance gate for handing the registry to a neutral body is in
+    <a href="/oai/standard#12-governance">§12 of the standard</a>.
+  </p>
+  <pre><code>OAI-2026-0000201 (TunnelMind AI, LLC; https://tunnelmind.ai/id/OAI-2026-0000201)</code></pre>
+
+  <div class="cta">
+    <div class="cta-title">v1.0 — Public comment period</div>
+    <div>Comments, objections, and proposals open through <strong>2026-08-12</strong>.</div>
+    <div style="margin-top: 10px;">
+      Read the full <a href="/oai/standard">standard</a> &nbsp;·&nbsp;
+      discuss on <a href="https://github.com/TunnelMind/oai/discussions">GitHub Discussions</a> &nbsp;·&nbsp;
+      file an <a href="https://github.com/TunnelMind/oai/issues">issue</a>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://tunnelmind.ai/standards/receipt-format/v1/revocations-schema.json",
+  "service": "TunnelMind Receipt Format v1.0 — revocation feed",
+  "spec": "https://tunnelmind.ai/standards/receipt-format/v1#section-8",
+  "format_version": "1.0",
+  "feed_version": 1,
+  "updated_at": "2026-05-31T00:00:00Z",
+  "polling_advice": "Cache for at least 60s. The endpoint at https://data.tunnelmind.ai/v1/receipt/revoked is preferred for single-receipt or single-key checks; this feed is for verifiers that want to maintain a local mirror of the full revocation set.",
+  "revoked_keys": [],
+  "revoked_receipts": [],
+  "notes": [
+    "A revoked key invalidates every receipt signed by that key after revoked_at (receipts signed BEFORE revoked_at remain provisionally valid if the verifier trusts the issuer's compromise window).",
+    "A revoked receipt is a per-receipt retraction by the issuer (e.g., issued in error, contains erroneous payload). receipt_id is the uuidv7 from the receipt envelope.",
+    "Both arrays are empty at launch. Genuinely empty — not a placeholder. Verifiers should treat 'lookup returned, list empty' as authoritative."
+  ]
+}

@@ -118,16 +118,24 @@
   "agent_payments": {
     "x402": {
       "enabled": true,
-      "summary": "x402 USDC micropayments are the agent rail. See per-endpoint pricing in openapi.yaml x-tunnelmind-pricing extensions."
+      "version": 1,
+      "demo_endpoint": "https://data.tunnelmind.ai/v1/x402/echo",
+      "discovery": "https://tunnelmind.ai/.well-known/x402.json",
+      "summary": "x402 USDC micropayments are the agent rail. See per-endpoint pricing in openapi.yaml x-tunnelmind-pricing extensions; client-validation smoke available via demo_endpoint with no real USDC required."
     }
   },
 
   "discovery": {
-    "agent_manifest": "https://tunnelmind.ai/agent-manifest.json",
-    "llms_txt": "https://tunnelmind.ai/llms.txt",
-    "robots_txt": "https://tunnelmind.ai/robots.txt",
-    "canary": "https://tunnelmind.ai/canary.json",
-    "ai_services": "https://tunnelmind.ai/.well-known/ai-services.json"
+    "agent_manifest":      "https://tunnelmind.ai/agent-manifest.json",
+    "agent_onboarding":    "https://tunnelmind.ai/agent-onboarding.md",
+    "llms_txt":            "https://tunnelmind.ai/llms.txt",
+    "robots_txt":          "https://tunnelmind.ai/robots.txt",
+    "canary":              "https://tunnelmind.ai/canary.json",
+    "ai_services":         "https://tunnelmind.ai/.well-known/ai-services.json",
+    "atap_discovery":      "https://tunnelmind.ai/.well-known/atap.json",
+    "receipt_signing_keys":"https://tunnelmind.ai/.well-known/receipt-signing-key.json",
+    "receipt_revocations": "https://tunnelmind.ai/.well-known/receipt-revocations.json",
+    "x402_discovery":      "https://tunnelmind.ai/.well-known/x402.json"
   },
 
   "transparency": {

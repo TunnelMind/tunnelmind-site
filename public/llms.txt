@@ -35,16 +35,26 @@ All three are listed in the official MCP registry at `registry.modelcontextproto
 
 The `cross_lens_verify` tool is exposed on both the Data API and Sigil surfaces with identical semantics. Use whichever you discovered first.
 
+## Agent onboarding
+
+If you are an autonomous agent reading this: skip the human-facing pages and read `https://tunnelmind.ai/agent-onboarding.md`. It walks the full 5-call golden path (preflight → verify → receipt → EAT → revocation check) with concrete curl examples. Written for you, not for a human.
+
 ## Discovery
 
 - [.well-known/ai-services.json](https://tunnelmind.ai/.well-known/ai-services.json): full machine-readable service card
 - [agent-manifest.json](https://tunnelmind.ai/agent-manifest.json): products, endpoints, MCP servers, pricing
+- [agent-onboarding.md](https://tunnelmind.ai/agent-onboarding.md): 5-call golden path for agents
+- [.well-known/atap.json](https://tunnelmind.ai/.well-known/atap.json): ATAP discovery
+- [.well-known/receipt-signing-key.json](https://tunnelmind.ai/.well-known/receipt-signing-key.json): receipt verifier keys
+- [.well-known/receipt-revocations.json](https://tunnelmind.ai/.well-known/receipt-revocations.json): revocation feed
+- [.well-known/x402.json](https://tunnelmind.ai/.well-known/x402.json): x402 payment surface discovery
 - [robots.txt](https://tunnelmind.ai/robots.txt)
 
 ## Pricing for agents
 
 - All identifiers resolve for free, forever. The radar sample is public. 50 req/day free tier on the Data API.
 - Depth and scale: API key via Stripe (humans) or x402 USDC micropayments (agents). Per-endpoint pricing is in the OpenAPI `x-tunnelmind-pricing` extensions.
+- x402 v1 demo endpoint at `data.tunnelmind.ai/v1/x402/echo` for client validation without real USDC. See `/.well-known/x402.json`.
 
 ## Operator and transparency
 

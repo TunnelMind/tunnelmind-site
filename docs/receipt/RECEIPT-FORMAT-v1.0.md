@@ -136,6 +136,90 @@ and MAY accept a higher minor version (minor versions are additive-only, via new
 fields or `extensions`). SHA-256 and Ed25519 are fixed for all of v1.x; algorithm agility
 is carried by `signature.algorithm` for a future v2.
 
+## 8. Revocation
+
+Revocation answers two operationally distinct questions:
+
+1. **Key revocation** — "Is the signing key that produced this receipt still trusted by
+   the issuer?" A key is revoked when the issuer believes it has been compromised, or
+   when it is rotated out of service. Receipts signed *before* `revoked_at` remain
+   provisionally valid; receipts signed *after* `revoked_at` MUST be rejected.
+2. **Receipt revocation** — "Has the issuer retracted this specific receipt?" Used when
+   the issuer made a mistake (erroneous payload, out-of-policy emission) and wants to
+   inform downstream verifiers without rotating the underlying key.
+
+### 8.1 Discovery — the well-known feed
+
+The full revocation set is published at:
+
+```
+https://tunnelmind.ai/.well-known/receipt-revocations.json
+```
+
+Schema:
+
+```json
+{
+  "feed_version": <int, monotonically increasing>,
+  "updated_at": "<ISO 8601 UTC>",
+  "revoked_keys": [
+    {
+      "key_id": "<the receipt-format key_id>",
+      "revoked_at": "<ISO 8601 UTC>",
+      "reason": "<human-readable>",
+      "replacement_key_id": "<optional pointer to the rotated successor>"
+    }
+  ],
+  "revoked_receipts": [
+    {
+      "receipt_id": "<uuidv7>",
+      "revoked_at": "<ISO 8601 UTC>",
+      "reason": "<human-readable>"
+    }
+  ]
+}
+```
+
+Verifiers SHOULD cache this feed (Cache-Control: `max-age=300`) and poll `feed_version`
+to detect changes. Both arrays are empty at launch; an empty array is authoritative,
+not a placeholder.
+
+### 8.2 Lookup — the query endpoint
+
+For verifiers that don't want to maintain a local mirror, the data API offers single-item
+lookup at:
+
+```
+GET https://data.tunnelmind.ai/v1/receipt/revoked?key_id=<key_id>
+GET https://data.tunnelmind.ai/v1/receipt/revoked?id=<receipt_id>
+```
+
+Response shape:
+
+```json
+{ "key_id": "tm-receipt-2026-05",  "revoked": false, "checked_at": "..." }
+{ "receipt_id": "<uuidv7>",        "revoked": false, "checked_at": "..." }
+```
+
+When `revoked: true`, the response also carries `revoked_at` and `reason`. The endpoint
+is rate-limited but free; verifiers can call it on every receipt validation.
+
+### 8.3 Verifier obligations
+
+A relying party SHOULD:
+
+1. On every verification, check `signature.key_id` against the `revoked_keys` set.
+2. If a `key_id` is revoked and the receipt's `issued_at` precedes `revoked_at`, the
+   receipt remains valid but verifiers SHOULD attach a `key-rotated-out-of-service`
+   warning.
+3. If a `key_id` is revoked and the receipt's `issued_at` is on-or-after `revoked_at`,
+   reject the receipt with reason `revoked_key`.
+4. Optionally check `receipt_id` against `revoked_receipts`; reject with reason
+   `revoked_receipt` if present.
+
+The reference verifier (`@tunnelmindai/receipt-verify`) implements steps 1–4
+automatically against the well-known feed.
+
 ## Appendix A — EAT crosswalk (informative)
 
 The same claim set serializes to an [EAT Profile v0.1](../EAT-PROFILE-v0.1.md) token.

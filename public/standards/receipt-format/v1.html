@@ -244,6 +244,71 @@ body is the envelope above with the legacy response carried verbatim in <code>pa
 and MAY accept a higher minor version (minor versions are additive-only, via new optional
 fields or <code>extensions</code>). SHA-256 and Ed25519 are fixed for all of v1.x; algorithm agility
 is carried by <code>signature.algorithm</code> for a future v2.</p>
+<h2>8. Revocation</h2>
+<p>Revocation answers two operationally distinct questions:</p>
+<ol>
+<li><strong>Key revocation</strong> — &quot;Is the signing key that produced this receipt still trusted by
+the issuer?&quot; A key is revoked when the issuer believes it has been compromised, or
+when it is rotated out of service. Receipts signed <em>before</em> <code>revoked_at</code> remain
+provisionally valid; receipts signed <em>after</em> <code>revoked_at</code> MUST be rejected.</li>
+<li><strong>Receipt revocation</strong> — &quot;Has the issuer retracted this specific receipt?&quot; Used when
+the issuer made a mistake (erroneous payload, out-of-policy emission) and wants to
+inform downstream verifiers without rotating the underlying key.</li>
+</ol>
+<h3>8.1 Discovery — the well-known feed</h3>
+<p>The full revocation set is published at:</p>
+<pre><code>https://tunnelmind.ai/.well-known/receipt-revocations.json
+</code></pre>
+<p>Schema:</p>
+<pre><code class="language-json">{
+  &quot;feed_version&quot;: &lt;int, monotonically increasing&gt;,
+  &quot;updated_at&quot;: &quot;&lt;ISO 8601 UTC&gt;&quot;,
+  &quot;revoked_keys&quot;: [
+    {
+      &quot;key_id&quot;: &quot;&lt;the receipt-format key_id&gt;&quot;,
+      &quot;revoked_at&quot;: &quot;&lt;ISO 8601 UTC&gt;&quot;,
+      &quot;reason&quot;: &quot;&lt;human-readable&gt;&quot;,
+      &quot;replacement_key_id&quot;: &quot;&lt;optional pointer to the rotated successor&gt;&quot;
+    }
+  ],
+  &quot;revoked_receipts&quot;: [
+    {
+      &quot;receipt_id&quot;: &quot;&lt;uuidv7&gt;&quot;,
+      &quot;revoked_at&quot;: &quot;&lt;ISO 8601 UTC&gt;&quot;,
+      &quot;reason&quot;: &quot;&lt;human-readable&gt;&quot;
+    }
+  ]
+}
+</code></pre>
+<p>Verifiers SHOULD cache this feed (Cache-Control: <code>max-age=300</code>) and poll <code>feed_version</code>
+to detect changes. Both arrays are empty at launch; an empty array is authoritative,
+not a placeholder.</p>
+<h3>8.2 Lookup — the query endpoint</h3>
+<p>For verifiers that don&#39;t want to maintain a local mirror, the data API offers single-item
+lookup at:</p>
+<pre><code>GET https://data.tunnelmind.ai/v1/receipt/revoked?key_id=&lt;key_id&gt;
+GET https://data.tunnelmind.ai/v1/receipt/revoked?id=&lt;receipt_id&gt;
+</code></pre>
+<p>Response shape:</p>
+<pre><code class="language-json">{ &quot;key_id&quot;: &quot;tm-receipt-2026-05&quot;,  &quot;revoked&quot;: false, &quot;checked_at&quot;: &quot;...&quot; }
+{ &quot;receipt_id&quot;: &quot;&lt;uuidv7&gt;&quot;,        &quot;revoked&quot;: false, &quot;checked_at&quot;: &quot;...&quot; }
+</code></pre>
+<p>When <code>revoked: true</code>, the response also carries <code>revoked_at</code> and <code>reason</code>. The endpoint
+is rate-limited but free; verifiers can call it on every receipt validation.</p>
+<h3>8.3 Verifier obligations</h3>
+<p>A relying party SHOULD:</p>
+<ol>
+<li>On every verification, check <code>signature.key_id</code> against the <code>revoked_keys</code> set.</li>
+<li>If a <code>key_id</code> is revoked and the receipt&#39;s <code>issued_at</code> precedes <code>revoked_at</code>, the
+receipt remains valid but verifiers SHOULD attach a <code>key-rotated-out-of-service</code>
+warning.</li>
+<li>If a <code>key_id</code> is revoked and the receipt&#39;s <code>issued_at</code> is on-or-after <code>revoked_at</code>,
+reject the receipt with reason <code>revoked_key</code>.</li>
+<li>Optionally check <code>receipt_id</code> against <code>revoked_receipts</code>; reject with reason
+<code>revoked_receipt</code> if present.</li>
+</ol>
+<p>The reference verifier (<code>@tunnelmindai/receipt-verify</code>) implements steps 1–4
+automatically against the well-known feed.</p>
 <h2>Appendix A — EAT crosswalk (informative)</h2>
 <p>The same claim set serializes to an <a href="../EAT-PROFILE-v0.1.md">EAT Profile v0.1</a> token.
 Mapping:</p>

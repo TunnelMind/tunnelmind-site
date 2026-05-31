@@ -152,17 +152,25 @@
   },
 
   "agent_payments": {
-    "x402_enabled": true,
-    "rail": "USDC on Base",
-    "summary": "x402 is the agent-native rail. Stripe is the human rail. Pricing per endpoint lives in the OpenAPI x-tunnelmind-pricing extension."
+    "x402_enabled":      true,
+    "rail":              "USDC on Base",
+    "x402_version":      1,
+    "demo_endpoint":     "https://data.tunnelmind.ai/v1/x402/echo",
+    "discovery":         "https://tunnelmind.ai/.well-known/x402.json",
+    "summary":           "x402 is the agent-native rail. Stripe is the human rail. Demo endpoint accepts mode='demo' HMAC payments (no USDC required) for client-validation smoke. Real-mode mainnet USDC verification pending wallet provisioning + facilitator credentials. Pricing per endpoint lives in the OpenAPI x-tunnelmind-pricing extension."
   },
 
   "discovery_artifacts": {
-    "ai_services_card": "https://tunnelmind.ai/.well-known/ai-services.json",
-    "llms_txt":         "https://tunnelmind.ai/llms.txt",
-    "openapi":          "https://data.tunnelmind.ai/openapi.yaml",
-    "robots_txt":       "https://tunnelmind.ai/robots.txt",
-    "warrant_canary":   "https://tunnelmind.ai/canary.json"
+    "ai_services_card":      "https://tunnelmind.ai/.well-known/ai-services.json",
+    "agent_onboarding":      "https://tunnelmind.ai/agent-onboarding.md",
+    "llms_txt":              "https://tunnelmind.ai/llms.txt",
+    "openapi":               "https://data.tunnelmind.ai/openapi.yaml",
+    "robots_txt":            "https://tunnelmind.ai/robots.txt",
+    "warrant_canary":        "https://tunnelmind.ai/canary.json",
+    "atap_discovery":        "https://tunnelmind.ai/.well-known/atap.json",
+    "receipt_signing_keys":  "https://tunnelmind.ai/.well-known/receipt-signing-key.json",
+    "receipt_revocations":   "https://tunnelmind.ai/.well-known/receipt-revocations.json",
+    "x402_discovery":        "https://tunnelmind.ai/.well-known/x402.json"
   },
 
   "principles": [

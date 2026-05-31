@@ -1,0 +1,56 @@
+{
+  "$schema": "https://tunnelmind.ai/.well-known/x402.schema.json",
+  "service": "TunnelMind — x402 v1 payment surface discovery",
+  "x402_version": 1,
+  "updated_at": "2026-05-31T00:00:00Z",
+  "operator": {
+    "name": "TunnelMind AI, LLC",
+    "oai": "OAI-2026-0000201",
+    "oai_resolver": "https://tunnelmind.ai/id/OAI-2026-0000201"
+  },
+
+  "paid_endpoints": [
+    {
+      "url": "https://data.tunnelmind.ai/v1/x402/echo",
+      "methods": ["GET", "POST"],
+      "purpose": "x402 demo endpoint — proves the HTTP-402 challenge → X-PAYMENT retry → settlement-response wire works end-to-end against TunnelMind. Echoes the request body on valid payment.",
+      "price_micro_usdc": "1000",
+      "price_usd_equiv": "0.001",
+      "asset": "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913",
+      "asset_label": "USDC on Base",
+      "network": "base",
+      "modes_accepted": ["demo", "x402"],
+      "pay_to_status": "placeholder_until_wallet_provisioned"
+    }
+  ],
+
+  "demo_mode": {
+    "purpose": "Validate your x402 client implementation without moving any USDC. The HMAC verifier accepts a nonce + SHA-256-HMAC pair signed against a Worker-side secret. Settlement is simulated; the response is identical-shape to real-mode.",
+    "construction": {
+      "step_1": "Generate a 16+ character random nonce (UUIDv4 works).",
+      "step_2": "Compute HMAC-SHA256(secret=<see notes>, message=`x402-demo-echo:` + nonce). Hex-lowercase the digest.",
+      "step_3": "Build payment payload: { x402Version: 1, mode: 'demo', nonce: <nonce>, hmac: <hex_digest> }.",
+      "step_4": "Base64-encode the JSON payload and set as X-PAYMENT header.",
+      "step_5": "Retry the request with the X-PAYMENT header. 200 + echo body + X-PAYMENT-RESPONSE confirms success."
+    },
+    "notes": [
+      "The demo HMAC secret is a Worker-side environment variable (X402_DEMO_HMAC). For the public smoke, the operator publishes the secret directly here — there is nothing to protect; the demo asserts only protocol correctness.",
+      "Public demo secret (intentionally weak): 'tunnelmind-x402-demo-secret-NOT-FOR-PRODUCTION'",
+      "If a different secret is provisioned per-tenant in the future, this field will move to a per-key well-known doc."
+    ],
+    "example_curl_no_payment": "curl -i https://data.tunnelmind.ai/v1/x402/echo  # 402 with accepts[]",
+    "example_curl_with_payment": "# See https://github.com/TunnelMind/tunnelmind-data-api/blob/main/scripts/smoke-x402-demo.sh"
+  },
+
+  "real_mode": {
+    "status": "wired_pending_wallet_and_facilitator_credentials",
+    "summary": "The endpoint accepts mode='x402' payment payloads and forwards them to env.X402_FACILITATOR_URL (e.g., Coinbase) for verification. Activation gated on (a) TM-controlled Base USDC receive address, (b) Coinbase facilitator API key. See roadmap item #65 progress.",
+    "spec": "https://www.x402.org/"
+  },
+
+  "policy": {
+    "free_tier_unaffected": true,
+    "summary": "Every existing TunnelMind endpoint remains free or auth-gated as before. x402 is an additional rail for new paid surfaces; no endpoint is being moved behind x402.",
+    "principle": "x402 is the agent rail. Stripe is the human rail. Both rails accept the same paid quota."
+  }
+}

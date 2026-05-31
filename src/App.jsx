@@ -19,35 +19,54 @@ import AbusePolicy from './pages/legal/AbusePolicy.jsx'
 import TransparencyReport from './pages/legal/TransparencyReport.jsx'
 import AccountRiskDisclosure from './pages/legal/AccountRiskDisclosure.jsx'
 
-// ── Hash Router ────────────────────────────────────────────────────
-function getPageFromHash() {
-  // Strip any ?-query suffix (e.g. /#/?inspect=example.com is the Radar
-  // page with a deep-link parameter the Radar component reads itself).
-  let hash = window.location.hash.split('?')[0]
-  hash = hash.replace('#/', '').replace('#', '').trim()
-  if (!hash || hash === '/') return 'landing'
-  const page = hash.replace(/^\//, '').replace(/\/$/, '') || 'landing'
+// ── History Router (clean URLs, indexable per-route) ───────────────
+// Migrated from hash routing 2026-05-31 for SEO (#47). Old hash URLs
+// (e.g. /#/vision) are redirected to clean URLs on first load so existing
+// inbound links keep working.
+
+const KNOWN_PAGES = new Set([
+  'landing','vision','tools','api','whitepapers','about','pricing','products','roadmap',
+  'privacy','terms','law-enforcement','abuse','transparency','account-risk',
+])
+
+function getPageFromPath() {
+  // Backward-compat: redirect old hash routes (e.g. /#/vision) to clean URLs
+  // BEFORE anything else reads the location. Done once per pageload.
+  if (typeof window !== 'undefined' && window.location.hash.startsWith('#/')) {
+    const hashPage = window.location.hash.replace(/^#\//, '').split('?')[0].replace(/\/$/, '')
+    const query = window.location.hash.includes('?') ? '?' + window.location.hash.split('?').slice(1).join('?') : ''
+    const target = !hashPage || hashPage === '/' ? '/' : `/${hashPage === 'manifesto' ? 'vision' : hashPage}`
+    window.history.replaceState({}, '', target + query + window.location.search.replace(/^\?/, query ? '&' : '?'))
+  }
+  const path = window.location.pathname.replace(/^\/+|\/+$/g, '')
+  if (!path) return 'landing'
   // 'manifesto' was renamed to 'vision' — keep old inbound links working.
-  return page === 'manifesto' ? 'vision' : page
+  if (path === 'manifesto') return 'vision'
+  // Only return known SPA pages; unknown paths fall through to landing
+  // (Cloudflare Pages serves index.html for them via SPA fallback).
+  return KNOWN_PAGES.has(path) ? path : 'landing'
 }
 
-function setHash(page) {
-  window.location.hash = page === 'landing' ? '/' : `/${page}`
+function pushPath(page) {
+  const target = page === 'landing' ? '/' : `/${page}`
+  if (window.location.pathname !== target) {
+    window.history.pushState({}, '', target)
+  }
 }
 
 // ── App ────────────────────────────────────────────────────────────
 export default function App() {
-  const [page, setPage] = useState(getPageFromHash)
+  const [page, setPage] = useState(getPageFromPath)
 
   useEffect(() => {
-    function onHashChange() { setPage(getPageFromHash()) }
-    window.addEventListener('hashchange', onHashChange)
-    return () => window.removeEventListener('hashchange', onHashChange)
+    function onPopState() { setPage(getPageFromPath()) }
+    window.addEventListener('popstate', onPopState)
+    return () => window.removeEventListener('popstate', onPopState)
   }, [])
 
   const handleNavigate = useCallback((newPage) => {
     setPage(newPage)
-    setHash(newPage)
+    pushPath(newPage)
     window.scrollTo(0, 0)
   }, [])
 

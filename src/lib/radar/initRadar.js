@@ -1395,7 +1395,26 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
         cl.recommendations.map((r) => '<li>' + esc(r) + '</li>').join('') +
         '</ul>';
     }
+    // OAI Phase 4 — surface the verdict issuer's permanent identifier so a
+    // viewer (or an agent reading the rendered JSON) can resolve who issued
+    // this cross-lens verdict via tunnelmind.ai/id/{OAI} without an out-of-
+    // band lookup. The standard becomes visible at the highest-trafficked
+    // point in the UI.
+    if (typeof cl.issued_by === 'string' && /^OAI-/.test(cl.issued_by)) {
+      html += '<div class="insp-sub-label">Issued by</div>' +
+        '<div class="insp-tag-row">' + renderOaiBadge(cl.issued_by) + '</div>';
+    }
     return html;
+  }
+
+  // Small clickable chip rendering an OAI identifier. The resolver at
+  // tunnelmind.ai/id/{OAI} accepts both canonical (OAI-YYYY-NNNNNNN) and
+  // sensor (OAI-SENSOR-{cc}-{seq}) forms — caller pre-validates format.
+  function renderOaiBadge(oai) {
+    const href = 'https://tunnelmind.ai/id/' + encodeURIComponent(oai);
+    return '<a class="insp-tag insp-tag-link" href="' + href +
+      '" target="_blank" rel="noopener" title="Resolve ' + esc(oai) +
+      ' via the OAI registry">' + esc(oai) + '</a>';
   }
 
   function renderSigilLens(sig) {

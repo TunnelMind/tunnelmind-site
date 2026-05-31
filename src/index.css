@@ -918,6 +918,20 @@ a:hover {
   background: var(--radar-panel-2); color: var(--radar-fg-dim);
   border: 1px solid var(--radar-border);
 }
+/* OAI Phase 4 — clickable identifier badge. Same chip shape as insp-tag
+   but inherits link affordances + a hover accent so the OAI is visibly
+   resolvable in tunnelmind.ai/id/{OAI}. */
+.radar-root a.insp-tag-link {
+  text-decoration: none;
+  font-family: var(--font-mono, monospace);
+  letter-spacing: 0.02em;
+  transition: color 120ms ease, border-color 120ms ease, background 120ms ease;
+}
+.radar-root a.insp-tag-link:hover {
+  color: var(--radar-accent);
+  border-color: var(--radar-accent-dim);
+  background: var(--radar-panel);
+}
 .radar-root .insp-source {
   margin-top: 12px;
   font-size: 10.5px; color: var(--radar-fg-muted);

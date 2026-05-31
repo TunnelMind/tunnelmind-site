@@ -1,9 +1,11 @@
 # TunnelMind EAT Profile v0.1 (draft)
 
-**Status:** DRAFT. Not yet implemented. Awaiting Josh review before any code changes.
+**Status:** DRAFT — published 2026-05-31 · 90-day public-comment window closes 2026-08-29.
 **Editor:** TunnelMind
-**Public-comment window:** TBD (typically 90 days from publication).
-**License:** CC BY 4.0.
+**Canonical URL:** https://tunnelmind.ai/eat/profile/v0.1
+**License:** spec CC BY 4.0 · reference code Apache-2.0.
+**Companion:** [TunnelMind Receipt Format v1.0](https://tunnelmind.ai/standards/receipt-format/v1) is the JSON serialization of the same claim set; this document is the RATS-aligned (CWT/JWT) view.
+**Reference verifier:** `@tunnelmindai/eat` (planned, see `packages/eat-js` in `github.com/TunnelMind/atap`).
 
 This profile defines how a TunnelMind ATAP receipt and its cross-lens
 enrichments are conveyed as an IETF RATS Entity Attestation Token (EAT,

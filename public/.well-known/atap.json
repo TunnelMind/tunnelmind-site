@@ -1,0 +1,23 @@
+{
+  "$schema": "https://tunnelmind.ai/atap/discovery-schema.json",
+  "service": "TunnelMind ATAP",
+  "atap_version": "0.1.2",
+  "updated_at": "2026-05-31T00:00:00Z",
+  "spec": "https://tunnelmind.ai/atap/standard",
+  "keys_url": "https://tunnelmind.ai/atap/keys",
+  "profiles_url": "https://tunnelmind.ai/atap/profiles",
+  "verifier_url": "https://tunnelmind.ai/atap/verify.sh",
+  "schemas_url": "https://tunnelmind.ai/atap/schemas/v0.1/",
+  "context_url": "https://tunnelmind.ai/atap/context.jsonld",
+  "registry_url": "https://github.com/TunnelMind/atap",
+  "witness": {
+    "operator_oai": "OAI-2026-0000201",
+    "resolver_url": "https://tunnelmind.ai/id/OAI-2026-0000201"
+  },
+  "companion_specs": {
+    "receipt_format": "https://tunnelmind.ai/standards/receipt-format/v1",
+    "eat_profile": "https://tunnelmind.ai/eat/profile/v0.1",
+    "oai_standard": "https://tunnelmind.ai/oai/standard"
+  },
+  "discovery_note": "This is the RFC 8615 well-known discovery document for ATAP. The signing key bundle lives at keys_url. The reference verifier is at verifier_url. Profiles (sigil:media_buyer:v1, etc.) live at profiles_url and are individually addressable as {profiles_url}{namespace}/{domain}/v{N}."
+}

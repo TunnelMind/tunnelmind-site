@@ -3,9 +3,6 @@
   OAI explainer page. Hand-maintained (NOT generated). Counterpart to the
   formal standard at /oai/standard, which is built from docs/OAI-STANDARD-v1.md
   by scripts/build-oai-page.js. Edit this file directly.
-
-  The opening paragraph is an AI-authored draft pending the editor's voice
-  pass — see project_p26_oai_standard.md Phase 5: "[Josh writes this]".
 -->
 <html lang="en">
 <head>
@@ -108,18 +105,12 @@ strong { color: var(--chrome-text-bright); font-weight: 700; }
   <h1>OAI</h1>
   <p class="lede">Observed Actor Identifier · v1.0</p>
 
-  <!--
-    Draft opening paragraph — author's voice pass pending (see
-    project_p26_oai_standard.md Phase 5). Three sentences: what, where,
-    what-it-is-not.
-  -->
   <p class="intro">
-    An OAI is a CVE-style identifier for entities that watch traffic, build profiles on
-    users, or act against networks — trackers, fingerprinters, ad networks, surveillance
-    vendors, data brokers, threat actors. The identifier <code>OAI-2026-0000201</code> always
-    means the same entity; the resolver at <code>tunnelmind.ai/id/{id}</code> returns its
-    current record. It is not a reputation score, not a block list, and not a payment rail —
-    just a permanent, free-to-resolve name you can cite the way you cite a CVE.
+    An OAI is a permanent name for something that watches traffic, profiles users, or acts
+    against networks — a tracker, an ad network, a threat actor. Resolve any OAI at
+    <code>tunnelmind.ai/id/{id}</code> and the record tells you what it is, who runs it, and
+    whether it is still active. It is not a reputation score, a block list, or a payment rail —
+    it is the name an agent cites the way a CVE cites a vulnerability.
   </p>
 
   <h2>What an OAI looks like</h2>

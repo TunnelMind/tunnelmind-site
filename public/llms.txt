@@ -43,7 +43,10 @@ If you are an autonomous agent reading this: skip the human-facing pages and rea
 
 To configure your LLM runtime as a TunnelMind analyst — system prompt + tool subset + response schema + attestation tiers, in one fetch — use either of:
 - REST: `GET https://data.tunnelmind.ai/v1/config/analyst` (content-negotiated; `?surface=data|scry|sigil`, `?receipt=true` for a Receipt v1.0 wrap)
-- MCP: `prompts/get { name: "tunnelmind_analyst" }` on `mcp-data.tunnelmind.ai`
+- MCP: `prompts/get { name: "tunnelmind_analyst" }` on **any of the three MCPs**. Each MCP's default surface matches its scope so an arg-less call returns the right shape:
+  - `mcp-data.tunnelmind.ai` → defaults to `surface=data` (full tool set)
+  - `mcp.tunnelmind.ai` → defaults to `surface=scry`
+  - `mcp.sigil.tunnelmind.ai` → defaults to `surface=sigil`
 
 Bundle is inline-signed (Ed25519, verifiable against `/.well-known/receipt-signing-key.json`). TunnelMind doesn't run your inference — you bring the model, we ship the config and meter the data API calls your analyst makes.
 

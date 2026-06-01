@@ -144,8 +144,15 @@
     "rest_endpoint":   "https://data.tunnelmind.ai/v1/config/analyst",
     "mcp_prompt_name": "tunnelmind_analyst",
     "available_on_mcp": [
-      "https://mcp-data.tunnelmind.ai/mcp"
+      "https://mcp-data.tunnelmind.ai/mcp",
+      "https://mcp.tunnelmind.ai/mcp",
+      "https://mcp.sigil.tunnelmind.ai/mcp"
     ],
+    "default_surface_by_mcp": {
+      "https://mcp-data.tunnelmind.ai/mcp":  "data",
+      "https://mcp.tunnelmind.ai/mcp":       "scry",
+      "https://mcp.sigil.tunnelmind.ai/mcp": "sigil"
+    },
     "surfaces": ["data", "scry", "sigil"],
     "formats":  ["anthropic", "openai", "generic"]
   },

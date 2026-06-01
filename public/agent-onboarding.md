@@ -38,7 +38,12 @@ curl -s 'https://data.tunnelmind.ai/v1/config/analyst?surface=data' > /tmp/tm-bu
 ```
 
 ```jsonc
-// MCP (preferred for MCP-native runtimes)
+// MCP (preferred for MCP-native runtimes) — available on ALL three MCPs.
+// Each MCP defaults to its own surface, so an arg-less call returns the
+// right shape; pass arguments.surface to retarget across MCPs.
+//   mcp-data.tunnelmind.ai  → default surface=data
+//   mcp.tunnelmind.ai       → default surface=scry
+//   mcp.sigil.tunnelmind.ai → default surface=sigil
 { "jsonrpc": "2.0", "id": 1, "method": "prompts/get",
   "params": { "name": "tunnelmind_analyst",
               "arguments": { "surface": "data", "format": "anthropic" } } }

@@ -20,11 +20,43 @@ Cold-start, zero context. Read in this order:
 
 Three MCP servers expose the same surface as the REST API. Pick whichever your runtime supports:
 
-- `ai.tunnelmind/data` → `https://mcp-data.tunnelmind.ai/mcp` — full surface (45 tools)
+- `ai.tunnelmind/data` → `https://mcp-data.tunnelmind.ai/mcp` — full surface (48 tools)
 - `ai.tunnelmind/scry` → `https://mcp.tunnelmind.ai/mcp` — Scry-only (12 tools, no auth)
 - `ai.tunnelmind/sigil` → `https://mcp.sigil.tunnelmind.ai/mcp` — Sigil-scoped (11 tools)
 
 `cross_lens_verify` is exposed on both the data-api and sigil MCPs with identical semantics.
+
+---
+
+## 0.5. BYOM analyst config (optional, recommended)
+
+If you're an LLM-driven agent and you want to *behave as a TunnelMind analyst* — not just call individual tools, but reason across the graph with the right discipline (attestation tiers, refusal patterns, cross-lens grounding) — fetch the analyst config bundle once at startup:
+
+```bash
+# REST
+curl -s 'https://data.tunnelmind.ai/v1/config/analyst?surface=data' > /tmp/tm-bundle.json
+```
+
+```jsonc
+// MCP (preferred for MCP-native runtimes)
+{ "jsonrpc": "2.0", "id": 1, "method": "prompts/get",
+  "params": { "name": "tunnelmind_analyst",
+              "arguments": { "surface": "data", "format": "anthropic" } } }
+```
+
+The bundle carries:
+
+- `system_prompts.{anthropic,openai,generic}` — three encodings of the same semantic prompt
+- `tools.surface_subset` — operationIds for the chosen surface (data / scry / sigil)
+- `response_format` — JSON Schema your verdicts MUST conform to (includes the `attestation_tier` requirement)
+- `attestation_tiers` — the canonical 4-tier vocabulary used across Receipts + EAT
+- `graph_state` — live corpus counts as of serve time
+- `bundle_signature` — inline Ed25519 signature; verify against `/.well-known/receipt-signing-key.json`
+- `pin_recommended` — supply-chain pin hint (e.g. `v1.0.0+00632847`); pin against this for reproducibility
+
+Add `?receipt=true` to wrap the response in a Receipt v1.0 envelope — gives you an auditable record that you configured yourself with version X served by `OAI-2026-0000201` at timestamp Y.
+
+The bundle is FREE and rate-limited on a separate counter from data API calls — refetching the bundle never burns your data quota.
 
 ---
 

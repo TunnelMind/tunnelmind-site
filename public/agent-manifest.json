@@ -163,6 +163,7 @@
   "discovery_artifacts": {
     "ai_services_card":      "https://tunnelmind.ai/.well-known/ai-services.json",
     "agent_onboarding":      "https://tunnelmind.ai/agent-onboarding.md",
+    "analyst_config_bundle": "https://data.tunnelmind.ai/v1/config/analyst",
     "llms_txt":              "https://tunnelmind.ai/llms.txt",
     "openapi":               "https://data.tunnelmind.ai/openapi.yaml",
     "robots_txt":            "https://tunnelmind.ai/robots.txt",
@@ -171,6 +172,17 @@
     "receipt_signing_keys":  "https://tunnelmind.ai/.well-known/receipt-signing-key.json",
     "receipt_revocations":   "https://tunnelmind.ai/.well-known/receipt-revocations.json",
     "x402_discovery":        "https://tunnelmind.ai/.well-known/x402.json"
+  },
+
+  "byom_analyst_config": {
+    "summary": "BYOM (bring-your-own-model) config bundle that turns any LLM into a TunnelMind analyst. System prompt + tool subset + response schema + attestation-tier vocabulary. Customer brings the LLM and the tokens; TunnelMind earns on data API calls.",
+    "rest_endpoint":   "https://data.tunnelmind.ai/v1/config/analyst",
+    "mcp_prompt_name": "tunnelmind_analyst",
+    "mcp_servers":     ["https://mcp-data.tunnelmind.ai/mcp"],
+    "surfaces":        ["data", "scry", "sigil"],
+    "formats":         ["anthropic", "openai", "generic"],
+    "receipt_wrap":    "Add ?receipt=true to wrap the response in a signed Receipt v1.0 envelope",
+    "verification":    "Inline bundle_signature is Ed25519 over JCS(bundle minus bundle_signature). Verify against /.well-known/receipt-signing-key.json."
   },
 
   "principles": [

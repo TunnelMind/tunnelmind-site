@@ -128,6 +128,7 @@
   "discovery": {
     "agent_manifest":      "https://tunnelmind.ai/agent-manifest.json",
     "agent_onboarding":    "https://tunnelmind.ai/agent-onboarding.md",
+    "analyst_config":      "https://data.tunnelmind.ai/v1/config/analyst",
     "llms_txt":            "https://tunnelmind.ai/llms.txt",
     "robots_txt":          "https://tunnelmind.ai/robots.txt",
     "canary":              "https://tunnelmind.ai/canary.json",
@@ -136,6 +137,17 @@
     "receipt_signing_keys":"https://tunnelmind.ai/.well-known/receipt-signing-key.json",
     "receipt_revocations": "https://tunnelmind.ai/.well-known/receipt-revocations.json",
     "x402_discovery":      "https://tunnelmind.ai/.well-known/x402.json"
+  },
+
+  "byom_analyst_config": {
+    "summary": "Bring-your-own-model config bundle. Configures any LLM (Claude, GPT, Gemini, local) as a TunnelMind analyst. Customer brings the model + tokens; TunnelMind earns on data API calls.",
+    "rest_endpoint":   "https://data.tunnelmind.ai/v1/config/analyst",
+    "mcp_prompt_name": "tunnelmind_analyst",
+    "available_on_mcp": [
+      "https://mcp-data.tunnelmind.ai/mcp"
+    ],
+    "surfaces": ["data", "scry", "sigil"],
+    "formats":  ["anthropic", "openai", "generic"]
   },
 
   "transparency": {

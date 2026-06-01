@@ -95,8 +95,10 @@ Any endpoint that emits a verdict can wrap its response in a TunnelMind Receipt 
 ```bash
 curl -X POST 'https://data.tunnelmind.ai/v1/receipt/generate?receipt=true' \
   -H 'Content-Type: application/json' \
-  -d '{"event_type":"agent.action","payload":{"agent":"my-agent","verb":"egress","node":"8.8.8.8"}}'
+  -d '{"domains":["example.com","nytimes.com"]}'
 ```
+
+The endpoint takes a `{domains: [...]}` body and emits a signed surveillance receipt for that domain set. With `?receipt=true` the legacy response is wrapped in a v1.0 envelope; without the query the legacy unwrapped shape is returned for backward compat.
 
 Returns `Content-Type: application/tunnelmind-receipt+json`. Envelope:
 

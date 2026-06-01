@@ -175,5 +175,15 @@ ${ctaBottom}
 
 writeFileSync(outHtml, html, 'utf8')
 copyFileSync(srcMd, outMd)
+
+// Copy the example receipts referenced in §Appendix B. These are signed with
+// a doc-only ephemeral key (`receipt-example-…`) and verify against the §4
+// procedure independently — never expected to match the production key bundle.
+for (const f of ['receipt-example-scry.json', 'receipt-example-sigil.json']) {
+  const src = join(root, 'docs', 'receipt', f)
+  const dst = join(outDir, f)
+  copyFileSync(src, dst)
+  console.log(`wrote ${dst}`)
+}
 console.log(`wrote ${outHtml}`)
 console.log(`wrote ${outMd}`)

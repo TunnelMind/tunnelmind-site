@@ -55,7 +55,7 @@
       "url": "https://mcp-data.tunnelmind.ai/mcp",
       "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tool_count": 43,
+      "tool_count": 49,
       "summary": "All Data API operations exposed as MCP tools (auto-generated from openapi.yaml). Tracker / Sigil / Cross-lens — the union of every REST endpoint, including cross_lens_verify."
     },
     {
@@ -133,6 +133,7 @@
     "robots_txt":          "https://tunnelmind.ai/robots.txt",
     "canary":              "https://tunnelmind.ai/canary.json",
     "ai_services":         "https://tunnelmind.ai/.well-known/ai-services.json",
+    "mcp_index":           "https://tunnelmind.ai/.well-known/mcp.json",
     "atap_discovery":      "https://tunnelmind.ai/.well-known/atap.json",
     "receipt_signing_keys":"https://tunnelmind.ai/.well-known/receipt-signing-key.json",
     "receipt_revocations": "https://tunnelmind.ai/.well-known/receipt-revocations.json",

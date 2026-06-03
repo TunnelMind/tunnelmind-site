@@ -1,630 +1,423 @@
 import React, { useState } from 'react'
 
-// /api — post-pivot (P25 Phase 2). Documents the live attacker-corpus
-// API (scry-server v0.2.0 at api.tunnelmind.ai) and the MCP endpoint.
-// Endpoints + response shapes verified against the running service.
+// /api — the full TunnelMind surface catalog, for humans and agents.
+//
+// Two rails over one signed corpus:
+//   • REST   — two services: the Scry attacker corpus (api.tunnelmind.ai) and
+//              the Data API (data.tunnelmind.ai: Sigil supply graph, cross-lens
+//              verify, tracker signals, provenance, agent payment rail).
+//   • MCP    — three servers: Scry, Data, Sigil. Every Data API endpoint is also
+//              an MCP tool (1:1, generated from OpenAPI); Scry and Sigil expose
+//              curated subsets.
+//
+// Machine-legible mirrors of this page: data.tunnelmind.ai/openapi.yaml,
+// tunnelmind.ai/.well-known/mcp.json, /agent-manifest.json, /llms.txt,
+// /agent-onboarding.md. Endpoint blurbs here are sourced from those.
 
-const ENDPOINTS = [
+// ── Machine-legible discovery docs ───────────────────────────────────────────
+const DISCOVERY = [
+  { label: 'OpenAPI 3.1', url: 'https://data.tunnelmind.ai/openapi.yaml',
+    desc: 'Every Data API endpoint, machine-readable. The source of truth this page mirrors.' },
+  { label: 'MCP index', url: 'https://tunnelmind.ai/.well-known/mcp.json',
+    desc: 'All three MCP servers, tool counts, and default prompt surfaces in one card.' },
+  { label: 'agent-manifest.json', url: 'https://tunnelmind.ai/agent-manifest.json',
+    desc: 'Capabilities, endpoints, auth, and payment rails enumerated for autonomous agents.' },
+  { label: 'agent-onboarding.md', url: 'https://tunnelmind.ai/agent-onboarding.md',
+    desc: 'The 5-call golden path for an agent landing cold: preflight → verify → receipt.' },
+  { label: 'llms.txt', url: 'https://tunnelmind.ai/llms.txt',
+    desc: 'Plain-text site + API map for language models.' },
+]
+
+// ── MCP servers ──────────────────────────────────────────────────────────────
+const MCP_SERVERS = [
   {
-    name: 'Corpus API',
-    base: 'https://api.tunnelmind.ai',
-    tag: 'Live · Free tier',
-    tagColor: '--accent-green',
-    routes: [
-      {
-        method: 'GET',
-        path: '/v1/check/{ip}',
-        desc: 'Look up a single IP against the corpus. Returns category, confidence bucket, protocols and ports observed, ASN, country, and observation count.',
-        params: [
-          { name: 'ip', type: 'path', desc: 'IPv4 or IPv6 address to check' },
-        ],
-        example: 'GET https://api.tunnelmind.ai/v1/check/45.141.56.49',
-        response: `{
-  "ip": "45.141.56.49",
-  "status": "observed",
-  "category": "actor",
-  "confidence_bucket": "high",
-  "first_seen_ms": 1778288596802,
-  "last_seen_ms": 1778336268495,
-  "observation_count": 576,
-  "protocols": ["telnet"],
-  "ports": [23],
-  "asn": "213373",
-  "country": "AT"
-}`,
-      },
-      {
-        method: 'POST',
-        path: '/v1/check/bulk',
-        desc: 'Check up to 100 IPs in a single round trip — one request for a whole block list.',
-        params: [
-          { name: 'ips', type: 'string[]', desc: 'Array of IP addresses (max 100)' },
-        ],
-        example: `POST https://api.tunnelmind.ai/v1/check/bulk
-Content-Type: application/json
-
-{ "ips": ["45.141.56.49", "128.199.25.179"] }`,
-        response: `{
-  "results": [
-    { "ip": "45.141.56.49", "status": "observed",
-      "category": "actor", "confidence_bucket": "high" },
-    { "ip": "128.199.25.179", "status": "observed",
-      "category": "actor", "confidence_bucket": "high" }
-  ]
-}`,
-      },
-      {
-        method: 'GET',
-        path: '/v1/recent',
-        desc: 'Most recently observed hostile source IPs, newest first. Cursor-paginated via next_cursor_since_ms.',
-        params: [
-          { name: 'limit', type: 'integer', desc: 'Max results (default 50)' },
-          { name: 'since_ms', type: 'integer', desc: 'Cursor — only results after this timestamp' },
-        ],
-        example: "GET https://api.tunnelmind.ai/v1/recent?limit=50",
-        response: `{
-  "limit": 50,
-  "filters": { "include_noise": false },
-  "results": [
-    {
-      "source_ip": "128.199.25.179",
-      "category": "actor",
-      "confidence_bucket": "high",
-      "observations": 51,
-      "asn": null,
-      "country": null
-    }
-  ],
-  "next_cursor_since_ms": 1778995391971
-}`,
-      },
-      {
-        method: 'GET',
-        path: '/v1/campaigns',
-        desc: 'Coordinated clusters of actors sharing a payload signature across multiple networks. Active campaigns by default.',
-        params: [
-          { name: 'limit', type: 'integer', desc: 'Max results (default 50)' },
-          { name: 'include_inactive', type: 'boolean', desc: 'Include campaigns no longer active' },
-        ],
-        example: 'GET https://api.tunnelmind.ai/v1/campaigns',
-        response: `{
-  "include_inactive": false,
-  "results": [
-    {
-      "id": "c87eaae90aa8a6e9",
-      "protocol": "telnet",
-      "payload_sha256_prefix": "0693621d03183c49",
-      "member_actor_count": 2327,
-      "confidence_bucket": "low",
-      "active": true
-    }
-  ]
-}`,
-      },
-      {
-        method: 'GET',
-        path: '/v1/tools',
-        desc: 'Distinct attacker tools, identified as clusters of actors that share a payload pattern. Drill into one with /v1/tool/{id}.',
-        params: [
-          { name: 'protocol', type: 'string', desc: 'Filter by protocol (telnet, ssh, http…)' },
-          { name: 'limit', type: 'integer', desc: 'Max results (default 50)' },
-        ],
-        example: 'GET https://api.tunnelmind.ai/v1/tools',
-        response: `{
-  "results": [
-    {
-      "id": "87eaae90aa8a6e9e",
-      "protocol": "telnet",
-      "actor_count": 2896,
-      "payload_sha256_prefix": "0693621d03183c49",
-      "first_seen_ms": 1778288596802,
-      "last_seen_ms": 1778994731943
-    }
-  ]
-}`,
-      },
-      {
-        method: 'GET',
-        path: '/v1/stats',
-        desc: 'Corpus totals — total observations, distinct source IPs, last-24h volume, and the protocol breakdown. /v1/stats/timeseries returns the same broken out over time.',
-        params: [],
-        example: 'GET https://api.tunnelmind.ai/v1/stats',
-        response: `{
-  "total_observations": 253692,
-  "distinct_source_ips": 10191,
-  "observations_last_24h": 25306,
-  "distinct_source_ips_last_24h": 1653,
-  "by_protocol": {
-    "telnet": 180611,
-    "http": 23260,
-    "https": 15253,
-    "ssh": 14751
-  }
-}`,
-      },
-      {
-        method: 'GET',
-        path: '/v1/asn/{asn}  ·  /v1/country/{cc}  ·  /v1/top',
-        desc: 'Slice the corpus by network or geography: all observed actors in an ASN, in a country (ISO 3166-1 alpha-2), or the top actors overall by observation count.',
-        params: [
-          { name: 'asn', type: 'path', desc: 'Autonomous System Number, e.g. 213373' },
-          { name: 'cc', type: 'path', desc: 'Two-letter country code, e.g. AT' },
-        ],
-        example: 'GET https://api.tunnelmind.ai/v1/country/AT',
-        response: `{
-  "country": "AT",
-  "results": [
-    { "source_ip": "45.141.56.49", "category": "actor",
-      "confidence_bucket": "high", "observations": 576 }
-  ]
-}`,
-      },
+    name: 'Scry MCP',
+    host: 'mcp.tunnelmind.ai',
+    registry: 'ai.tunnelmind/scry',
+    count: 12,
+    blurb: 'The attacker corpus as callable tools — who is hostile on the open internet, observed first-hand by the sensor fleet.',
+    tools: [
+      ['scry_check', 'Corpus knowledge for one IPv4 — first/last seen, category, actor class, ASN, ports.'],
+      ['scry_check_bulk', 'Look up to 100 IPs in one call; same per-IP shape as scry_check.'],
+      ['scry_recent', 'Recent observations feed, aggregated by source IP within a window. Cursor-paginated.'],
+      ['scry_top', 'Top-N source dimensions over a window — where is the activity right now.'],
+      ['scry_timeseries', 'Bucketed observation counts over time — detect bursts and trends.'],
+      ['scry_asn', 'Corpus roll-up for one ASN — observation count, distinct IPs, actor mix.'],
+      ['scry_country', 'Corpus roll-up by ISO country code.'],
+      ['scry_tools', 'Detected attack tools — (protocol, payload, path) tuples from 3+ distinct sources.'],
+      ['scry_tool', 'Single attack-tool detail by id.'],
+      ['scry_campaigns', 'Active threat campaigns — coordinated attacker activity above the noise floor.'],
+      ['scry_campaign', 'Single campaign detail by id.'],
+      ['scry_stats', 'Aggregate corpus telemetry — totals, distinct sources, protocol breakdown.'],
     ],
   },
   {
-    name: 'MCP — agent-native access',
-    base: 'https://mcp.tunnelmind.ai',
-    tag: 'Live · Free',
-    tagColor: '--accent-cyan',
-    routes: [
-      {
-        method: 'POST',
-        path: '/mcp',
-        desc: 'The Model Context Protocol endpoint — JSON-RPC 2.0 over streamable HTTP. Point any MCP-capable agent at it and the corpus becomes a callable tool. Start with tools/list to discover what is available.',
-        params: [
-          { name: 'jsonrpc', type: 'string', desc: 'Protocol version — always "2.0"' },
-          { name: 'method', type: 'string', desc: 'JSON-RPC method, e.g. tools/list or tools/call' },
-          { name: 'id', type: 'integer', desc: 'Request identifier echoed in the response' },
-        ],
-        example: `POST https://mcp.tunnelmind.ai/mcp
-Content-Type: application/json
-
-{ "jsonrpc": "2.0", "id": 1, "method": "tools/list" }`,
-        response: `{
-  "jsonrpc": "2.0",
-  "id": 1,
-  "result": {
-    "tools": [
-      { "name": "check_ip", "description": "Look up an IP in the corpus" },
-      { "name": "recent_actors", "description": "Recently observed attackers" }
-    ]
-  }
-}`,
-      },
+    name: 'Data MCP',
+    host: 'mcp-data.tunnelmind.ai',
+    registry: 'ai.tunnelmind/data',
+    count: 54,
+    blurb: 'The full Data API as tools. Every REST endpoint below is also an MCP tool, generated 1:1 from OpenAPI. Flagship decision tools highlighted; call tools/list for the complete set.',
+    mirror: true,
+    tools: [
+      ['cross_lens_verify', 'A2 — fused Scry × Sigil verdict for a node, now carrying its adversary_class.'],
+      ['preflight_should_i_act', 'The single call an agent makes before transacting — allow / caution / deny + signed receipt.'],
+      ['profile_entity', 'Cross-lens fused profile (Scry × Sigil × Tracker) + confidence + signed receipt.'],
+      ['cross_lens_lookup', 'All three lens views for a node, no fusion — the raw join.'],
+      ['sigil_traverse', 'Walk a publisher\'s supply graph — itemized, classified sell paths.'],
+      ['signal_dark_pool_risk', 'Two-sided opacity of a publisher\'s declared supply chain.'],
+      ['signal_tracker_density', 'Footprint of one tracker entity across the surveillance supply graph.'],
+      ['signal_halo_score', 'Peer-reputation halo from an entity\'s supply-graph neighbours.'],
+      ['signal_team_signal', 'Coordinated-operation detection via shared identifiers.'],
+      ['get_analyst_config', 'BYOM bundle — configure any LLM as a TunnelMind analyst (bring your own tokens).'],
+      ['x402_echo', 'Validate an agent\'s x402 payment-rail client implementation.'],
+    ],
+  },
+  {
+    name: 'Sigil MCP',
+    host: 'mcp.sigil.tunnelmind.ai',
+    registry: 'ai.tunnelmind/sigil',
+    count: 12,
+    blurb: 'The ad supply-chain trust surface for media-buying agents — verify a path, score an entity, attest the buy.',
+    tools: [
+      ['cross_lens_verify', 'Fuse Scry + Sigil into one verdict on a node (with adversary_class).'],
+      ['sigil_verify_supply_path', 'The core pre-bid check — compose ads.txt, IP, fraud, and bundle into one trust verdict + signed token.'],
+      ['sigil_verify_supply_chain', 'Verify a full OpenRTB SupplyChain (schain) object, node by node.'],
+      ['traverse_supply_chain', 'Reconstruct a publisher\'s sell paths from the graph — itemized and classified.'],
+      ['sigil_verify_ads_txt', 'Is this exchange authorized to sell this publisher\'s inventory?'],
+      ['sigil_verify_ip_type', 'Classify an IP as datacenter / residential / mobile — the CTV-fraud signal.'],
+      ['sigil_verify_app_bundle', 'Does this app bundle ID actually exist in its store?'],
+      ['sigil_score_entity', 'Pre-computed 0–1 trust score for one supply-chain entity.'],
+      ['sigil_score_batch', 'Trust scores for up to 200 entities in one round-trip.'],
+      ['sigil_atap_register_ait', 'Register an ATAP Agent Identity Token for a media-buying agent.'],
+      ['sigil_atap_witness', 'Witness one agent-reported bid/budget event onto a hash-chained AIT.'],
+      ['sigil_generate_receipt', 'Generate the ATAP compliance Receipt for an AIT — portable, signed.'],
     ],
   },
 ]
 
-function CodeBlock({ children }) {
-  const [copied, setCopied] = useState(false)
-  function copy() {
-    navigator.clipboard.writeText(children).then(() => {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 1500)
-    })
-  }
+// ── REST: Scry attacker corpus (api.tunnelmind.ai) ───────────────────────────
+const SCRY_GROUPS = [
+  {
+    name: 'Lookup',
+    endpoints: [
+      ['GET', '/v1/check/{ip}', 'Look up one IP — category, confidence, protocols/ports, ASN, country, observation count.'],
+      ['POST', '/v1/check/bulk', 'Check up to 100 IPs in one round trip — a whole block list at once.'],
+      ['GET', '/v1/recent', 'Most recently observed hostile source IPs, newest first. Cursor-paginated.'],
+    ],
+  },
+  {
+    name: 'Threat structure',
+    endpoints: [
+      ['GET', '/v1/campaigns', 'Coordinated clusters of actors sharing a payload signature across networks.'],
+      ['GET', '/v1/tools', 'Distinct attacker tools — actor clusters sharing a payload pattern.'],
+    ],
+  },
+  {
+    name: 'Slices & totals',
+    endpoints: [
+      ['GET', '/v1/asn/{asn} · /v1/country/{cc} · /v1/top', 'Slice the corpus by network, geography, or overall volume.'],
+      ['GET', '/v1/stats · /v1/stats/timeseries', 'Corpus totals and the same broken out over time.'],
+    ],
+  },
+]
+
+// ── REST: Data API (data.tunnelmind.ai) ──────────────────────────────────────
+const DATA_GROUPS = [
+  {
+    name: 'Cross-lens & agent decisions',
+    desc: 'The moat: one verdict over both lenses, plus the calls an agent makes before it acts.',
+    endpoints: [
+      ['POST', '/v1/verify/{node}', 'Fused Scry × Sigil verdict for an IP, domain, ASN, or entity — now naming the adversary_class behind it (human_hacker / rogue_agent / surveillance_bigtech / clean).'],
+      ['POST', '/v1/preflight', 'Agent-facing "should I act?" consultation — allow / caution / deny + a signed consultation receipt.'],
+      ['POST', '/v1/profile', 'Cross-lens fused profile (Scry × Sigil × Tracker) + confidence + signed receipt.'],
+      ['GET', '/v1/entity/{node}', 'Fan-out lookup of a node across all three lenses — no fusion, the raw join.'],
+    ],
+  },
+  {
+    name: 'Sigil — ad supply-chain verification',
+    desc: 'Is this programmatic ad supply genuine? ads.txt, sellers.json, schain, datacenter IP, app bundle.',
+    endpoints: [
+      ['POST', '/v1/sigil/verify/supply_path', 'The core pre-bid call — composes ads.txt, datacenter-IP, fraud, and bundle into one trust verdict + signed token.'],
+      ['POST', '/v1/sigil/verify/supply_chain', 'Verify an OpenRTB SupplyChain (schain) object you bring — per-node and aggregate.'],
+      ['GET', '/v1/sigil/traverse', 'Walk a publisher\'s supply graph from our own crawl — itemized, classified sell paths + downstream resellers.'],
+      ['POST', '/v1/sigil/verify/ads_txt', 'Is an exchange authorized to sell a publisher\'s inventory, per ads.txt?'],
+      ['POST', '/v1/sigil/verify/ads_txt/batch', 'Batch ads.txt verification — up to 100 in one call.'],
+      ['GET', '/v1/sigil/verify/domain', 'Verify publisher domain ownership via a DNS TXT record.'],
+      ['GET', '/v1/sigil/verify/ip_type', 'Classify an IP as datacenter / residential / mobile — the CTV-fraud signal.'],
+      ['GET', '/v1/sigil/verify/adscert', 'Does a domain publish ads.cert DNS records?'],
+      ['POST', '/v1/sigil/verify/app_bundle', 'Verify a mobile/CTV app bundle ID exists in its store.'],
+      ['GET', '/v1/sigil/verify/token/{token}', 'Verify a sigil_token issued by a supply-path check.'],
+      ['GET', '/v1/sigil/score/{entity_id}', 'Pre-computed 0–1 trust score for one supply-chain entity.'],
+      ['POST', '/v1/sigil/score/batch', 'Trust scores for up to 200 entities in one call.'],
+      ['GET', '/v1/sigil/score/weights', 'The published, versioned default trust-score weights.'],
+      ['GET', '/v1/sigil/publisher/{domain}/ads_txt/history', 'A publisher\'s ads.txt change log — one entry per crawl with changes.'],
+    ],
+  },
+  {
+    name: 'Sigil — ATAP attestation',
+    desc: 'Agentic Trust & Attestation Protocol: a hash-chained, signed record of what a buying agent did.',
+    endpoints: [
+      ['POST', '/v1/sigil/atap/ait', 'Register an ATAP Agent Identity Token.'],
+      ['POST', '/v1/sigil/atap/witness', 'Witness an agent-reported bid or budget event onto the chain.'],
+      ['POST', '/v1/sigil/atap/block', 'Roll pending events into a signed Attestation Block.'],
+      ['GET', '/v1/sigil/atap/ait/{id}', 'AIT status and chain summary.'],
+      ['POST', '/v1/sigil/receipt/generate', 'Generate an ATAP compliance Receipt ZIP for an AIT.'],
+    ],
+  },
+  {
+    name: 'Adversary & tracker signals',
+    desc: 'Read-only signals over the surveillance supply graph — the building blocks of adversary classification.',
+    endpoints: [
+      ['GET', '/v1/signals/dark-pool-risk/{domain}', 'Two-sided opacity of a publisher\'s declared supply chain (ads.txt × sellers.json).'],
+      ['GET', '/v1/signals/tracker-density/{entity_slug}', 'How much of the surveillance supply graph one entity occupies.'],
+      ['GET', '/v1/signals/halo-score/{entity_slug}', 'Reputation an entity inherits from its supply-graph neighbours.'],
+      ['GET', '/v1/signals/team-signal/{entity_slug}', 'Coordinated-operation detection via shared seller identifiers.'],
+    ],
+  },
+  {
+    name: 'Tracker data',
+    desc: 'The normalized surveillance graph: who tracks whom, across domains and corporate entities.',
+    endpoints: [
+      ['GET', '/v1/domains/{domain}', 'Full surveillance tracker record for a domain.'],
+      ['GET', '/v1/domains', 'List tracker domains, filterable by category and minimum risk.'],
+      ['GET', '/v1/entities/{slug}', 'Full surveillance profile for a corporate entity and its domains.'],
+      ['GET', '/v1/entities', 'List surveillance entities, filterable by industry.'],
+      ['GET', '/v1/search', 'Full-text search across tracker domains and entities.'],
+    ],
+  },
+  {
+    name: 'Domain intelligence',
+    desc: 'Live probes of a destination\'s public surface — what it runs, who it lets in, how it treats agents.',
+    endpoints: [
+      ['GET', '/v1/intel/http', 'HTTP headers, redirect chain, and security posture.'],
+      ['GET', '/v1/intel/stack', 'Technology stack — CMS, framework, CDN, analytics.'],
+      ['GET', '/v1/intel/robots', 'robots.txt parsed, with AI-crawler policy detection.'],
+      ['GET', '/v1/intel/agent', 'The AI-agent surface a domain exposes — llms.txt, MCP, OpenAPI, plugins.'],
+      ['GET', '/v1/intel/inject', 'Scan a domain\'s public surface for prompt-injection signals.'],
+      ['GET', '/v1/intel/optout', 'AI-training opt-out signals — TDM, noai, license.'],
+    ],
+  },
+  {
+    name: 'Provenance — receipts & certificates',
+    desc: 'Signed, verifiable artifacts: surveillance receipts, jurisdiction certs, and the BYOM analyst config.',
+    endpoints: [
+      ['POST', '/v1/receipt/generate', 'Generate a signed surveillance receipt for a list of domains.'],
+      ['GET', '/v1/receipt/revoked', 'Check whether a receipt signing key or individual receipt is revoked.'],
+      ['POST', '/verify', 'Verify a surveillance receipt\'s integrity by hash + signature.'],
+      ['GET', '/verify/{receipt_id}', 'Look up a receipt by ID in the public registry.'],
+      ['POST', '/v1/ghostroute/generate', 'Generate a GhostRoute jurisdiction certificate for a domain.'],
+      ['POST', '/ghostroute/verify', 'Verify a GhostRoute jurisdiction certificate.'],
+      ['GET', '/v1/config/analyst', 'BYOM analyst config bundle — system prompt + tool subset + response schema, signed.'],
+      ['GET', '/v1/audit/export', 'Export signed, hash-chained audit log entries scoped to the caller.'],
+    ],
+  },
+  {
+    name: 'Agent payment rail',
+    desc: 'x402 micropayments — how an autonomous agent pays for a metered call and verifies the receipt.',
+    endpoints: [
+      ['POST', '/v1/x402/echo', 'x402 demo — 402 challenge → X-PAYMENT retry → echo with settlement header.'],
+    ],
+  },
+  {
+    name: 'Keys, tasks & status',
+    desc: 'Self-serve key management, async task polling, and liveness.',
+    endpoints: [
+      ['GET', '/v1/keys/me', 'Metadata + today\'s usage for the authenticated API key.'],
+      ['DELETE', '/v1/keys/me', 'Permanently revoke the authenticated key.'],
+      ['GET', '/v1/tasks/{task_id}', 'Poll an async background task.'],
+      ['GET', '/v1/tasks/{task_id}/stream', 'Stream task progress over Server-Sent Events.'],
+      ['POST', '/v1/tasks/{task_id}/cancel', 'Cancel a pending or running task.'],
+      ['GET', '/v1/health', 'Liveness check.'],
+    ],
+  },
+]
+
+// ── Shared bits ──────────────────────────────────────────────────────────────
+function MethodBadge({ method }) {
+  const colors = { GET: '--accent-green', POST: '--accent-blue', DELETE: '--accent-red' }
+  const c = `var(${colors[method] || '--chrome-border'})`
   return (
-    <div style={{ position: 'relative' }}>
-      <pre style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '11px',
-        lineHeight: '1.6',
-        color: 'var(--accent-green)',
-        background: 'var(--chrome-bg)',
-        border: '1px solid var(--chrome-border)',
-        borderRadius: '3px',
-        padding: '12px 14px',
-        overflowX: 'auto',
-        margin: 0,
-        whiteSpace: 'pre',
-      }}>
-        {children}
-      </pre>
-      <button
-        onClick={copy}
-        style={{
-          position: 'absolute',
-          top: '6px',
-          right: '6px',
-          padding: '2px 7px',
-          background: 'var(--chrome-bg2)',
-          border: '1px solid var(--chrome-border)',
-          borderRadius: '2px',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '8px',
-          color: copied ? 'var(--accent-green)' : 'var(--chrome-text-dim)',
-          cursor: 'pointer',
-        }}
-      >
-        {copied ? 'copied' : 'copy'}
-      </button>
+    <span style={{
+      fontFamily: 'var(--font-mono)', fontSize: '9px', fontWeight: 700, color: c,
+      border: `1px solid ${c}`, borderRadius: '2px', padding: '2px 6px',
+      flexShrink: 0, minWidth: '46px', textAlign: 'center',
+    }}>{method}</span>
+  )
+}
+
+function EndpointRow({ row }) {
+  const [method, path, desc] = row
+  return (
+    <div style={{
+      display: 'flex', gap: '12px', alignItems: 'baseline',
+      padding: '11px 0', borderBottom: '1px solid var(--chrome-border)',
+    }}>
+      <MethodBadge method={method} />
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <code style={{
+          fontFamily: 'var(--font-mono)', fontSize: '12px',
+          color: 'var(--chrome-text-bright)', wordBreak: 'break-all',
+        }}>{path}</code>
+        <p style={{
+          fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.5',
+          color: 'var(--doc-text-dim)', margin: '4px 0 0 0',
+        }}>{desc}</p>
+      </div>
     </div>
   )
 }
 
-function MethodBadge({ method }) {
-  const colors = {
-    GET: 'var(--accent-green)',
-    POST: 'var(--accent-blue)',
-    DELETE: 'var(--accent-red)',
-  }
+function ToolRow({ tool }) {
+  const [name, desc] = tool
   return (
-    <span style={{
-      fontFamily: 'var(--font-mono)',
-      fontSize: '9px',
-      fontWeight: 700,
-      color: colors[method] || 'var(--chrome-text)',
-      border: `1px solid ${colors[method] || 'var(--chrome-border)'}`,
-      borderRadius: '2px',
-      padding: '2px 6px',
-      flexShrink: 0,
-    }}>
-      {method}
-    </span>
+    <div style={{ padding: '9px 0', borderBottom: '1px solid var(--chrome-border)' }}>
+      <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-cyan)' }}>{name}</code>
+      <span style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', color: 'var(--doc-text-dim)', marginLeft: '8px' }}>{desc}</span>
+    </div>
   )
 }
 
-function RouteSection({ route }) {
-  const [open, setOpen] = useState(false)
+function Collapsible({ title, badge, badgeColor, subtitle, link, defaultOpen, children }) {
+  const [open, setOpen] = useState(!!defaultOpen)
   return (
-    <div style={{
-      border: '1px solid var(--chrome-border)',
-      borderRadius: '3px',
-      overflow: 'hidden',
-    }}>
-      <div
-        onClick={() => setOpen(o => !o)}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '12px 16px',
-          background: open ? 'var(--doc-paper)' : 'var(--chrome-bg2)',
-          cursor: 'pointer',
-          transition: 'background var(--transition)',
-        }}
-      >
-        <MethodBadge method={route.method} />
-        <code style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '12px',
-          color: 'var(--chrome-text-bright)',
-          flex: 1,
-          minWidth: 0,
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        }}>
-          {route.path}
-        </code>
-        <span style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '10px',
-          color: 'var(--chrome-text-dim)',
-          flexShrink: 0,
-        }}>
-          {open ? '▲' : '▼'}
-        </span>
+    <div style={{ border: '1px solid var(--chrome-border)', borderRadius: '3px', overflow: 'hidden', marginBottom: '10px' }}>
+      <div onClick={() => setOpen(o => !o)} style={{
+        display: 'flex', alignItems: 'center', gap: '10px', padding: '13px 16px',
+        background: open ? 'var(--doc-paper)' : 'var(--chrome-bg2)', cursor: 'pointer',
+        transition: 'background var(--transition)', flexWrap: 'wrap',
+      }}>
+        <h3 style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--chrome-text-bright)', margin: 0 }}>{title}</h3>
+        {badge != null && (
+          <span style={{
+            fontFamily: 'var(--font-mono)', fontSize: '8px', color: `var(${badgeColor || '--accent-green'})`,
+            border: `1px solid var(${badgeColor || '--accent-green'})`, borderRadius: '2px', padding: '1px 5px',
+          }}>{badge}</span>
+        )}
+        {subtitle && <span style={{ fontFamily: 'var(--font-serif)', fontSize: '12px', color: 'var(--doc-text-dim)', flex: 1, minWidth: 0 }}>{subtitle}</span>}
+        <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)', marginLeft: 'auto' }}>{open ? '▲' : '▼'}</span>
       </div>
-
       {open && (
-        <div style={{
-          padding: '20px',
-          borderTop: '1px solid var(--chrome-border)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px',
-          background: 'var(--doc-bg)',
-        }}>
-          <p style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '14px',
-            lineHeight: '1.65',
-            color: 'var(--doc-text)',
-            margin: 0,
-          }}>
-            {route.desc}
-          </p>
-
-          {route.params && route.params.length > 0 && (
-            <div>
-              <div style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '9px',
-                color: 'var(--chrome-text-dim)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-                marginBottom: '8px',
-              }}>
-                Parameters
-              </div>
-              <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                <tbody>
-                  {route.params.map(p => (
-                    <tr key={p.name} style={{ borderBottom: '1px solid var(--chrome-border)' }}>
-                      <td style={{
-                        padding: '7px 12px 7px 0',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '11px',
-                        color: 'var(--accent-amber)',
-                        whiteSpace: 'nowrap',
-                        verticalAlign: 'top',
-                        width: '1%',
-                      }}>
-                        {p.name}
-                      </td>
-                      <td style={{
-                        padding: '7px 12px',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '9px',
-                        color: 'var(--chrome-text-dim)',
-                        whiteSpace: 'nowrap',
-                        verticalAlign: 'top',
-                        width: '1%',
-                      }}>
-                        {p.type}
-                      </td>
-                      <td style={{
-                        padding: '7px 0 7px 0',
-                        fontFamily: 'var(--font-serif)',
-                        fontSize: '13px',
-                        color: 'var(--doc-text-dim)',
-                        verticalAlign: 'top',
-                      }}>
-                        {p.desc}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+        <div style={{ padding: '8px 18px 16px', borderTop: '1px solid var(--chrome-border)', background: 'var(--doc-bg)' }}>
+          {link && (
+            <a href={link} target="_blank" rel="noopener noreferrer" style={{
+              fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--accent-blue)', textDecoration: 'none',
+              display: 'inline-block', margin: '8px 0 4px',
+            }}>{link.replace('https://', '')} ↗</a>
           )}
-
-          <div>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              marginBottom: '8px',
-            }}>
-              Example request
-            </div>
-            <CodeBlock>{route.example}</CodeBlock>
-          </div>
-
-          <div>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              marginBottom: '8px',
-            }}>
-              Example response
-            </div>
-            <CodeBlock>{route.response}</CodeBlock>
-          </div>
+          {children}
         </div>
       )}
     </div>
   )
 }
 
+function SectionTitle({ eyebrow, children }) {
+  return (
+    <>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', letterSpacing: '0.16em', textTransform: 'uppercase', margin: '44px 0 10px' }}>{eyebrow}</div>
+      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 400, color: 'var(--chrome-text-bright)', margin: '0 0 18px' }}>{children}</h2>
+    </>
+  )
+}
+
 export default function Api({ onNavigate }) {
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
-      <div style={{ maxWidth: '860px', margin: '0 auto', padding: 'clamp(32px, 6vw, 56px) clamp(16px, 4vw, 32px)' }}>
+      <div style={{ maxWidth: '880px', margin: '0 auto', padding: 'clamp(32px, 6vw, 56px) clamp(16px, 4vw, 32px)' }}>
 
         {/* Header */}
-        <div style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '9px',
-          color: 'var(--accent-green)',
-          letterSpacing: '0.16em',
-          textTransform: 'uppercase',
-          marginBottom: '12px',
-        }}>
-          ● Developer API
-        </div>
-        <h1 style={{
-          fontFamily: 'var(--font-serif)',
-          fontSize: 'clamp(22px, 4vw, 32px)',
-          fontWeight: 400,
-          color: 'var(--chrome-text-bright)',
-          marginBottom: '10px',
-        }}>
-          Build on the attacker corpus.
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '12px' }}>● APIs &amp; MCP</div>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 400, color: 'var(--chrome-text-bright)', marginBottom: '10px' }}>
+          The whole surface — for humans and agents.
         </h1>
-        <p style={{
-          fontFamily: 'var(--font-serif)',
-          fontSize: '15px',
-          lineHeight: '1.7',
-          color: 'var(--doc-text-dim)',
-          marginBottom: '40px',
-          maxWidth: '600px',
-        }}>
-          REST over the same signed corpus the radar draws — real source IPs,
-          campaigns, attacker tools, and rolling stats. JSON in, JSON out, CORS
-          open. The MCP endpoint exposes the identical corpus to AI agents.
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '28px', maxWidth: '640px' }}>
+          One signed corpus, two rails. <strong style={{ color: 'var(--chrome-text)' }}>REST</strong> over
+          the Scry attacker corpus and the Data API; <strong style={{ color: 'var(--chrome-text)' }}>MCP</strong> for
+          agents — every Data API endpoint is also a tool. JSON in, JSON out, CORS open. The free tier needs no key.
         </p>
 
-        {/* Auth + rate limits */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '12px',
-          marginBottom: '40px',
-        }}>
-          <div style={{
-            padding: '18px 20px',
-            background: 'var(--chrome-bg2)',
-            border: '1px solid var(--chrome-border)',
-            borderLeft: '3px solid var(--accent-green)',
-            borderRadius: '4px',
-          }}>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--accent-green)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              marginBottom: '8px',
-            }}>
-              Authentication
+        {/* Machine-legible discovery */}
+        <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-cyan)', borderRadius: '4px', marginBottom: '8px' }}>
+          <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Machine-legible · start here if you are an agent</div>
+          {DISCOVERY.map(d => (
+            <div key={d.url} style={{ marginBottom: '10px' }}>
+              <a href={d.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-blue)', textDecoration: 'none' }}>{d.label} ↗</a>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', color: 'var(--doc-text-dim)', marginLeft: '8px' }}>{d.desc}</span>
             </div>
-            <p style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '13px',
-              lineHeight: '1.6',
-              color: 'var(--doc-text-dim)',
-              margin: 0,
-            }}>
-              No key needed for the free tier — call it straight from the
-              browser. Pass{' '}
-              <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>
-                Authorization: Bearer &lt;key&gt;
-              </code>{' '}
-              on the defender tier for unmetered access.
-            </p>
-          </div>
-
-          <div style={{
-            padding: '18px 20px',
-            background: 'var(--chrome-bg2)',
-            border: '1px solid var(--chrome-border)',
-            borderLeft: '3px solid var(--accent-amber)',
-            borderRadius: '4px',
-          }}>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--accent-amber)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              marginBottom: '8px',
-            }}>
-              Rate limits
-            </div>
-            <p style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '13px',
-              lineHeight: '1.6',
-              color: 'var(--doc-text-dim)',
-              margin: 0,
-            }}>
-              <strong style={{ color: 'var(--chrome-text-bright)' }}>Free:</strong> per-IP limit,
-              plenty for evaluation and light use.{' '}
-              <strong style={{ color: 'var(--chrome-text-bright)' }}>Defender:</strong> unmetered —{' '}
-              <span
-                onClick={() => onNavigate && onNavigate('pricing')}
-                style={{ color: 'var(--accent-blue)', cursor: 'pointer', textDecoration: 'underline' }}
-              >
-                see pricing
-              </span>.
-            </p>
-          </div>
+          ))}
         </div>
 
-        {/* Endpoint groups */}
-        {ENDPOINTS.map(group => (
-          <section key={group.name} style={{ marginBottom: '40px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px', flexWrap: 'wrap' }}>
-              <h2 style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '12px',
-                fontWeight: 600,
-                color: 'var(--chrome-text-bright)',
-                margin: 0,
-              }}>
-                {group.name}
-              </h2>
-              <span style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '8px',
-                color: `var(${group.tagColor})`,
-                border: `1px solid var(${group.tagColor})`,
-                borderRadius: '2px',
-                padding: '1px 5px',
-                opacity: 0.85,
-              }}>
-                {group.tag}
-              </span>
-              <a
-                href={group.base}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '9px',
-                  color: 'var(--accent-blue)',
-                  textDecoration: 'none',
-                  marginLeft: 'auto',
-                }}
-              >
-                {group.base.replace('https://', '')} ↗
-              </a>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {group.routes.map(route => (
-                <RouteSection key={route.path} route={route} />
-              ))}
-            </div>
-          </section>
+        {/* MCP servers */}
+        <SectionTitle eyebrow="MCP · agent-native">Three MCP servers</SectionTitle>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
+          JSON-RPC 2.0 over streamable HTTP. Point any MCP-capable agent at a server and call <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent-amber)' }}>tools/list</code> to discover what is available. All three are in the public MCP registry.
+        </p>
+        {MCP_SERVERS.map(s => (
+          <Collapsible
+            key={s.host}
+            title={s.name}
+            badge={`${s.count} tools · ${s.registry}`}
+            badgeColor="--accent-cyan"
+            subtitle={s.host}
+            link={`https://${s.host}`}
+          >
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text)', margin: '8px 0 12px' }}>{s.blurb}</p>
+            {s.mirror && (
+              <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)', margin: '0 0 10px' }}>
+                ↳ all {s.count} tools mirror the Data API endpoints below, 1:1. Highlights:
+              </p>
+            )}
+            <div>{s.tools.map(t => <ToolRow key={t[0]} tool={t} />)}</div>
+          </Collapsible>
         ))}
 
-        {/* CTA */}
-        <div style={{
-          padding: '24px',
-          background: 'var(--chrome-bg2)',
-          border: '1px solid var(--chrome-border)',
-          borderRadius: '4px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-          flexWrap: 'wrap',
-        }}>
-          <div>
-            <div style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '9px',
-              color: 'var(--chrome-text-dim)',
-              textTransform: 'uppercase',
-              letterSpacing: '0.1em',
-              marginBottom: '6px',
-            }}>
-              Running at scale?
-            </div>
-            <p style={{
-              fontFamily: 'var(--font-serif)',
-              fontSize: '13px',
-              color: 'var(--doc-text-dim)',
-              margin: 0,
-            }}>
-              The defender tier removes the rate limit and unlocks full campaign
-              membership and payload signatures.
+        {/* REST: Scry corpus */}
+        <SectionTitle eyebrow="REST · attacker corpus">Scry API — api.tunnelmind.ai</SectionTitle>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
+          The signed corpus the radar draws — real source IPs, campaigns, attacker tools, and rolling stats, observed first-hand by the sensor fleet.
+        </p>
+        {SCRY_GROUPS.map(g => (
+          <Collapsible key={g.name} title={g.name} defaultOpen>
+            {g.endpoints.map(e => <EndpointRow key={e[1]} row={e} />)}
+          </Collapsible>
+        ))}
+
+        {/* REST: Data API */}
+        <SectionTitle eyebrow="REST · the agentic surface">Data API — data.tunnelmind.ai</SectionTitle>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
+          The cross-lens moat, the Sigil supply graph, tracker signals, provenance, and the agent payment rail. Every endpoint here is also an MCP tool on <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent-amber)' }}>mcp-data.tunnelmind.ai</code>.
+        </p>
+        {DATA_GROUPS.map(g => (
+          <Collapsible key={g.name} title={g.name} badge={`${g.endpoints.length}`} subtitle={g.desc} defaultOpen={g.name === 'Cross-lens & agent decisions'}>
+            {g.endpoints.map(e => <EndpointRow key={e[1]} row={e} />)}
+          </Collapsible>
+        ))}
+
+        {/* Auth + pricing */}
+        <SectionTitle eyebrow="Access">Auth, limits &amp; payment</SectionTitle>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', marginBottom: '40px' }}>
+          <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-green)', borderRadius: '4px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Authentication</div>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
+              No key needed for the free tier — call it straight from the browser or an agent. Pass{' '}
+              <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>Authorization: Bearer &lt;key&gt;</code>{' '}for a paid tier.
             </p>
           </div>
-          <button
-            onClick={() => onNavigate && onNavigate('pricing')}
-            style={{
-              padding: '8px 18px',
-              background: 'transparent',
-              border: '1px solid var(--chrome-border)',
-              borderRadius: '3px',
-              fontFamily: 'var(--font-mono)',
-              fontSize: '10px',
-              color: 'var(--chrome-text)',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-              flexShrink: 0,
-            }}
-          >
-            See pricing →
-          </button>
+          <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-amber)', borderRadius: '4px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-amber)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Rate limits</div>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
+              Per-IP on the free tier — every response carries{' '}
+              <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>X-RateLimit-*</code>{' '}headers so agents back off cleanly.
+            </p>
+          </div>
+          <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-blue)', borderRadius: '4px' }}>
+            <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-blue)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Payment</div>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
+              Identifier resolution is free, forever. Metered calls: a $20 prepaid block (Stripe, for humans) or{' '}
+              <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>x402</code>{' '}USDC on Base (for agents).{' '}
+              <span onClick={() => onNavigate && onNavigate('pricing')} style={{ color: 'var(--accent-blue)', cursor: 'pointer', textDecoration: 'underline' }}>See pricing</span>.
+            </p>
+          </div>
         </div>
 
       </div>

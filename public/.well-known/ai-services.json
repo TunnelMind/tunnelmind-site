@@ -55,8 +55,8 @@
       "url": "https://mcp-data.tunnelmind.ai/mcp",
       "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tool_count": 49,
-      "summary": "All Data API operations exposed as MCP tools (auto-generated from openapi.yaml). Tracker / Sigil / Cross-lens — the union of every REST endpoint, including cross_lens_verify."
+      "tool_count": 54,
+      "summary": "All Data API operations exposed as MCP tools (auto-generated from openapi.yaml). Tracker / Sigil / Cross-lens — the union of every REST endpoint, including cross_lens_verify (with adversary_class)."
     },
     {
       "name": "Scry",
@@ -73,8 +73,8 @@
       "url": "https://mcp.sigil.tunnelmind.ai/mcp",
       "card_url": "https://mcp.sigil.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tool_count": 11,
-      "summary": "Sigil-scoped MCP surface: supply verification + cross_lens_verify with identical semantics to the data-api surface. Agents get the right answer no matter which entry point they landed at."
+      "tool_count": 12,
+      "summary": "Sigil-scoped MCP surface: supply verification (incl. traverse_supply_chain) + cross_lens_verify with identical semantics to the data-api surface. Agents get the right answer no matter which entry point they landed at."
     }
   ],
 

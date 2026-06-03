@@ -13,7 +13,7 @@
       "mcp_url": "https://mcp-data.tunnelmind.ai/mcp",
       "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tools_count": 49,
+      "tools_count": 54,
       "auth": "oauth2",
       "default_prompt_surface": "data",
       "summary": "The union surface: every Data API operation as an MCP tool (auto-generated from openapi.yaml). Tracker / Sigil / Cross-lens — including cross_lens_verify and the /v1/profile fused Scry x Sigil x Tracker entity profile. Start here if you don't know which lens you need."
@@ -35,7 +35,7 @@
       "mcp_url": "https://mcp.sigil.tunnelmind.ai/mcp",
       "card_url": "https://mcp.sigil.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tools_count": 11,
+      "tools_count": 12,
       "auth": "oauth2",
       "default_prompt_surface": "sigil",
       "summary": "Agentic supply verification for programmatic advertising: ads.txt authorization, IP classification, app-bundle and supply-path verification, entity trust scoring, ATAP receipts, and cross_lens_verify with identical semantics to the data-api surface."

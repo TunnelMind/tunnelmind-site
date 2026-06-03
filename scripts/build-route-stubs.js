@@ -37,12 +37,12 @@ const ROUTES = [
   },
   {
     slug: 'api',
-    title: 'TunnelMind — Data API: cross-lens verify, Sigil supply graph, Scry corpus',
+    title: 'TunnelMind — APIs & MCP: full catalog for humans and agents',
     description:
-      'REST endpoints for autonomous agents: /v1/verify/{node} fused cross-lens verdict, /v1/preflight should-I-act consultation, /v1/receipt/generate signed receipts, /v1/x402/echo agent payment rail. OpenAPI 3.1 + MCP-mirrored.',
-    h1:    'TunnelMind Data API',
+      'The complete TunnelMind surface: Scry attacker-corpus + Data API (cross-lens verify with adversary_class, Sigil supply graph, tracker signals, provenance receipts, x402 agent rail) over REST, plus three MCP servers (Scry/Data/Sigil). OpenAPI 3.1 + MCP-mirrored.',
+    h1:    'TunnelMind APIs & MCP',
     body:
-      'Every operation auto-published as both REST and MCP tool. Open free tier. x402 USDC for agents, Stripe for humans. See data.tunnelmind.ai/openapi.yaml and the agent-onboarding doc at /agent-onboarding.md.',
+      'One signed corpus, two rails. Every Data API endpoint is also an MCP tool. Open free tier; $20 Stripe block for humans, x402 USDC for agents. Machine-legible discovery: data.tunnelmind.ai/openapi.yaml, /.well-known/mcp.json, /agent-manifest.json, /agent-onboarding.md.',
   },
   {
     slug: 'products',

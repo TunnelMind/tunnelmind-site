@@ -79,9 +79,9 @@
       "url": "https://mcp-data.tunnelmind.ai/mcp",
       "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tool_count": 43,
+      "tool_count": 54,
       "auto_generated_from": "https://data.tunnelmind.ai/openapi.yaml",
-      "summary": "Every Data API operation surfaced as an MCP tool. Tracker, Sigil, and cross_lens_verify in one surface."
+      "summary": "Every Data API operation surfaced as an MCP tool. Tracker, Sigil, and cross_lens_verify (with adversary_class) in one surface."
     },
     {
       "id": "scry-mcp",
@@ -98,8 +98,8 @@
       "url": "https://mcp.sigil.tunnelmind.ai/mcp",
       "card_url": "https://mcp.sigil.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tool_count": 11,
-      "summary": "Sigil-scoped MCP. Curated tool surface. Includes cross_lens_verify with identical semantics to the data-api surface."
+      "tool_count": 12,
+      "summary": "Sigil-scoped MCP. Curated tool surface (incl. traverse_supply_chain). Includes cross_lens_verify with identical semantics to the data-api surface."
     }
   ],
 

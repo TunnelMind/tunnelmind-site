@@ -984,7 +984,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       { id: 'mail',       label: 'Mail',                      enabled: !ip },
       { id: 'cert',       label: 'Certs',                     enabled: !ip },
       { id: 'subdomains', label: 'Subdomains',                enabled: !ip },
-      { id: 'asn',        label: 'ASN',                       enabled: true },
+      { id: 'asn',        label: 'BGP',                       enabled: true },
       { id: 'http',       label: 'HTTP',                      enabled: !ip },
       { id: 'stack',      label: 'Stack',                     enabled: !ip },
       { id: 'tracker',    label: 'Tracker',                   enabled: !ip },
@@ -1604,11 +1604,15 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     return html;
   }
 
+  // BGP tab — ASN, the announced prefix, RIR, and abuse contact for each
+  // address. `announced` answers "is this prefix live in the global
+  // routing table right now" — the one fact that's genuinely BGP rather
+  // than registry. Order leads with the routing facts, then contacts.
   function renderAsn(a, host) {
-    if (!a || !Array.isArray(a.addresses)) return emptyTab('ASN lookup returned no data.');
+    if (!a || !Array.isArray(a.addresses)) return emptyTab('BGP lookup returned no data.');
     if (a.addresses.length === 0) {
       return emptyTab(a.note || 'No addresses resolved.') +
-        sourceLink('bgpview.io', null);
+        sourceLink('RIPEstat', `https://stat.ripe.net/${encodeURIComponent(host)}`);
     }
     let html = '';
     for (const addr of a.addresses) {
@@ -1617,13 +1621,19 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
         html += '<div class="insp-err-soft">lookup failed</div>';
         continue;
       }
+      const announced = addr.announced === true
+        ? '<span class="v-ok">yes — globally routed</span>'
+        : addr.announced === false
+          ? '<span class="v-bad">no — not in the routing table</span>'
+          : null;
       const rows = [
-        ['ASN', addr.asn != null ? 'AS' + addr.asn : null],
-        ['org', addr.org],
-        ['prefix', addr.prefix],
-        ['country', addr.country],
-        ['RIR', addr.rir],
-        ['abuse', (addr.abuse || []).join(', ') || null],
+        ['ASN', addr.asn != null ? 'AS' + esc(addr.asn) : null],
+        ['holder', addr.org ? esc(addr.org) : null],
+        ['prefix', addr.prefix ? '<code>' + esc(addr.prefix) + '</code>' : null],
+        ['announced', announced],
+        ['country', addr.country ? esc(addr.country) : null],
+        ['RIR', addr.rir ? esc(addr.rir) : null],
+        ['abuse', (addr.abuse || []).map(esc).join(', ') || null],
       ];
       html += '<div class="insp-fields">';
       for (const [k, v] of rows) {
@@ -1631,7 +1641,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       }
       html += '</div>';
     }
-    html += sourceLink('bgpview.io', `https://bgpview.io/search/${encodeURIComponent(host)}`);
+    html += sourceLink('RIPEstat', `https://stat.ripe.net/${encodeURIComponent(host)}`);
     return html;
   }
 

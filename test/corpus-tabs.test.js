@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import { parseMx, parseSpf, parseDmarc, parseDkim } from '../functions/api/corpus/mail/[domain].js'
 import { trim as trimSubdomains } from '../functions/api/corpus/subdomains/[domain].js'
-import { trimBgpview } from '../functions/api/corpus/asn/[host].js'
+import { trimRipe, mergeRows } from '../functions/api/corpus/asn/[host].js'
 
 describe('mail/parseMx', () => {
   it('extracts preference + host', () => {
@@ -91,35 +91,63 @@ describe('subdomains trim', () => {
   })
 })
 
-describe('asn/trimBgpview', () => {
-  const RESP = {
-    prefixes: [
-      { prefix: '8.0.0.0/9',  asn: { asn: 15169, name: 'GOOGLE', country_code: 'US' } },
-      { prefix: '8.8.8.0/24', asn: { asn: 15169, name: 'GOOGLE', description: 'Google LLC', country_code: 'US' } },
-    ],
-    rir_allocation: { rir: 'ARIN', country_code: 'US', prefix: '8.0.0.0/8' },
-    abuse_contacts: [{ email: 'network-abuse@google.com' }],
+describe('asn/trimRipe', () => {
+  // Shapes mirror the RIPEstat data-call payloads (the `.data` body).
+  const PARTS = {
+    ni:    { asns: ['213373'], prefix: '45.141.56.0/24' },
+    abuse: { abuse_contacts: ['abuse@ipconnect.example', 'noc@ipconnect.example'] },
+    rir:   { rirs: [{ rir: 'RIPE NCC' }] },
+    over:  { holder: 'IPCONNECT IP Connect Inc', announced: true },
   }
-  it('picks the most-specific prefix', () => {
-    const out = trimBgpview('8.8.8.8', RESP)
-    expect(out).toMatchObject({
-      ip: '8.8.8.8',
-      asn: 15169,
-      org: 'GOOGLE',
-      prefix: '8.8.8.0/24',
-      country: 'US',
-      rir: 'ARIN',
-      abuse: ['network-abuse@google.com'],
+  it('assembles a routing row from the four data calls', () => {
+    expect(trimRipe('45.141.56.49', PARTS)).toEqual({
+      ip: '45.141.56.49',
+      asn: '213373',
+      org: 'IPCONNECT IP Connect Inc',
+      prefix: '45.141.56.0/24',
+      country: null,
+      rir: 'RIPE NCC',
+      abuse: ['abuse@ipconnect.example', 'noc@ipconnect.example'],
+      announced: true,
     })
   })
-  it('falls back to RIR allocation when no announced prefix matches', () => {
-    const out = trimBgpview('1.2.3.4', { prefixes: [], rir_allocation: { rir: 'APNIC', country_code: 'JP', prefix: '1.0.0.0/8' } })
-    expect(out.asn).toBeNull()
-    expect(out.org).toBe('APNIC')
-    expect(out.prefix).toBe('1.0.0.0/8')
-    expect(out.rir).toBe('APNIC')
+  it('surfaces a not-announced prefix', () => {
+    const out = trimRipe('1.2.3.4', { ni: { asns: ['64500'], prefix: '1.2.3.0/24' }, over: { holder: 'X', announced: false } })
+    expect(out.announced).toBe(false)
+    expect(out.asn).toBe('64500')
   })
-  it('handles null payload', () => {
-    expect(trimBgpview('1.2.3.4', null)).toMatchObject({ ip: '1.2.3.4', asn: null, org: null, abuse: [] })
+  it('degrades gracefully when calls are missing', () => {
+    expect(trimRipe('1.2.3.4', {})).toEqual({
+      ip: '1.2.3.4', asn: null, org: null, prefix: null,
+      country: null, rir: null, abuse: [], announced: null,
+    })
+  })
+})
+
+describe('asn/mergeRows', () => {
+  const scry = { asn: '213373', org: 'IPCONNECT', country: 'AT' }
+  const ripe = { asn: '213373', org: 'IPCONNECT IP Connect Inc', prefix: '45.141.56.0/24', rir: 'RIPE NCC', abuse: ['abuse@x'], announced: true }
+  it('prefers our iptoasn view for asn/org/country, RIPEstat for routing', () => {
+    expect(mergeRows('45.141.56.49', scry, ripe)).toEqual({
+      ip: '45.141.56.49',
+      asn: '213373',
+      org: 'IPCONNECT',          // scry wins
+      country: 'AT',             // scry-only
+      prefix: '45.141.56.0/24',  // RIPEstat-only
+      rir: 'RIPE NCC',
+      abuse: ['abuse@x'],
+      announced: true,
+    })
+  })
+  it('falls back to RIPEstat holder when scry has no org', () => {
+    const out = mergeRows('45.141.56.49', null, ripe)
+    expect(out.org).toBe('IPCONNECT IP Connect Inc')
+    expect(out.country).toBeNull()
+  })
+  it('tolerates both sources failing', () => {
+    expect(mergeRows('1.2.3.4', null, null)).toEqual({
+      ip: '1.2.3.4', asn: null, org: null, country: null,
+      prefix: null, rir: null, abuse: [], announced: null,
+    })
   })
 })

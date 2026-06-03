@@ -722,6 +722,8 @@ a:hover {
 }
 #inspector .field .v-num { font-variant-numeric: tabular-nums; }
 #inspector .field .v-dim { color: var(--radar-fg-muted); }
+#inspector .field .v-ok  { color: var(--radar-accent); }
+#inspector .field .v-bad { color: var(--radar-warn); }
 
 .radar-root .badge {
   display: inline-block; padding: 1px 7px; border-radius: 3px;

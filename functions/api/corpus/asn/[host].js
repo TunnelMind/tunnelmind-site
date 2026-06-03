@@ -1,24 +1,22 @@
-// GET /api/corpus/asn/:host — ASN / BGP-prefix / abuse contact.
+// GET /api/corpus/asn/:host — ASN / BGP routing / abuse contact.
 //
-// Single contract for IP and domain inputs:
-//   - IP   → one /v1/check call against our own scry-server (iptoasn)
-//   - host → resolve A/AAAA via DoH, then bgpview each (max 4) in parallel
+// Real BGP data via RIPEstat (RIPE NCC, the non-profit RIR — see
+// feedback_no_big_tech). bgpview.io was community-run and routinely died
+// on cold workers ("first lookup fails, retry works"); RIPEstat is the
+// authoritative routing-registry source and stays up.
 //
-// Returns the same {host, kind, addresses:[...]} shape regardless of
-// input. Each address row carries asn, org, prefix, country, rir, and
-// abuse contacts so the inspector can render either form uniformly.
+//   IP   → scry-server /v1/check (our iptoasn: asn/org/country, instant)
+//          merged with RIPEstat (prefix, RIR, abuse, announced)
+//   host → resolve A/AAAA via DoH, then RIPEstat each (max 4) in parallel
 //
-// We used to call bgpview.io for IP inputs too, but it's community-run
-// and frequently dies on cold workers — the "first lookup fails, retry
-// works" UX traced back to that. /v1/check serves the same ASN/country/
-// org from our own iptoasn snapshot with no upstream flakiness.
-// (Domains still fan-out through bgpview until we add a /v1/asn/{ip}
-// surface; that's the next migration.)
+// Same {host, kind, addresses:[...]} shape regardless of input. Each row:
+// { ip, asn, org, prefix, country, rir, abuse:[], announced }.
 
 import { normalizeHost, normalizeIp, normalizeDomain, json, fetchWithTimeout } from '../_lib.js'
 
 const MAX_ADDRESSES = 4
 const SCRY_BASE = 'https://api.tunnelmind.ai'
+const RIPE_BASE = 'https://stat.ripe.net/data'
 
 export async function onRequestGet(context) {
   const host = normalizeHost(context.params.host)
@@ -26,8 +24,13 @@ export async function onRequestGet(context) {
 
   try {
     if (normalizeIp(host)) {
-      const addr = await scryCheck(host)
-      return json({ host, kind: 'ip', addresses: [addr] }, 200, 3600)
+      // Our own iptoasn view + RIPEstat routing, in parallel; either may
+      // fail without sinking the row (mergeRows tolerates nulls).
+      const [scry, ripe] = await Promise.all([
+        scryCheck(host).catch(() => null),
+        ripeLookup(host).catch(() => null),
+      ])
+      return json({ host, kind: 'ip', addresses: [mergeRows(host, scry, ripe)] }, 200, 3600)
     }
 
     const ips = await resolveAddrs(host)
@@ -35,7 +38,7 @@ export async function onRequestGet(context) {
       return json({ host, kind: 'domain', addresses: [], note: 'Domain did not resolve to any A/AAAA records.' }, 200, 300)
     }
 
-    const settled = await Promise.allSettled(ips.slice(0, MAX_ADDRESSES).map(bgpview))
+    const settled = await Promise.allSettled(ips.slice(0, MAX_ADDRESSES).map(ripeLookup))
     const addresses = settled.map((s, i) => s.status === 'fulfilled'
       ? s.value
       : { ip: ips[i], error: 'lookup_failed' })
@@ -46,26 +49,87 @@ export async function onRequestGet(context) {
   }
 }
 
-// Map /v1/check's shape into the address row the inspector renders.
-// Prefix / RIR / abuse don't exist in our iptoasn snapshot — the renderer
-// already skips null fields, so the row collapses gracefully.
+// Merge our own iptoasn view (asn/org/country — authoritative + instant)
+// with RIPEstat's routing data (prefix/rir/abuse/announced). Prefer scry
+// for asn/org/country so the tab matches the inline node enrichment; fall
+// back to RIPEstat's AS holder when we have no org of our own.
+export function mergeRows(ip, scry, ripe) {
+  const r = ripe || {}
+  const s = scry || {}
+  return {
+    ip,
+    asn: s.asn || r.asn || null,
+    org: s.org || r.org || null,
+    country: s.country || r.country || null,
+    prefix: r.prefix || null,
+    rir: r.rir || null,
+    abuse: r.abuse || [],
+    announced: r.announced ?? null,
+  }
+}
+
+// Map /v1/check's shape into the asn/org/country we trust most.
 async function scryCheck(ip) {
   const r = await fetchWithTimeout(
     `${SCRY_BASE}/v1/check/${encodeURIComponent(ip)}`,
     { headers: { Accept: 'application/json' } },
     4000,
   )
-  if (!r.ok) return { ip, error: 'lookup_failed' }
+  if (!r.ok) return null
   const j = await r.json()
+  return { asn: j.asn || null, org: j.org || null, country: j.country || null }
+}
+
+// One IP → its routing facts, assembled from RIPEstat data calls. The
+// three independent calls run in parallel (allSettled, so a slow
+// abuse-finder never sinks the prefix); as-overview needs the ASN, so
+// it's a dependent second hop taken only when one is known.
+async function ripeLookup(ip) {
+  if (!normalizeIp(ip)) return { ip, error: 'lookup_failed' }
+  const [netInfo, abuse, rir] = await Promise.allSettled([
+    ripe('network-info', ip),
+    ripe('abuse-contact-finder', ip),
+    ripe('rir', ip),
+  ])
+  const ni = val(netInfo)
+  const asn = ni && Array.isArray(ni.asns) && ni.asns.length ? ni.asns[0] : null
+  const over = asn ? await ripe('as-overview', `AS${asn}`).catch(() => null) : null
+  return trimRipe(ip, { ni, abuse: val(abuse), rir: val(rir), over })
+}
+
+function val(settled) {
+  return settled && settled.status === 'fulfilled' ? settled.value : null
+}
+
+// Pure shaping of the RIPEstat payloads into one address row. Kept pure +
+// exported so the field mapping is unit-testable without the network.
+export function trimRipe(ip, parts = {}) {
+  const { ni, abuse, rir, over } = parts
+  const asns = ni && Array.isArray(ni.asns) ? ni.asns : []
+  const rirs = rir && Array.isArray(rir.rirs) ? rir.rirs : []
   return {
     ip,
-    asn: j.asn || null,
-    org: j.org || null,
-    country: j.country || null,
-    prefix: null,
-    rir: null,
-    abuse: [],
+    asn: asns.length ? String(asns[0]) : null,
+    org: (over && over.holder) || null,
+    prefix: (ni && ni.prefix) || null,
+    country: null,            // RIPEstat network-info carries no geo; RDAP tab covers it
+    rir: rirs.length ? rirs[0].rir : null,
+    abuse: abuse && Array.isArray(abuse.abuse_contacts) ? abuse.abuse_contacts.slice(0, 5) : [],
+    announced: over ? !!over.announced : null,
   }
+}
+
+async function ripe(call, resource) {
+  // sourceapp is RIPEstat's politeness convention for identifying heavier
+  // automated callers; it does not gate access.
+  const r = await fetchWithTimeout(
+    `${RIPE_BASE}/${call}/data.json?resource=${encodeURIComponent(resource)}&sourceapp=tunnelmind`,
+    { headers: { Accept: 'application/json' } },
+    5000,
+  )
+  if (!r.ok) throw new Error(`ripe_${call}_${r.status}`)
+  const j = await r.json()
+  return j && j.data
 }
 
 async function resolveAddrs(domain) {
@@ -93,44 +157,4 @@ async function doh(name, type) {
   )
   if (!r.ok) return null
   return r.json()
-}
-
-async function bgpview(ip) {
-  const r = await fetchWithTimeout(
-    `https://api.bgpview.io/ip/${ip}`,
-    { headers: { Accept: 'application/json' } },
-    4000,
-  )
-  if (!r.ok) throw new Error(`bgpview_${r.status}`)
-  const j = await r.json()
-  return trimBgpview(ip, j && j.data)
-}
-
-export function trimBgpview(ip, d) {
-  if (!d) return { ip, asn: null, org: null, prefix: null, country: null, rir: null, abuse: [] }
-  const prefixes = Array.isArray(d.prefixes) ? d.prefixes : []
-  // Pick the most-specific prefix (longest mask length) — that's the
-  // one actually announcing this IP.
-  const ranked = prefixes
-    .filter((p) => p && p.prefix)
-    .map((p) => ({ p, len: prefixLen(p.prefix) }))
-    .sort((a, b) => b.len - a.len)
-  const top = ranked[0] && ranked[0].p
-  const rir = d.rir_allocation || null
-  return {
-    ip,
-    asn: top && top.asn && top.asn.asn != null ? top.asn.asn : null,
-    org: (top && top.asn && (top.asn.name || top.asn.description)) || (rir && rir.rir) || null,
-    prefix: top ? top.prefix : (rir ? rir.prefix : null),
-    country: (top && top.asn && top.asn.country_code) || (rir && rir.country_code) || null,
-    rir: rir && rir.rir ? rir.rir : (top && top.asn && top.asn.rir_name) || null,
-    abuse: Array.isArray(d.abuse_contacts)
-      ? d.abuse_contacts.map((c) => c && c.email).filter(Boolean).slice(0, 5)
-      : [],
-  }
-}
-
-function prefixLen(p) {
-  const m = String(p).match(/\/(\d+)$/)
-  return m ? Number(m[1]) : 0
 }

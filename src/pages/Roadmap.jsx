@@ -12,42 +12,46 @@ const STATUS = {
 const SECTIONS = [
   {
     eyebrow: 'Shipping now',
-    title: 'The observability layer is live.',
-    summary: 'A single corpus of attested observations, exposed three ways — a public radar, a free REST API, and an MCP server agents can wire straight into a model. Free to read, free to query, no key required to start.',
+    title: 'The trust attestation layer is live.',
+    summary: 'One correlated graph of who is attacking, who is watching, and who can be trusted — read through three lenses (Scry, Sigil, Tracker) and queryable identically by humans and AI agents. Free to read, free to query, no key required to start. The cross-lens join is the part no siloed incumbent can compute.',
     items: [
       { name: 'Surveillance Radar', status: 'live', desc: 'The live attacker corpus as the front door of tunnelmind.ai — every dot a real source IP a sensor watched in the last hour, geo + ASN-enriched, sampled but never edited. SSE stream, click-to-inspect, three view modes (Visual / JSON / curl).' },
-      { name: 'Augur — clearnet recon corpus', status: 'live', desc: 'Continuous passive collection from URLhaus, ThreatFox, Tor exit and DAN lists, Spamhaus DROP, and crt.sh. 6 sources running, 125+ actors with cross-source links, CIDR-aware. The corpus the radar draws and the API serves.' },
-      { name: 'Familiar — attested sensor fleet', status: 'live', desc: 'Distributed passive sensor that Ed25519-signs every observation at the source and submits to the corpus. Bad signatures are dropped before ingest. 5-node bootstrap fleet live; fleet expands as paying entities cover the marginal cost.' },
-      { name: 'Tracker Data API', status: 'live', desc: 'REST over the same corpus the radar draws, at api.tunnelmind.ai. Free anonymous tier with a Durable-Object rate limit; paid keys for unmetered defender lookups. Geo, ASN, campaign membership, payload signatures, time series.', link: { label: 'Browse the endpoints', href: '/api' } },
-      { name: 'MCP server', status: 'live', desc: 'JSON-RPC 2.0 over streamable HTTP at mcp.tunnelmind.ai. The same corpus, structured for an AI agent to consume directly — agent-native because the agents are the new internet.' },
-      { name: 'Sigil verification surfaces', status: 'live', desc: 'Eight verify endpoints at data.tunnelmind.ai — entity trust scoring, supply-chain attestations, ATAP receipt verification, signed bundles, IP/domain reputation. The "who can you trust" layer for programmatic supply.' },
-      { name: 'Corpus inspector — the right panel of the Radar', status: 'live', desc: 'Click any radar node or type any domain or IP to open a 14-tab intel surface — WHOIS, DNS, Mail (SPF/DMARC/DKIM), Certs, Subdomains, ASN, HTTP, Stack, Tracker, Crawlers, Agent surface, Injection, Opt-Out, Reputation. Same data over REST and MCP. Deep-linkable at /#/?inspect=<host>; the retired NetProbe subdomain 301s here.' },
-      { name: 'ATAP — Agent Trust Attestation Protocol', status: 'comment', desc: 'v0.1 protocol spec, receipt format, JSON Schemas, JSON-LD context, and reference verifier — all published. npm @tunnelmindai/atap shipped. In public comment through 2026-08-12.', link: { label: 'Read the spec', href: 'https://tunnelmind.ai/atap/standard' } },
-      { name: 'OAI — Observed Actor Identifier Standard', status: 'comment', desc: 'Open identifier standard for trackers, fingerprinters, surveillance vendors, ad networks, data brokers, threat actors, and sensor operators. CVE editorial model: free resolution, permanent canonical identifiers, signed observations. v1.0 in public comment through 2026-08-12.', link: { label: 'Read the spec', href: '/oai/standard' } },
+      { name: 'Cross-lens verify — the join', status: 'live', desc: 'POST /v1/verify/{node} on data.tunnelmind.ai fuses Scry × Sigil × Tracker into one verdict on any entity, with the per-lens blocks shown alongside, a 5-minute signed sigil_token, an optional ATAP witness event, and an adversary-class read (human hacker / rogue agent / big-tech surveillance). The moat: the botnet running your ad fraud is the botnet scanning your edge.', link: { label: 'See the catalog', href: '/api' } },
+      { name: 'Scry — who is attacking', status: 'live', desc: 'Signed observations of hostile network actors: IPs, ASNs, behaviors, threat-feed overlap, actor- and adversary-class overlays. REST at api.tunnelmind.ai — /v1/check, /recent, /bulk, /campaigns, /stats. Free, no key, Durable-Object rate limit.', link: { label: 'Browse the endpoints', href: '/api' } },
+      { name: 'Sigil — who can you trust', status: 'live', desc: 'The supply-graph trust layer at data.tunnelmind.ai: ads.txt / sellers.json / app-ads.txt verification, supply-chain and supply-path traversal, entity trust scoring, and ATAP receipt generation. First application: programmatic advertising for AI media-buying agents.' },
+      { name: 'Tracker — who is watching', status: 'live', desc: 'The demand-side graph of the surveillance economy: tracker-operator entities, the resellers they buy from, the publishers they reach. Surfaced today through cross-lens joins; deepening the demand layer is next.' },
+      { name: 'Augur — clearnet recon corpus', status: 'live', desc: 'Continuous passive collection across eight threat-feed sources (URLhaus, ThreatFox, Tor exit lists, Spamhaus DROP, crt.sh, Feodo, Emerging Threats), CIDR-aware, intent-tagged. The corpus the radar draws and the API serves.' },
+      { name: 'Familiar — attested sensor fleet', status: 'live', desc: 'Distributed passive sensor that Ed25519-signs every observation at the source and submits over a frozen v1.0 signed-ingest contract. Bad signatures are dropped before ingest. 5-node bootstrap fleet, each carrying an OAI sensor identity; fleet expands as paying entities cover the marginal cost.' },
+      { name: 'Three MCP servers', status: 'live', desc: 'JSON-RPC 2.0 over streamable HTTP, all listed in the official MCP registry: mcp.tunnelmind.ai (Scry, 12 tools), mcp-data.tunnelmind.ai (Data, 54 tools), mcp.sigil.tunnelmind.ai (Sigil, 12 tools). Same corpus, structured for a model to consume directly.' },
+      { name: 'Agent self-serve — BYOM, preflight, x402', status: 'live', desc: 'GET /v1/config/analyst hands any LLM a signed config bundle (bring your own model + tokens). POST /v1/preflight gives an allow / caution / deny verdict plus a signed consultation receipt before an agent acts. x402 USDC micropayments let an agent pay per call with no human in the loop — discovery at /.well-known/x402.json.' },
+      { name: 'Corpus inspector — the right panel of the Radar', status: 'live', desc: 'Click any radar node or type any domain or IP to open a 14-tab intel surface — WHOIS, DNS, Mail (SPF/DMARC/DKIM), Certs, Subdomains, ASN, HTTP, Stack, Tracker, Crawlers, Agent surface, Injection, Opt-Out, Reputation. Same data over REST and MCP. Deep-linkable at /?inspect=<host>; the retired NetProbe subdomain 301s here.' },
+      { name: 'OAI resolver — Observed Actor Identifier', status: 'live', desc: 'Every observed actor and operator carries a stable, resolvable identifier. The edge resolver at tunnelmind.ai/id/{id-or-alias} does status-aware caching and content negotiation (HTML + JSON-LD), free and unauthenticated. The v1.0 standard is in public comment.', link: { label: 'Read the spec', href: '/oai/standard' } },
+      { name: 'Open standards — ATAP, Receipt, EAT', status: 'comment', desc: 'The attestation rails are open (Apache-2.0 / CC-BY) so anyone can issue or verify. ATAP v0.1 (npm @tunnelmindai/atap) and the TunnelMind Receipt format v1.0 are both in public comment, with reference verifiers shipped; an EAT (IETF RATS) profile is in draft. The moat is not the format — it is what signs it.', link: { label: 'Read the spec', href: 'https://tunnelmind.ai/atap/standard' } },
     ],
   },
   {
     eyebrow: 'In active development',
-    title: 'Turning the corpus into a defender tier and an agent rail.',
-    summary: 'The free surfaces above are deliberately sampled. The work in flight is what makes the rest of the corpus purchasable — by humans on Stripe, and by agents on x402 — without compromising the public-by-default stance.',
+    title: 'Turning the sampled corpus into revenue — human rail and agent rail.',
+    summary: 'The free surfaces above are deliberately sampled. The work in flight makes the depth purchasable — by humans on Stripe, by agents on x402 — without compromising the public-by-default stance. No subscription tier: identifiers resolve free forever; you pay for depth and scale.',
     items: [
-      { name: 'Defender & Team tiers — block checkout', status: 'active', desc: 'Prepaid $20 call blocks against the API, one-time payment, volume rate computed per block from Stripe charge history. Client and webhook code-complete and deployed; the credit endpoint on scry-server and the Stripe product setup are the remaining gates before checkout flips live.' },
-      { name: 'x402 agent rail', status: 'drafting', desc: 'USDC micropayments per call so AI agents can transact directly against the API without a human in the loop. Stripe stays the human rail; x402 is the agent rail. Spec landed; production wiring in progress.' },
-      { name: 'OAI Resolver', status: 'drafting', desc: 'Dedicated edge resolver at tunnelmind.ai/id/{id-or-alias}. Status-aware caching, content negotiation (HTML + JSON-LD), no rate limit, authentication forbidden.' },
+      { name: 'Block checkout — $20 access block', status: 'active', desc: 'A one-time $20 prepaid block of API calls instead of a monthly subscription (the old Defender tier is retired). Client and webhook code are complete and deployed; the remaining gate is the Stripe product setup plus the credit endpoint before checkout flips live.' },
+      { name: 'x402 — real-USDC settlement', status: 'active', desc: 'The agent rail is operational in demo mode (HMAC, no real USDC) end-to-end: 402 challenge → X-PAYMENT retry → 200 + settlement header. Wiring the Coinbase facilitator for real USDC settlement is pending wallet provisioning.' },
+      { name: 'Inbound discovery', status: 'drafting', desc: 'Show HN / writeups and search resolvability so "ads.txt verification API" and "sellers.json supply-chain verification" surface TunnelMind, not a name-collision rival. The draft is written; it fires when the timing is right.' },
       { name: 'Monitor / post-candidate bot', status: 'drafting', desc: 'Fleet-health watcher plus a post-candidate generator off the same event stream. Dry-run by default; live posting gated behind an explicit env flag and confirmed credentials.' },
-      { name: 'Augur source expansion', status: 'active', desc: 'Phase 2b sources beyond the current six — more passive feeds, more cross-source links, more campaigns visible without enlarging the sensor fleet beyond bootstrap.' },
+      { name: 'Augur source expansion', status: 'active', desc: 'Phase 2b sources beyond the current eight — ASNDROP, an AbuseIPDB licensing evaluation, GreyNoise — more cross-source links and campaigns visible without enlarging the sensor fleet beyond bootstrap.' },
     ],
   },
   {
     eyebrow: 'Planned',
-    title: 'Standards infrastructure and the Sigil supply line.',
-    summary: 'Specifications drafted, ship order depends on adoption of the layers below. The standards lock first; the products consume the standards rather than the reverse.',
+    title: 'Deepen the graph, then own the silicon.',
+    summary: 'Gated behind first revenue on the block model. Each item makes the cross-lens graph denser or the attestation chain stronger; the silicon track stays off the critical path until a data gap appears that only custom hardware can close.',
     items: [
-      { name: 'Sigil — programmatic ad supply verification', status: 'spec', desc: 'The "who can you trust" verification layer for the agentic internet. First application: programmatic advertising. Built on OAI as the identifier substrate and ATAP as the receipt format. Verification surfaces are live today; the paid Sigil products consume them.' },
-      { name: 'OAI Schema Repository', status: 'planned', desc: 'GitHub-hosted JSON Schema, JSON-LD context, worked examples, and tooling. Opens once v1.0 closes comment.' },
-      { name: 'OAI Sensor Issuance', status: 'planned', desc: 'Per-country issuance flow for OAI-SENSOR-{cc}-{seq} identifiers. Enables external sensor operators to contribute signed observations into the corpus.' },
-      { name: 'OAI Transparency Log', status: 'planned', desc: 'Ed25519 attestation log at /oai/log. Append-only, publicly verifiable, mirrors the registry payload archive.' },
-      { name: 'Federation', status: 'planned', desc: 'Multiple resolvers, multiple registries, canonical 301 chain. v2 governance work.' },
+      { name: 'CT-log ingestion', status: 'planned', desc: 'Stream Certificate Transparency logs directly, replacing the brittle crt.sh dependency — a seismograph for the trust-migration thesis as issuance patterns shift.' },
+      { name: 'MISP / STIX-TAXII tap', status: 'planned', desc: 'Bidirectional threat-intel exchange: receive IOCs from the established ecosystem, contribute signed cross-lens verdicts back.' },
+      { name: 'Contribute-and-earn', status: 'planned', desc: 'A signed-submission path where agents and Familiar nodes submit observations for credit — the route to making a Sigil receipt an automatic byproduct of every MCP call (the witnessability gap).' },
+      { name: 'Tracker demand-layer deepening', status: 'planned', desc: 'Recurring SDK/script fingerprints, demand concentration, and made-for-advertising share trends — turning Tracker from a bootstrap mirror into a full demand-side graph.' },
+      { name: 'Compliance-grade agent-action ledger', status: 'planned', desc: 'A tamper-evident, retained ledger of an agent’s receipts with a compliance-oriented export — converting receipts from "nice proof" into a required audit record. Builds when a named prospect with a compliance mandate appears.' },
+      { name: 'Microkernel sensor — silicon-root attestation', status: 'planned', desc: 'A Rust microkernel sensor with attestation pushed to silicon, eBPF line-rate capture, and signed transport. Explicitly off the critical path until first revenue exists and a gap appears that only hardware can close.' },
     ],
   },
 ]
@@ -107,10 +111,12 @@ export default function Roadmap() {
           marginBottom: '48px',
           maxWidth: '600px',
         }}>
-          TunnelMind is a single-operator project building toward one outcome: every entity that
-          observes, profiles, or acts against users should be identifiable by a stable handle,
-          their observations should be signed, and the corpus should be public. Below is what
-          is shipping, what is being built, and what is queued.
+          TunnelMind is a single-operator project building the trust attestation layer for the
+          agentic internet: every entity that attacks, watches, or transacts on the open web
+          should be identifiable by a stable handle, every observation should be signed at the
+          source, and every verdict should carry a receipt a human or a machine can replay later.
+          The corpus is public by default. Below is what is shipping, what is being built, and
+          what is queued.
         </p>
 
         <div style={{ height: '1px', background: 'var(--chrome-border)', marginBottom: '48px' }} />

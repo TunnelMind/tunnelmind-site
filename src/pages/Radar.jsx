@@ -92,6 +92,31 @@ const AUDIENCES = [
   },
 ]
 
+// The three pillars — why the graph is defensible. Shown between the hero
+// and the live radar so the mission frame lands before the instrument.
+// tone maps to a P-GEO accent: amber = open protocol, the lens trio =
+// honest graph, cyan = silicon-root attestation.
+const PILLARS = [
+  {
+    label: 'RFC-TUNNELMIND-001',
+    tone: 'standard',
+    head: 'The protocol belongs to everyone.',
+    body: 'The receipt format is Apache-2.0. The OAI threat namespace is public. Any node, any vendor, any agent implements it. No licensing. No gate. Ubiquity is the strategy — the moat is not the format, it is what signs it.',
+  },
+  {
+    label: 'ARCH-LENS-003',
+    tone: 'graph',
+    head: 'One graph. Three lenses. No blind spots.',
+    body: 'IPs, ASNs, domains, entities, supply paths — one correlated abuse/identity graph. Scry reads who is attacking. Sigil reads who to trust. Tracker reads who is watching. Correlated because the infrastructure is the same: the botnet running your ad fraud is the botnet scanning your edge.',
+  },
+  {
+    label: 'ATTEST-TIER-004',
+    tone: 'receipts',
+    head: 'Proof, not promises.',
+    body: 'Every verdict carries an attestation tier — self-asserted to silicon-root. The receipt is machine-readable, cryptographically signed, and embeddable in any agent workflow, audit trail, or supply-chain report. Trust is not a score. It is evidence.',
+  },
+]
+
 // Count-up animation for the hero stat strip — ease-out cubic, ~1.1s.
 function useCountUp(target, ms = 1100) {
   const [val, setVal] = useState(0)
@@ -176,19 +201,18 @@ export default function Radar({ onNavigate }) {
       <section className="tm-hero">
         <div className="tm-eyebrow">
           <span className="tm-live-dot" aria-hidden="true" />
-          TunnelMind · the observability layer
+          TunnelMind · Trust Attestation Layer
         </div>
         <h1>
-          Observability for the agentic internet.
+          The internet has no memory.
           <br />
-          <span className="tm-accent">Real attacker IPs, attested at the sensor.</span>
+          <span className="tm-accent">We're building one.</span>
         </h1>
         <p>
-          The web is filling up with traffic no human ever typed. TunnelMind
-          watches the hostile slice of it — a distributed fleet of attested
-          sensors plus public feeds, every observation Ed25519-signed at the
-          source so the data can prove where it came from. Below is a live,
-          unedited window into that corpus.
+          Every IP address, every domain, every ad-tech entity, every agent
+          endpoint — one correlated graph of who is attacking, who is watching,
+          and who can be trusted. Signed receipts. Open protocol. Attestation
+          that scales from self-asserted identity to silicon-root hardware trust.
         </p>
         <div className="tm-lens-strip" aria-label="One corpus, three lenses">
           <div className="tm-lens-caption">
@@ -214,6 +238,25 @@ export default function Radar({ onNavigate }) {
           </div>
         </div>
         <HeroStats />
+        <div className="tm-cta-curl" aria-label="Check any IP, free, no key">
+          <code>curl https://api.tunnelmind.ai/v1/check/{'{ip}'}</code>
+          <button
+            className="tm-cta-copy"
+            type="button"
+            onClick={(e) => {
+              const cmd = 'curl https://api.tunnelmind.ai/v1/check/'
+              if (navigator.clipboard) navigator.clipboard.writeText(cmd)
+              const b = e.currentTarget
+              b.textContent = 'copied'
+              setTimeout(() => { b.textContent = 'copy' }, 1200)
+            }}
+          >copy</button>
+        </div>
+        <a className="tm-cta-agent" href="https://data.tunnelmind.ai/v1/config/analyst">
+          <span className="tm-cta-agent-method">GET</span>
+          <span className="tm-cta-agent-path">/v1/config/analyst</span>
+          <span className="tm-cta-agent-note">→ BYOM config bundle for agents</span>
+        </a>
         <div className="tm-cta-row">
           <a className="tm-btn tm-btn-primary" href="https://chat.tunnelmind.ai">
             Try the chat
@@ -236,6 +279,17 @@ export default function Radar({ onNavigate }) {
         <div className="tm-scroll-cue" aria-hidden="true">
           live corpus below ↓
         </div>
+      </section>
+
+      {/* ── Three pillars: why the graph is defensible ──────────── */}
+      <section className="tm-pillars" aria-label="What makes TunnelMind defensible">
+        {PILLARS.map((p) => (
+          <article key={p.label} className={`tm-pillar tm-pillar-${p.tone}`}>
+            <div className="tm-pillar-label">{p.label}</div>
+            <h3 className="tm-pillar-head">{p.head}</h3>
+            <p className="tm-pillar-body">{p.body}</p>
+          </article>
+        ))}
       </section>
 
       {/* ── The radar (vanilla-JS force graph mounts here) ───────── */}
@@ -396,6 +450,23 @@ export default function Radar({ onNavigate }) {
         </section>
 
       </div>
+
+      {/* ── Agent access bar — the explicit machine-reader handshake ── */}
+      <section className="tm-agent-bar" aria-label="For agents">
+        <div className="tm-agent-bar-inner">
+          <div className="tm-agent-bar-left">
+            <span className="tm-agent-bar-eyebrow">For agents</span>
+            <code className="tm-agent-bar-endpoints">
+              MCP · api.tunnelmind.ai · data.tunnelmind.ai/v1/config/analyst
+            </code>
+          </div>
+          <div className="tm-agent-bar-chips">
+            <a className="tm-chip" href="https://mcp-data.tunnelmind.ai/mcp">MCP tools ↗</a>
+            <a className="tm-chip" href="https://api.tunnelmind.ai">API docs ↗</a>
+            <a className="tm-chip" href="/llms.txt">llms.txt ↗</a>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }

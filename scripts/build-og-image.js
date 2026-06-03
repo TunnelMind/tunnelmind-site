@@ -53,9 +53,9 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" 
   ${dotField()}
   <rect x="0" y="0" width="${W}" height="${H}" fill="none" stroke="#1f242c" stroke-width="2"/>
   <text x="80" y="138" font-family="monospace" font-size="24" font-weight="bold" letter-spacing="7" fill="#4ade80">&#9679; TUNNELMIND</text>
-  <text x="76" y="312" font-family="Georgia, 'Times New Roman', serif" font-size="86" fill="#f4f4f5">Observability for the</text>
-  <text x="76" y="412" font-family="Georgia, 'Times New Roman', serif" font-size="86" fill="#4ade80">agentic internet.</text>
-  <text x="80" y="524" font-family="monospace" font-size="25" fill="#9ca3af">Live attacker corpus &#183; every observation signed at the sensor.</text>
+  <text x="76" y="300" font-family="Georgia, 'Times New Roman', serif" font-size="74" fill="#f4f4f5">The internet has no memory.</text>
+  <text x="76" y="398" font-family="Georgia, 'Times New Roman', serif" font-size="74" fill="#4ade80">We&#8217;re building one.</text>
+  <text x="80" y="512" font-family="monospace" font-size="25" fill="#9ca3af">Who attacks &#183; who watches &#183; who to trust. Signed receipts, open protocol.</text>
   <text x="80" y="568" font-family="monospace" font-size="23" letter-spacing="3" fill="#6b7280">tunnelmind.ai</text>
 </svg>`
 

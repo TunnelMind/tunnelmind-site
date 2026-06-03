@@ -1269,6 +1269,198 @@ a:hover {
   .tm-pricing { flex-direction: column; align-items: flex-start; }
 }
 
+/* ── Hero CTAs: human curl chip + agent BYOM link ──────────────────────
+   The two locked CTAs from P-LAND. curl chip = the human handshake;
+   the GET line = the agent handshake (data-api BYOM bundle). */
+.tm-cta-curl {
+  display: inline-flex;
+  align-items: stretch;
+  margin: 0 0 14px;
+  border: 1px solid var(--chrome-border);
+  border-radius: 5px;
+  background: var(--chrome-bg2);
+  overflow: hidden;
+  max-width: 100%;
+}
+.tm-cta-curl code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--chrome-text-bright);
+  padding: 11px 14px;
+  white-space: nowrap;
+  overflow-x: auto;
+}
+.tm-cta-copy {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent-green);
+  background: var(--accent-green-faint);
+  border: none;
+  border-left: 1px solid var(--chrome-border);
+  padding: 0 14px;
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition);
+}
+.tm-cta-copy:hover { background: var(--accent-green-dim); color: #6ee79a; }
+.tm-cta-agent {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 9px;
+  margin: 0 0 22px;
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  text-decoration: none;
+  color: var(--chrome-text-dim);
+  transition: color var(--transition);
+}
+.tm-cta-agent:hover { color: var(--accent-blue); }
+.tm-cta-agent-method {
+  font-weight: 600;
+  font-size: 9.5px;
+  letter-spacing: 0.08em;
+  color: var(--accent-blue);
+  border: 1px solid var(--accent-blue);
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+.tm-cta-agent-path { color: var(--chrome-text-bright); }
+.tm-cta-agent-note { color: var(--chrome-text-dim); }
+
+/* ── Three pillars: open standard · honest graph · signed receipts ─────
+   Sits between hero and radar. Card aesthetic matches .tm-surface; each
+   tone draws a P-GEO accent on the top border + label. */
+.tm-pillars {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: clamp(8px, 2vw, 18px) clamp(18px, 4vw, 32px) clamp(20px, 4vw, 34px);
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(12px, 2.4vw, 20px);
+}
+@media (max-width: 768px) {
+  .tm-pillars { grid-template-columns: 1fr; }
+}
+.tm-pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 22px 22px 24px;
+  background: var(--chrome-bg2);
+  border: 1px solid var(--chrome-border);
+  border-top: 2px solid var(--chrome-border);
+  border-radius: 6px;
+  transition: border-color var(--transition), transform var(--transition),
+              box-shadow var(--transition);
+}
+.tm-pillar:hover { transform: translateY(-2px); }
+.tm-pillar-standard { border-top-color: var(--accent-amber); }
+.tm-pillar-standard:hover { box-shadow: 0 8px 26px -14px var(--accent-amber); }
+.tm-pillar-standard .tm-pillar-label { color: var(--accent-amber); }
+.tm-pillar-graph { border-top-color: var(--accent-green); }
+.tm-pillar-graph:hover { box-shadow: 0 8px 26px -14px var(--accent-green); }
+.tm-pillar-graph .tm-pillar-label { color: var(--accent-green); }
+.tm-pillar-receipts { border-top-color: var(--accent-blue); }
+.tm-pillar-receipts:hover { box-shadow: 0 8px 26px -14px var(--accent-blue); }
+.tm-pillar-receipts .tm-pillar-label { color: var(--accent-blue); }
+.tm-pillar-label {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.tm-pillar-head {
+  font-family: var(--font-display);
+  font-size: clamp(16px, 2vw, 19px);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--chrome-text-bright);
+}
+.tm-pillar-body {
+  font-family: var(--font-serif);
+  font-size: 14.5px;
+  line-height: 1.62;
+  color: var(--doc-text-dim);
+}
+
+/* ── Agent access bar — full-width machine-reader handshake ─────────────
+   Reads as one terminal line, not a footer widget. */
+.tm-agent-bar {
+  background: var(--chrome-bg2);
+  border-top: 1px solid var(--chrome-border);
+  border-bottom: 1px solid var(--chrome-border);
+}
+.tm-agent-bar-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 16px clamp(18px, 4vw, 32px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.tm-agent-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.tm-agent-bar-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent-blue);
+  white-space: nowrap;
+}
+.tm-agent-bar-endpoints {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--chrome-text-dim);
+  overflow-x: auto;
+}
+.tm-agent-bar-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.tm-chip {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--chrome-text);
+  text-decoration: none;
+  padding: 6px 11px;
+  border: 1px solid var(--chrome-border);
+  border-radius: 4px;
+  background: var(--chrome-bg);
+  transition: border-color var(--transition), color var(--transition),
+              transform var(--transition);
+}
+.tm-chip:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  transform: translateY(-1px);
+}
+
+/* Pillar entrance — staggered fade-up, motion-safe only. */
+@media (prefers-reduced-motion: no-preference) {
+  .tm-pillar {
+    opacity: 0;
+    animation: tm-pillar-in 0.6s ease-out forwards;
+  }
+  .tm-pillar:nth-child(1) { animation-delay: 0.05s; }
+  .tm-pillar:nth-child(2) { animation-delay: 0.16s; }
+  .tm-pillar:nth-child(3) { animation-delay: 0.27s; }
+}
+@keyframes tm-pillar-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
 /* ── P-GEO sacred-geometry layer ────────────────────────────────────────
    Cinzel display headers + geometry primitives. The mystical frame; the
    monospace data readouts it sits beside carry the truth. ─────────────── */

@@ -1,44 +1,70 @@
 /* ── TunnelMind Design System ─────────────────────────────────────── */
 :root {
-  /* Chrome: deep slate */
-  --chrome-bg: #0f172a;
-  --chrome-bg2: #1e293b;
-  --chrome-border: #334155;
+  /* ── P-GEO sacred-geometry palette ──────────────────────────────────
+     Cosmic near-black ground, gold geometry lines, three lens colors.
+     "GEOMETRY CARRIES STRUCTURE. MONOSPACE CARRIES TRUTH." ───────────── */
+
+  /* Chrome: cosmic near-black (was deep slate) */
+  --chrome-bg: #0a0a0f;
+  --chrome-bg2: #14121c;
+  --chrome-border: #2a2440;
   --chrome-text: #cbd5e1;
   --chrome-text-dim: #94a3b8;
   --chrome-text-bright: #e2e8f0;
 
-  /* Document: slightly lighter slate for readable body text */
-  --doc-bg: #1e293b;
-  --doc-paper: #243044;
+  /* Document: violet-black, one step up from chrome for readable body */
+  --doc-bg: #0d0b14;
+  --doc-paper: #14121c;
   --doc-text: #e2e8f0;
   --doc-text-dim: #cbd5e1;
   --doc-text-faint: #94a3b8;
 
-  /* Accent system */
-  --accent-green: #4ade80;
-  --accent-green-faint: rgba(74, 222, 128, 0.05);
-  --accent-green-dim: rgba(74, 222, 128, 0.15);
-  --accent-green-mid: rgba(74, 222, 128, 0.3);
-  --accent-green-glow: rgba(74, 222, 128, 0.2);
-  --accent-amber: #fbbf24;
-  --accent-amber-dim: rgba(251, 191, 36, 0.15);
-  --accent-red: #f87171;
+  /* Accent system — mapped to the three lenses + gold geometry line.
+     green = Sigil, purple = Tracker, cyan/blue = Scry, amber = gold. */
+  --accent-green: #3dba8a;                       /* Sigil lens */
+  --accent-green-faint: rgba(61, 186, 138, 0.05);
+  --accent-green-dim: rgba(61, 186, 138, 0.15);
+  --accent-green-mid: rgba(61, 186, 138, 0.3);
+  --accent-green-glow: rgba(61, 186, 138, 0.2);
+  --accent-amber: #c9a84c;                        /* geometry gold */
+  --accent-amber-dim: rgba(201, 168, 76, 0.15);
+  --accent-red: #f87171;                          /* risk/error — kept */
   --accent-red-dim: rgba(248, 113, 113, 0.15);
-  --accent-purple: #a78bfa;
-  --accent-purple-dim: rgba(167, 139, 250, 0.15);
-  --accent-blue: #60a5fa;
-  --accent-cyan: #38bdf8;
+  --accent-purple: #9b6fd4;                        /* Tracker lens */
+  --accent-purple-dim: rgba(155, 111, 212, 0.15);
+  --accent-blue: #00d4ff;                          /* Scry lens */
+  --accent-cyan: #00d4ff;                          /* Scry lens */
+
+  /* Geometry / sacred-geometry tokens */
+  --geo-line: #c9a84c;                             /* gold geometry stroke */
+  --scry: #00d4ff;
+  --sigil: #3dba8a;
+  --tracker: #9b6fd4;
+  /* Attestation-tier ramp (spiral inward = higher trust) */
+  --attest-self: #4a5568;
+  --attest-software: #7a8499;
+  --attest-tee: #c9a84c;
+  --attest-silicon: #00d4ff;
+
+  /* φ spacing scale */
+  --phi-1: 8px;
+  --phi-2: 13px;
+  --phi-3: 21px;
+  --phi-4: 34px;
+  --phi-5: 55px;
+  --phi-6: 89px;
+  --phi-7: 144px;
 
   /* Interactive states */
   --hover-overlay: rgba(255, 255, 255, 0.05);
-  --selected-overlay: rgba(74, 222, 128, 0.08);
-  --vote-up: #4ade80;
+  --selected-overlay: rgba(61, 186, 138, 0.08);
+  --vote-up: #3dba8a;
   --vote-down: #f87171;
 
   /* Typography */
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
   --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
+  --font-display: 'Cinzel', Georgia, 'Times New Roman', serif;
 
   /* Layout */
   --nav-height: 38px;
@@ -228,16 +254,16 @@ a:hover {
   animation: tm-pulse 2.4s ease-out infinite;
 }
 @keyframes tm-pulse {
-  0%   { box-shadow: 0 0 0 0 rgba(74,222,128,0.45); }
-  70%  { box-shadow: 0 0 0 7px rgba(74,222,128,0); }
-  100% { box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+  0%   { box-shadow: 0 0 0 0 rgba(61,186,138,0.45); }
+  70%  { box-shadow: 0 0 0 7px rgba(61,186,138,0); }
+  100% { box-shadow: 0 0 0 0 rgba(61,186,138,0); }
 }
 .tm-hero h1 {
-  font-family: var(--font-serif);
-  font-size: clamp(30px, 5.4vw, 52px);
-  font-weight: 500;
-  line-height: 1.14;
-  letter-spacing: -0.015em;
+  font-family: var(--font-display);
+  font-size: clamp(28px, 5vw, 48px);
+  font-weight: 600;
+  line-height: 1.18;
+  letter-spacing: 0.01em;
   color: var(--chrome-text-bright);
   margin-bottom: 20px;
 }
@@ -387,22 +413,22 @@ a:hover {
   --radar-fg: #e5e7eb;
   --radar-fg-dim: #9ca3af;
   --radar-fg-muted: #6b7280;
-  --radar-accent: #6ad6c8;
-  --radar-accent-dim: #2d4f4a;
-  --radar-warn: #f59e0b;
+  --radar-accent: #00d4ff;        /* Scry lens (was teal #6ad6c8) */
+  --radar-accent-dim: #103a47;
+  --radar-warn: #c9a84c;          /* geometry gold */
   --radar-err: #ef4444;
   --radar-border: #2a2d36;
-  --radar-node-actor: #6ad6c8;
+  --radar-node-actor: #00d4ff;    /* Scry lens */
   --radar-node-scanner: #6b7280;
-  --radar-node-campaign: #f59e0b;
+  --radar-node-campaign: #c9a84c; /* geometry gold */
   /* vendor-aware overlay colors (actor classification):
      - vendor: cool slate-blue for neutral, benign infrastructure
        (Palo Alto, Shodan, Censys, generic AI/search crawlers)
      - claude: Anthropic warm orange for the `elevate` treatment
        (verified ClaudeBot only). Build for Claude specifically —
        see feedback_claude_first in Claude Memory. */
-  --radar-node-vendor: #6b91d6;
-  --radar-node-claude: #cc785c;
+  --radar-node-vendor: #9b6fd4;   /* Tracker lens */
+  --radar-node-claude: #cc785c;   /* Anthropic clay — brand, do not touch */
 
   /* The radar IS the page — give it real estate. Use the full viewport
      height below the hero. The 160px buffer used to be 220px; tightening
@@ -1241,4 +1267,57 @@ a:hover {
 }
 @media (max-width: 560px) {
   .tm-pricing { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── P-GEO sacred-geometry layer ────────────────────────────────────────
+   Cinzel display headers + geometry primitives. The mystical frame; the
+   monospace data readouts it sits beside carry the truth. ─────────────── */
+
+/* Display face on top-level headings site-wide. The radar's small panel
+   <h3>s stay on the mono/UI face (scoped under .radar-root, untouched). */
+h1, h2 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Fixed geometry watermark mounted once in App.jsx; sits behind all content. */
+.pgeo-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.pgeo-bg > svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: min(120vh, 120vw);
+  height: min(120vh, 120vw);
+  transform: translate(-50%, -50%);
+  stroke: var(--geo-line);
+  opacity: 0.05;
+  animation: geo-rotate 240s linear infinite;
+}
+
+/* Hero geometry accent (beside an <h1>). */
+.pgeo-mark {
+  stroke: var(--geo-line);
+  fill: none;
+  opacity: 0.5;
+}
+.pgeo-mark.spin { animation: geo-spin 90s linear infinite; transform-origin: 50% 50%; }
+
+@keyframes geo-rotate { to { transform: translate(-50%, -50%) rotate(360deg); } }
+@keyframes geo-spin { to { transform: rotate(360deg); } }
+@keyframes geo-pulse {
+  0%, 100% { opacity: 0.35; }
+  50%      { opacity: 0.7; }
+}
+
+/* Respect reduced-motion: freeze all geometry animation. */
+@media (prefers-reduced-motion: reduce) {
+  .pgeo-bg > svg,
+  .pgeo-mark.spin { animation: none; }
 }

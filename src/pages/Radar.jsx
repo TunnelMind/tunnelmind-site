@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { initRadar } from '../lib/radar/initRadar.js'
+import { Hexagram } from '../components/geometry/Geometry.jsx'
 
 // Radar — the TunnelMind landing (P25 Phase 2). The live attacker-corpus
 // force graph is the hero, wrapped in a deliberate conversion frame so a
@@ -190,7 +191,10 @@ export default function Radar({ onNavigate }) {
           unedited window into that corpus.
         </p>
         <div className="tm-lens-strip" aria-label="One corpus, three lenses">
-          <div className="tm-lens-caption">One corpus · Three lenses</div>
+          <div className="tm-lens-caption">
+            <Hexagram size={20} className="pgeo-mark" style={{ verticalAlign: '-4px', marginRight: '8px' }} />
+            One corpus · Three lenses
+          </div>
           <div className="tm-lens-grid">
             <div className="tm-lens">
               <div className="tm-lens-name">Scry</div>

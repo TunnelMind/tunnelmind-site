@@ -1,4 +1,5 @@
 import React from 'react'
+import { Hexagram } from '../components/geometry/Geometry.jsx'
 
 // The /vision route. Plain prose — the thesis behind the pivot
 // (P25 Phase 2): TunnelMind reframed as the observability layer for the
@@ -71,16 +72,21 @@ const PRINCIPLES = [
 export default function Landing({ onNavigate }) {
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
-      <div style={{ maxWidth: '760px', margin: '0 auto', padding: 'clamp(32px, 6vw, 60px) clamp(16px, 4vw, 32px)' }}>
+      <div style={{ position: 'relative', maxWidth: '760px', margin: '0 auto', padding: 'clamp(32px, 6vw, 60px) clamp(16px, 4vw, 32px)' }}>
 
         {/* ── Hero ─────────────────────────────────────────────────── */}
+        <Hexagram
+          className="pgeo-mark spin"
+          size={140}
+          style={{ position: 'absolute', top: 'clamp(8px, 3vw, 28px)', right: 'clamp(8px, 3vw, 24px)', pointerEvents: 'none' }}
+        />
         <div style={eyebrow}>● Vision</div>
         <h1 style={{
-          fontFamily: 'var(--font-serif)',
-          fontSize: 'clamp(28px, 5vw, 44px)',
-          fontWeight: 400,
-          lineHeight: '1.2',
-          letterSpacing: '-0.01em',
+          fontFamily: 'var(--font-display)',
+          fontSize: 'clamp(26px, 4.6vw, 42px)',
+          fontWeight: 600,
+          lineHeight: '1.22',
+          letterSpacing: '0.01em',
           color: 'var(--chrome-text-bright)',
           marginBottom: '22px',
         }}>
@@ -282,7 +288,7 @@ export default function Landing({ onNavigate }) {
                 fontFamily: 'var(--font-mono)',
                 fontSize: '11px',
                 fontWeight: 600,
-                color: '#0f172a',
+                color: 'var(--chrome-bg)',
                 cursor: 'pointer',
                 letterSpacing: '0.04em',
               }}

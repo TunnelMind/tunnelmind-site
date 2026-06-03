@@ -110,7 +110,7 @@ function SurfaceCard({ tool, onNavigate }) {
             fontFamily: 'var(--font-mono)',
             fontSize: '10px',
             fontWeight: 600,
-            color: '#0f172a',
+            color: 'var(--chrome-bg)',
             cursor: 'pointer',
             whiteSpace: 'nowrap',
             flexShrink: 0,

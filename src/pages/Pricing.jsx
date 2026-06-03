@@ -143,7 +143,7 @@ function HumanCard() {
             style={{
               padding: '10px', background: accent, border: `1px solid ${accent}`,
               borderRadius: '3px', fontFamily: 'var(--font-mono)', fontSize: '10px',
-              fontWeight: 700, color: '#0f172a', cursor: busy ? 'wait' : 'pointer',
+              fontWeight: 700, color: 'var(--chrome-bg)', cursor: busy ? 'wait' : 'pointer',
               opacity: busy ? 0.6 : 1,
             }}
           >
@@ -287,7 +287,7 @@ function KeyReveal({ apiKey, calls }) {
             padding: '8px 12px', background: 'var(--accent-green)',
             border: '1px solid var(--accent-green)', borderRadius: '3px',
             fontFamily: 'var(--font-mono)', fontSize: '10px', fontWeight: 700,
-            color: '#0f172a', cursor: 'pointer',
+            color: 'var(--chrome-bg)', cursor: 'pointer',
           }}
         >
           {copied ? 'Copied' : 'Copy key'}

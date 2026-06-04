@@ -2,10 +2,16 @@
 
 | | |
 |---|---|
-| **Status**     | Accepted |
+| **Status**     | ⚠️ SUPERSEDED 2026-06-03 by `ADR-2026-06-P-LAND-trust-leads-narrative.md` |
 | **Date**       | 2026-05-30 |
 | **Workstream** | Audit candidate #52 from `session_2026-05-24_outside_in_audit` |
 | **Authors**    | Josh Moore + Claude |
+
+> **Superseded.** The external narrative now **leads with trust attestation**, with each
+> lens (Scry / Sigil / Tracker) given its own equal spotlight rather than Sigil-as-headline.
+> Josh's call 2026-06-03: "lead with trust — but everything has its place to shine."
+> The reasoning below is preserved as the record of why Sigil-first was tried first.
+> See `ADR-2026-06-P-LAND-trust-leads-narrative.md` for the current decision.
 
 ## Context
 

@@ -1,5 +1,4 @@
 import React from 'react'
-import { Hexagram } from '../components/geometry/Geometry.jsx'
 
 // The /vision route. Plain prose — the thesis behind the pivot
 // (P25 Phase 2): TunnelMind reframed as the observability layer for the
@@ -75,11 +74,6 @@ export default function Landing({ onNavigate }) {
       <div style={{ position: 'relative', maxWidth: '760px', margin: '0 auto', padding: 'clamp(32px, 6vw, 60px) clamp(16px, 4vw, 32px)' }}>
 
         {/* ── Hero ─────────────────────────────────────────────────── */}
-        <Hexagram
-          className="pgeo-mark spin"
-          size={140}
-          style={{ position: 'absolute', top: 'clamp(8px, 3vw, 28px)', right: 'clamp(8px, 3vw, 24px)', pointerEvents: 'none' }}
-        />
         <div style={eyebrow}>● Vision</div>
         <h1 style={{
           fontFamily: 'var(--font-display)',

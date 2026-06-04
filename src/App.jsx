@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react'
 
 import TopNav from './components/shared/TopNav.jsx'
 import Footer from './components/shared/Footer.jsx'
-import { GeometryBackground } from './components/geometry/Geometry.jsx'
 
 import Radar from './pages/Radar.jsx'
 import Landing from './pages/Landing.jsx'
@@ -99,8 +98,6 @@ export default function App() {
       background: 'var(--chrome-bg)',
       position: 'relative',
     }}>
-      <GeometryBackground variant="metatron" />
-
       <TopNav site="tunnelmind" currentPage={page} onNavigate={handleNavigate} />
 
       <div style={{

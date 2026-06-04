@@ -1,13 +1,5 @@
 import React from 'react'
 import PageDesc from '../components/PageDesc.jsx'
-import { Familiar, Augur, SigilProbe } from '../components/geometry/Sigils.jsx'
-
-// Sensor/service glyphs, keyed by product name (only the ones that have one).
-const PRODUCT_SIGIL = {
-  Familiar,
-  Augur,
-  Sigil: SigilProbe,
-}
 
 // /products — post-pivot (P25 Phase 2). The full registry of the
 // observability layer: the pipelines that build the corpus, the surfaces
@@ -118,7 +110,6 @@ function ProductCard({ tool }) {
     ? { href: tool.url, ...(isHash ? {} : { target: '_blank', rel: 'noopener noreferrer' }) }
     : {}
   const tagColor = TagColor(tool.tag)
-  const Sigil = PRODUCT_SIGIL[tool.name]
 
   return (
     <El
@@ -154,7 +145,6 @@ function ProductCard({ tool }) {
           fontWeight: 600,
           color: 'var(--chrome-text-bright)',
         }}>
-          {Sigil && <Sigil size={22} strokeWidth={3} style={{ flexShrink: 0 }} />}
           {tool.name}
         </span>
         <span style={{

@@ -1461,9 +1461,8 @@ a:hover {
   to   { opacity: 1; transform: none; }
 }
 
-/* ── P-GEO sacred-geometry layer ────────────────────────────────────────
-   Cinzel display headers + geometry primitives. The mystical frame; the
-   monospace data readouts it sits beside carry the truth. ─────────────── */
+/* ── Display headers ────────────────────────────────────────────────────
+   Serif display face on top-level headings; monospace carries the data. ── */
 
 /* Display face on top-level headings site-wide. The radar's small panel
    <h3>s stay on the mono/UI face (scoped under .radar-root, untouched). */
@@ -1473,43 +1472,7 @@ h1, h2 {
   letter-spacing: 0.01em;
 }
 
-/* Fixed geometry watermark mounted once in App.jsx; sits behind all content. */
-.pgeo-bg {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  overflow: hidden;
-}
-.pgeo-bg > svg {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: min(120vh, 120vw);
-  height: min(120vh, 120vw);
-  transform: translate(-50%, -50%);
-  stroke: var(--geo-line);
-  opacity: 0.05;
-  animation: geo-rotate 240s linear infinite;
-}
-
-/* Hero geometry accent (beside an <h1>). */
-.pgeo-mark {
-  stroke: var(--geo-line);
-  fill: none;
-  opacity: 0.5;
-}
-.pgeo-mark.spin { animation: geo-spin 90s linear infinite; transform-origin: 50% 50%; }
-
-@keyframes geo-rotate { to { transform: translate(-50%, -50%) rotate(360deg); } }
-@keyframes geo-spin { to { transform: rotate(360deg); } }
-@keyframes geo-pulse {
-  0%, 100% { opacity: 0.35; }
-  50%      { opacity: 0.7; }
-}
-
-/* Respect reduced-motion: freeze all geometry animation. */
+/* Respect reduced-motion: freeze decorative animation. */
 @media (prefers-reduced-motion: reduce) {
-  .pgeo-bg > svg,
-  .pgeo-mark.spin { animation: none; }
+  .tm-live-dot, .radar-livedot, .tk-dot { animation: none; }
 }

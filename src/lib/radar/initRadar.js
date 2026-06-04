@@ -21,6 +21,8 @@
 //   initialLookup — domain or IP to auto-inspect on bootstrap (deep link
 //                   target for /#/?inspect=<host>, used when retiring
 //                   netprobe.tunnelmind.ai by 301)
+import ForceGraph3D from '3d-force-graph';
+
 export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   const $ = (sel) => root.querySelector(sel);
   const $$ = (sel) => root.querySelectorAll(sel);
@@ -55,6 +57,20 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   let intervalId = null;
   let es = null;
   let destroyed = false;
+  let graph3d = null;
+
+  // Node fill by kind — hardcoded hex (three.js can't read CSS vars).
+  // Mirrors --radar-node-* in index.css.
+  const NODE_COLOR = {
+    campaign: '#c9a84c', // geometry gold
+    scanner:  '#6b7280',
+    claude:   '#cc785c', // Anthropic clay (verified ClaudeBot)
+    vendor:   '#9b6fd4', // Tracker violet
+    actor:    '#00d4ff', // Scry cyan
+  };
+  const nodeColorFn = (n) =>
+    n.id === selected ? '#ffffff' : (NODE_COLOR[n.kind] || NODE_COLOR.actor);
+  function refreshNodeColors() { if (graph3d) graph3d.nodeColor(nodeColorFn); }
 
   // ── view-mode toggle ──────────────────────────────────────────────
   $$('.radar-modes button').forEach((b) => {
@@ -109,6 +125,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     detectNewArrivals(r);
     if (mode === 'json') renderJson();
     rebuildGraph(r, c);
+    syncGraph3d();
     updateLegend();
     if (inspectorMode === 'overview') renderOverview();
   }
@@ -287,117 +304,57 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     }
   }
 
-  // ── force layout (tiny custom impl, no D3) ────────────────────────
+  // ── 3D force graph (WebGL via three.js / 3d-force-graph) ──────────
+  // Swaps the old hand-rolled 2D SVG force layout for a real 3D graph.
+  // The data model (nodes/edges) and the inspector (selectNode) are
+  // unchanged — only the renderer. OrbitControls give rotate/zoom/pan.
+  function ensureGraph3d() {
+    if (graph3d || destroyed) return;
+    const el = $('#graphArea');
+    if (!el) return;
+    const svg = $('#graphSvg');
+    if (svg) svg.style.display = 'none'; // legacy SVG layer no longer renders
+    graph3d = ForceGraph3D()(el)
+      .backgroundColor('rgba(0,0,0,0)')
+      .width(W()).height(H())
+      .showNavInfo(false)
+      .nodeId('id')
+      .nodeVal((n) => n.r)
+      .nodeRelSize(2)
+      .nodeColor(nodeColorFn)
+      .nodeOpacity(0.92)
+      .nodeResolution(14)
+      .nodeLabel((n) => n.label)
+      .linkColor(() => '#3a3f4b')
+      .linkWidth(0.4)
+      .linkOpacity(0.5)
+      .warmupTicks(40)
+      .cooldownTime(9000)
+      .onNodeClick((n) => { selectNode(n.id); });
+    syncGraph3d();
+  }
+
+  // Push current nodes/edges into the 3D graph, carrying computed x/y/z
+  // from the previous frame by id so positions persist across snapshots
+  // (brand-new nodes are auto-placed by the layout).
+  function syncGraph3d() {
+    if (!graph3d) return;
+    const live = new Map((graph3d.graphData().nodes || []).map((n) => [n.id, n]));
+    for (const n of nodes) {
+      const p = live.get(n.id);
+      if (p) { n.x = p.x; n.y = p.y; n.z = p.z; n.vx = p.vx; n.vy = p.vy; n.vz = p.vz; }
+      else { delete n.x; delete n.y; delete n.z; }
+    }
+    graph3d.graphData({ nodes, links: edges });
+  }
+
   function startGraphLoop() {
-    if (rafId !== null || destroyed) return;
-    const tick = () => {
-      if (mode !== 'visual' || destroyed) { rafId = null; return; }
-      stepForces();
-      drawGraph();
-      rafId = requestAnimationFrame(tick);
-    };
-    rafId = requestAnimationFrame(tick);
+    if (destroyed) return;
+    if (!graph3d) { ensureGraph3d(); return; }
+    graph3d.resumeAnimation();
   }
   function stopGraphLoop() {
-    if (rafId !== null) cancelAnimationFrame(rafId);
-    rafId = null;
-  }
-
-  function stepForces() {
-    if (!nodes.length) return;
-    const cx = W() / 2, cy = H() / 2;
-    // Center attraction
-    for (const n of nodes) {
-      n.vx += (cx - n.x) * 0.0008;
-      n.vy += (cy - n.y) * 0.0008;
-    }
-    // Repulsion (n^2 — fine for ~70 nodes max; if it grows we'll bin)
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i], b = nodes[j];
-        const dx = b.x - a.x, dy = b.y - a.y;
-        const d2 = Math.max(dx * dx + dy * dy, 25);
-        const f = 350 / d2;
-        const ux = dx / Math.sqrt(d2), uy = dy / Math.sqrt(d2);
-        a.vx -= ux * f; a.vy -= uy * f;
-        b.vx += ux * f; b.vy += uy * f;
-      }
-    }
-    // Edge spring
-    const byId = new Map(nodes.map((n) => [n.id, n]));
-    for (const e of edges) {
-      const a = byId.get(e.source), b = byId.get(e.target);
-      if (!a || !b) continue;
-      const dx = b.x - a.x, dy = b.y - a.y;
-      const d = Math.max(Math.sqrt(dx * dx + dy * dy), 1);
-      const target = 90;
-      const f = (d - target) * 0.012;
-      const ux = dx / d, uy = dy / d;
-      a.vx += ux * f; a.vy += uy * f;
-      b.vx -= ux * f; b.vy -= uy * f;
-    }
-    // Damping + integration
-    for (const n of nodes) {
-      n.vx *= 0.85; n.vy *= 0.85;
-      n.x += n.vx; n.y += n.vy;
-      n.x = Math.max(20, Math.min(W() - 20, n.x));
-      n.y = Math.max(20, Math.min(H() - 20, n.y));
-    }
-  }
-
-  function drawGraph() {
-    const svg = $('#graphSvg');
-    if (!svg) return;
-    const byId = new Map(nodes.map((n) => [n.id, n]));
-    const now = Date.now();
-    let html = '';
-    for (const e of edges) {
-      const a = byId.get(e.source), b = byId.get(e.target);
-      if (!a || !b) continue;
-      html += '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y +
-              '" stroke="#2a2d36" stroke-width="0.6"/>';
-    }
-    for (const n of nodes) {
-      const fill = n.kind === 'campaign' ? 'var(--radar-node-campaign)' :
-                   n.kind === 'scanner'  ? 'var(--radar-node-scanner)'  :
-                   n.kind === 'claude'   ? 'var(--radar-node-claude)'   :
-                   n.kind === 'vendor'   ? 'var(--radar-node-vendor)'   :
-                                           'var(--radar-node-actor)';
-      const isSel = n.id === selected;
-      const stroke = isSel ? '#fff' : (n.kind === 'campaign' ? '#fff3' : '#0006');
-      const swidth = isSel ? 2 : 1;
-      // Brand-new nodes (< 6s old) get a fading pulse ring.
-      const age = now - (n.bornAt || now);
-      if (age < 6000) {
-        const p = age / 6000;
-        html += '<circle cx="' + n.x + '" cy="' + n.y + '" r="' +
-                (n.r + 3 + p * 14) + '" fill="none" stroke="' + fill +
-                '" stroke-width="1" opacity="' + (0.5 * (1 - p)).toFixed(3) + '"/>';
-      }
-      html += '<circle data-id="' + escAttr(n.id) +
-              '" cx="' + n.x + '" cy="' + n.y + '" r="' + n.r + '" fill="' + fill +
-              '" stroke="' + stroke + '" stroke-width="' + swidth + '" style="cursor:pointer"/>';
-    }
-    svg.innerHTML = html;
-
-    // Selection is delegated to the persistent <svg>, wired exactly once,
-    // and listens on `pointerdown` rather than `click`. The force loop
-    // rebuilds svg.innerHTML every frame, so the circle a user presses on
-    // is destroyed before their mouseup — at which point the browser fires
-    // `click` on the common ancestor (the <svg>), `ev.target.closest(
-    // 'circle[data-id]')` returns null, and selectNode is never called.
-    // `pointerdown` resolves the target at press time, before the next
-    // redraw can swap it. There are no drag semantics on the radar, so
-    // promoting press → select is a behavior win, not a regression.
-    if (!svg.dataset.clickWired) {
-      svg.dataset.clickWired = '1';
-      svg.addEventListener('pointerdown', (ev) => {
-        // Primary button / primary touch only — ignore right-click etc.
-        if (ev.button !== undefined && ev.button !== 0) return;
-        const circle = ev.target.closest('circle[data-id]');
-        if (circle) selectNode(circle.getAttribute('data-id'));
-      });
-    }
+    if (graph3d) graph3d.pauseAnimation();
   }
 
   function selectNode(id) {
@@ -407,6 +364,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     inspectorMode = 'node';
     if (n.kind === 'campaign') renderCampaignInspector(n);
     else renderActorInspector(n);
+    refreshNodeColors();
   }
 
   function clearSelection() {
@@ -414,6 +372,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     lookupHost = null;
     inspectorMode = 'overview';
     renderOverview();
+    refreshNodeColors();
   }
 
   // ── inspector shell ───────────────────────────────────────────────
@@ -1953,12 +1912,13 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   // Runs after renderOverview so a bad host falls back cleanly to it.
   if (initialLookup) enterLookup(initialLookup);
 
-  const onResize = () => drawGraph();
+  const onResize = () => { if (graph3d) graph3d.width(W()).height(H()); };
   window.addEventListener('resize', onResize);
 
   return function cleanup() {
     destroyed = true;
     stopGraphLoop();
+    if (graph3d) { graph3d._destructor(); graph3d = null; }
     if (es) es.close();
     if (intervalId) clearInterval(intervalId);
     window.removeEventListener('resize', onResize);

@@ -156,14 +156,27 @@ const ROUTES = [
 
 // ── Replacers ────────────────────────────────────────────────────────────────
 
+// Escape a value for safe interpolation into a double-quoted HTML attribute.
+// Without this, a value containing " (e.g. the /vision description's quoted
+// phrase) breaks the attribute.
+function escAttr(value) {
+  return String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+}
+
 function setTag(html, name, value) {
-  // Replace <meta name="..."> OR <meta property="..."> by name.
-  const re = new RegExp(`(<meta[^>]+(?:name|property)=["']${name}["'][^>]*content=["'])[^"']*(["'][^>]*>)`, 'gi');
-  if (re.test(html)) return html.replace(re, `$1${value}$2`);
+  const v = escAttr(value);
+  // Replace <meta name="..."> OR <meta property="..."> by name. Match the
+  // existing content up to its closing double-quote only ([^"]*, NOT [^"']*)
+  // so an apostrophe in the base value (e.g. "We're building one") does not
+  // truncate the match and splice the leftover tail onto the new value.
+  const re = new RegExp(`(<meta[^>]+(?:name|property)=["']${name}["'][^>]*content=")[^"]*(")`, 'gi');
+  // Function replacer: its return value is used literally, so a value
+  // containing "$" (e.g. the /pricing "$20") is never read as a $n capture ref.
+  if (re.test(html)) return html.replace(re, (_m, p1, p2) => `${p1}${v}${p2}`);
   // Otherwise inject before </head>.
   const isProp = /^og:|^twitter:/.test(name);
   const attr = isProp ? 'property' : 'name';
-  return html.replace('</head>', `    <meta ${attr}="${name}" content="${value}">\n  </head>`);
+  return html.replace('</head>', `    <meta ${attr}="${name}" content="${v}">\n  </head>`);
 }
 
 function setTitle(html, title) {

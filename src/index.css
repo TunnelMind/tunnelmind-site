@@ -1099,6 +1099,7 @@ a:hover {
   color: var(--radar-accent); border-color: var(--radar-accent-dim);
 }
 .radar-root .whois-btn:disabled { cursor: default; opacity: 0.7; }
+.radar-root .whois-wrap .bgp-btn { margin-top: 8px; }
 .radar-root .whois-box {
   margin-top: 10px; padding: 8px 10px;
   background: var(--radar-panel-2); border-radius: 5px;

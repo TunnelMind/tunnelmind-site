@@ -22,6 +22,7 @@
 //                   target for /#/?inspect=<host>, used when retiring
 //                   netprobe.tunnelmind.ai by 301)
 import ForceGraph3D from '3d-force-graph';
+import * as THREE from 'three';
 
 export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   const $ = (sel) => root.querySelector(sel);
@@ -50,6 +51,8 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   //   'lookup'   — a host was typed into the lookup form; tabbed intel
   let inspectorMode = 'overview';
   let lookupHost = null;
+  let lookupTab = null;          // the tab the user is currently looking at, so a
+                                 // slow earlier tab's late response can't clobber it
   const tabCache = new Map();    // `${host}:${tab}` -> trimmed payload (lazy; success-only)
   const tabInflight = new Map(); // `${host}:${tab}` -> Promise; dedupes simultaneous clicks
 
@@ -320,18 +323,109 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       .showNavInfo(false)
       .nodeId('id')
       .nodeVal((n) => n.r)
-      .nodeRelSize(2)
+      .nodeRelSize(2.4)
       .nodeColor(nodeColorFn)
       .nodeOpacity(0.92)
       .nodeResolution(14)
-      .nodeLabel((n) => n.label)
+      .nodeLabel(hoverLabel)
+      // Campaign hubs carry an always-on text label so the cloud reads at a
+      // glance instead of requiring a hover on every dot.
+      .nodeThreeObjectExtend(true)
+      .nodeThreeObject(nodeLabelObject)
       .linkColor(() => '#3a3f4b')
       .linkWidth(0.4)
       .linkOpacity(0.5)
       .warmupTicks(40)
       .cooldownTime(9000)
-      .onNodeClick((n) => { selectNode(n.id); });
+      // Pointer affordance — without it the dots don't read as clickable.
+      .onNodeHover((n) => { el.style.cursor = n ? 'pointer' : 'grab'; })
+      .onNodeClick((n) => { selectNode(n.id); focusNode(n); });
+    el.style.cursor = 'grab';
     syncGraph3d();
+  }
+
+  // Richer hover tooltip than a bare IP: kind + label + (for actors) origin
+  // and network so the graph is legible before you even click.
+  function hoverLabel(n) {
+    if (n.kind === 'campaign') {
+      return 'Campaign · ' + esc(n.protocol ? n.protocol.toUpperCase() : '?') +
+        (n.member_actor_count != null ? ' · ' + fmt(n.member_actor_count) + ' actors' : '');
+    }
+    const bits = [esc(n.label)];
+    if (n.country) bits.push(flagOf(n.country) + ' ' + esc(n.country));
+    if (n.asn) bits.push('AS' + esc(n.asn));
+    return bits.join('  ·  ');
+  }
+
+  // Always-on sprite label for the prominent nodes (campaign hubs). Returns
+  // undefined for ordinary actor/scanner dots so they stay clean — with
+  // nodeThreeObjectExtend(true) a returned sprite is *added to* the default
+  // sphere rather than replacing it.
+  function nodeLabelObject(n) {
+    if (n.kind !== 'campaign') return undefined;
+    const text = (n.protocol ? n.protocol.toUpperCase() : 'campaign') +
+      (n.member_actor_count != null ? ' · ' + n.member_actor_count : '');
+    return makeLabelSprite(text, '#c9a84c', (n.r || 8));
+  }
+
+  // Text → pill sprite via a 2D canvas texture. Uses the same `three`
+  // instance 3d-force-graph renders with (single hoisted copy), so the
+  // sprite composites correctly into the scene.
+  function makeLabelSprite(text, color, nodeR) {
+    const dpr = 2;
+    const fontPx = 26;
+    const measure = document.createElement('canvas').getContext('2d');
+    measure.font = '600 ' + fontPx + 'px ui-sans-serif, system-ui, sans-serif';
+    const padX = 16, padY = 9;
+    const tw = Math.ceil(measure.measureText(text).width);
+    const w = tw + padX * 2, h = fontPx + padY * 2;
+    const canvas = document.createElement('canvas');
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    const ctx = canvas.getContext('2d');
+    ctx.scale(dpr, dpr);
+    ctx.font = '600 ' + fontPx + 'px ui-sans-serif, system-ui, sans-serif';
+    const radius = 8;
+    ctx.beginPath();
+    ctx.moveTo(radius, 0);
+    ctx.arcTo(w, 0, w, h, radius);
+    ctx.arcTo(w, h, 0, h, radius);
+    ctx.arcTo(0, h, 0, 0, radius);
+    ctx.arcTo(0, 0, w, 0, radius);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(15,23,42,0.82)';
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(201,168,76,0.55)';
+    ctx.stroke();
+    ctx.fillStyle = color || '#e2e8f0';
+    ctx.textBaseline = 'middle';
+    ctx.textAlign = 'center';
+    ctx.fillText(text, w / 2, h / 2 + 1);
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.minFilter = THREE.LinearFilter;
+    tex.needsUpdate = true;
+    const sprite = new THREE.Sprite(
+      new THREE.SpriteMaterial({ map: tex, depthWrite: false, transparent: true }),
+    );
+    const s = 0.42; // world-units per CSS px
+    sprite.scale.set(w * s, h * s, 1);
+    // Float the label just above the node sphere.
+    sprite.position.set(0, (nodeR || 8) + h * s * 0.7, 0);
+    return sprite;
+  }
+
+  // Fly the camera to frame a clicked node so it doesn't get lost in the
+  // cloud — the single biggest navigability win for a 3D force graph.
+  function focusNode(n) {
+    if (!graph3d || !n || n.x == null) return;
+    const dist = 90;
+    const r = Math.hypot(n.x, n.y, n.z || 0) || 1;
+    const k = 1 + dist / r;
+    graph3d.cameraPosition(
+      { x: n.x * k, y: n.y * k, z: (n.z || 0) * k },
+      { x: n.x, y: n.y, z: n.z || 0 },
+      900,
+    );
   }
 
   // Push current nodes/edges into the 3D graph, carrying computed x/y/z
@@ -637,6 +731,8 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     html += '<div class="whois-wrap">' +
       '<button class="whois-btn" type="button">Registry record (RDAP) →</button>' +
       '<div class="whois-slot"></div>' +
+      '<button class="whois-btn bgp-btn" type="button">Live routing &amp; BGP →</button>' +
+      '<div class="bgp-slot"></div>' +
       '</div>';
 
     // Pivot from a clicked actor into the full Corpus inspector for the
@@ -648,10 +744,59 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
     body.innerHTML = html;
     wireBack(body);
-    const wb = body.querySelector('.whois-btn');
+    const wb = body.querySelector('.whois-btn:not(.bgp-btn)');
     if (wb) wb.addEventListener('click', () => loadWhois(ip, wb, body));
+    const gb = body.querySelector('.bgp-btn');
+    if (gb) gb.addEventListener('click', () => loadRouting(ip, gb, body));
     const pb = body.querySelector('.insp-pivot-btn');
     if (pb) pb.addEventListener('click', () => enterLookup(pb.dataset.host));
+  }
+
+  // Live BGP / routing for the clicked IP — ASN, the announced prefix, and
+  // whether the prefix is globally routed right now. The static ASN is
+  // already shown inline; this adds the genuinely-BGP facts (prefix +
+  // announced state from RIPEstat) one click from the radar, so a visitor
+  // sees routing without drilling into the Corpus BGP tab. Deferred to a
+  // click — like RDAP — so the radar never fans a lookup per visible node.
+  async function loadRouting(ip, btn, scope) {
+    const slot = scope.querySelector('.bgp-slot');
+    btn.textContent = 'querying RIPEstat…';
+    btn.disabled = true;
+    try {
+      const r = await fetch('/api/corpus/asn/' + encodeURIComponent(ip)).then((x) => x.json());
+      if (!slot) return;
+      const addr = (r && Array.isArray(r.addresses))
+        ? (r.addresses.find((a) => a.asn || a.prefix) || r.addresses[0])
+        : null;
+      if (!r || r.error || !addr) {
+        slot.innerHTML = '<div class="whois-err">No routing data came back — the ' +
+          'RIPEstat relay may be rate-limiting. Try again shortly.</div>';
+        btn.textContent = 'Retry routing →';
+        btn.disabled = false;
+        return;
+      }
+      const row = (k, v) =>
+        v ? '<div class="field"><span class="k">' + k + '</span><span class="v">' +
+          v + '</span></div>' : '';
+      const announced = addr.announced === true ? 'yes — globally routed'
+        : addr.announced === false ? 'no — not in the global table' : null;
+      slot.innerHTML =
+        '<div class="whois-box">' +
+        row('ASN', addr.asn ? 'AS' + esc(addr.asn) : null) +
+        row('holder', addr.org ? esc(addr.org) : null) +
+        row('prefix', addr.prefix ? '<code>' + esc(addr.prefix) + '</code>' : null) +
+        row('announced', announced ? esc(announced) : null) +
+        '</div>' +
+        '<div class="insp-pivot"><button class="insp-pivot-btn bgp-full-btn" ' +
+          'type="button">Full BGP tab →</button></div>';
+      btn.style.display = 'none';
+      const fb = slot.querySelector('.bgp-full-btn');
+      if (fb) fb.addEventListener('click', () => enterLookup(ip, 'asn'));
+    } catch {
+      if (slot) slot.innerHTML = '<div class="whois-err">Routing lookup failed — try again.</div>';
+      btn.textContent = 'Retry routing →';
+      btn.disabled = false;
+    }
   }
 
   // One-sentence interpretation of an actor node.
@@ -895,7 +1040,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   // CT is crt.sh, Tracker is the tunnelmind-data-api surface, Reputation
   // is URLhaus today. A failed tab shows its own error without poisoning
   // the others.
-  function enterLookup(rawHost) {
+  function enterLookup(rawHost, targetTab = null) {
     const host = normalizeHostLocal(rawHost);
     if (!host) {
       renderLookupError(rawHost, 'That does not look like a domain or IP — try ' +
@@ -906,7 +1051,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     selected = null;
     lookupHost = host;
     setLookupInput(host);
-    renderLookup(host, defaultTabFor(host));
+    renderLookup(host, targetTab || defaultTabFor(host));
   }
 
   function defaultTabFor(host) {
@@ -1005,6 +1150,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   async function loadTab(host, tab) {
     const panel = $('#inspTabPanel');
     if (!panel) return;
+    lookupTab = tab; // mark the tab the user is now looking at
     const isIp = isIpLocal(host);
     const renderKey = (tab === 'rdap' && isIp) ? 'rdap-ip' : tab;
     const cacheKey = host + ':' + renderKey;
@@ -1015,7 +1161,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       return;
     }
 
-    panel.innerHTML = '<div class="placeholder">Loading ' + esc(tab) + '…</div>';
+    panel.innerHTML = '<div class="placeholder">' + esc(tabLoadingLabel(tab)) + '</div>';
 
     // Dedupe: if this exact (host, tab) is already in-flight, await the
     // existing promise instead of firing a second request.
@@ -1031,21 +1177,30 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
     const data = await work;
 
-    // Bail if the user navigated away mid-fetch.
+    // Bail if the user navigated away mid-fetch (different host, or left
+    // lookup mode entirely).
     if (lookupHost !== host || inspectorMode !== 'lookup') return;
 
     const transient = data && (data.__failed || isTransientUpstreamError(data));
+
+    // A clean payload or a deterministic upstream error (NXDOMAIN, invalid
+    // input) is stable — cache it regardless of which tab is active now, so
+    // switching back is instant. Transient failures are never cached.
+    if (!transient) tabCache.set(cacheKey, data);
+
+    // Only paint if THIS tab is still the one being viewed. Without this a
+    // slow earlier tab (e.g. the default RDAP/Tracker auto-load) lands after
+    // the user has clicked BGP and clobbers the BGP panel — which reads as
+    // "I clicked BGP but there's no BGP data".
+    if (lookupTab !== tab) return;
+
     if (transient) {
-      // Don't cache. Render a retry-able failure panel.
+      // Render a retry-able failure panel.
       panel.innerHTML = renderTabFailureHtml(tab, data);
       const rb = panel.querySelector('.insp-retry-btn');
       if (rb) rb.addEventListener('click', () => loadTab(host, tab));
       return;
     }
-
-    // Either a clean payload or a deterministic upstream error (e.g.
-    // NXDOMAIN, invalid input). Both are stable — cache and render.
-    tabCache.set(cacheKey, data);
     panel.innerHTML = renderTabHtml(renderKey, data, host);
   }
 
@@ -1101,6 +1256,21 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   }
 
   function sleep(ms) { return new Promise((res) => setTimeout(res, ms)); }
+
+  // Friendly loading copy per tab — the raw tab id ("asn") read as broken
+  // ("Loading asn…"); these say what's actually happening, and the slower
+  // upstreams (BGP/RIPEstat, CT logs) name the source so a multi-second
+  // wait reads as work-in-progress rather than a hang.
+  function tabLoadingLabel(tab) {
+    return ({
+      asn:        'Querying live routing (RIPEstat)…',
+      cert:       'Fetching certificates (CT logs)…',
+      subdomains: 'Enumerating subdomains…',
+      reputation: 'Computing cross-lens verdict…',
+      rdap:       'Looking up the registry…',
+      tracker:    'Loading tracker intelligence…',
+    })[tab] || 'Loading…';
+  }
 
   function endpointForTab(tab) {
     // Maps tab id → /api/corpus/<this>/<host>. The intel/* family lives

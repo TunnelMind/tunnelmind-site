@@ -335,12 +335,30 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       .linkColor(() => '#3a3f4b')
       .linkWidth(0.4)
       .linkOpacity(0.5)
-      .warmupTicks(40)
-      .cooldownTime(9000)
+      // Floaty, smooth motion. Lower velocity decay lets nodes keep momentum
+      // and glide rather than snapping to rest; lower alpha decay makes the
+      // settle long and gentle; a cooldown longer than the 10s snapshot poll
+      // means the layout never hard-freezes — each refresh reheats before the
+      // previous one fully stills, so there's a continuous gentle drift. Fewer
+      // warmup ticks lets nodes ease into place on first paint instead of
+      // appearing pre-settled.
+      .d3VelocityDecay(0.25)
+      .d3AlphaDecay(0.0125)
+      .warmupTicks(12)
+      .cooldownTime(16000)
       // Pointer affordance — without it the dots don't read as clickable.
       .onNodeHover((n) => { el.style.cursor = n ? 'pointer' : 'grab'; })
       .onNodeClick((n) => { selectNode(n.id); focusNode(n); });
     el.style.cursor = 'grab';
+    // Trackball camera: more inertia so a flick drifts to a smooth stop
+    // instead of halting abruptly — the camera feels as floaty as the nodes.
+    const ctrl = graph3d.controls();
+    if (ctrl) {
+      ctrl.staticMoving = false;
+      ctrl.dynamicDampingFactor = 0.08;
+      ctrl.rotateSpeed = 0.8;
+      ctrl.zoomSpeed = 0.9;
+    }
     syncGraph3d();
   }
 
@@ -424,7 +442,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     graph3d.cameraPosition(
       { x: n.x * k, y: n.y * k, z: (n.z || 0) * k },
       { x: n.x, y: n.y, z: n.z || 0 },
-      900,
+      1300,
     );
   }
 

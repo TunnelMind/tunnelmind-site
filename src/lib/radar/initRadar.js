@@ -1105,6 +1105,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       { id: 'dns',        label: 'DNS',                       enabled: !ip },
       { id: 'mail',       label: 'Mail',                      enabled: !ip },
       { id: 'cert',       label: 'Certs',                     enabled: !ip },
+      { id: 'ctproof',    label: 'CT Proof',                  enabled: !ip },
       { id: 'subdomains', label: 'Subdomains',                enabled: !ip },
       { id: 'asn',        label: 'BGP',                       enabled: true },
       { id: 'http',       label: 'HTTP',                      enabled: !ip },
@@ -1283,6 +1284,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     return ({
       asn:        'Querying live routing (RIPEstat)…',
       cert:       'Fetching certificates (CT logs)…',
+      ctproof:    'Proving CT inclusion…',
       subdomains: 'Enumerating subdomains…',
       reputation: 'Computing cross-lens verdict…',
       rdap:       'Looking up the registry…',
@@ -1299,6 +1301,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       dns:        'dns',
       mail:       'mail',
       cert:       'cert',
+      ctproof:    'ghostroute-proof',
       subdomains: 'subdomains',
       asn:        'asn',
       http:       'intel/http',
@@ -1328,6 +1331,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       case 'dns':        return renderDns(data);
       case 'mail':       return renderMail(data);
       case 'cert':       return renderCert(data);
+      case 'ctproof':    return renderGhostrouteProof(data, host);
       case 'subdomains': return renderSubdomains(data);
       case 'asn':        return renderAsn(data, host);
       case 'http':       return renderHttp(data);
@@ -1447,6 +1451,75 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     }
     html += '</ul>';
     html += sourceLink('crt.sh', `https://crt.sh/?q=${encodeURIComponent(c.domain)}`);
+    return html;
+  }
+
+  // GhostRoute CT-witness tab — the witnessability pillar made visible.
+  //   `proofs`  — per-cert inclusion proofs for THIS host (a cryptographic
+  //               demonstration the exact cert it serves is in an append-only
+  //               CT log whose root TunnelMind signature-verified).
+  //   `witness` — corpus-wide trust context: how many trusted (non-Google) CT
+  //               logs we independently witness, all STH signatures verified,
+  //               and whether any append-only regression was detected.
+  function renderGhostrouteProof(d, host) {
+    if (!d) return emptyTab('No GhostRoute CT data came back.');
+    const proofs = d.proofs || {};
+    const summary = proofs.summary || {};
+    const recent = Array.isArray(proofs.recent) ? proofs.recent : [];
+    let html = '';
+
+    // ── corpus witness health (context that makes one proof meaningful) ──
+    const w = d.witness && d.witness.summary ? d.witness.summary : null;
+    if (w) {
+      const regressed = Number(w.regressions) > 0;
+      const healthBadge = (w.all_verified && !regressed)
+        ? '<span class="badge proven">healthy</span>'
+        : '<span class="badge regress">' + (regressed ? 'regression' : 'unverified') + '</span>';
+      html += '<div class="insp-sub-label">First-party CT witness ' + healthBadge + '</div>';
+      html += '<div class="insp-fields">' +
+        field('logs witnessed', '<span class="v-num">' + fmt(w.logs_witnessed) + '</span>' +
+          ' <span class="v-dim">non-Google, signature-verified</span>') +
+        field('append-only regressions',
+          '<span class="' + (regressed ? 'v-bad' : 'v-num') + '">' + fmt(w.regressions) + '</span>') +
+        '</div>';
+    }
+
+    // ── per-cert inclusion proofs for this host ──
+    html += '<div class="insp-sub-label">Inclusion proofs · <code>' + esc(host) + '</code></div>';
+    if (!recent.length) {
+      html += emptyTab('No inclusion proof yet for this host. The ct_inclusion ' +
+        'worker proves the AI-infrastructure watchlist on a 24h cadence.');
+      html += sourceLink('GhostRoute · /v1/ghostroute/proofs',
+        'https://data.tunnelmind.ai/v1/ghostroute/proofs?domain=' + encodeURIComponent(host));
+      return html;
+    }
+
+    const proven = Number(summary.proven) || 0;
+    const attempts = Number(summary.total_attempts) || recent.length;
+    html += '<div class="insp-fields">' +
+      field('proven', '<span class="v-num">' + fmt(proven) + '</span> of ' +
+        '<span class="v-num">' + fmt(attempts) + '</span> certs') +
+      '</div>';
+
+    html += '<ul class="insp-cert-list">';
+    for (const p of recent.slice(0, 10)) {
+      const badge = p.inclusion_proven
+        ? '<span class="badge proven">proven</span>'
+        : '<span class="badge unproven">' + esc(p.reason || 'unproven') + '</span>';
+      const op = esc(p.log_operator || p.log_url || 'CT log');
+      const leaf = (p.leaf_index !== null && p.leaf_index !== undefined)
+        ? ' <span class="v-dim">leaf #' + fmt(p.leaf_index) + '</span>' : '';
+      const sha = p.cert_sha256 ? String(p.cert_sha256).slice(0, 16) : '—';
+      const when = p.observed_at ? String(p.observed_at).slice(0, 10) : '';
+      html += '<li class="insp-cert">' +
+        '<div class="insp-cert-cn">' + badge + ' <span>' + op + '</span>' + leaf + '</div>' +
+        '<div class="insp-cert-meta"><code>sha256:' + esc(sha) + '…</code>' +
+        (when ? ' <span class="v-dim">' + esc(when) + '</span>' : '') + '</div>' +
+        '</li>';
+    }
+    html += '</ul>';
+    html += sourceLink('GhostRoute · proven in a log TunnelMind witnesses',
+      'https://data.tunnelmind.ai/v1/ghostroute/proofs?domain=' + encodeURIComponent(host));
     return html;
   }
 

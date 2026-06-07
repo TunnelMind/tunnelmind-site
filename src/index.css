@@ -763,6 +763,10 @@ a:hover {
 .radar-root .badge.high { background: rgba(239,68,68,0.18); color: var(--radar-err); }
 .radar-root .badge.medium { background: rgba(245,158,11,0.18); color: var(--radar-warn); }
 .radar-root .badge.low { background: rgba(107,114,128,0.18); color: var(--radar-fg-dim); }
+/* GhostRoute CT-proof tab: proven (green) / unproven (gold) / regression (red). */
+.radar-root .badge.proven { background: rgba(52,211,153,0.16); color: #34d399; }
+.radar-root .badge.unproven { background: rgba(201,168,76,0.18); color: var(--radar-warn); }
+.radar-root .badge.regress { background: rgba(239,68,68,0.18); color: var(--radar-err); }
 
 /* Vendor-aware banner above the actor inspector — the most important
    fact about a classified IP, surfaced before everything else. The

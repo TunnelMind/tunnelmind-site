@@ -67,7 +67,7 @@ The bundle is FREE and rate-limited on a separate counter from data API calls �
 
 ## 1. Preflight — "should I act?"
 
-Before transacting with any new endpoint, ask. One call, three lenses fused, allow/caution/deny back with a signed consultation receipt.
+Before transacting with any new endpoint, ask. One call, the lenses fused (Scry × Sigil × GhostRoute), allow/caution/deny back with a signed consultation receipt. An RPKI-INVALID origin or a sanctions match are hard floors that pull the decision down regardless of the other lenses.
 
 ```bash
 curl -X POST https://data.tunnelmind.ai/v1/preflight \
@@ -111,7 +111,7 @@ curl -X POST https://data.tunnelmind.ai/v1/verify/8.8.8.8 \
   -d '{}'
 ```
 
-Response shape: `{ scry, sigil, cross_lens, sigil_token, token_signed, token_expires_at, witnessed_event? }`
+Response shape: `{ scry, sigil, ghostroute, cross_lens, sigil_token, token_signed, token_expires_at, witnessed_event? }`. The `ghostroute` block carries the routing/sovereignty read (origin AS, `rpki_status`, `sovereign_tier`, `sanctions_match`); it is absent only for a bare `entity_slug`, which has no routing surface.
 
 To chain the verdict into an ATAP witness event on your existing AIT (Agent Identity Token), include `ait` in the body:
 

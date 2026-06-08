@@ -84,13 +84,20 @@ const GROUPS = [
   {
     label: '◆ Verification',
     color: 'var(--accent-purple)',
-    note: 'The trust layer built on top of OAI and ATAP.',
+    note: 'The trust layer built on top of OAI and ATAP — fused into one cross-lens verdict at POST /v1/verify.',
     items: [
       {
         name: 'Sigil',
         desc: 'An agentic supply-verification layer — "who can you trust" for the agentic internet. Entity trust scoring and signed verification endpoints, with programmatic advertising as the first application.',
         url: 'https://data.tunnelmind.ai',
         label: 'data.tunnelmind.ai',
+        tag: 'Live',
+      },
+      {
+        name: 'GhostRoute',
+        desc: 'The fourth lens — routing integrity and sovereignty. Resolves the origin AS, the RPKI validity of the route, the sovereign jurisdiction a service claims versus the one it actually egresses through, and certificate-transparency logs we witness against our own signature-verified roots. Fused into the /v1/verify verdict and queryable directly under /v1/ghostroute/.',
+        url: 'https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com',
+        label: 'data.tunnelmind.ai/v1/ghostroute',
         tag: 'Live',
       },
     ],

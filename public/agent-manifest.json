@@ -19,7 +19,7 @@
     "warrant_canary": "https://tunnelmind.ai/canary.json"
   },
 
-  "thesis": "Three lenses on one signed corpus. Scry watches who is attacking; Sigil watches who can be trusted; Tracker watches who is paying whom. The join across the three is the thing no siloed incumbent can compute — and it is what an autonomous agent needs to answer the only question that matters when it transacts with a new endpoint: is this real?",
+  "thesis": "Four lenses on one signed corpus. Scry watches who is attacking; Sigil watches who can be trusted; Tracker watches who is paying whom; GhostRoute watches where the traffic actually goes — routing integrity and sovereignty. The join across the four is the thing no siloed incumbent can compute — and it is what an autonomous agent needs to answer the only question that matters when it transacts with a new endpoint: is this real?",
 
   "products": [
     {
@@ -59,16 +59,28 @@
       ]
     },
     {
+      "id": "ghostroute",
+      "name": "GhostRoute",
+      "lens": "where_it_actually_goes",
+      "summary": "Routing integrity and sovereignty. Origin AS, RPKI route validity (read first-party from our own corpus), the sovereign jurisdiction a service claims versus the one it egresses through, sanctions and AI-infrastructure ownership, and certificate-transparency logs witnessed against signature-verified roots we hold ourselves.",
+      "rest_base": "https://data.tunnelmind.ai",
+      "key_endpoints": [
+        {"method": "GET", "path": "/v1/ghostroute/check/{entity}",   "purpose": "Routing/sovereignty verdict for an IP, domain, or ASN (ephemeral; ?receipt=true for a durable signed receipt)"},
+        {"method": "GET", "path": "/v1/ghostroute/witness",          "purpose": "First-party CT witness health — signature-verified STH per trusted log + append-only regression scan"},
+        {"method": "GET", "path": "/v1/ghostroute/proofs",           "purpose": "Per-cert CT inclusion proofs witnessed against our verified roots (optional ?domain=)"}
+      ]
+    },
+    {
       "id": "cross_lens",
       "name": "Cross-lens verify",
       "lens": "is_this_real",
-      "summary": "The A2 join. Service-layer fusion of Scry × Sigil × Tracker for one node key. Returns the fused verdict, per-lens blocks, a 5-minute signed sigil_token, and an optional ATAP witness event.",
+      "summary": "The A2 join. Service-layer fusion of Scry × Sigil × GhostRoute for one node key. Returns the fused verdict, per-lens blocks (incl. ghostroute), a 5-minute signed sigil_token, and an optional ATAP witness event. An RPKI-INVALID origin or a sanctions match are hard floors the fusion cannot average away.",
       "rest_base": "https://data.tunnelmind.ai",
       "key_endpoints": [
         {"method": "POST", "path": "/v1/verify/{node}", "purpose": "Fused cross-lens verdict for an IP, domain, ASN, or entity_slug. Optional ait field wraps the verdict in an ATAP cross_lens:verified witness event."}
       ],
       "node_types": ["ip", "domain", "asn", "entity_slug"],
-      "response_shape": ["scry", "sigil", "cross_lens", "sigil_token", "token_signed", "token_expires_at", "witnessed_event"]
+      "response_shape": ["scry", "sigil", "ghostroute", "cross_lens", "sigil_token", "token_signed", "token_expires_at", "witnessed_event"]
     }
   ],
 
@@ -79,9 +91,9 @@
       "url": "https://mcp-data.tunnelmind.ai/mcp",
       "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tool_count": 54,
+      "tool_count": 61,
       "auto_generated_from": "https://data.tunnelmind.ai/openapi.yaml",
-      "summary": "Every Data API operation surfaced as an MCP tool. Tracker, Sigil, and cross_lens_verify (with adversary_class) in one surface."
+      "summary": "Every Data API operation surfaced as an MCP tool. Tracker, Sigil, GhostRoute, and cross_lens_verify (with adversary_class) in one surface."
     },
     {
       "id": "scry-mcp",

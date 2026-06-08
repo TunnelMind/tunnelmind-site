@@ -105,8 +105,8 @@ const PILLARS = [
   {
     label: 'ARCH-LENS-003',
     tone: 'graph',
-    head: 'One graph. Three lenses. No blind spots.',
-    body: 'IPs, ASNs, domains, entities, supply paths — one correlated abuse/identity graph. Scry reads who is attacking. Sigil reads who to trust. Tracker reads who is watching. Correlated because the infrastructure is the same: the botnet running your ad fraud is the botnet scanning your edge.',
+    head: 'One graph. Four lenses. No blind spots.',
+    body: 'IPs, ASNs, domains, entities, supply paths, routes — one correlated abuse/identity graph. Scry reads who is attacking. Sigil reads who to trust. Tracker reads who is watching. GhostRoute reads where the traffic actually goes — origin AS, RPKI validity, claimed-versus-actual sovereign jurisdiction. Correlated because the infrastructure is the same: the botnet running your ad fraud is the botnet scanning your edge.',
   },
   {
     label: 'ATTEST-TIER-004',
@@ -219,9 +219,9 @@ export default function Radar({ onNavigate }) {
           and who can be trusted. Signed receipts. Open protocol. Attestation
           that scales from self-asserted identity to silicon-root hardware trust.
         </p>
-        <div className="tm-lens-strip" aria-label="One corpus, three lenses">
+        <div className="tm-lens-strip" aria-label="One corpus, four lenses">
           <div className="tm-lens-caption">
-            One corpus · Three lenses
+            One corpus · Four lenses
           </div>
           <div className="tm-lens-grid">
             <div className="tm-lens">
@@ -235,6 +235,10 @@ export default function Radar({ onNavigate }) {
             <div className="tm-lens">
               <div className="tm-lens-name">Tracker</div>
               <div className="tm-lens-blurb">The demand-side graph of who watches whom on the open web.</div>
+            </div>
+            <div className="tm-lens">
+              <div className="tm-lens-name">GhostRoute</div>
+              <div className="tm-lens-blurb">Routing integrity and sovereignty — origin AS, RPKI validity, claimed-versus-actual jurisdiction, first-party CT witness.</div>
             </div>
           </div>
           <div className="tm-lens-kicker">

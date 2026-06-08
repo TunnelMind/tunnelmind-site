@@ -186,13 +186,18 @@ export default function Landing({ onNavigate }) {
             actually asking: <em>is this real?</em>
           </p>
           <p style={prose}>
-            TunnelMind runs three lenses against the same observation
+            TunnelMind runs four lenses against the same observation
             graph. <strong>Scry</strong> watches who is attacking — IPs,
             ASNs, behaviors, threat-intel overlap.{' '}
             <strong>Sigil</strong> watches who can be trusted —
             publishers, SSPs, DSPs, seats, the OpenRTB SupplyChain.{' '}
             <strong>Tracker</strong> watches who is paying whom in the
-            surveillance economy. They share a graph; the join across
+            surveillance economy.{' '}
+            <strong>GhostRoute</strong> watches where the traffic
+            actually goes — the origin AS, the RPKI validity of the
+            route, the sovereign jurisdiction a service claims versus the
+            one it routes through, and the certificate-transparency logs
+            we witness ourselves. They share a graph; the join across
             them is the thing nobody else can compute.
           </p>
           <p style={prose}>
@@ -207,10 +212,20 @@ export default function Landing({ onNavigate }) {
             to know about, immediately, with cryptographic proof.
           </p>
           <p style={prose}>
+            Sovereignty is the same join, run on geography. An agent told
+            to use only EU-resident inference can ask GhostRoute directly:
+            a German model whose API resolves to an origin AS owned by a
+            German carrier verifies clean; a service that markets itself as
+            sovereign-in-region but whose traffic actually egresses through
+            a hyperscaler on another continent comes back a{' '}
+            <em>mismatch</em> — claim and route disagree, and the proof is
+            the RPKI-validated origin, not a marketing page.
+          </p>
+          <p style={prose}>
             The endpoint that returns this is{' '}
             <code style={inlineMono}>POST /v1/verify/&#123;node&#125;</code>{' '}
             on <code style={inlineMono}>data.tunnelmind.ai</code>. One
-            call, one node key (IP, domain, ASN, or entity), three lens
+            call, one node key (IP, domain, ASN, or entity), four lens
             blocks plus the fused verdict, a five-minute signed{' '}
             <code style={inlineMono}>sigil_token</code> as portable
             proof, and an optional ATAP witness event chained onto the

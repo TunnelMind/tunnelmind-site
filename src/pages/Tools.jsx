@@ -44,6 +44,14 @@ const SURFACES = [
     tag: 'Live · Public',
     tagColor: '--accent-cyan',
   },
+  {
+    name: 'GhostRoute',
+    desc: 'The fourth lens — routing integrity and sovereignty. Check the origin AS, RPKI route validity, and the sovereign jurisdiction a service claims versus the one it actually egresses through; inspect certificate-transparency proofs witnessed against roots we verify ourselves. Fused into /v1/verify, queryable under /v1/ghostroute/.',
+    href: 'https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com',
+    label: 'data.tunnelmind.ai/v1/ghostroute',
+    tag: 'Live · Free',
+    tagColor: '--accent-purple',
+  },
 ]
 
 function SurfaceCard({ tool, onNavigate }) {

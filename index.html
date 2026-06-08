@@ -5,7 +5,7 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href="https://tunnelmind.ai/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="TunnelMind — trust attestation for the agentic internet. One correlated graph of who is attacking, who is watching, and who can be trusted. Scry · Sigil · Tracker. Signed receipts, open protocol, silicon-root attestation." />
+    <meta name="description" content="TunnelMind — trust attestation for the agentic internet. One correlated graph of who is attacking, who is watching, who can be trusted, and where the traffic actually goes. Scry · Sigil · Tracker · GhostRoute. Signed receipts, open protocol, silicon-root attestation." />
     <meta property="og:title" content="TunnelMind — trust attestation for the agentic internet" />
     <meta property="og:description" content="The internet has no memory. We're building one. One correlated graph of who is attacking, who is watching, and who can be trusted — signed receipts, open protocol, silicon-root attestation." />
     <meta property="og:type" content="website" />
@@ -36,7 +36,7 @@
           "legalName": "TunnelMind AI, LLC",
           "url": "https://tunnelmind.ai/",
           "logo": "https://tunnelmind.ai/favicon.svg",
-          "description": "The trust attestation layer for the agentic internet. One correlated graph viewed through three lenses (Scry, Sigil, Tracker) on one signed corpus, plus a fused cross-lens verdict no siloed incumbent can compute. Signed receipts, open protocol, attestation that scales from self-asserted identity to silicon-root hardware trust.",
+          "description": "The trust attestation layer for the agentic internet. One correlated graph viewed through four lenses (Scry, Sigil, Tracker, GhostRoute) on one signed corpus, plus a fused cross-lens verdict no siloed incumbent can compute. Signed receipts, open protocol, attestation that scales from self-asserted identity to silicon-root hardware trust.",
           "email": "agents@tunnelmind.ai",
           "sameAs": [
             "https://github.com/TunnelMind"
@@ -47,7 +47,7 @@
           "@id": "https://tunnelmind.ai/#website",
           "url": "https://tunnelmind.ai/",
           "name": "TunnelMind",
-          "description": "Trust attestation layer for the agentic internet: live attacker-corpus radar and cross-lens verify API (Scry × Sigil × Tracker) for autonomous agents.",
+          "description": "Trust attestation layer for the agentic internet: live attacker-corpus radar and cross-lens verify API (Scry × Sigil × GhostRoute) for autonomous agents.",
           "publisher": { "@id": "https://tunnelmind.ai/#organization" },
           "inLanguage": "en"
         },
@@ -89,11 +89,21 @@
         },
         {
           "@type": "SoftwareApplication",
+          "@id": "https://tunnelmind.ai/#ghostroute",
+          "name": "GhostRoute",
+          "applicationCategory": "SecurityApplication",
+          "operatingSystem": "Web (HTTPS / MCP)",
+          "description": "Routing integrity and sovereignty. Origin AS, RPKI route validity, the sovereign jurisdiction a service claims versus the one it egresses through, and first-party certificate-transparency witnessing against signature-verified roots.",
+          "url": "https://data.tunnelmind.ai/v1/ghostroute/",
+          "provider": { "@id": "https://tunnelmind.ai/#organization" }
+        },
+        {
+          "@type": "SoftwareApplication",
           "@id": "https://tunnelmind.ai/#cross-lens",
           "name": "TunnelMind Cross-lens Verify",
           "applicationCategory": "SecurityApplication",
           "operatingSystem": "Web (HTTPS / MCP)",
-          "description": "Service-layer fusion of Scry × Sigil × Tracker. One node key returns the fused verdict, per-lens blocks, a 5-minute signed sigil_token, and an optional ATAP witness event.",
+          "description": "Service-layer fusion of Scry × Sigil × GhostRoute. One node key returns the fused verdict, per-lens blocks, a 5-minute signed sigil_token, and an optional ATAP witness event.",
           "url": "https://data.tunnelmind.ai/v1/verify/",
           "provider": { "@id": "https://tunnelmind.ai/#organization" }
         }
@@ -115,7 +125,7 @@
       </header>
 
       <section>
-        <h2>One signed corpus, three lenses</h2>
+        <h2>One signed corpus, four lenses</h2>
         <ul>
           <li>
             <strong>Scry</strong> — signed observations of hostile network
@@ -132,11 +142,18 @@
             watching whom on the open web; recurring SDK fingerprints and
             tracker-operator entities.
           </li>
+          <li>
+            <strong>GhostRoute</strong> — routing integrity and sovereignty.
+            Origin AS, RPKI route validity, the sovereign jurisdiction a
+            service claims versus the one it egresses through, and first-party
+            certificate-transparency witnessing.
+            <a href="https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com">data.tunnelmind.ai/v1/ghostroute</a>
+          </li>
         </ul>
         <p>
           The moat is the join: a fused cross-lens verdict on any entity
-          (attack signal × trust signal × tracker signal) no siloed
-          incumbent can compute.
+          (attack signal × trust signal × tracker signal × routing signal)
+          no siloed incumbent can compute.
         </p>
       </section>
 

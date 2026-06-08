@@ -5,7 +5,7 @@
 
   "service": {
     "name": "TunnelMind",
-    "summary": "The observability layer for the agentic internet. Three lenses (Scry / Sigil / Tracker) on one signed corpus, with a fused cross-lens verdict no siloed incumbent can compute.",
+    "summary": "The observability layer for the agentic internet. Four lenses (Scry / Sigil / Tracker / GhostRoute) on one signed corpus, with a fused cross-lens verdict no siloed incumbent can compute.",
     "homepage": "https://tunnelmind.ai",
     "vision": "https://tunnelmind.ai/vision",
     "operator": {
@@ -40,9 +40,16 @@
       "rest_quickstart": "https://data.tunnelmind.ai/v1/tracker/resolve/google-analytics.com"
     },
     {
+      "name": "GhostRoute",
+      "lens": "where_it_actually_goes",
+      "summary": "Routing integrity and sovereignty: origin AS, RPKI route validity, the sovereign jurisdiction a service claims versus the one it egresses through, and first-party certificate-transparency witnessing against signature-verified roots.",
+      "rest_base": "https://data.tunnelmind.ai",
+      "rest_quickstart": "https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com"
+    },
+    {
       "name": "Cross-lens verify",
       "lens": "is_this_real",
-      "summary": "The A2 join. One node key (IP, domain, ASN, entity_slug) returns fused verdict + per-lens blocks + a signed 5-minute sigil_token. Optional ATAP witness event chained onto the calling agent's identity token.",
+      "summary": "The A2 join. One node key (IP, domain, ASN, entity_slug) returns fused verdict + per-lens blocks (incl. ghostroute) + a signed 5-minute sigil_token. Optional ATAP witness event chained onto the calling agent's identity token.",
       "rest_base": "https://data.tunnelmind.ai",
       "rest_quickstart": "POST https://data.tunnelmind.ai/v1/verify/8.8.8.8"
     }

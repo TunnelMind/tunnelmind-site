@@ -28,27 +28,27 @@ const shell = readFileSync(SHELL_PATH, 'utf8');
 const ROUTES = [
   {
     slug: 'vision',
-    title: 'TunnelMind — Vision: three lenses on one signed corpus',
+    title: 'TunnelMind — Vision: four lenses on one signed corpus',
     description:
-      'The plain-prose thesis behind TunnelMind. Why Scry, Sigil, and Tracker — and the cross-lens join across them — are the answer to the "is this real?" question every autonomous agent must answer before transacting.',
+      'The plain-prose thesis behind TunnelMind. Why Scry, Sigil, Tracker, and GhostRoute — and the cross-lens join across them — are the answer to the "is this real?" question every autonomous agent must answer before transacting.',
     h1:    'The vision',
     body:
-      'TunnelMind is the observability layer for the agentic internet. Three lenses on one signed corpus: Scry (who is attacking), Sigil (who can be trusted), Tracker (who is paying whom). The cross-lens join is what no siloed incumbent can compute — and it is what an autonomous agent needs.',
+      'TunnelMind is the observability layer for the agentic internet. Four lenses on one signed corpus: Scry (who is attacking), Sigil (who can be trusted), Tracker (who is paying whom), GhostRoute (where the traffic actually goes). The cross-lens join is what no siloed incumbent can compute — and it is what an autonomous agent needs.',
   },
   {
     slug: 'api',
     title: 'TunnelMind — APIs & MCP: full catalog for humans and agents',
     description:
-      'The complete TunnelMind surface: Scry attacker-corpus + Data API (cross-lens verify with adversary_class, Sigil supply graph, tracker signals, provenance receipts, x402 agent rail) over REST, plus three MCP servers (Scry/Data/Sigil). OpenAPI 3.1 + MCP-mirrored.',
+      'The complete TunnelMind surface: Scry attacker-corpus + Data API (cross-lens verify with adversary_class, Sigil supply graph, tracker signals, GhostRoute routing/sovereignty, provenance receipts, x402 agent rail) over REST, plus three MCP servers (Scry/Data/Sigil). OpenAPI 3.1 + MCP-mirrored.',
     h1:    'TunnelMind APIs & MCP',
     body:
       'One signed corpus, two rails. Every Data API endpoint is also an MCP tool. Open free tier; $20 Stripe block for humans, x402 USDC for agents. Machine-legible discovery: data.tunnelmind.ai/openapi.yaml, /.well-known/mcp.json, /agent-manifest.json, /agent-onboarding.md.',
   },
   {
     slug: 'products',
-    title: 'TunnelMind — Products: Scry, Sigil, Tracker, Cross-lens verify',
+    title: 'TunnelMind — Products: Scry, Sigil, Tracker, GhostRoute, Cross-lens verify',
     description:
-      'Scry watches who is attacking. Sigil watches who can be trusted in the programmatic-advertising supply chain. Tracker watches who is paying whom in the surveillance graph. Cross-lens fuses all three.',
+      'Scry watches who is attacking. Sigil watches who can be trusted in the programmatic-advertising supply chain. Tracker watches who is paying whom in the surveillance graph. GhostRoute watches where the traffic actually goes — routing integrity and sovereignty. Cross-lens fuses them.',
     h1:    'The product line',
     body:
       'Each lens is a paid surface; the open protocol layer (ATAP, OAI, Receipt Format v1.0, EAT Profile v0.1) is Apache-2.0 + CC-BY-4.0. See agent-manifest.json for the machine-legible enumeration.',

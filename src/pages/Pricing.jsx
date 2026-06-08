@@ -29,7 +29,7 @@ function readCheckoutParams() {
 }
 
 const HUMAN_FEATURES = [
-  'The whole corpus — Tracker, Scry, and Sigil endpoints',
+  'The whole corpus — Tracker, Scry, Sigil, and GhostRoute endpoints',
   'No public sampling — full campaigns, signatures, supply paths',
   'Bearer API key + the MCP endpoint',
   'Bulk export (JSON / CSV), ASN / country slicing at scale',

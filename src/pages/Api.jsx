@@ -59,10 +59,10 @@ const MCP_SERVERS = [
     blurb: 'The full Data API as tools. Every REST endpoint below is also an MCP tool, generated 1:1 from OpenAPI. Flagship decision tools highlighted; call tools/list for the complete set.',
     mirror: true,
     tools: [
-      ['cross_lens_verify', 'A2 — fused Scry × Sigil verdict for a node, now carrying its adversary_class.'],
+      ['cross_lens_verify', 'A2 — fused Scry × Sigil × GhostRoute verdict for a node, now carrying its adversary_class.'],
       ['preflight_should_i_act', 'The single call an agent makes before transacting — allow / caution / deny + signed receipt.'],
-      ['profile_entity', 'Cross-lens fused profile (Scry × Sigil × Tracker) + confidence + signed receipt.'],
-      ['cross_lens_lookup', 'All three lens views for a node, no fusion — the raw join.'],
+      ['profile_entity', 'Cross-lens fused profile (Scry × Sigil × Tracker × GhostRoute) + confidence + signed receipt.'],
+      ['cross_lens_lookup', 'All four lens views for a node, no fusion — the raw join.'],
       ['sigil_traverse', 'Walk a publisher\'s supply graph — itemized, classified sell paths.'],
       ['signal_dark_pool_risk', 'Two-sided opacity of a publisher\'s declared supply chain.'],
       ['signal_tracker_density', 'Footprint of one tracker entity across the surveillance supply graph.'],
@@ -125,12 +125,12 @@ const SCRY_GROUPS = [
 const DATA_GROUPS = [
   {
     name: 'Cross-lens & agent decisions',
-    desc: 'The moat: one verdict over both lenses, plus the calls an agent makes before it acts.',
+    desc: 'The moat: one verdict over all the lenses, plus the calls an agent makes before it acts.',
     endpoints: [
-      ['POST', '/v1/verify/{node}', 'Fused Scry × Sigil verdict for an IP, domain, ASN, or entity — now naming the adversary_class behind it (human_hacker / rogue_agent / surveillance_bigtech / clean).'],
+      ['POST', '/v1/verify/{node}', 'Fused Scry × Sigil × GhostRoute verdict for an IP, domain, ASN, or entity — naming the adversary_class behind it (human_hacker / rogue_agent / surveillance_bigtech / clean) and flagging routing/sovereignty mismatches.'],
       ['POST', '/v1/preflight', 'Agent-facing "should I act?" consultation — allow / caution / deny + a signed consultation receipt.'],
-      ['POST', '/v1/profile', 'Cross-lens fused profile (Scry × Sigil × Tracker) + confidence + signed receipt.'],
-      ['GET', '/v1/entity/{node}', 'Fan-out lookup of a node across all three lenses — no fusion, the raw join.'],
+      ['POST', '/v1/profile', 'Cross-lens fused profile (Scry × Sigil × Tracker × GhostRoute) + confidence + signed receipt.'],
+      ['GET', '/v1/entity/{node}', 'Fan-out lookup of a node across all four lenses — no fusion, the raw join.'],
     ],
   },
   {

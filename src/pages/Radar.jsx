@@ -114,6 +114,12 @@ const PILLARS = [
     head: 'Proof, not promises.',
     body: 'Every verdict carries an attestation tier — self-asserted to silicon-root. The receipt is machine-readable, cryptographically signed, and embeddable in any agent workflow, audit trail, or supply-chain report. Trust is not a score. It is evidence.',
   },
+  {
+    label: 'WITNESS-CT-005',
+    tone: 'witness',
+    head: 'We witness the logs ourselves.',
+    body: 'GhostRoute holds its own signature-verified roots for the public Certificate Transparency logs — not a crt.sh resell. The exact certificate an AI host serves can be proven included in an append-only log we independently check, and any log that rewinds its history, forks its root, or serves an unverifiable signature trips a regression alert. Provenance you can re-derive, not take on faith.',
+  },
 ]
 
 // Count-up animation for the hero stat strip — ease-out cubic, ~1.1s.
@@ -279,7 +285,7 @@ export default function Radar({ onNavigate }) {
         </div>
       </section>
 
-      {/* ── Three pillars: why the graph is defensible ──────────── */}
+      {/* ── Pillars: why the graph is defensible ────────────────── */}
       <section className="tm-pillars" aria-label="What makes TunnelMind defensible">
         {PILLARS.map((p) => (
           <article key={p.label} className={`tm-pillar tm-pillar-${p.tone}`}>

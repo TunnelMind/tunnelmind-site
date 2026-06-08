@@ -1174,13 +1174,16 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     const renderKey = (tab === 'rdap' && isIp) ? 'rdap-ip' : tab;
     const cacheKey = host + ':' + renderKey;
 
-    // Cache hit — only success payloads ever land here.
+    // Cache hit — only success payloads ever land here. Cached tabs are
+    // instant, so skip the fade (it would flash on every revisit).
     if (tabCache.has(cacheKey)) {
       panel.innerHTML = renderTabHtml(renderKey, tabCache.get(cacheKey), host);
       return;
     }
 
-    panel.innerHTML = '<div class="placeholder">' + esc(tabLoadingLabel(tab)) + '</div>';
+    panel.innerHTML = '<div class="placeholder">' +
+      '<span class="placeholder-dot" aria-hidden="true"></span>' +
+      esc(tabLoadingLabel(tab)) + '</div>';
 
     // Dedupe: if this exact (host, tab) is already in-flight, await the
     // existing promise instead of firing a second request.
@@ -1215,12 +1218,14 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
     if (transient) {
       // Render a retry-able failure panel.
-      panel.innerHTML = renderTabFailureHtml(tab, data);
+      panel.innerHTML = '<div class="insp-fade">' + renderTabFailureHtml(tab, data) + '</div>';
       const rb = panel.querySelector('.insp-retry-btn');
       if (rb) rb.addEventListener('click', () => loadTab(host, tab));
       return;
     }
-    panel.innerHTML = renderTabHtml(renderKey, data, host);
+    // Fade the freshly-fetched content in — the wrapper is a new element each
+    // load, so the animation re-fires on every first paint of a tab.
+    panel.innerHTML = '<div class="insp-fade">' + renderTabHtml(renderKey, data, host) + '</div>';
   }
 
   // Two attempts total with a short backoff between them. Handles:

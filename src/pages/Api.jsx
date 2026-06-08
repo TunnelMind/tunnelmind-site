@@ -165,6 +165,21 @@ const DATA_GROUPS = [
     ],
   },
   {
+    name: 'GhostRoute — routing integrity & CT witness',
+    desc: 'The fourth lens: is this infrastructure where it claims to be, owned by whom it claims, and provably certificate-logged? Includes TunnelMind\'s first-party Certificate-Transparency witness — we hold our own signature-verified roots.',
+    endpoints: [
+      ['GET', '/v1/ghostroute/check/{entity}', 'Routing-integrity & sovereignty verdict for an IP, domain, ASN, or cert. Add ?receipt=true to sign + persist a GR-receipt.'],
+      ['GET', '/v1/ghostroute/witness', 'Certificate-Transparency witness health: latest signature-verified Signed Tree Head per trusted (non-Google) log, plus append-only regression detection (rewind / fork / bad STH signature).'],
+      ['GET', '/v1/ghostroute/proofs', 'Per-cert CT inclusion-proof rollup — corpus-wide, or ?domain= for one host. Proves the exact cert a host serves is included in a log whose root we verified.'],
+      ['GET', '/v1/ghostroute/alerts', 'Durable, deduplicated feed of CT append-only regression events. A healthy ecosystem returns empty; any row is a serious trust event.'],
+      ['GET', '/v1/ghostroute/asn/{asn}', 'ASN ownership and sovereign zone — registrant + jurisdiction from RIR RDAP.'],
+      ['GET', '/v1/ghostroute/cert/{domain}', 'Recent CT certificate observations for a domain — issuing CA and chain provenance.'],
+      ['GET', '/v1/ghostroute/ai/{entity}', 'Curated AI-infrastructure match for a domain or ASN.'],
+      ['POST', '/v1/ghostroute/batch', 'Batch routing-integrity check — up to 50 subjects in one call.'],
+      ['GET', '/v1/ghostroute/verify/{receipt_id}', 'Fetch a persisted GR-receipt (GR-YYYY-NNNNNNN).'],
+    ],
+  },
+  {
     name: 'Adversary & tracker signals',
     desc: 'Read-only signals over the surveillance supply graph — the building blocks of adversary classification.',
     endpoints: [
@@ -205,8 +220,6 @@ const DATA_GROUPS = [
       ['GET', '/v1/receipt/revoked', 'Check whether a receipt signing key or individual receipt is revoked.'],
       ['POST', '/verify', 'Verify a surveillance receipt\'s integrity by hash + signature.'],
       ['GET', '/verify/{receipt_id}', 'Look up a receipt by ID in the public registry.'],
-      ['POST', '/v1/ghostroute/generate', 'Generate a GhostRoute jurisdiction certificate for a domain.'],
-      ['POST', '/ghostroute/verify', 'Verify a GhostRoute jurisdiction certificate.'],
       ['GET', '/v1/config/analyst', 'BYOM analyst config bundle — system prompt + tool subset + response schema, signed.'],
       ['GET', '/v1/audit/export', 'Export signed, hash-chained audit log entries scoped to the caller.'],
     ],

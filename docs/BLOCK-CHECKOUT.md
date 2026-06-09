@@ -33,40 +33,68 @@ $20 blocks of API calls, bought through Stripe.
 Block math lives once in `src/config/pricing.js` (`callsForPurchase`) and
 is shared with the Functions via `functions/api/_blocks.js`.
 
-## NOT yet built — required before go-live
+## Code side — ✅ BUILT, DEPLOYED & DB-MIGRATED (verified live 2026-06-09)
 
-### 1. scry-server: `POST /api/v1/keys/credit`
+The scry-server credit endpoint that this doc once listed as "NOT yet built"
+is **done and live**. Verified end-to-end:
 
-scry-server owns the `api_keys` table. It currently exposes
-`/api/v1/keys/issue` + `/api/v1/keys/revoke` (subscription-shaped, now
-unused). The block model needs a **credit** endpoint and a **call balance**:
-
-- Add a `calls_remaining` column (bigint) to `api_keys`.
-- `POST /api/v1/keys/credit`, Bearer `KEY_ADMIN_SECRET`:
-  - request: `{ stripe_customer, label, calls, idempotency_key }`
-  - idempotent on `idempotency_key` (the Stripe Checkout Session id) — a
-    replay credits nothing and returns the current state.
-  - first credit for a `stripe_customer`: mint a key, set balance to
-    `calls`, return the raw key **once**.
-  - subsequent credit: find that customer's key, add `calls`, return the
-    prefix only.
-  - response: `{ ok, key?, prefix, calls_remaining, already_credited }`
-- Decrement `calls_remaining` on the request hot path; reject at zero.
-  Per `feedback_no_freetier_loadbearing` the counter belongs in VPS
-  Postgres (where `api_keys` already lives), never in KV.
+- **`POST /api/v1/keys/credit`** — implemented in
+  `scry-server/src/routes/keys_admin.js` (`postCreditKey`), routed in
+  `src/index.js`, guarded by Bearer `KEY_ADMIN_SECRET`. Idempotent on
+  `idempotency_key` (the Stripe Checkout Session id) via a `UNIQUE`
+  constraint on `key_credits`; first credit for a `stripe_customer` mints a
+  key and returns the raw key once, subsequent credits accumulate balance
+  and return the prefix only. Concurrent first-credits for one customer are
+  serialized by a per-customer pg advisory lock. Response
+  `{ ok, key?, prefix, calls_remaining, already_credited }`.
+  *Live check:* the endpoint returns `401 unauthorized` (route present,
+  secret-gated) on `api.tunnelmind.ai`.
+- **Hot-path balance** — `scry-server/src/lib/api_key.js` (`chargeBlock`)
+  atomically `calls_remaining = calls_remaining - 1 … WHERE calls_remaining > 0`
+  on every `/v1/*` request for a `block`-tier key (runs on cache hit *and*
+  miss so the 60 s identity cache can't leak free calls), and returns
+  **HTTP 402 "block exhausted"** at zero. Counter lives in VPS Postgres per
+  `feedback_no_freetier_loadbearing`, never in KV.
+- **Migration `005_block_credits`** — applied to the live `scry` DB
+  (verified 2026-06-09): `api_keys.calls_remaining` column + `block` tier in
+  the tier CHECK + the `key_credits` idempotency ledger all present.
 
 The contract is also documented at the top of `functions/api/_scry-keys.js`.
 
-### 2. Stripe dashboard (Josh)
+## Remaining before go-live — ALL Josh-gated (no code left)
+
+### 1. Stripe dashboard (Josh)
 
 - Create a one-time **product + $20 price** ("TunnelMind API call block").
-- Set Pages env vars: `STRIPE_SECRET_KEY`, `STRIPE_PRICE_BLOCK`,
-  `STRIPE_WEBHOOK_SECRET`, `KEY_ADMIN_SECRET`, `RESEND_API_KEY`.
-- Point a webhook at `https://tunnelmind.ai/api/stripe-webhook` for
-  `checkout.session.completed`.
+- Set these **Cloudflare Pages → tunnelmind-site → Settings → Environment
+  variables (Production)**, then redeploy so Functions pick them up:
+  - `STRIPE_SECRET_KEY` — Stripe live secret key (`sk_live_…`).
+  - `STRIPE_PRICE_BLOCK` — the $20 price id (`price_…`).
+  - `STRIPE_WEBHOOK_SECRET` — signing secret from the webhook in step 2 (`whsec_…`).
+  - `KEY_ADMIN_SECRET` — **must byte-match** scry-server's `KEY_ADMIN_SECRET`
+    in `/opt/tunnelmind/deploy/.env` (this is the bearer the Functions use to
+    call `/api/v1/keys/credit`). If scry-server's is unset, set both sides to
+    the same fresh random value and restart `tmd-scry-server`.
+  - `RESEND_API_KEY` — for emailing the freshly-minted key on first purchase.
+- Point a Stripe webhook at `https://tunnelmind.ai/api/stripe-webhook` for the
+  **`checkout.session.completed`** event; copy its signing secret into
+  `STRIPE_WEBHOOK_SECRET` above.
 
-### 3. Flip the switch
+### 2. Flip the switch (one line — do this LAST)
 
-Set `PRICING.human.checkoutEnabled = true` in `src/config/pricing.js` once
-1 and 2 are done. Until then the pricing page shows "Checkout opens at
-launch" and `/api/checkout` returns `503 checkout_unavailable`.
+Set `PRICING.human.checkoutEnabled = true` in `src/config/pricing.js` **only
+after** step 1 is fully done. Until then the pricing page shows "Checkout
+opens at launch" and `/api/checkout` returns `503 checkout_unavailable`
+(graceful — `checkout.js` already 503s when `STRIPE_SECRET_KEY` /
+`STRIPE_PRICE_BLOCK` are unset, so a premature flip degrades safely rather
+than erroring).
+
+### 3. Smoke test after go-live
+
+1. Buy one block in Stripe **test mode** → confirm a key is minted + emailed
+   and `calls_remaining` = 25,000.
+2. Buy a second block on the same email → confirm balance accumulates on the
+   **same** key (no second key minted).
+3. Replay the webhook for one session id → confirm `already_credited: true`
+   and no double-credit.
+4. Drain a test key to 0 → confirm `/v1/*` returns **HTTP 402**.

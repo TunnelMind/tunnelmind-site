@@ -4,7 +4,12 @@
 // owns the api_keys table and the per-key call balance. Underscore-
 // prefixed: not a route, import-only.
 //
-// ── REQUIRED scry-server endpoint (NOT yet built — block-checkout) ───────
+// ── scry-server endpoint (BUILT + DEPLOYED LIVE 2026-06-09) ──────────────
+// Implemented in scry-server/src/routes/keys_admin.js (postCreditKey),
+// routed at src/index.js, backed by migration 005_block_credits (applied to
+// the live `scry` DB: api_keys.calls_remaining + key_credits ledger). The
+// hot-path decrement + 402-at-zero lives in scry-server/src/lib/api_key.js
+// (chargeBlock). Verified live: POST returns 401 unauth without the secret.
 // POST /api/v1/keys/credit   guarded by Bearer KEY_ADMIN_SECRET
 //   request:  { stripe_customer, label, calls, idempotency_key }
 //   behaviour:

@@ -1,0 +1,12 @@
+-- 034_revoke_trigger_fn_public_execute.sql (2026-06-09).
+--
+-- touch_updated_at_p29() is a SECURITY DEFINER trigger helper. PostgreSQL
+-- grants function EXECUTE to PUBLIC by default, so 033's REVOKE from
+-- anon/authenticated didn't remove it (those roles inherit via PUBLIC, and
+-- the advisor kept flagging /rest/v1/rpc/touch_updated_at_p29 as anon-callable).
+-- Revoke from PUBLIC. Triggers fire independently of EXECUTE grants, so the
+-- updated_at triggers keep working; only the pointless RPC call path closes.
+--
+-- After this, the Supabase security advisor reports 0 ERROR / 0 WARN
+-- (remaining lints are INFO rls_enabled_no_policy = the intended deny-all).
+REVOKE EXECUTE ON FUNCTION public.touch_updated_at_p29() FROM PUBLIC, anon, authenticated;

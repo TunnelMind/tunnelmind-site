@@ -25,7 +25,7 @@ export const PRICING = {
       // Calls per $20 block once past the threshold — twice the base rate.
       callsPerBlock: 50000,
     },
-    checkoutEnabled: false,
+    checkoutEnabled: true,
   },
   agent: {
     settlementAsset: 'USDC',

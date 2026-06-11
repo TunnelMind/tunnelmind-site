@@ -335,17 +335,16 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       .linkColor(() => '#3a3f4b')
       .linkWidth(0.4)
       .linkOpacity(0.5)
-      // Floaty, smooth motion. Lower velocity decay lets nodes keep momentum
-      // and glide rather than snapping to rest; lower alpha decay makes the
-      // settle long and gentle; a cooldown longer than the 10s snapshot poll
-      // means the layout never hard-freezes — each refresh reheats before the
-      // previous one fully stills, so there's a continuous gentle drift. Fewer
-      // warmup ticks lets nodes ease into place on first paint instead of
-      // appearing pre-settled.
-      .d3VelocityDecay(0.25)
-      .d3AlphaDecay(0.0125)
-      .warmupTicks(12)
-      .cooldownTime(16000)
+      // Floaty but settled — dialed back from the fully-floaty pass, which
+      // let the charge repulsion keep pushing the cloud outward and never
+      // quite settle. These sit halfway between that and the old tight values:
+      // nodes still keep some momentum and glide rather than snapping to rest,
+      // but the decay is firm enough that the layout pulls in and comes to a
+      // gentle near-rest instead of drifting apart on every reheat.
+      .d3VelocityDecay(0.32)
+      .d3AlphaDecay(0.018)
+      .warmupTicks(26)
+      .cooldownTime(12000)
       // Pointer affordance — without it the dots don't read as clickable.
       .onNodeHover((n) => { el.style.cursor = n ? 'pointer' : 'grab'; })
       .onNodeClick((n) => { selectNode(n.id); focusNode(n); });
@@ -359,6 +358,12 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
       ctrl.rotateSpeed = 0.8;
       ctrl.zoomSpeed = 0.9;
     }
+    // Cap how far the charge repulsion reaches. Without a bound, every node
+    // shoves every other node across the whole canvas and the cloud balloons;
+    // limiting the range keeps natural local spacing while pulling the overall
+    // spread back in, so endpoints don't sit so far apart.
+    const charge = graph3d.d3Force('charge');
+    if (charge && charge.distanceMax) charge.distanceMax(260);
     syncGraph3d();
   }
 
@@ -433,10 +438,13 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   }
 
   // Fly the camera to frame a clicked node so it doesn't get lost in the
-  // cloud — the single biggest navigability win for a 3D force graph.
+  // cloud — the single biggest navigability win for a 3D force graph. The
+  // offset frames the node from a comfortable distance rather than slamming
+  // the camera right up against it, so the focus reads as a glide-in, not a
+  // jarring punch-in zoom.
   function focusNode(n) {
     if (!graph3d || !n || n.x == null) return;
-    const dist = 90;
+    const dist = 150;
     const r = Math.hypot(n.x, n.y, n.z || 0) || 1;
     const k = 1 + dist / r;
     graph3d.cameraPosition(

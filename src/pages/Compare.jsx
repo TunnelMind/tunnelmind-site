@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react'
 
-// Live corpus counts come from the public ecosystem scoreboard, so the numbers
-// on this page track the weekly Sunday supply-graph crawl instead of going
-// stale. Cached server-side (~10 min); falls back to the baked-in figures below
-// if the fetch fails, so the page never shows a blank or a zero.
-const STATS_URL = 'https://data.tunnelmind.ai/v1/stats'
+// Live corpus counts come from the ecosystem scoreboard (data-api /v1/stats,
+// served as a weekly KV snapshot), so the numbers on this page track the weekly
+// Sunday supply-graph crawl instead of going stale. Fetched via a same-origin
+// proxy Function so it satisfies the site's strict CSP (connect-src 'self');
+// falls back to the baked-in figures below if the fetch fails, so the page never
+// shows a blank or a zero.
+const STATS_URL = '/api/ecosystem-stats'
 
 function fmt(n) {
   if (n == null || !Number.isFinite(n)) return null

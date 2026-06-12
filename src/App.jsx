@@ -12,6 +12,7 @@ import About from './pages/About.jsx'
 import Pricing from './pages/Pricing.jsx'
 import Products from './pages/Products.jsx'
 import Roadmap from './pages/Roadmap.jsx'
+import Compare from './pages/Compare.jsx'
 import PrivacyPolicy from './pages/legal/PrivacyPolicy.jsx'
 import TermsOfService from './pages/legal/TermsOfService.jsx'
 import LawEnforcementPolicy from './pages/legal/LawEnforcementPolicy.jsx'
@@ -25,7 +26,7 @@ import AccountRiskDisclosure from './pages/legal/AccountRiskDisclosure.jsx'
 // inbound links keep working.
 
 const KNOWN_PAGES = new Set([
-  'landing','vision','tools','api','whitepapers','about','pricing','products','roadmap',
+  'landing','vision','tools','api','whitepapers','about','pricing','products','roadmap','compare',
   'privacy','terms','law-enforcement','abuse','transparency','account-risk',
 ])
 
@@ -86,6 +87,7 @@ export default function App() {
     'account-risk': <AccountRiskDisclosure />,
     products:     <Products />,
     roadmap:      <Roadmap />,
+    compare:      <Compare />,
   }
 
   const currentPageEl = pageComponent[page] || pageComponent.landing

@@ -10,12 +10,9 @@
 // dotted segments. Accept up to 253 chars per RFC 1035. We do NOT accept
 // underscores, schemes, paths, or ports — every upstream rejects those
 // anyway, and rejecting early gives a clean 400 instead of a 502.
+import { ipVersion, canonicalizeIp } from './_ip.js'
+
 const DOMAIN_RE = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/
-
-const IPV4_RE = /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/
-
-// Conservative IPv6 — only well-formed colon-hex; rejects zone IDs.
-const IPV6_RE = /^[0-9a-f:]+$/
 
 export function normalizeDomain(raw) {
   if (typeof raw !== 'string') return null
@@ -23,13 +20,14 @@ export function normalizeDomain(raw) {
   return DOMAIN_RE.test(s) ? s : null
 }
 
+// IPv4 returned as-is; IPv6 validated structurally (rejects `:::`, accepts
+// v4-mapped) and returned in RFC 5952 canonical form. rdap/[ip].js then passes
+// the colons through raw (encodeURIComponent would break rdap.org).
 export function normalizeIp(raw) {
   if (typeof raw !== 'string') return null
-  const s = raw.trim().toLowerCase()
-  if (IPV4_RE.test(s)) return s
-  // Reject obvious garbage but accept colon-hex; rdap.org will validate.
-  if (s.includes(':') && IPV6_RE.test(s) && s.length <= 39) return s
-  return null
+  const v = ipVersion(raw)
+  if (!v) return null
+  return v === 6 ? canonicalizeIp(raw) : raw.trim().toLowerCase()
 }
 
 export function normalizeHost(raw) {

@@ -90,6 +90,15 @@ const ROUTES = [
       'Operator: TunnelMind AI, LLC. OAI-2026-0000201. Single-operator project. Warrant canary at /canary.json updated monthly. Contact: agents@tunnelmind.ai.',
   },
   {
+    slug: 'compare',
+    title: 'TunnelMind vs. ipinfo & GreyNoise — trust attestation, not IP lookup',
+    description:
+      'ipinfo and GreyNoise answer "what is this IP?" TunnelMind answers "should my agent trust this actor right now, on whose authority, and can it prove the decision later?" Four lenses on one signed corpus — destination intelligence, provenance, and witnessability — with a cross-lens join no single-axis enrichment vendor can compute.',
+    h1:    'TunnelMind vs. ipinfo & GreyNoise',
+    body:
+      'Enrichment vendors win raw IP-geolocation scale; TunnelMind does not compete there. The product is a trust-attestation layer for agents: signed observations (provenance), replayable verification receipts (witnessability), and the cross-lens join across Scry, Sigil, Tracker, and GhostRoute. Data scale of a different shape — public, self-replenishing supply/threat/routing graphs — served over agent-native rails (MCP, x402, OAI, preflight).',
+  },
+  {
     slug: 'tools',
     title: 'TunnelMind — Tools and live data surfaces',
     description:

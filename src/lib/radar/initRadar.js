@@ -23,6 +23,7 @@
 //                   netprobe.tunnelmind.ai by 301)
 import ForceGraph3D from '3d-force-graph';
 import * as THREE from 'three';
+import { ipVersion, canonicalizeIp } from './ip.js';
 
 export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   const $ = (sel) => root.querySelector(sel);
@@ -2080,18 +2081,17 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
   // duplicated rather than imported — initRadar.js is loaded into the
   // browser, _lib.js runs at the edge.
   const _DOMAIN_RE = /^(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)(?:\.[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?)+$/;
-  const _IPV4_RE = /^(?:(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.){3}(?:25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
-  const _IPV6_RE = /^[0-9a-f:]+$/;
+  // IP validation comes from the shared ip.js primitive (mirrors the edge
+  // _ip.js + data-api), so a valid IPv6 — incl. v4-mapped — is never rejected
+  // pre-flight, and `:::`-style garbage never reaches the Functions.
   function isIpLocal(s) {
-    if (typeof s !== 'string') return false;
-    const v = s.trim().toLowerCase();
-    if (_IPV4_RE.test(v)) return true;
-    return v.includes(':') && _IPV6_RE.test(v) && v.length <= 39;
+    return !!ipVersion(s);
   }
   function normalizeHostLocal(raw) {
     if (typeof raw !== 'string') return null;
     const s = raw.trim().toLowerCase().replace(/\.$/, '').replace(/^https?:\/\//, '').split('/')[0];
-    if (isIpLocal(s)) return s;
+    const v = ipVersion(s);
+    if (v) return v === 6 ? (canonicalizeIp(s) || s) : s;
     return _DOMAIN_RE.test(s) ? s : null;
   }
 

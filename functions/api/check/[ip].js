@@ -20,8 +20,18 @@
 // Layer 1 degrades gracefully: if the RATE_LIMITER binding is ever
 // absent, the local cap is skipped and layer 2 still applies.
 
+import { ipVersion } from '../corpus/_ip.js'
+
 export async function onRequestGet(context) {
   const { request, params, env } = context
+  // Validate before spending a rate-limit token or hitting the public API —
+  // accepts IPv4 + IPv6, rejects junk with a clean 400 instead of a pass-through.
+  if (!ipVersion(params.ip)) {
+    return new Response(JSON.stringify({ error: 'invalid_ip' }), {
+      status: 400,
+      headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+    })
+  }
   const ip = encodeURIComponent(params.ip)
   const clientIp = request.headers.get('CF-Connecting-IP') || ''
 

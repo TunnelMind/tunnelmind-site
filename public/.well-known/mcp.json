@@ -4,7 +4,7 @@
   "description": "Apex discovery index for TunnelMind's Model Context Protocol surface. Four lenses on one signed corpus — Scry (attacker observation), Sigil (advertising supply verification), Tracker (surveillance-economy graph), and GhostRoute (routing integrity / sovereignty), unified in the Data API (the union surface, including the cross-lens fused verdict). Each entry's card_url is the per-server RFC 8615 discovery doc; mcp_url is the streamable-http endpoint to connect to.",
   "homepage": "https://tunnelmind.ai",
   "contact": "api@tunnelmind.ai",
-  "updated_at": "2026-06-01T00:00:00Z",
+  "updated_at": "2026-06-13T00:00:00Z",
   "operator_oai": "OAI-2026-0000201",
   "servers": [
     {
@@ -13,7 +13,7 @@
       "mcp_url": "https://mcp-data.tunnelmind.ai/mcp",
       "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tools_count": 61,
+      "tools_count": 66,
       "auth": "oauth2",
       "default_prompt_surface": "data",
       "summary": "The union surface: every Data API operation as an MCP tool (auto-generated from openapi.yaml). Tracker / Sigil / GhostRoute / Cross-lens — including cross_lens_verify (fused Scry x Sigil x GhostRoute) and the /v1/profile fused Scry x Sigil x Tracker x GhostRoute entity profile. Start here if you don't know which lens you need."

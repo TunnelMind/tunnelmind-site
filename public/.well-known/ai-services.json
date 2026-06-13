@@ -1,11 +1,11 @@
 {
   "$schema": "https://tunnelmind.ai/.well-known/ai-services.schema.json",
   "version": "0.1",
-  "updated": "2026-05-24",
+  "updated": "2026-06-13",
 
   "service": {
     "name": "TunnelMind",
-    "summary": "The observability layer for the agentic internet. Four lenses (Scry / Sigil / Tracker / GhostRoute) on one signed corpus, with a fused cross-lens verdict no siloed incumbent can compute.",
+    "summary": "The trust attestation layer for the agentic internet. Four lenses (Scry / Sigil / Tracker / GhostRoute) on one signed corpus, with a fused cross-lens verdict no siloed incumbent can compute.",
     "homepage": "https://tunnelmind.ai",
     "vision": "https://tunnelmind.ai/vision",
     "operator": {
@@ -62,8 +62,8 @@
       "url": "https://mcp-data.tunnelmind.ai/mcp",
       "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tool_count": 54,
-      "summary": "All Data API operations exposed as MCP tools (auto-generated from openapi.yaml). Tracker / Sigil / Cross-lens — the union of every REST endpoint, including cross_lens_verify (with adversary_class)."
+      "tool_count": 66,
+      "summary": "All Data API operations exposed as MCP tools (auto-generated from openapi.yaml). Tracker / Sigil / GhostRoute / Cross-lens — the union of every REST endpoint, including cross_lens_verify (with adversary_class)."
     },
     {
       "name": "Scry",

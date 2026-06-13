@@ -236,9 +236,10 @@ export default function VerifyWidget({ onNavigate }) {
       {/* ── Verdict + receipt ─────────────────────────────────────────── */}
       {phase === 'error' ? (
         <div className="tm-verify-verdict is-error">
-          <div className="tm-vv-head">Taking longer than usual.</div>
+          <div className="tm-vv-head">Warming up.</div>
           <p className="tm-vv-note">
-            The live verdict for <code>{host}</code> is slow to warm.{' '}
+            First lookup of <code>{host}</code> is computing in the background — give
+            it a few seconds, then{' '}
             <button type="button" className="tm-link" onClick={() => verify(host)}>retry</button>
             {' '}or{' '}
             <button

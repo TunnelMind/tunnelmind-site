@@ -22,6 +22,30 @@ import { normalizeHost, json, fetchWithTimeout } from '../corpus/_lib.js'
 
 const DATA_BASE = 'https://data.tunnelmind.ai'
 const CACHE_TTL = 300
+// Background warm budget. Longer than the foreground 9s cap (no client is
+// waiting on it) but bounded so a detached task can't run unbounded.
+const WARM_TIMEOUT_MS = 28_000
+
+const VERIFY_HEADERS = {
+  'Content-Type': 'application/json',
+  Accept: 'application/json',
+  'User-Agent': 'TunnelMindSite/1.0 (+https://tunnelmind.ai)',
+}
+
+// Fire-and-forget: run the verify to completion with a generous deadline so the
+// upstream's per-stage + result KV caches actually populate. Used via
+// context.waitUntil when the foreground 9s attempt times out on a cold node —
+// our abort cancels that attempt mid-flight, so without this the node never
+// warms and stays permanently stuck behind the 9s cap. Best-effort; never throws.
+async function warmUpstream(node) {
+  try {
+    await fetchWithTimeout(
+      `${DATA_BASE}/v1/verify/${encodeURIComponent(node)}`,
+      { method: 'POST', headers: VERIFY_HEADERS, body: '{}' },
+      WARM_TIMEOUT_MS,
+    )
+  } catch { /* best-effort warm — nothing is waiting on it */ }
+}
 
 export async function onRequestGet(context) {
   const node = normalizeHost(context.params.node)
@@ -38,20 +62,16 @@ export async function onRequestGet(context) {
   try {
     r = await fetchWithTimeout(
       `${DATA_BASE}/v1/verify/${encodeURIComponent(node)}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          'User-Agent': 'TunnelMindSite/1.0 (+https://tunnelmind.ai)',
-        },
-        body: '{}',
-      },
+      { method: 'POST', headers: VERIFY_HEADERS, body: '{}' },
       9000,
     )
   } catch {
-    // AbortError (our 9s deadline) or a network blip — the widget shows a
-    // "taking longer than usual" state, auto-retries once, then links out.
+    // AbortError (our 9s deadline) or a network blip. The browser gets a fast
+    // 504 (widget falls back + retries), but we detach a long-budget warm so the
+    // upstream completes in the background and populates its caches — otherwise a
+    // slow-cold node never self-warms (our abort kills it) and stays stuck. The
+    // visitor's retry, or the next visitor, then lands on a warm node.
+    context.waitUntil(warmUpstream(node))
     return json({ error: 'verify_timeout', node }, 504)
   }
 

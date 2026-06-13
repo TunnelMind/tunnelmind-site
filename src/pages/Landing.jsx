@@ -132,7 +132,7 @@ export default function Landing({ onNavigate }) {
           </p>
           <p style={prose}>
             You cannot fight what you cannot see, and you cannot see what you
-            cannot name. The missing layer is observability: a public, signed,
+            cannot name. The missing layer is attestation: a public, signed,
             continuously-updated record of who is acting on the network and what
             they have done.
           </p>
@@ -143,7 +143,7 @@ export default function Landing({ onNavigate }) {
         {/* ── What we're building ───────────────────────────────────── */}
         <section>
           <div style={sectionLabel}>What we&apos;re building</div>
-          <h2 style={h2}>The observability layer for the agentic internet.</h2>
+          <h2 style={h2}>The trust attestation layer for the agentic internet.</h2>
           <p style={prose}>
             TunnelMind runs a distributed fleet of attested sensors and a
             continuous clearnet recon pipeline. Together they produce a corpus of

@@ -47,7 +47,7 @@ export default function About() {
           The internet should be legible. We&apos;re building the layer that makes it so.
         </h1>
         <p style={{ ...prose, fontSize: '16px', maxWidth: '600px', marginBottom: '48px' }}>
-          TunnelMind builds the observability layer for the agentic internet — a
+          TunnelMind builds the trust attestation layer for the agentic internet — a
           public, signed corpus of who is acting on the network and what they
           have done. When the consumers of the web are machines, identifying the
           entity behind a request stops being a nicety and becomes the question

@@ -22,7 +22,7 @@ export default function TermsOfService() {
 
       <Section title="2. The service">
         <P>
-          TunnelMind operates an observability layer for the agentic internet: a
+          TunnelMind operates a trust attestation layer for the agentic internet: a
           distributed fleet of attested sensors and a continuous recon pipeline
           that together produce the Scry corpus — a signed, continuously-updated
           record of hostile and automated network activity, including source

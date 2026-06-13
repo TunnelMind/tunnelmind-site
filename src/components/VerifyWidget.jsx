@@ -144,7 +144,7 @@ export default function VerifyWidget({ onNavigate }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  async function verify(target) {
+  async function verify(target, attempt = 0) {
     const node = (target || '').trim().toLowerCase()
     if (!node) return
     clearTimers()
@@ -161,7 +161,14 @@ export default function VerifyWidget({ onNavigate }) {
       setResult(data)
       runReveal()
     } catch {
-      setPhase('error')
+      // The upstream verdict is fast warm but slow cold (it 504s past our 9s
+      // proxy cap). That first cold call warms it, so one auto-retry usually
+      // lands — only surface the fallback after the retry also fails.
+      if (attempt < 1) {
+        timers.current.push(setTimeout(() => verify(node, attempt + 1), 1200))
+      } else {
+        setPhase('error')
+      }
     }
   }
 

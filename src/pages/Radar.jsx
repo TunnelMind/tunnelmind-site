@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { initRadar } from '../lib/radar/initRadar.js'
+import VerifyWidget from '../components/VerifyWidget.jsx'
 
 // Radar — the TunnelMind landing (P25 Phase 2). The live attacker-corpus
 // force graph is the hero, wrapped in a deliberate conversion frame so a
@@ -219,6 +220,11 @@ export default function Radar({ onNavigate }) {
           and who can be trusted. Signed receipts. Open protocol. Attestation
           that scales from self-asserted identity to silicon-root hardware trust.
         </p>
+        <p className="tm-hero-sell">
+          ipinfo tells your agent <em>where</em> an IP is. TunnelMind tells it
+          <em> whether to trust</em> the actor — and hands back a signed receipt
+          it can prove later.
+        </p>
         <div className="tm-lens-strip" aria-label="One corpus, four lenses">
           <div className="tm-lens-caption">
             One corpus · Four lenses
@@ -245,6 +251,7 @@ export default function Radar({ onNavigate }) {
             The moat is the <span className="tm-accent">join</span> — a fused verdict no siloed incumbent can compute.
           </div>
         </div>
+        <VerifyWidget onNavigate={onNavigate} />
         <HeroStats />
         <div className="tm-cta-curl" aria-label="Check any IP, free, no key">
           <code>curl https://api.tunnelmind.ai/v1/check/{'{ip}'}</code>

@@ -199,7 +199,7 @@ export default function Products() {
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
       <PageDesc
         title="products"
-        desc="The observability layer for the agentic internet, end to end — the pipelines that build the signed corpus, the surfaces onto it, the open standards on top, and the verification layer they support."
+        desc="The trust attestation layer for the agentic internet, end to end — the pipelines that build the signed corpus, the surfaces onto it, the open standards on top, and the verification layer they support."
       />
 
       <div style={{ padding: 'clamp(12px, 4vw, 32px)', maxWidth: '960px', margin: '0 auto' }}>

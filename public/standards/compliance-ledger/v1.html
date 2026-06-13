@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TunnelMind Compliance Ledger v1 — TunnelMind</title>
+<meta name="description" content="A tamper-evident, customer-configurable ledger of an agent's verdict receipts, with regime-mapped signed exports (EU AI Act Art.12, DORA, NYDFS, HIPAA, PCI DSS, SOC 2) an auditor can verify independently. Ed25519 + JCS + SHA-256.">
+<link rel="canonical" href="https://tunnelmind.ai/standards/compliance-ledger/v1">
+<meta property="og:title" content="TunnelMind Compliance Ledger v1">
+<meta property="og:description" content="Tamper-evident, customer-configurable record of agent decisions with regime-mapped signed exports.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://tunnelmind.ai/standards/compliance-ledger/v1">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<style>:root {
+  --chrome-bg: #0f172a; --chrome-bg2: #1e293b; --chrome-border: #334155;
+  --chrome-text: #cbd5e1; --chrome-text-dim: #94a3b8; --chrome-text-bright: #e2e8f0;
+  --doc-text: #e2e8f0; --doc-text-dim: #cbd5e1; --doc-paper: #243044;
+  --accent-green: #3dba8a; --accent-amber: #fbbf24; --accent-blue: #00d4ff;
+  --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+  --font-serif: 'Crimson Pro', Georgia, Palatino, serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--chrome-bg); color: var(--doc-text); font-family: var(--font-serif); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.banner { background: var(--chrome-bg2); border-bottom: 1px solid var(--chrome-border); padding: 14px 24px; font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.banner a { color: var(--accent-green); text-decoration: none; }
+.banner .home { color: var(--accent-green); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 11px; }
+main { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+h1 { font-family: var(--font-mono); font-size: 27px; font-weight: 700; color: var(--accent-green); margin: 0 0 10px; line-height: 1.25; }
+.sub { font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); margin: 0 0 32px; }
+h2 { font-family: var(--font-mono); font-size: 17px; color: var(--accent-blue); margin: 40px 0 12px; border-bottom: 1px solid var(--chrome-border); padding-bottom: 6px; }
+h3 { font-family: var(--font-mono); font-size: 14px; color: var(--chrome-text-bright); margin: 22px 0 8px; }
+code { font-family: var(--font-mono); font-size: 0.86em; background: var(--chrome-bg2); padding: 1px 5px; border-radius: 3px; color: var(--accent-amber); }
+pre { background: var(--chrome-bg2); border: 1px solid var(--chrome-border); border-radius: 6px; padding: 16px; overflow-x: auto; font-family: var(--font-mono); font-size: 12.5px; line-height: 1.5; color: var(--chrome-text); }
+pre code { background: none; color: inherit; padding: 0; }
+table { width: 100%; border-collapse: collapse; font-size: 14px; margin: 12px 0; }
+th, td { text-align: left; padding: 7px 10px; border-bottom: 1px solid var(--chrome-border); vertical-align: top; }
+th { font-family: var(--font-mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--chrome-text-dim); }
+td code { font-size: 0.8em; }
+a { color: var(--accent-green); }
+ol, ul { padding-left: 22px; }
+li { margin: 5px 0; }
+.foot { margin-top: 56px; padding-top: 20px; border-top: 1px solid var(--chrome-border); font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); line-height: 1.8; }
+.pill { display: inline-block; font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; padding: 2px 8px; border: 1px solid var(--accent-green); color: var(--accent-green); border-radius: 999px; }
+</style>
+</head>
+<body>
+<div class="banner">
+  <a class="home" href="/">TunnelMind</a>
+  <span>Compliance Ledger v1 · live · CC BY 4.0</span>
+</div>
+<main>
+  <h1>TunnelMind Compliance Ledger v1</h1>
+  <p class="sub">A tamper-evident, customer-configurable record of agent decisions · Ed25519 + RFC 8785 JCS + SHA-256</p>
+
+  <p>
+    Every time an agent asks TunnelMind to verify a destination
+    (<code>/v1/verify</code>, <code>/v1/explain</code>, <code>/v1/preflight</code>,
+    <code>/v1/profile</code>) it receives a signed
+    <a href="/standards/receipt-format/v1">Receipt</a>. The Compliance Ledger
+    <em>retains</em> those decisions as a per-customer, append-only, hash-chained
+    log, and lets you export them — mapped to your regulatory regime, signed, and
+    independently verifiable — as the evidentiary record a regulation like the
+    EU AI Act, DORA, or NYDFS Part 500 requires. <span class="pill">self-serve</span>
+  </p>
+  <p>
+    You configure it. Pick your <strong>regime</strong>, your
+    <strong>retention period</strong>, and your <strong>export formats</strong> —
+    no bespoke engineering, no sales call. The format your auditor wants is a
+    setting, not a feature request.
+  </p>
+
+  <h2>1 · Configure (your knob)</h2>
+  <pre><code>PUT /v1/compliance/profile        (Authorization: Bearer &lt;key&gt;)
+{ "enabled": true,
+  "regime": "ai_act_art12",
+  "retention_days": 365,
+  "export_formats": ["signed_json","csv","eat"] }</code></pre>
+  <p>
+    <code>GET /v1/compliance/profile</code> returns your config plus the catalog
+    of supported regimes and formats. Anonymous callers get no ledger — it is an
+    authenticated, opt-in record.
+  </p>
+
+  <h2>2 · The ledger entry &amp; the chain</h2>
+  <p>
+    Each enabled verdict appends one entry with a per-customer monotonic
+    <code>seq</code>. Tamper-evidence comes from a hash chain: every entry binds
+    the content hash of its decision <em>and</em> the previous entry's hash.
+  </p>
+  <pre><code>record_hash = "0x" + sha256( JCS(decision_record) )
+entry_hash  = "0x" + sha256( JCS({
+   seq, customer_id, receipt_id, endpoint, node, verdict,
+   trust_score, confidence, decided_at, record_hash, prev_hash
+}) )
+prev_hash   = entry_hash of (seq - 1), or "0x0" at genesis</code></pre>
+  <p>
+    Altering or deleting any entry changes its <code>entry_hash</code>, which
+    breaks <code>prev_hash</code> linkage for every entry after it. The chain is
+    the proof.
+  </p>
+
+  <h2>3 · Signed checkpoints</h2>
+  <p>
+    Periodically (and on every export) TunnelMind signs the current chain head
+    with the <a href="/.well-known/receipt-signing-key.json">receipt signing key</a>
+    (Ed25519): <code>{customer_id, seq_high, entry_count, chain_head_hash, signed_at}</code>.
+    A checkpoint is a portable proof that your ledger held <em>N</em> entries with
+    head <em>H</em> at time <em>T</em> — so even TunnelMind cannot rewrite history
+    before a checkpoint without detection.
+  </p>
+
+  <h2>4 · Regimes</h2>
+  <p>The chosen regime maps each entry to your auditor's field names and citation. Extensible — adding a regime is one mapping entry.</p>
+  <table>
+    <tr><th>id</th><th>maps to</th></tr>
+    <tr><td><code>ai_act_art12</code></td><td>EU AI Act — Reg. (EU) 2024/1689 Art. 12 (automatic logging)</td></tr>
+    <tr><td><code>dora_art11</code></td><td>EU DORA — Reg. (EU) 2022/2554 Art. 11 (ICT response records)</td></tr>
+    <tr><td><code>nydfs_500</code></td><td>NYDFS Part 500 — 23 NYCRR 500.06 (audit trail)</td></tr>
+    <tr><td><code>hipaa</code></td><td>HIPAA Security Rule — 45 CFR 164.312(b)</td></tr>
+    <tr><td><code>pci_dss</code></td><td>PCI DSS v4.0 — Requirement 10</td></tr>
+    <tr><td><code>soc2</code></td><td>SOC 2 — AICPA TSC CC7.2</td></tr>
+    <tr><td><code>generic</code></td><td>raw tamper-evident record (no regime mapping)</td></tr>
+  </table>
+
+  <h2>5 · Export</h2>
+  <pre><code>POST /v1/compliance/export?format=csv&amp;regime=ai_act_art12&amp;from=&amp;to=</code></pre>
+  <table>
+    <tr><th>format</th><th>artifact</th></tr>
+    <tr><td><code>signed_json</code></td><td>the whole bundle wrapped as a TunnelMind Receipt (Ed25519)</td></tr>
+    <tr><td><code>csv</code></td><td>one row per decision, columns = the regime's field labels</td></tr>
+    <tr><td><code>eat</code></td><td>EAT profile token — EdDSA JWS, <code>typ: eat+jwt</code></td></tr>
+    <tr><td><code>stix</code></td><td>STIX 2.1 bundle (custom compliance objects)</td></tr>
+  </table>
+  <p>
+    Every export carries a <code>manifest</code>: the time window, entry count,
+    <code>first_seq</code>/<code>last_seq</code>, the live chain-integrity result,
+    and the latest signed checkpoint.
+  </p>
+
+  <h2>6 · Verify it yourself</h2>
+  <p>An auditor can confirm an export is authentic and complete without trusting us:</p>
+  <ol>
+    <li>For each record, recompute <code>record_hash</code> and <code>entry_hash</code>
+        from the formulas in §2 and confirm they match.</li>
+    <li>Confirm each entry's <code>prev_hash</code> equals the prior entry's
+        <code>entry_hash</code>, and <code>seq</code> increments by 1 with no gaps.</li>
+    <li>Verify the manifest's signed <code>checkpoint</code> signature against the
+        published <a href="/.well-known/receipt-signing-key.json">receipt key</a>,
+        and confirm its <code>chain_head_hash</code> equals the last entry's
+        <code>entry_hash</code> (for records up to <code>seq_high</code>).</li>
+    <li>Or simply call <code>GET /v1/compliance/verify</code> — TunnelMind
+        recomputes the whole chain and returns <code>{ intact, entry_count,
+        chain_head_hash }</code>, or <code>{ reason, first_break_seq }</code> if any
+        record was altered or removed.</li>
+  </ol>
+  <p>
+    Tombstoned entries (content purged after your retention window) keep their
+    <code>record_hash</code> and chain hashes, so the proof that a decision
+    occurred survives even after its detail is minimised away.
+  </p>
+
+  <div class="foot">
+    Lens: agent-action record-keeping · Pillar: witnessability.<br>
+    Substrate: <a href="/standards/receipt-format/v1">Receipt Format v1.0</a> ·
+    Key bundle: <a href="/.well-known/receipt-signing-key.json">/.well-known/receipt-signing-key.json</a><br>
+    Endpoints: <code>data.tunnelmind.ai/v1/compliance/{profile,ledger,export,verify}</code> ·
+    also on the <a href="/api">MCP surface</a>.<br>
+    Standards hub: <a href="/standards">/standards</a>.
+  </div>
+</main>
+</body>
+</html>

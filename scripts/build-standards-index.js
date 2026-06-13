@@ -59,6 +59,16 @@ const STANDARDS = [
     github: 'https://github.com/TunnelMind/atap',
     published: '2026-05-27',
   },
+  {
+    id: 'compliance-ledger',
+    version: 'v1',
+    name: 'Compliance Ledger',
+    full: 'Tamper-evident, customer-configurable agent-action record',
+    status: 'v1 — Live',
+    blurb: 'A per-customer, append-only, hash-chained ledger of an agent’s verdict receipts, with Ed25519 signed checkpoints and regime-mapped signed exports (EU AI Act Art.12, DORA, NYDFS Part 500, HIPAA, PCI DSS, SOC 2) in signed_json / CSV / EAT / STIX. You pick the regime, retention, and format; an auditor verifies the chain independently against the published receipt key.',
+    href: '/standards/compliance-ledger/v1',
+    published: '2026-06-13',
+  },
 ]
 
 const css = `

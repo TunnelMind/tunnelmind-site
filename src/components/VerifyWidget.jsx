@@ -116,10 +116,14 @@ const verdictLabel = (v) => ({
   fail: 'Do not trust',
   warn: 'Caution',
   mismatch: 'Mismatch',
+  unknown: 'Insufficient data',
 }[v] || (v ? v[0].toUpperCase() + v.slice(1) : 'No verdict'))
 
 const verdictTone = (v) =>
-  v === 'pass' ? 'clean' : (v === 'fail' || v === 'mismatch') ? 'bad' : 'warn'
+  v === 'pass' ? 'clean'
+    : (v === 'fail' || v === 'mismatch') ? 'bad'
+    : v === 'unknown' ? 'neutral'   // no data ≠ caution — render it as neutral, not amber
+    : 'warn'
 
 export default function VerifyWidget({ onNavigate }) {
   const [host, setHost] = useState(SEED.node.value)

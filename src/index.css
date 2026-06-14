@@ -536,6 +536,7 @@ a:hover {
 .tm-verify-verdict[data-tone="clean"] { border-left-color: var(--accent-green); }
 .tm-verify-verdict[data-tone="warn"]  { border-left-color: var(--accent-amber); }
 .tm-verify-verdict[data-tone="bad"]   { border-left-color: var(--accent-red); }
+.tm-verify-verdict[data-tone="neutral"] { border-left-color: var(--accent-blue); }
 .tm-verify-verdict.is-error { border-left-color: var(--accent-amber); }
 .tm-vv-row {
   display: flex;

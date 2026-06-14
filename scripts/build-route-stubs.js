@@ -45,6 +45,15 @@ const ROUTES = [
       'One signed corpus, two rails. Every Data API endpoint is also an MCP tool. Open free tier; $20 Stripe block for humans, x402 USDC for agents. Machine-legible discovery: data.tunnelmind.ai/openapi.yaml, /.well-known/mcp.json, /agent-manifest.json, /agent-onboarding.md.',
   },
   {
+    slug: 'skills',
+    title: 'TunnelMind — Claude Skills: preflight + verify, with a signed receipt',
+    description:
+      'Drop TunnelMind into your Claude agent. Two skills in one install: preflight-should-i-act (allow/caution/deny before transacting) and verify-actor (fused Scry x Sigil x GhostRoute verdict + adversary class). Every check leaves a signed, replayable receipt. Apache-2.0, version-pinned.',
+    h1:    'TunnelMind Claude Skills',
+    body:
+      'Install with /plugin marketplace add TunnelMind/tunnelmind-skills then /plugin install tunnelmind-trust@tunnelmind. A Skill teaches a Claude agent when to consult TunnelMind and what to do with the verdict — and to keep the signed receipt. Built claude-first on the public verify/preflight API; the free tier needs no key.',
+  },
+  {
     slug: 'products',
     title: 'TunnelMind — Products: Scry, Sigil, Tracker, GhostRoute, Cross-lens verify',
     description:

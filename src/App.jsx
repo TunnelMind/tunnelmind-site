@@ -7,6 +7,7 @@ import Radar from './pages/Radar.jsx'
 import Landing from './pages/Landing.jsx'
 import Tools from './pages/Tools.jsx'
 import Api from './pages/Api.jsx'
+import Skills from './pages/Skills.jsx'
 import Whitepapers from './pages/Whitepapers.jsx'
 import About from './pages/About.jsx'
 import Pricing from './pages/Pricing.jsx'
@@ -26,7 +27,7 @@ import AccountRiskDisclosure from './pages/legal/AccountRiskDisclosure.jsx'
 // inbound links keep working.
 
 const KNOWN_PAGES = new Set([
-  'landing','vision','tools','api','whitepapers','about','pricing','products','roadmap','compare',
+  'landing','vision','tools','api','skills','whitepapers','about','pricing','products','roadmap','compare',
   'privacy','terms','law-enforcement','abuse','transparency','account-risk',
 ])
 
@@ -76,6 +77,7 @@ export default function App() {
     vision:       <Landing onNavigate={handleNavigate} />,
     tools:        <Tools onNavigate={handleNavigate} />,
     api:          <Api onNavigate={handleNavigate} />,
+    skills:       <Skills onNavigate={handleNavigate} />,
     whitepapers:  <Whitepapers />,
     about:        <About />,
     pricing:      <Pricing onNavigate={handleNavigate} />,

@@ -4,6 +4,7 @@ const NAV_ITEMS = {
   tunnelmind: [
     { label: 'Tools',        page: 'tools' },
     { label: 'API',          page: 'api' },
+    { label: 'Skills',       page: 'skills' },
     { label: 'Compare',      page: 'compare' },
     { label: 'Standards',    href: '/standards' },
     { label: 'Roadmap',      page: 'roadmap' },

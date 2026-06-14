@@ -96,8 +96,26 @@ export async function onRequestGet(context) {
     receipt:          body.receipt          ?? null,
   }
 
+  // GhostRoute races a 5s deadline upstream: a cold node returns a fast
+  // 3-lens verdict with ghostroute {available:false, reason:'ghostroute_pending'}
+  // while its routing stage keeps warming in the background. We must NOT cache
+  // that partial — caching it would pin the pending verdict for 300s and the
+  // 4th lens would never land. Return it un-cached (so the widget can show a
+  // "verifying routing…" state) and detach a long warm so the upstream
+  // completes; the widget's background re-fetch, or the next visitor, then gets
+  // the full 4-lens verdict (which does get cached).
+  const grPending =
+    payload.ghostroute &&
+    payload.ghostroute.available === false &&
+    payload.ghostroute.reason === 'ghostroute_pending'
+
+  if (grPending) {
+    context.waitUntil(warmUpstream(node))
+    return json(payload, 200, 0) // no-store — let the next call land the full verdict
+  }
+
   const resp = json(payload, 200, CACHE_TTL)
-  // Store the successful verdict at the edge so repeat / curated lookups are
+  // Store the complete verdict at the edge so repeat / curated lookups are
   // instant even while the upstream is cold. Non-blocking.
   context.waitUntil(cache.put(cacheKey, resp.clone()))
   return resp

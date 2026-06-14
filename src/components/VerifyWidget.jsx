@@ -84,8 +84,13 @@ function lensRows(r) {
     ? { status: 'tracker / surveillance entity', detail: 'curated cartel association', tone: 'warn' }
     : { status: 'no tracker association', detail: '—', tone: 'clean' }
 
-  // GhostRoute — routing integrity & sovereignty (the richest block here)
-  const grRow = !gr.available
+  // GhostRoute — routing integrity & sovereignty (the richest block here).
+  // A cold node returns reason 'ghostroute_pending' (the 4th lens is still
+  // racing its 5s deadline upstream): show it as actively resolving, not as a
+  // bare "no data" — otherwise a legit host reads as a gap rather than a wait.
+  const grRow = gr.reason === 'ghostroute_pending'
+    ? { status: 'verifying routing…', detail: 'RPKI / sovereignty still resolving', tone: 'pending' }
+    : !gr.available
     ? { status: 'no route data', detail: '—', tone: 'na' }
     : {
         status: gr.sanctions_match
@@ -121,7 +126,9 @@ export default function VerifyWidget({ onNavigate }) {
   const [result, setResult] = useState(SEED)
   const [phase, setPhase] = useState('revealing') // revealing | done | evaluating | error
   const [reveal, setReveal] = useState(0)          // 0..4 lens rows shown
+  const [pendingLens, setPendingLens] = useState(false) // GhostRoute still warming → verdict may sharpen
   const timers = useRef([])
+  const activeNode = useRef(SEED.node.value)        // guards stale background re-fetches
 
   const clearTimers = () => { timers.current.forEach(clearTimeout); timers.current = [] }
 
@@ -139,18 +146,35 @@ export default function VerifyWidget({ onNavigate }) {
   }
 
   useEffect(() => {
-    runReveal()
+    // Deep-link: /?verify=<host> runs the lookup on load so an outreach link can
+    // land a prospect straight on their own domain's verdict. App.jsx folds any
+    // hash-route query into window.location.search before this mounts.
+    let target = ''
+    if (typeof window !== 'undefined') {
+      try { target = new URLSearchParams(window.location.search).get('verify') || '' } catch { /* noop */ }
+    }
+    if (target.trim()) verify(target)
+    else runReveal()
     return clearTimers
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Is this verdict a fast 3-lens partial with GhostRoute still racing its 5s
+  // deadline upstream? (reason 'ghostroute_pending' — see the proxy.)
+  function isPending(data) {
+    const gr = data && data.ghostroute
+    return !!(gr && gr.available === false && gr.reason === 'ghostroute_pending')
+  }
 
   async function verify(target, attempt = 0) {
     const node = (target || '').trim().toLowerCase()
     if (!node) return
     clearTimers()
+    activeNode.current = node
     setHost(node)
     setPhase('evaluating')
     setReveal(0)
+    setPendingLens(false)
     try {
       const res = await fetch(`/api/verify/${encodeURIComponent(node)}`, {
         headers: { Accept: 'application/json' },
@@ -160,6 +184,13 @@ export default function VerifyWidget({ onNavigate }) {
       if (!data || !data.cross_lens) throw new Error('empty')
       setResult(data)
       runReveal()
+      // Cold node → show the partial now, then quietly re-fetch: the upstream is
+      // warming, so within a few seconds the 4th lens lands and the verdict can
+      // sharpen (often warn→pass). No theatre — the visitor keeps the verdict.
+      if (isPending(data)) {
+        setPendingLens(true)
+        timers.current.push(setTimeout(() => refetchQuiet(node, 1), 6500))
+      }
     } catch {
       // The upstream verdict is fast warm but slow cold (it 504s past our 9s
       // proxy cap). That first cold call warms it, so one auto-retry usually
@@ -170,6 +201,28 @@ export default function VerifyWidget({ onNavigate }) {
         setPhase('error')
       }
     }
+  }
+
+  // Background, no-theatre re-fetch used only while GhostRoute is warming. It
+  // never resets the UI to "evaluating…"; it just swaps in the sharper verdict
+  // when the 4th lens lands. Bails if the visitor has since looked up another host.
+  async function refetchQuiet(node, warmTries) {
+    try {
+      const res = await fetch(`/api/verify/${encodeURIComponent(node)}`, {
+        headers: { Accept: 'application/json' },
+      })
+      if (!res.ok || activeNode.current !== node) return
+      const data = await res.json()
+      if (!data || !data.cross_lens || activeNode.current !== node) return
+      const stillPending = isPending(data)
+      setResult(data)
+      setPendingLens(stillPending)
+      setReveal(4)
+      setPhase('done')
+      if (stillPending && warmTries < 3) {
+        timers.current.push(setTimeout(() => refetchQuiet(node, warmTries + 1), 6500))
+      }
+    } catch { /* keep the partial verdict already shown */ }
   }
 
   const rows = lensRows(result)
@@ -220,7 +273,7 @@ export default function VerifyWidget({ onNavigate }) {
           return (
             <div
               key={row.key}
-              className={`tm-vl tm-vl-${row.key} ${shown ? 'is-shown' : ''} ${evaluating ? 'is-eval' : ''}`}
+              className={`tm-vl tm-vl-${row.key} ${shown ? 'is-shown' : ''} ${evaluating ? 'is-eval' : ''} ${shown && row.tone === 'pending' ? 'is-pending' : ''}`}
             >
               <span className="tm-vl-dot" aria-hidden="true" />
               <span className="tm-vl-name">{row.name}</span>
@@ -263,6 +316,12 @@ export default function VerifyWidget({ onNavigate }) {
               </div>
             )}
           </div>
+          {pendingLens && (
+            <div className="tm-vv-pending">
+              <span className="tm-vv-pending-dot" aria-hidden="true" />
+              routing still verifying — the 4th lens lands in a moment and the verdict may sharpen
+            </div>
+          )}
           {sig ? (
             <div className="tm-vv-receipt" title={sig.value}>
               <span className="tm-vv-receipt-icon" aria-hidden="true">⧉</span>

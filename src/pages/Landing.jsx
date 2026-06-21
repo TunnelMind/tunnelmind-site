@@ -1,7 +1,7 @@
 import React from 'react'
 
 // The /vision route. Plain prose — the thesis behind the pivot
-// (P25 Phase 2): TunnelMind reframed as the observability layer for the
+// (P25 Phase 2): TunnelMind reframed as the trust attestation layer for the
 // agentic internet. House voice, data-forward, a little dry.
 
 const eyebrow = {

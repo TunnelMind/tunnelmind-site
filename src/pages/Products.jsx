@@ -2,7 +2,7 @@ import React from 'react'
 import PageDesc from '../components/PageDesc.jsx'
 
 // /products — post-pivot (P25 Phase 2). The full registry of the
-// observability layer: the pipelines that build the corpus, the surfaces
+// trust attestation layer: the pipelines that build the corpus, the surfaces
 // onto it, the open standards on top, and the verification layer.
 // NetShell is shelved and the old eBPF "personal" line is retired — both
 // deliberately absent.

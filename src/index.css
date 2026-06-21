@@ -1,8 +1,9 @@
 /* ── TunnelMind Design System ─────────────────────────────────────── */
 :root {
-  /* ── P-GEO sacred-geometry palette ──────────────────────────────────
-     Cosmic near-black ground, gold geometry lines, three lens colors.
-     "GEOMETRY CARRIES STRUCTURE. MONOSPACE CARRIES TRUTH." ───────────── */
+  /* ── Palette ─────────────────────────────────────────────────────────
+     Deep slate-navy ground, lens accent colors, a restrained gold line.
+     (Reverted 2026-06-04 from the P-GEO cosmic/sacred-geometry skin.)
+     "MONOSPACE CARRIES TRUTH" — every visual sits next to legible data. ── */
 
   /* Chrome: deep slate-navy (reverted from P-GEO cosmic near-black) */
   --chrome-bg: #0f172a;
@@ -19,8 +20,8 @@
   --doc-text-dim: #cbd5e1;
   --doc-text-faint: #94a3b8;
 
-  /* Accent system — mapped to the three lenses + gold geometry line.
-     green = Sigil, purple = Tracker, cyan/blue = Scry, amber = gold. */
+  /* Accent system — mapped to the four lenses + gold line.
+     green = Sigil, purple = Tracker, cyan/blue = Scry, amber/gold = GhostRoute & geometry. */
   --accent-green: #3dba8a;                       /* Sigil lens */
   --accent-green-faint: rgba(61, 186, 138, 0.05);
   --accent-green-dim: rgba(61, 186, 138, 0.15);
@@ -286,7 +287,7 @@ a:hover {
 }
 .tm-hero p.tm-hero-sell em { color: var(--chrome-text-bright); font-style: italic; }
 
-/* hero three-lens strip — frames the product as one corpus, three lenses */
+/* hero lens strip — frames the product as one corpus, four lenses */
 .tm-lens-strip {
   margin: 0 0 28px;
   padding: 22px 0 24px;
@@ -1674,7 +1675,7 @@ a:hover {
 
 /* ── Three pillars: open standard · honest graph · signed receipts ─────
    Sits between hero and radar. Card aesthetic matches .tm-surface; each
-   tone draws a P-GEO accent on the top border + label. */
+   tone draws a lens accent on the top border + label. */
 .tm-pillars {
   max-width: 1140px;
   margin: 0 auto;

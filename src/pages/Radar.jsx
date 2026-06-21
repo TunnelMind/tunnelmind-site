@@ -94,7 +94,7 @@ const AUDIENCES = [
 
 // The three pillars — why the graph is defensible. Shown between the hero
 // and the live radar so the mission frame lands before the instrument.
-// tone maps to a P-GEO accent: amber = open protocol, the lens trio =
+// tone maps to a lens accent: amber = open protocol, the lens set =
 // honest graph, cyan = silicon-root attestation.
 const PILLARS = [
   {

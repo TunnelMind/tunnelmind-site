@@ -18,13 +18,21 @@ const n = (v) => Number(v).toLocaleString('en-US')
 const usd = (v) => '$' + v
 
 // Read the ?checkout= flag (and the Stripe session id) appended to the
-// success / cancel URLs. Hash routing means the query lives inside
-// window.location.hash, after the route.
+// success / cancel URLs. Since the 2026-05-31 history-router migration the
+// checkout redirect lands on a clean URL, so the params live in
+// window.location.search. Any legacy /#/pricing?… link is rewritten into the
+// search string by App.getPageFromPath before this runs, which also clears the
+// hash — so we read search first and only fall back to the hash for safety.
 function readCheckoutParams() {
-  const h = window.location.hash || ''
-  const qi = h.indexOf('?')
-  if (qi === -1) return {}
-  const p = new URLSearchParams(h.slice(qi + 1))
+  const search = window.location.search || ''
+  let qs = search.replace(/^\?/, '')
+  if (!qs) {
+    const h = window.location.hash || ''
+    const qi = h.indexOf('?')
+    qs = qi === -1 ? '' : h.slice(qi + 1)
+  }
+  if (!qs) return {}
+  const p = new URLSearchParams(qs)
   return { checkout: p.get('checkout'), session: p.get('session') }
 }
 
@@ -234,7 +242,7 @@ function AgentCard() {
       </p>
 
       <a
-        href="#/api"
+        href="/api"
         style={{
           padding: '10px', textAlign: 'center', background: 'transparent',
           border: `1px solid ${accent}`, borderRadius: '3px',
@@ -420,7 +428,7 @@ export default function Pricing() {
             hello@tunnelmind.ai
           </a>
           . Payment terms and the refund policy are in the{' '}
-          <a href="#/terms" style={{ color: 'var(--accent-blue)' }}>
+          <a href="/terms" style={{ color: 'var(--accent-blue)' }}>
             Terms of Service
           </a>
           .

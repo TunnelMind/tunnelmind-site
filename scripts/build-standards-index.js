@@ -15,6 +15,16 @@ mkdirSync(outDir, { recursive: true })
 
 const STANDARDS = [
   {
+    id: 'reconciliation-verdict',
+    version: 'v1.0',
+    name: 'Reconciliation Verdict',
+    full: 'Claim-vs-conduct verdict for any cryptographic key',
+    status: 'v1.0 — Live',
+    blurb: 'The reconciliation layer above all roots of trust. One verdict, keyed on an Ed25519 key, that reconciles what the key can prove about itself (its attestation tier across roots — a bare self-attestation or a RATS/EAT hardware token) against what the network has seen its subject do (Scry × Sigil × GhostRoute × Tracker). Surfaces over-claim contradictions no single root can. Ships as a self-verifying receipt with an RFC 6962 inclusion proof and witness cosignatures — verifiable offline, no call back to TunnelMind.',
+    href: '/standards/reconciliation-verdict/v1',
+    published: '2026-06-16',
+  },
+  {
     id: 'oai',
     version: 'v1.0',
     name: 'OAI',

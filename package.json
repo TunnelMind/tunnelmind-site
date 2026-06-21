@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:oai && npm run build:atap && npm run build:eat && npm run build:receipt && npm run build:standards && npm run build:og && vite build && npm run build:routes",
+    "build": "npm run build:oai && npm run build:atap && npm run build:eat && npm run build:receipt && npm run build:verdict && npm run build:standards && npm run build:og && vite build && npm run build:routes",
     "build:oai": "node scripts/build-oai-page.js",
     "build:atap": "node scripts/build-atap-page.js",
     "build:eat": "node scripts/build-eat-page.js",
     "build:receipt": "node scripts/build-receipt-page.js",
+    "build:verdict": "node scripts/build-verdict-page.js",
     "build:standards": "node scripts/build-standards-index.js",
     "build:og": "node scripts/build-og-image.js",
     "build:routes": "node scripts/build-route-stubs.js",

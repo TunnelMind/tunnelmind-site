@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { STATS_FALLBACK } from '../config/facts.js'
 
 // Live corpus counts come from the ecosystem scoreboard (data-api /v1/stats,
 // served as a weekly KV snapshot), so the numbers on this page track the weekly
@@ -107,9 +108,10 @@ export default function Compare() {
   }, [])
 
   // Baked-in fallbacks — used until/unless the live fetch resolves.
-  const seats     = stats?.seats     || '~911K'
-  const sellPaths = stats?.sellPaths || '~1.7M'
-  const entities  = stats?.entities  || '~59K'
+  // Single-sourced in src/config/facts.js so they don't drift across pages.
+  const seats     = stats?.seats     || STATS_FALLBACK.seats
+  const sellPaths = stats?.sellPaths || STATS_FALLBACK.sellPaths
+  const entities  = stats?.entities  || STATS_FALLBACK.entities
 
   return (
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>

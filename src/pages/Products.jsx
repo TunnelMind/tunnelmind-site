@@ -100,6 +100,13 @@ const GROUPS = [
         label: 'data.tunnelmind.ai/v1/ghostroute',
         tag: 'Live',
       },
+      {
+        name: 'Tracker',
+        desc: 'The demand-side lens — the surveillance-economy graph of who watches whom on the open web. Recurring SDK and tracker-operator fingerprints map the entities, the resellers they buy from, and the publishers they reach. Joinable with the other three lenses in the cross-lens verdict.',
+        url: 'https://data.tunnelmind.ai',
+        label: 'data.tunnelmind.ai',
+        tag: 'Scaffolded',
+      },
     ],
   },
 ]

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TunnelMind Reconciliation Verdict v1.0 — TunnelMind</title>
+<meta name="description" content="Reconciliation Verdict v1.0 — does what a key claims about itself match what the network has seen it do? Claim (attestation tier across roots) vs conduct (the graph), as one portable, offline-verifiable verdict. CC BY 4.0.">
+<link rel="canonical" href="https://tunnelmind.ai/standards/reconciliation-verdict/v1">
+<meta property="og:title" content="TunnelMind Reconciliation Verdict v1.0">
+<meta property="og:description" content="Claim vs conduct for any cryptographic key, reconciled into one offline-verifiable verdict. The reconciliation layer above all roots of trust.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://tunnelmind.ai/standards/reconciliation-verdict/v1">
+<meta name="twitter:card" content="summary">
+<link rel="stylesheet" href="/fonts/fonts.css">
+<style>:root {
+  --chrome-bg: #0f172a;
+  --chrome-bg2: #1e293b;
+  --chrome-border: #334155;
+  --chrome-text: #cbd5e1;
+  --chrome-text-dim: #94a3b8;
+  --chrome-text-bright: #e2e8f0;
+  --doc-bg: #1e293b;
+  --doc-paper: #243044;
+  --doc-text: #e2e8f0;
+  --doc-text-dim: #cbd5e1;
+  --accent-green: #3dba8a;
+  --accent-amber: #fbbf24;
+  --accent-blue: #00d4ff;
+  --accent-cyan: #00d4ff;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+  --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; background: var(--chrome-bg); color: var(--doc-text); font-family: var(--font-serif); font-size: 17px; line-height: 1.65; -webkit-font-smoothing: antialiased; }
+.banner { background: var(--chrome-bg2); border-bottom: 1px solid var(--chrome-border); padding: 14px 24px; font-family: var(--font-mono); font-size: 12px; color: var(--chrome-text-dim); display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.banner a { color: var(--accent-green); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 150ms ease; }
+.banner a:hover { border-bottom-color: var(--accent-green); }
+.banner .home { color: var(--accent-green); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 11px; }
+main { max-width: 760px; margin: 0 auto; padding: 48px 24px 96px; }
+h1 { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: var(--accent-green); letter-spacing: 0.02em; margin: 0 0 28px; line-height: 1.25; }
+h2 { font-family: var(--font-mono); font-size: 20px; font-weight: 700; color: var(--chrome-text-bright); margin: 56px 0 18px; line-height: 1.3; padding-bottom: 8px; border-bottom: 1px solid var(--chrome-border); }
+h3 { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--accent-cyan); margin: 36px 0 14px; }
+h4 { font-family: var(--font-mono); font-size: 14px; font-weight: 700; color: var(--chrome-text); margin: 28px 0 10px; }
+p { margin: 0 0 18px; }
+a { color: var(--accent-blue); text-decoration: none; border-bottom: 1px solid rgba(96, 165, 250, 0.35); transition: border-color 150ms ease, color 150ms ease; }
+a:hover { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+ul, ol { margin: 0 0 18px; padding-left: 26px; }
+li { margin: 6px 0; }
+code { font-family: var(--font-mono); font-size: 0.88em; background: var(--chrome-bg2); color: var(--accent-cyan); padding: 2px 6px; border-radius: 3px; border: 1px solid var(--chrome-border); }
+pre { background: var(--chrome-bg2); border: 1px solid var(--chrome-border); border-radius: 4px; padding: 16px 18px; overflow-x: auto; margin: 0 0 22px; }
+pre code { background: transparent; border: none; padding: 0; color: var(--doc-text); font-size: 13px; line-height: 1.55; }
+table { border-collapse: collapse; margin: 0 0 22px; font-size: 14px; width: 100%; font-family: var(--font-mono); }
+th, td { border: 1px solid var(--chrome-border); padding: 8px 12px; text-align: left; vertical-align: top; }
+th { background: var(--chrome-bg2); color: var(--chrome-text-bright); font-weight: 700; }
+blockquote { margin: 0 0 22px; padding: 4px 20px; border-left: 3px solid var(--accent-green); color: var(--chrome-text); font-style: italic; }
+hr { border: none; border-top: 1px solid var(--chrome-border); margin: 40px 0; }
+strong { color: var(--chrome-text-bright); }
+.cta { background: var(--doc-paper); border: 1px solid var(--chrome-border); border-left: 3px solid var(--accent-green); border-radius: 4px; padding: 20px 24px; margin: 0 0 36px; font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: var(--chrome-text); }
+.cta-title { color: var(--accent-green); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 11px; margin-bottom: 10px; }
+.cta code { font-size: 12px; }
+@media (max-width: 600px) {
+  main { padding: 32px 18px 64px; }
+  h1 { font-size: 22px; }
+  h2 { font-size: 17px; }
+}</style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "TunnelMind Reconciliation Verdict v1.0",
+  "name": "Reconciliation Verdict v1.0",
+  "url": "https://tunnelmind.ai/standards/reconciliation-verdict/v1",
+  "description": "Does what a key claims about itself match what the network has seen it do? Claim (attestation tier across roots) vs conduct (the graph), reconciled into one portable, offline-verifiable verdict. CC BY 4.0.",
+  "inLanguage": "en",
+  "proficiencyLevel": "Expert",
+  "audience": { "@type": "Audience", "audienceType": "SoftwareDeveloper" },
+  "isPartOf": { "@type": "WebSite", "@id": "https://tunnelmind.ai/#website" },
+  "author":    { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
+  "publisher": { "@type": "Organization", "@id": "https://tunnelmind.ai/#organization" },
+  "license": "https://creativecommons.org/licenses/by/4.0/",
+  "version": "1.0",
+  "creativeWorkStatus": "Published",
+  "datePublished": "2026-06-16",
+  "encoding": {
+    "@type": "MediaObject",
+    "contentUrl": "https://tunnelmind.ai/standards/reconciliation-verdict/RECONCILIATION-VERDICT-v1.0.md",
+    "encodingFormat": "text/markdown"
+  }
+}
+</script>
+</head>
+<body>
+<div class="banner">
+  <a class="home" href="/">TunnelMind</a>
+  <div>
+    <a href="/standards">All standards</a>
+    &nbsp;·&nbsp;
+    <a href="/standards/receipt-format/v1">Receipt Format v1.0</a>
+    &nbsp;·&nbsp;
+    <a href="/atap/standard">ATAP v0.1</a>
+    &nbsp;·&nbsp;
+    <a href="/standards/reconciliation-verdict/RECONCILIATION-VERDICT-v1.0.md">Raw markdown</a>
+  </div>
+</div>
+<main>
+<div class="cta">
+  <div class="cta-title">Live</div>
+  <div>
+    Try it: <code>GET https://data.tunnelmind.ai/v1/verdict/{key}</code> — or the
+    <code>verdict_lookup</code> MCP tool at <code>mcp-data.tunnelmind.ai</code>.
+    Every verdict ships a self-verifying receipt you can check offline with the
+    reference verifier — no call back to us required.
+  </div>
+</div>
+<h1>TunnelMind Reconciliation Verdict v1.0</h1>
+<p><strong>Status:</strong> v1 — Live · <strong>Published:</strong> 2026-06-16 · <strong>License:</strong> CC BY 4.0</p>
+<p>A <strong>reconciliation verdict</strong> answers one question about a key-addressed actor on
+the open internet:</p>
+<blockquote>
+<p><strong>Does what this key <em>claims</em> about itself match what the network has <em>seen it
+do</em>?</strong></p>
+</blockquote>
+<p>TunnelMind is the <strong>reconciliation layer above all roots of trust</strong>. It owns no
+silicon and operates no root of its own — it reads every root and reconciles two
+independent sides of trust for any public key:</p>
+<ul>
+<li><strong>claim</strong> — what the key can prove about itself: its <strong>attestation tier</strong>
+across roots of trust (a bare Ed25519 self-attestation, or a hardware/platform
+attestation presented as a RATS/EAT token), and</li>
+<li><strong>conduct</strong> — what the graph has observed the key&#39;s subject do across
+TunnelMind&#39;s four lenses (Scry attacker intelligence × Sigil supply graph ×
+GhostRoute routing integrity × the Tracker corpus).</li>
+</ul>
+<p>The output is a single verdict — and it is <strong>portable and offline-verifiable</strong>:
+no one has to trust TunnelMind to use it.</p>
+<hr>
+<h2>1. The endpoint</h2>
+<pre><code>GET https://data.tunnelmind.ai/v1/verdict/{key}
+</code></pre>
+<p><code>{key}</code> is an Ed25519 public key as <strong>hex</strong> (64 chars), <strong>base64url</strong> (43
+chars), or <strong>did:key</strong> (<code>did:key:z6Mk…</code>). All query parameters are optional:</p>
+<table>
+<thead>
+<tr>
+<th>Param</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>subject</code></td>
+<td>An ip / domain / ASN / entity_slug the key claims to act as. Drives the <strong>conduct</strong> side. Omit for a claim-only verdict.</td>
+</tr>
+<tr>
+<td><code>nonce</code>, <code>sig</code></td>
+<td>A bare-Ed25519 self-attestation: <code>sig</code> is a base64 Ed25519 signature over <code>nonce</code>, proving control of the key.</td>
+</tr>
+<tr>
+<td><code>eat</code></td>
+<td>A RATS/EAT compact JWS (EdDSA) attesting this key, signed by a trusted anchor.</td>
+</tr>
+<tr>
+<td><code>claims</code></td>
+<td>URL-encoded JSON array of raw claim objects (overrides the convenience params).</td>
+</tr>
+</tbody></table>
+<p>The MCP tool <code>verdict_lookup</code> (at <code>mcp-data.tunnelmind.ai</code>) exposes the same
+call to agents.</p>
+<p>A bare, unattested key still returns a verdict — at the <code>self-asserted</code> tier.
+<strong>Attestation is never required to participate.</strong></p>
+<hr>
+<h2>2. The attestation tier ladder</h2>
+<p>Tier is always <em>measured / anchored</em>, <strong>never</strong> taken from a claimant&#39;s
+say-so. A token may <em>claim</em> a higher tier than its signing anchor is trusted to
+assert; the recorded tier is capped at the anchor&#39;s <code>max_tier</code>.</p>
+<pre><code>self-asserted  &lt;  software  &lt;  tee-tpm  &lt;  silicon-root
+</code></pre>
+<ul>
+<li><strong>self-asserted</strong> — the key proved control of itself (signed the nonce). Floor.</li>
+<li><strong>software</strong> — an OS/isolate-enforced software attestation.</li>
+<li><strong>tee-tpm</strong> — a TEE or TPM-rooted attestation.</li>
+<li><strong>silicon-root</strong> — a hardware silicon root of trust.</li>
+</ul>
+<p>Each root normalizes to one shape — <code>{ root, tier, verified, props }</code> — so the
+layer can compare a claim from any root against any other and against conduct.</p>
+<hr>
+<h2>3. The verdict</h2>
+<pre><code class="language-jsonc">{
+  &quot;key&quot;: { &quot;hex&quot;: &quot;…&quot;, &quot;b64url&quot;: &quot;…&quot;, &quot;did&quot;: &quot;did:key:z6Mk…&quot; },
+  &quot;claim&quot;: {
+    &quot;best_verified_tier&quot;: &quot;tee-tpm&quot;,
+    &quot;key_control_proven&quot;: true,
+    &quot;binding_nonce&quot;: &quot;…&quot;,
+    &quot;roots&quot;: [ { &quot;root&quot;: &quot;ed25519-self&quot;, &quot;tier&quot;: &quot;self-asserted&quot;, &quot;verified&quot;: true, &quot;props&quot;: {…} },
+               { &quot;root&quot;: &quot;eat&quot;,          &quot;tier&quot;: &quot;tee-tpm&quot;,       &quot;verified&quot;: true, &quot;props&quot;: {…} } ]
+  },
+  &quot;conduct&quot;: { &quot;subject&quot;: {…}, &quot;trust_score&quot;: 0.31, &quot;confidence&quot;: 0.94, &quot;observed&quot;: true },
+  &quot;reconciliation&quot;: {
+    &quot;contradictions&quot;: [
+      { &quot;type&quot;: &quot;claim_exceeds_conduct&quot;, &quot;claim_trust&quot;: 0.85, &quot;conduct_trust&quot;: 0.31, &quot;delta&quot;: 0.54 }
+    ],
+    &quot;claim_vs_conduct_delta&quot;: 0.54,
+    &quot;verdict&quot;: { &quot;tier&quot;: &quot;tee-tpm&quot;, &quot;reputation&quot;: 0.31, &quot;flags&quot;: [&quot;over_claim&quot;, &quot;key_control_proven&quot;], &quot;confidence&quot;: 0.94 }
+  },
+  &quot;receipt&quot;: { /* self-verifying — see §4 */ }
+}
+</code></pre>
+<p><strong>Contradictions</strong> are the reconciliation signal no single root can produce:</p>
+<ul>
+<li><code>claim_exceeds_conduct</code> — the key attests a high tier but behaves as a
+low-trust node (the over-claim signal).</li>
+<li><code>unverified_claim</code> — a claim was <em>presented</em> but failed to verify.</li>
+<li><code>key_control_unproven</code> — a claim was presented but no root proved control of
+the key.</li>
+</ul>
+<h3>The privacy line</h3>
+<p>Keys are linked into one identity <strong>only</strong> when the actor cryptographically
+proves control of each — <strong>never</strong> inferred from behavioral correlation, shared
+infrastructure, or timing. An attestation that names a <em>different</em> subject key is
+rejected, not silently merged.</p>
+<hr>
+<h2>4. The verdict is self-verifying</h2>
+<p>Every verdict is published as a <strong>TunnelMind Receipt v1.0</strong> carrying a
+self-verification triple. Given the receipt bytes <strong>and the witness public keys
+carried inline</strong>, anyone re-derives the verdict and checks log inclusion
+<strong>offline</strong> — with no call back to TunnelMind:</p>
+<ol>
+<li><strong>Receipt signature</strong> — Ed25519 over the canonical receipt (RFC 8785 / JCS).</li>
+<li><strong>Payload integrity</strong> — <code>payload_hash</code> over the canonical payload (SHA-256).</li>
+<li><strong>Log inclusion</strong> — an RFC 6962 Merkle inclusion proof of the receipt&#39;s leaf
+into a signed <strong>checkpoint</strong>.</li>
+<li><strong>Witness cosignature(s)</strong> — Ed25519 over the canonical checkpoint.</li>
+<li><strong>Verdict re-derivation</strong> — re-running the same reconciliation over the
+embedded claim + conduct must reproduce the published verdict exactly.</li>
+</ol>
+<p>This builds on the <a href="/standards/receipt-format/v1">TunnelMind Receipt Format v1.0</a>
+envelope and is profiled as a RATS/EAT serialization
+(<a href="/eat/profile/v0.1">EAT Profile v0.1</a>).</p>
+<p>A reference standalone verifier ships with the API
+(<code>scripts/verify-verdict.mjs</code>) and performs all five checks with zero network
+access — the verifier <em>is</em> the specification.</p>
+<hr>
+<h2>5. Design invariants</h2>
+<ol>
+<li><strong>Trust binds to the key, never the transport.</strong> The verification core is
+transport-blind; each transport&#39;s only job is to hand over the authenticated
+peer key.</li>
+<li><strong><code>attestation_tier</code> is measured, never self-asserted</strong> — and cannot be
+retrofitted onto a claim after the fact.</li>
+<li><strong>Receipts are self-verifying</strong> — inclusion proof + witness cosignatures +
+checkpoint are mandatory fields.</li>
+<li><strong>Actor-proven linking only</strong> — the privacy line of §3.</li>
+<li><strong>Open to verify, never a root.</strong> TunnelMind is the neutral layer <em>above</em> the
+roots, not a competing root of trust.</li>
+</ol>
+<hr>
+<p><em>Reconciliation Verdict v1.0 is published under CC BY 4.0. It composes the
+<a href="/standards/receipt-format/v1">Receipt Format</a>, <a href="/atap/standard">ATAP</a>, and
+<a href="/eat/profile/v0.1">EAT Profile</a> standards. Public comment via the
+<a href="/standards">standards hub</a>.</em></p>
+
+<div class="cta" style="margin-top: 56px;">
+  <div class="cta-title">Implementation status</div>
+  <div>
+    Live at <code>data.tunnelmind.ai/v1/verdict/{key}</code> and as the
+    <code>verdict_lookup</code> MCP tool. The reconciliation core (claim
+    translation across roots, conduct fusion, the self-verifying receipt) and the
+    standalone offline verifier are open. The verdict composes the
+    <a href="/standards/receipt-format/v1">Receipt Format</a>,
+    <a href="/atap/standard">ATAP</a>, and
+    <a href="/eat/profile/v0.1">EAT Profile</a> standards.<br><br>
+    Discuss via the standards hub at <a href="/standards">/standards</a>.
+  </div>
+</div>
+</main>
+</body>
+</html>

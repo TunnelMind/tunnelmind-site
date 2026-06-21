@@ -288,7 +288,7 @@ export default function Radar({ onNavigate }) {
             type="button"
             onClick={() => onNavigate && onNavigate('pricing')}
           >
-            Defender tier
+            Full access
           </button>
         </div>
         <div className="tm-scroll-cue" aria-hidden="true">
@@ -443,13 +443,13 @@ export default function Radar({ onNavigate }) {
           </div>
         </section>
 
-        {/* Defender tier */}
+        {/* Full corpus access */}
         <section className="tm-block">
           <div className="tm-pricing">
             <div>
-              <div className="tm-section-label">Defender tier</div>
+              <div className="tm-section-label">Full corpus access</div>
               <p className="tm-prose" style={{ margin: 0 }}>
-                The radar samples the corpus. Defenders get the whole thing —
+                The radar samples the corpus. Paid access gets the whole thing —
                 full campaign membership, payload signatures, tool
                 fingerprints, and unmetered lookups. Same data, no velvet rope.
               </p>

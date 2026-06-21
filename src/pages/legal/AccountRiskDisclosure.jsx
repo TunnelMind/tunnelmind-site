@@ -192,7 +192,7 @@ export default function AccountRiskDisclosure() {
         <UL items={[
           'AUP violations confirmed through abuse investigation (see Abuse Policy).',
           'Valid law enforcement legal hold (see Law Enforcement Policy).',
-          'Failure to maintain a paid subscription (access to paid features suspended).',
+          'Exhaustion of your prepaid access blocks (paid features pause until you purchase another block or pay per query via x402).',
           'Account inactivity exceeding 12 months on a free tier (30-day notice sent first).',
         ]} />
         <P>

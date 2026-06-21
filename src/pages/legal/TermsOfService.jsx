@@ -8,7 +8,7 @@ export default function TermsOfService() {
       <Section title="1. Agreement">
         <P>
           By accessing the TunnelMind website, the Scry corpus, any TunnelMind
-          API, the MCP endpoint, or by purchasing a paid subscription, you agree
+          API, the MCP endpoint, or by purchasing a prepaid access block, you agree
           to these Terms of Service ("Terms") and the Acceptable Use Policy
           ("AUP") incorporated below. If you are accepting on behalf of an
           organization, you represent that you are authorized to bind it.
@@ -33,64 +33,66 @@ export default function TermsOfService() {
         <P>
           The live radar, the chat interface, the free API tier, OAI resolution,
           and the MCP endpoint are provided free of charge as a public sample.
-          The Defender and Team tiers provide depth and scale — the full corpus,
-          complete campaign membership, full payload signatures, bulk export, and
-          unmetered programmatic access — under the license set out in Section 5.
+          Beyond the sample, full depth and scale — the full corpus, complete
+          campaign membership, full payload signatures, bulk export, and
+          programmatic access — are available by purchasing prepaid access blocks
+          (through Stripe, for humans) or by paying per query over the x402 rail
+          (for agents), under the license set out in Section 5.
         </P>
       </Section>
 
       <Section title="3. Accounts and API keys">
         <P>
           You must be at least 18 years old to use TunnelMind. The free surfaces
-          require no account. A paid subscription provisions one API key — a
-          Bearer credential that authenticates every request made under it.
+          require no account. Purchasing a prepaid access block provisions one API
+          key — a Bearer credential that authenticates every request made under it.
         </P>
         <P>
           Treat your API key as a secret. Do not share it, publish it, or embed it
           in client-side or otherwise distributable code. You are responsible for
-          all activity conducted with your key. We will revoke a key on
-          subscription cancellation, non-payment, or any AUP violation. If your
+          all activity conducted with your key. We will revoke a key for any AUP
+          violation. If your
           key is lost or exposed, email support@tunnelmind.ai — we will revoke the
           compromised key and issue a replacement.
         </P>
       </Section>
 
-      <Section title="4. Subscriptions, billing, and refunds">
+      <Section title="4. Payments, blocks, and refunds">
         <P>
-          Paid plans are billed through Stripe. TunnelMind never receives or
-          stores your card details. The Defender tier is billed monthly; the
-          Team / Enterprise tier is billed annually. Subscriptions renew
-          automatically until cancelled.
+          Human purchases are made through Stripe as one-time prepaid blocks of
+          API calls. TunnelMind never receives or stores your card details. There
+          is no subscription and nothing renews automatically — a block is a
+          one-time purchase, its calls do not expire, and you buy another only when
+          you choose to. Autonomous agents may instead pay per query over the x402
+          rail (USDC), with no account and no stored balance.
         </P>
         <P>
-          You may cancel at any time through the Stripe customer portal or by
-          emailing legal@tunnelmind.ai. Cancellation stops the next renewal;
-          access continues until the end of the period you have already paid for.
-          We do not provide pro-rated refunds for partial billing periods except
-          where required by applicable law.
+          Because blocks are prepaid one-time purchases, there is nothing to cancel
+          and no recurring charge to stop. Unused calls remain credited to your key
+          until used.
         </P>
         <UL items={[
-          'First-charge refund: a first-time Defender subscriber who has not made substantial use of the paid corpus may request a full refund within 14 days of the initial charge.',
-          'Billing-error refund: if you are charged after cancellation, or charged in error, contact legal@tunnelmind.ai within 30 days for a full refund.',
-          'Price changes: we will give at least 14 days’ notice by email before a renewal price changes; continued renewal after the effective date constitutes acceptance.',
+          'First-purchase refund: a first-time buyer who has not made substantial use of the paid corpus may request a full refund of an unused block within 14 days of purchase.',
+          'Billing-error refund: if you are charged in error or charged more than once, contact legal@tunnelmind.ai within 30 days for a full refund.',
+          'Price changes: any change to block pricing applies only to future purchases; blocks you have already bought are unaffected.',
         ]} />
       </Section>
 
       <Section title="5. Corpus data — license and permitted use">
         <P>
           The Scry corpus, the underlying database, and its structure and
-          compilation are the property of TunnelMind AI, LLC. A paid subscription
-          grants you a non-exclusive, non-transferable, revocable license to
-          access and use the corpus — including bulk export — for your own
-          internal security operations, threat research, and product
-          integrations, for as long as the subscription is active.
+          compilation are the property of TunnelMind AI, LLC. A purchased access
+          block (or paid x402 query) grants you a non-exclusive, non-transferable,
+          revocable license to access and use the corpus — including bulk export —
+          for your own internal security operations, threat research, and product
+          integrations.
         </P>
         <P>You may not:</P>
         <UL items={[
           'Resell, sublicense, or publicly redistribute the raw corpus or bulk exports, or use them to build or train a competing data product or feed.',
           'Use corpus records — including observed IP addresses and actor identifiers — to harass, dox, retaliate against, attack, or otherwise target any person or system.',
           'Represent the corpus or any substantial extract of it as your own original work, or strip its provenance when redistributing permitted derivatives.',
-          'Continue to use, retain for operational use, or redistribute bulk exports after your subscription ends, beyond a reasonable archival copy of your own historical analysis.',
+          'Continue to use, retain for operational use, or redistribute bulk exports after your access block is exhausted or your key is revoked, beyond a reasonable archival copy of your own historical analysis.',
         ]} />
         <P>
           The corpus identifies network infrastructure observed conducting hostile

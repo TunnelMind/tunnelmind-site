@@ -13,7 +13,7 @@
       "mcp_url": "https://mcp-data.tunnelmind.ai/mcp",
       "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tools_count": 66,
+      "tools_count": 67,
       "auth": "oauth2",
       "default_prompt_surface": "data",
       "summary": "The union surface: every Data API operation as an MCP tool (auto-generated from openapi.yaml). Tracker / Sigil / GhostRoute / Cross-lens — including cross_lens_verify (fused Scry x Sigil x GhostRoute) and the /v1/profile fused Scry x Sigil x Tracker x GhostRoute entity profile. Start here if you don't know which lens you need."

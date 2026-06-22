@@ -91,7 +91,7 @@
       "url": "https://mcp-data.tunnelmind.ai/mcp",
       "card_url": "https://mcp-data.tunnelmind.ai/.well-known/mcp.json",
       "transport": "streamable-http",
-      "tool_count": 61,
+      "tool_count": 67,
       "auto_generated_from": "https://data.tunnelmind.ai/openapi.yaml",
       "summary": "Every Data API operation surfaced as an MCP tool. Tracker, Sigil, GhostRoute, and cross_lens_verify (with adversary_class) in one surface."
     },

@@ -60,8 +60,8 @@ export async function onRequestPost(context) {
     'line_items[0][adjustable_quantity][minimum]': '1',
     'line_items[0][adjustable_quantity][maximum]': '100',
     success_url:
-      'https://tunnelmind.ai/#/pricing?checkout=success&session={CHECKOUT_SESSION_ID}',
-    cancel_url: 'https://tunnelmind.ai/#/pricing?checkout=cancelled',
+      'https://tunnelmind.ai/pricing?checkout=success&session={CHECKOUT_SESSION_ID}',
+    cancel_url: 'https://tunnelmind.ai/pricing?checkout=cancelled',
     'metadata[kind]': 'block_purchase',
     // Promotion codes are deliberately OFF: the volume threshold is keyed
     // to dollars actually spent, and a discount would desync block count

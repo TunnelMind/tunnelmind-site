@@ -33,7 +33,7 @@ const ROUTES = [
       'The plain-prose thesis behind TunnelMind. Why Scry, Sigil, Tracker, and GhostRoute — and the cross-lens join across them — are the answer to the "is this real?" question every autonomous agent must answer before transacting.',
     h1:    'The vision',
     body:
-      'TunnelMind is the observability layer for the agentic internet. Four lenses on one signed corpus: Scry (who is attacking), Sigil (who can be trusted), Tracker (who is paying whom), GhostRoute (where the traffic actually goes). The cross-lens join is what no siloed incumbent can compute — and it is what an autonomous agent needs.',
+      'TunnelMind is the trust attestation layer for the agentic internet. Four lenses on one signed corpus: Scry (who is attacking), Sigil (who can be trusted), Tracker (who is paying whom), GhostRoute (where the traffic actually goes). The cross-lens join is what no siloed incumbent can compute — and it is what an autonomous agent needs.',
   },
   {
     slug: 'api',

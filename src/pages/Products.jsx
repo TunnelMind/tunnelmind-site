@@ -2,7 +2,7 @@ import React from 'react'
 import PageDesc from '../components/PageDesc.jsx'
 
 // /products — post-pivot (P25 Phase 2). The full registry of the
-// observability layer: the pipelines that build the corpus, the surfaces
+// trust attestation layer: the pipelines that build the corpus, the surfaces
 // onto it, the open standards on top, and the verification layer.
 // NetShell is shelved and the old eBPF "personal" line is retired — both
 // deliberately absent.
@@ -99,6 +99,13 @@ const GROUPS = [
         url: 'https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com',
         label: 'data.tunnelmind.ai/v1/ghostroute',
         tag: 'Live',
+      },
+      {
+        name: 'Tracker',
+        desc: 'The demand-side lens — the surveillance-economy graph of who watches whom on the open web. Recurring SDK and tracker-operator fingerprints map the entities, the resellers they buy from, and the publishers they reach. Joinable with the other three lenses in the cross-lens verdict.',
+        url: 'https://data.tunnelmind.ai',
+        label: 'data.tunnelmind.ai',
+        tag: 'Scaffolded',
       },
     ],
   },
@@ -203,6 +210,32 @@ export default function Products() {
       />
 
       <div style={{ padding: 'clamp(12px, 4vw, 32px)', maxWidth: '960px', margin: '0 auto' }}>
+        <figure style={{ margin: '0 0 36px', textAlign: 'center' }}>
+          <img
+            src="/assets/how-it-works.png"
+            alt="One query to verify(destination) fans out across four lenses — Scry, Sigil, Tracker, GhostRoute — and converges into a single cross-lens ALLOW verdict with an Ed25519 receipt and an attestation tier."
+            loading="lazy"
+            width="1600"
+            height="1000"
+            style={{
+              width: '100%',
+              height: 'auto',
+              borderRadius: '4px',
+              border: '1px solid var(--chrome-border)',
+              display: 'block',
+            }}
+          />
+          <figcaption style={{
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            color: 'var(--doc-text-faint)',
+            marginTop: '8px',
+            letterSpacing: '0.04em',
+          }}>
+            One query. Four lenses. One signed verdict.
+          </figcaption>
+        </figure>
+
         {GROUPS.map((group, gi) => (
           <section key={group.label} style={{ marginBottom: gi === GROUPS.length - 1 ? '0' : '36px' }}>
             <div style={{

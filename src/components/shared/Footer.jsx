@@ -2,20 +2,20 @@ import React from 'react'
 
 const LINKS = [
   { label: 'tunnelmind.ai',        href: 'https://tunnelmind.ai' },
-  { label: 'API',                  href: '/#/api' },
-  { label: 'Roadmap',              href: '/#/roadmap' },
-  { label: 'Vision',               href: '/#/vision' },
-  { label: 'Whitepapers',          href: '/#/whitepapers' },
-  { label: 'Pricing',              href: '/#/pricing' },
+  { label: 'API',                  href: '/api' },
+  { label: 'Roadmap',              href: '/roadmap' },
+  { label: 'Vision',               href: '/vision' },
+  { label: 'Whitepapers',          href: '/whitepapers' },
+  { label: 'Pricing',              href: '/pricing' },
 ]
 
 const LEGAL_LINKS = [
-  { label: 'Privacy Policy',       href: '/#/privacy' },
-  { label: 'Terms of Service',     href: '/#/terms' },
-  { label: 'Transparency',         href: '/#/transparency' },
-  { label: 'Law Enforcement',      href: '/#/law-enforcement' },
-  { label: 'Abuse Policy',         href: '/#/abuse' },
-  { label: 'Account Risk',         href: '/#/account-risk' },
+  { label: 'Privacy Policy',       href: '/privacy' },
+  { label: 'Terms of Service',     href: '/terms' },
+  { label: 'Transparency',         href: '/transparency' },
+  { label: 'Law Enforcement',      href: '/law-enforcement' },
+  { label: 'Abuse Policy',         href: '/abuse' },
+  { label: 'Account Risk',         href: '/account-risk' },
   { label: 'Warrant Canary',       href: '/canary.json', external: true },
 ]
 

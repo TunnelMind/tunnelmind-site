@@ -20,9 +20,9 @@ Cold-start, zero context. Read in this order:
 
 Three MCP servers expose the same surface as the REST API. Pick whichever your runtime supports:
 
-- `ai.tunnelmind/data` → `https://mcp-data.tunnelmind.ai/mcp` — full surface (48 tools)
+- `ai.tunnelmind/data` → `https://mcp-data.tunnelmind.ai/mcp` — full surface (67 tools)
 - `ai.tunnelmind/scry` → `https://mcp.tunnelmind.ai/mcp` — Scry-only (12 tools, no auth)
-- `ai.tunnelmind/sigil` → `https://mcp.sigil.tunnelmind.ai/mcp` — Sigil-scoped (11 tools)
+- `ai.tunnelmind/sigil` → `https://mcp.sigil.tunnelmind.ai/mcp` — Sigil-scoped (12 tools)
 
 `cross_lens_verify` is exposed on both the data-api and sigil MCPs with identical semantics.
 

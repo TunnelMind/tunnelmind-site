@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+    <rect width="1600" height="1000" fill="#0f172a"/>
+    <rect x="1" y="1" width="1598" height="998" fill="none" stroke="#243352" stroke-width="2"/>
+    <text x="80" y="90" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="22" font-weight="bold" letter-spacing="6" fill="#3dba8a">&#9679; TUNNELMIND</text>
+    <text x="80" y="190" font-family="Georgia, 'Times New Roman', serif" font-size="56" fill="#f1f5f9">Four lenses on one graph.</text>
+    <text x="80" y="256" font-family="Georgia, 'Times New Roman', serif" font-size="56" fill="#3dba8a">The join is the moat.</text>
+
+    <path d="M 620 380 C 830 380, 920 560, 1088 560" stroke="#00d4ff" stroke-width="2.5" fill="none" opacity="0.6"/><path d="M 620 500 C 830 500, 920 560, 1088 560" stroke="#3dba8a" stroke-width="2.5" fill="none" opacity="0.6"/><path d="M 620 620 C 830 620, 920 560, 1088 560" stroke="#9b6fd4" stroke-width="2.5" fill="none" opacity="0.6"/><path d="M 620 740 C 830 740, 920 560, 1088 560" stroke="#c9a84c" stroke-width="2.5" fill="none" opacity="0.6"/>
+    <g>
+      <rect x="320" y="348" width="300" height="64" rx="10" fill="#13203a" stroke="#00d4ff" stroke-width="1.5"/>
+      <circle cx="348" cy="380" r="7" fill="#00d4ff"/>
+      <text x="368" y="376" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="20" fill="#f1f5f9">Scry</text>
+      <text x="368" y="399" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="14" fill="#94a3b8">hostile network actors</text>
+    </g><g>
+      <rect x="320" y="468" width="300" height="64" rx="10" fill="#13203a" stroke="#3dba8a" stroke-width="1.5"/>
+      <circle cx="348" cy="500" r="7" fill="#3dba8a"/>
+      <text x="368" y="496" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="20" fill="#f1f5f9">Sigil</text>
+      <text x="368" y="519" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="14" fill="#94a3b8">ad supply-graph trust</text>
+    </g><g>
+      <rect x="320" y="588" width="300" height="64" rx="10" fill="#13203a" stroke="#9b6fd4" stroke-width="1.5"/>
+      <circle cx="348" cy="620" r="7" fill="#9b6fd4"/>
+      <text x="368" y="616" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="20" fill="#f1f5f9">Tracker</text>
+      <text x="368" y="639" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="14" fill="#94a3b8">who watches whom</text>
+    </g><g>
+      <rect x="320" y="708" width="300" height="64" rx="10" fill="#13203a" stroke="#c9a84c" stroke-width="1.5"/>
+      <circle cx="348" cy="740" r="7" fill="#c9a84c"/>
+      <text x="368" y="736" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="20" fill="#f1f5f9">GhostRoute</text>
+      <text x="368" y="759" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="14" fill="#94a3b8">routing integrity</text>
+    </g>
+
+    <!-- corpus core -->
+    <g>
+      <circle cx="1180" cy="560" r="92" fill="#13203a" stroke="#3dba8a" stroke-width="2.5"/>
+      <circle cx="1180" cy="560" r="58" fill="none" stroke="#243352" stroke-width="1.5"/>
+      <text x="1180" y="554" text-anchor="middle" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="16" fill="#94a3b8">one</text>
+      <text x="1180" y="582" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="30" fill="#f1f5f9">corpus</text>
+    </g>
+
+    <!-- moat callout -->
+    <rect x="950" y="710" width="460" height="120" rx="12" fill="#13203a" stroke="#243352" stroke-width="1.5"/>
+    <text x="1180" y="748" text-anchor="middle" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="16" fill="#94a3b8">the cross-lens join nobody else has</text>
+    <text x="1180" y="782" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="26" fill="#3dba8a">agent-native, signed, witnessable</text>
+    <text x="1180" y="812" text-anchor="middle" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="14" fill="#64748b">open protocol on the edge &#183; the data graph is paid</text>
+
+    <text x="80" y="944" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="20" letter-spacing="3" fill="#64748b">tunnelmind.ai</text>
+    <text x="1520" y="944" text-anchor="end" font-family="'JetBrains Mono', 'Courier New', monospace" font-size="18" fill="#64748b">Trust attestation layer for the agentic internet</text>
+  </svg>

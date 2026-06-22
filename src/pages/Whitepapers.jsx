@@ -1,13 +1,42 @@
 import React from 'react'
 
+// The published open standards behind the trust attestation layer. Each links
+// to its canonical spec page (the unified index lives at /standards).
 const PAPERS = [
   {
+    id: 'oai',
+    title: 'OAI v1.0 — Observed Actor Identifier',
+    abstract: 'A permanent, free-to-resolve handle for every observed actor on the network — tracker, scanner, ad network, threat actor, or sensor. CVE-style editorial model, stable identifiers instead of vibes. Public comment.',
+    href: '/oai/standard',
+    status: 'live',
+  },
+  {
     id: 'atap',
-    title: 'ATAP — Adversarial Telemetry Attestation Protocol',
-    abstract: 'A hardware-anchored chain of trust for kernel-level traffic observation. ATAP establishes device identity from enrollment through eBPF enforcement, enabling verifiable surveillance intelligence without relying on browser-level interception or DNS proxies. Covers Ed25519 attestation, WireGuard enrollment, and the identity tier model used by TunnelMind Personal.',
-    date: null,
-    pdf: null,
-    status: 'coming-soon',
+    title: 'ATAP v0.1 — Agent Trust Attestation Protocol',
+    abstract: 'Capability tokens, witness chains, and signed receipts that let one agent verify another’s claims against signed evidence. Reference verifier and JSON Schemas shipped; public comment through 2026-08-12.',
+    href: '/atap/standard',
+    status: 'live',
+  },
+  {
+    id: 'reconciliation-verdict',
+    title: 'Reconciliation Verdict v1.0',
+    abstract: 'The attestation reconciliation layer: read every root of trust (App Attest, Play Integrity, TPM, iSIM/EID, bare keys), normalize them into one comparable tier — self-asserted → software → tee-tpm → silicon-root — and emit a portable, self-verifying verdict.',
+    href: '/standards/reconciliation-verdict/v1',
+    status: 'live',
+  },
+  {
+    id: 'receipt-format',
+    title: 'Receipt Format v1.0',
+    abstract: 'The unified, self-verifying receipt every TunnelMind verdict ships with. Open receipt-verify tooling plus a STIX/TAXII bridge so a verdict is replayable by any auditor, human or machine.',
+    href: '/standards/receipt-format/v1',
+    status: 'live',
+  },
+  {
+    id: 'eat-profile',
+    title: 'EAT Profile v0.1',
+    abstract: 'An RFC 9711 Entity Attestation Token serialization of the receipt, for relying parties that consume standard attestation tokens rather than the native JSON receipt.',
+    href: '/eat/profile/v0.1',
+    status: 'live',
   },
 ]
 
@@ -76,11 +105,10 @@ function PaperCard({ paper }) {
         {paper.abstract}
       </p>
 
-      {isLive && paper.pdf && (
+      {isLive && (paper.href || paper.pdf) && (
         <a
-          href={paper.pdf}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={paper.href || paper.pdf}
+          {...(paper.pdf && !paper.href ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
           style={{
             alignSelf: 'flex-start',
             display: 'inline-flex',
@@ -99,7 +127,7 @@ function PaperCard({ paper }) {
           onMouseEnter={e => e.currentTarget.style.background = 'var(--accent-green-dim)'}
           onMouseLeave={e => e.currentTarget.style.background = 'transparent'}
         >
-          ↓ Download PDF
+          {paper.pdf && !paper.href ? '↓ Download PDF' : 'Read the spec ↗'}
         </a>
       )}
     </article>
@@ -138,8 +166,10 @@ export default function Whitepapers() {
           marginBottom: '40px',
           maxWidth: '560px',
         }}>
-          Technical documentation on the protocols, models, and systems that power
-          TunnelMind. All papers are freely available and independently verifiable.
+          The open standards behind the trust attestation layer — identity, provenance,
+          and witnessability. Every spec is free, citation-grade, and independently
+          verifiable. The unified index lives at{' '}
+          <a href="/standards" style={{ color: 'var(--accent-green)' }}>tunnelmind.ai/standards</a>.
         </p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

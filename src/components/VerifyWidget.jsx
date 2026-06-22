@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { ATTESTATION_TIERS } from '../config/facts.js'
 
 // VerifyWidget — the hero's interactive proof. It answers the two questions
 // HN keeps asking ("what's your selling point vs ipinfo?" and "do you have
@@ -124,6 +125,78 @@ const verdictTone = (v) =>
     : (v === 'fail' || v === 'mismatch') ? 'bad'
     : v === 'unknown' ? 'neutral'   // no data ≠ caution — render it as neutral, not amber
     : 'warn'
+
+// Lens accent per the design system (Scry cyan, Sigil green, Tracker purple,
+// GhostRoute amber). Kept here so the convergence graphic and the lens rows
+// stay in lockstep.
+const LENS_COLOR = {
+  scry: 'var(--scry)',
+  sigil: 'var(--sigil)',
+  tracker: 'var(--tracker)',
+  ghostroute: 'var(--accent-amber)',
+}
+const TONE_COLOR = {
+  clean: 'var(--accent-green)',
+  warn: 'var(--accent-amber)',
+  bad: 'var(--accent-red)',
+  neutral: 'var(--accent-blue)',
+}
+
+// The signature moment: four lens nodes draw edges into one fused verdict node
+// — the cross-lens JOIN as geometry, sitting right beside the hard data below
+// it. Each edge draws in as its lens reveals; the verdict node lights when all
+// four have landed. Pure SVG, no deps; motion is CSS and honours
+// prefers-reduced-motion (the edges simply appear).
+function ConvergeGraphic({ reveal, done, tone }) {
+  const keys = ['scry', 'sigil', 'tracker', 'ghostroute']
+  const ys = [16, 37, 59, 80]
+  const VX = 286, VY = 48
+  const destColor = TONE_COLOR[tone] || 'var(--accent-blue)'
+  return (
+    <svg className="tm-vv-graph" viewBox="0 0 320 96" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      {keys.map((k, i) => (
+        <path
+          key={k}
+          className={`tm-vv-edge ${reveal > i ? 'is-drawn' : ''}`}
+          d={`M24 ${ys[i]} C 150 ${ys[i]} 200 ${VY} ${VX} ${VY}`}
+          pathLength="1"
+          style={{ stroke: LENS_COLOR[k], strokeDashoffset: reveal > i ? 0 : 1 }}
+        />
+      ))}
+      {keys.map((k, i) => (
+        <circle
+          key={k}
+          className={`tm-vv-src ${reveal > i ? 'is-on' : ''}`}
+          cx="24" cy={ys[i]} r="4.5"
+          style={{ fill: LENS_COLOR[k] }}
+        />
+      ))}
+      <circle className={`tm-vv-dest ${done ? 'is-on' : ''}`} cx={VX} cy={VY} r="9" style={{ stroke: destColor }} />
+      <circle className={`tm-vv-dest-core ${done ? 'is-on' : ''}`} cx={VX} cy={VY} r="3.5" style={{ fill: destColor }} />
+    </svg>
+  )
+}
+
+// The attestation-tier ladder: self-asserted → software → tee-tpm →
+// silicon-root, with the receipt's signing-root tier lit. This is the rung a
+// lookup can never show — it says how much the signature is worth, not just
+// that one exists.
+function TierLadder({ tier }) {
+  const idx = ATTESTATION_TIERS.indexOf(tier)
+  return (
+    <div className="tm-vv-tier" title="Attestation strength of the signing root">
+      <span className="tm-vv-tier-label">attestation</span>
+      {ATTESTATION_TIERS.map((t, i) => (
+        <span
+          key={t}
+          className={`tm-vv-tier-step ${i === idx ? 'is-on' : ''} ${idx >= 0 && i < idx ? 'is-below' : ''}`}
+        >
+          {t}
+        </span>
+      ))}
+    </div>
+  )
+}
 
 export default function VerifyWidget({ onNavigate }) {
   const [host, setHost] = useState(SEED.node.value)
@@ -310,6 +383,8 @@ export default function VerifyWidget({ onNavigate }) {
         <div className={`tm-verify-verdict ${phase === 'done' ? 'is-shown' : ''}`} data-tone={verdictTone(cl.verdict)}>
           {/* convergence bar — the four lens colors fusing into one verdict */}
           <div className="tm-vv-converge" aria-hidden="true" />
+          {/* the join, drawn: four lens nodes converging into one verdict node */}
+          <ConvergeGraphic reveal={reveal} done={phase === 'done'} tone={verdictTone(cl.verdict)} />
           <div className="tm-vv-row">
             <div className="tm-vv-label">Fused verdict</div>
             <div className="tm-vv-value">{verdictLabel(cl.verdict)}</div>
@@ -337,6 +412,12 @@ export default function VerifyWidget({ onNavigate }) {
           ) : (
             <div className="tm-vv-receipt is-empty">no receipt returned</div>
           )}
+          {result.receipt && result.receipt.attestation_strength && (
+            <TierLadder tier={result.receipt.attestation_strength} />
+          )}
+          <div className="tm-vv-curl" aria-label="Replay this verdict yourself">
+            <code>curl https://data.tunnelmind.ai/v1/verify/{(result.node && result.node.value) || host}</code>
+          </div>
           <p className="tm-vv-foot">
             A lookup hands back an answer. TunnelMind hands back a{' '}
             <strong>verifiable receipt</strong> — the difference between a score and proof.

@@ -534,6 +534,44 @@ a:hover {
   10%  { opacity: 1; }
   100% { transform: scaleX(1); opacity: 1; }
 }
+/* ── The join, drawn — four lens nodes converging into one verdict node ── */
+.tm-vv-graph {
+  display: block;
+  width: 100%;
+  max-width: 340px;
+  height: auto;
+  margin: 0 auto 12px;
+  overflow: visible;
+}
+.tm-vv-edge {
+  fill: none;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  opacity: 0.85;
+  transition: stroke-dashoffset 540ms cubic-bezier(0.3, 0.7, 0.2, 1), opacity 300ms ease;
+}
+.tm-vv-edge:not(.is-drawn) { opacity: 0; }
+.tm-vv-src {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0.4);
+  transition: opacity 280ms ease, transform 280ms ease;
+}
+.tm-vv-src.is-on { opacity: 1; transform: scale(1); }
+.tm-vv-dest {
+  fill: none;
+  stroke-width: 1.6;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(0.6);
+  transition: opacity 360ms ease 120ms, transform 360ms cubic-bezier(0.2, 1.4, 0.4, 1) 120ms;
+}
+.tm-vv-dest.is-on { opacity: 0.9; transform: scale(1); }
+.tm-vv-dest-core { opacity: 0; transition: opacity 360ms ease 220ms; }
+.tm-vv-dest-core.is-on { opacity: 1; }
 .tm-verify-verdict[data-tone="clean"] { border-left-color: var(--accent-green); }
 .tm-verify-verdict[data-tone="warn"]  { border-left-color: var(--accent-amber); }
 .tm-verify-verdict[data-tone="bad"]   { border-left-color: var(--accent-red); }
@@ -599,6 +637,55 @@ a:hover {
 .tm-vv-receipt-icon { color: var(--accent-green); font-size: 13px; }
 .tm-vv-receipt code { color: var(--accent-green); }
 .tm-vv-receipt-id { margin-left: auto; color: var(--chrome-text-dim); }
+/* attestation-tier ladder — how much the signature is worth, lit at the rung
+   the signing root actually reached */
+.tm-vv-tier {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+}
+.tm-vv-tier-label {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--chrome-text-dim);
+  margin-right: 2px;
+}
+.tm-vv-tier-step {
+  padding: 2px 7px;
+  border: 1px solid var(--chrome-border);
+  border-radius: 999px;
+  color: var(--chrome-text-dim);
+  white-space: nowrap;
+}
+.tm-vv-tier-step.is-below { color: var(--chrome-text); border-color: var(--chrome-text-dim); }
+.tm-vv-tier-step.is-on {
+  color: var(--chrome-bg);
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  font-weight: 600;
+}
+/* the curl that replays this exact verdict — flash next to hard, runnable data */
+.tm-vv-curl {
+  margin-top: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--chrome-border);
+  border-radius: 6px;
+  background: var(--chrome-bg2);
+  overflow-x: auto;
+}
+.tm-vv-curl code {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--chrome-text);
+  white-space: nowrap;
+}
+@media (prefers-reduced-motion: reduce) {
+  .tm-vv-edge, .tm-vv-src, .tm-vv-dest, .tm-vv-dest-core { transition: none; }
+}
 .tm-vv-foot {
   margin: 12px 0 0;
   font-family: var(--font-serif);

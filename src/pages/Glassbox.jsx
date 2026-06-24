@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import LensAnatomy from '../components/LensAnatomy.jsx'
 import GhostRouteLive from '../components/GhostRouteLive.jsx'
-import { LENSES, RECEIPT_FORMAT, STATS_ENDPOINT, ATTESTATION_TIERS } from '../config/glassbox.js'
+import { LENSES, RECEIPT_FORMAT, STATS_ENDPOINT, SCRY_STATS_ENDPOINT, ATTESTATION_TIERS } from '../config/glassbox.js'
 
 // /glassbox — The Transparent Lens Exhibit (P-GLASSBOX).
 // Each lens is a glass box: the real pipeline, real code, real schema, real
@@ -15,14 +15,23 @@ export default function Glassbox() {
     let alive = true
     // Live headline numbers. No hardcoded metric (§0.1) — on failure the panels
     // each render an honest "momentarily unavailable", not a fabricated count.
-    fetch(STATS_ENDPOINT, { headers: { Accept: 'application/json' } })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((body) => {
-        if (!alive || !body) return
-        // /api/stats proxies the data-api envelope {ok,data}; unwrap.
-        setStats(body && body.data ? body.data : body)
-      })
-      .catch(() => {})
+    const get = (u) =>
+      fetch(u, { headers: { Accept: 'application/json' } })
+        .then((r) => (r.ok ? r.json() : null))
+        .catch(() => null)
+    Promise.all([get(STATS_ENDPOINT), get(SCRY_STATS_ENDPOINT)]).then(([eco, scry]) => {
+      if (!alive || !eco) return
+      // /api/ecosystem-stats carries the data-api envelope {ok,data}; unwrap.
+      const data = eco && eco.data ? eco.data : eco
+      // Backfill Scry's headline from scry-server when the four-lens feed is null,
+      // so the live number is real rather than a needless "unavailable".
+      if (data && data.lenses && data.lenses.scry &&
+          data.lenses.scry.observations_total == null &&
+          scry && typeof scry.total_observations === 'number') {
+        data.lenses.scry.observations_total = scry.total_observations
+      }
+      setStats(data)
+    })
     return () => { alive = false }
   }, [])
 

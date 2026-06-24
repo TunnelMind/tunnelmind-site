@@ -27,6 +27,15 @@ const shell = readFileSync(SHELL_PATH, 'utf8');
 // <noscript> fallback content that the SEO crawler sees pre-hydration.
 const ROUTES = [
   {
+    slug: 'glassbox',
+    title: 'TunnelMind — Lenses: the transparent lens exhibit',
+    description:
+      'Each of the four lenses — Scry, Sigil, Tracker, GhostRoute — shown as a glass box: the real pipeline, the real code from the repo, the real schema, and real signed receipts. Live GhostRoute CT-proof pulse. The deliberate opposite of an AI black box: every claim traces to a file, every metric is fetched live.',
+    h1:    'The transparent lens exhibit',
+    body:
+      'A trust attestation layer whose own workings are public. Four lenses on one corpus, each an illuminated schematic of its real pipeline (source → collect → normalize → store → verify → serve), with verbatim code, open schema, a reproducible curl, and a live headline metric. GhostRoute streams already-collected CT inclusion proofs in real time. Build-states are honest: LIVE where data serves, blueprint where it does not.',
+  },
+  {
     slug: 'vision',
     title: 'TunnelMind — Vision: four lenses on one signed corpus',
     description:

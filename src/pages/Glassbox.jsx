@@ -87,7 +87,8 @@ export default function Glassbox() {
         <p className="gb-foot-sub mono">
           the boundary above is enforced, not aspirational — each pipeline's collection
           stage shows shape only; every schema is open; no bulk row is fetched by this page.
-          discovery map: <a href="/GLASSBOX-MANIFEST.md">manifest</a> · open verifier:{' '}
+          discovery map: <a href="/GLASSBOX-MANIFEST.md">manifest</a> · redaction boundary:{' '}
+          <a href="/REDACTION-LIST.md">what's gated &amp; why</a> · open verifier:{' '}
           <a href="/standards">standards</a> · the endpoints: <a href="/api">API</a>
         </p>
       </footer>

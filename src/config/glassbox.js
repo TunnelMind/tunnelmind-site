@@ -14,10 +14,15 @@ import { ATTESTATION_TIERS } from './facts.js'
 
 export { ATTESTATION_TIERS }
 
-// Live metric source: GET data.tunnelmind.ai/v1/stats, proxied same-origin via
-// /api/stats. A null lens count means "momentarily unavailable" — NEVER a silent
-// zero (the upstream says so in its own note). The UI must render null honestly.
-export const STATS_ENDPOINT = '/api/stats'
+// Live metric source: the four-lens counts come from data.tunnelmind.ai/v1/stats,
+// proxied same-origin via /api/ecosystem-stats (NOT /api/stats — that one proxies
+// scry-server and has a different shape). A null lens count means "momentarily
+// unavailable" — NEVER a silent zero (the upstream says so). Render null honestly.
+export const STATS_ENDPOINT = '/api/ecosystem-stats'
+// Scry's four-lens slot is frequently null; its real headline (observations) is
+// served by scry-server via /api/stats. The page backfills from here so Scry
+// shows a live number when the four-lens feed reports null.
+export const SCRY_STATS_ENDPOINT = '/api/stats'
 
 // ── The four lenses ──────────────────────────────────────────────────────────
 // pipeline stage flags: `sensitive:true` nodes show SHAPE ONLY (§0.3) — the

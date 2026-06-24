@@ -49,6 +49,17 @@ import { classifyWithRdns, classifyWithEvidence } from "../lib/actor_class.js";
 // crawler classification AND emits its evidence for the actor-class catalog.
 const { classification: cls, via } = await classifyWithEvidence(ip, geo.asn ?? null);`,
       },
+      {
+        path: 'scry-server/src/routes/recent.js',
+        lang: 'JavaScript', lines: '1–7 · serve',
+        code: `// GET /v1/recent — recent-observations feed, aggregated per source_ip.
+//
+// Each actor is enriched with geo / network attribution: a LATERAL join
+// against geo_ranges (the iptoasn dataset, schema 003) resolves the source
+// IP to an ASN, ISO country, and network/org name. Sensor-supplied
+// observations.source_asn / source_country take precedence when present;
+// the geo dataset fills the (common) gap where they are null.`,
+      },
     ],
     // Real served projection of the corpus check (check.js): the actor-class
     // result, not the raw honeypot row (that stays gated, REDACTION #1).
@@ -93,6 +104,19 @@ export function parseAdsTxt(raw) {
   const fields = record.split(",").map((f) => f.trim());
   … elided …
   type, // 'DIRECT' | 'RESELLER' (uppercase preserved per IAB wire format)`,
+      },
+      {
+        path: 'tunnelmind-data-api/api/routes/sigil-supply-path.js',
+        lang: 'JavaScript', lines: '1–13 · serve',
+        code: `// Sigil P31 — supply-path verification.
+//   POST /v1/sigil/verify/supply_path  — the core pre-bid verification call
+//
+// supply_path composes the individual Sigil checks into one trust verdict:
+//   - ads_txt         — is the exchange authorized in the publisher's ads.txt (P30)
+//   - datacenter_ip   — is the IP a datacenter posing as a residential device (P33)
+//   - fraud_signals   — is the IP in Scry's attacker corpus (Familiar + Augur)
+//   - bundle_verified — does the app bundle exist in its store (P34)
+//   … elided …`,
       },
     ],
     schema: {

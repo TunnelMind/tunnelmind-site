@@ -36,8 +36,7 @@
   --accent-blue: #00d4ff;                          /* Scry lens */
   --accent-cyan: #00d4ff;                          /* Scry lens */
 
-  /* Geometry / sacred-geometry tokens */
-  --geo-line: #c9a84c;                             /* gold geometry stroke */
+  /* Lens accent tokens */
   --scry: #00d4ff;
   --sigil: #3dba8a;
   --tracker: #9b6fd4;
@@ -65,7 +64,7 @@
   /* Typography */
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
   --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
-  --font-display: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;  /* reverted from P-GEO 'Cinzel' */
+  --font-display: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;  /* serif display face */
 
   /* Layout */
   --nav-height: 38px;

@@ -3,7 +3,7 @@ import { LegalPage, Section, P, UL, Divider, ContactBox } from './LegalPage.jsx'
 
 export default function AbusePolicy() {
   return (
-    <LegalPage eyebrow="● Legal" title="Abuse Handling Policy" effective="April 24, 2026">
+    <LegalPage eyebrow="● Legal" title="Abuse Handling Policy" effective="June 25, 2026">
 
       <Section title="Overview">
         <P>
@@ -33,11 +33,11 @@ export default function AbusePolicy() {
       <Section title="2. What we investigate">
         <P>We act on credible reports of the following:</P>
         <UL items={[
-          'Use of TunnelMind infrastructure to attack, scan, or probe third-party systems without authorization.',
-          'Routing of malware, ransomware, or exploit payloads through the tunnel.',
-          'Network-layer fraud or identity theft.',
-          'DDoS attacks sourced from TunnelMind infrastructure.',
-          'Transmission of child sexual abuse material (CSAM) or other illegal content.',
+          'Use of TunnelMind attestations or corpus data to target, attack, or facilitate harm against third-party systems or people.',
+          'Misrepresenting a TunnelMind verdict or receipt — forging, altering, or falsely claiming an attestation we did not issue.',
+          'Automated scraping, credential sharing, or circumvention of rate limits, prepaid balances, or the x402 payment rail.',
+          'Payment fraud, chargebacks in bad faith, or identity theft in connection with an account.',
+          'Submission of unlawful content — including child sexual abuse material (CSAM) — as a query input or in any field sent to us.',
           'Any use that violates our Acceptable Use Policy.',
         ]} />
       </Section>
@@ -62,11 +62,12 @@ export default function AbusePolicy() {
 
       <Section title="4. What we cannot do">
         <P>
-          TunnelMind is a metadata-layer service. We observe DNS hostnames and
-          flow metadata — not payload content. We cannot reconstruct the content
-          of communications, inspect HTTPS traffic, or produce evidence of what
-          was transmitted beyond destination and volume. Our evidentiary capability
-          is limited to what our Privacy Policy says we collect.
+          TunnelMind is an attestation API, not a network operator. We are not in
+          the path of anyone's traffic: we see the destinations a customer asks us
+          to evaluate and the verdicts we returned — not communications content,
+          not browsing history, not HTTPS payloads. We cannot reconstruct what a
+          third party transmitted. Our evidentiary capability is limited to the
+          account records and query metadata described in our Privacy Policy.
         </P>
         <P>
           We do not currently operate automated CSAM hash-matching (NCMEC PhotoDNA

@@ -3,7 +3,7 @@ import { LegalPage, Section, P, UL, Divider, ContactBox } from './LegalPage.jsx'
 
 export default function LawEnforcementPolicy() {
   return (
-    <LegalPage eyebrow="● Legal" title="Law Enforcement Policy" effective="April 24, 2026">
+    <LegalPage eyebrow="● Legal" title="Law Enforcement Policy" effective="June 25, 2026">
 
       <Section title="Overview">
         <P>
@@ -16,10 +16,14 @@ export default function LawEnforcementPolicy() {
 
       <Section title="1. Our general posture">
         <P>
-          TunnelMind is a surveillance transparency company. We take seriously both
-          our legal obligations to cooperate with valid lawful process and our
-          obligation to protect users from unlawful government surveillance. These
-          are not in conflict when process is properly followed.
+          TunnelMind operates a trust attestation layer for the agentic internet:
+          you (or your agent) ask us to evaluate a destination — an IP address,
+          domain, ASN, or seller path — and we return a signed verdict. We are not
+          in the path of your traffic and we do not route, proxy, or tunnel your
+          connections. We take seriously both our legal obligations to cooperate
+          with valid lawful process and our obligation to protect users from
+          unlawful government surveillance. These are not in conflict when process
+          is properly followed.
         </P>
         <P>
           We do not proactively provide user data to any law enforcement agency
@@ -29,21 +33,23 @@ export default function LawEnforcementPolicy() {
 
       <Section title="2. What we can provide">
         <P>
-          Our infrastructure captures metadata only. The following data exists and
-          may be produced in response to valid legal process:
+          We hold account records and the metadata of the attestation requests you
+          make — not your network traffic. The following data exists and may be
+          produced in response to valid legal process:
         </P>
         <UL items={[
-          'Account records: email address, passkey credential ID, WireGuard peer ID, tunnel IP assignment, account creation timestamp, Stripe customer ID.',
-          'DNS query metadata: queried domain, timestamp, tunnel IP. No resolved IP addresses, no payload content.',
-          'Network flow metadata: source/destination IP, ports, bytes, protocol, direction, timestamp, verdict. No payload content.',
-          'Payment records: subscription tier, billing dates (via Stripe; separate subpoena to Stripe for card data).',
-          'Surveillance policy configuration: what blocking/audit rules a user has set.',
+          'Account records: email address, API key SHA-256 hash, WebAuthn passkey credential ID, Terms of Service acceptance timestamp, Stripe customer ID.',
+          'Query metadata: the IP addresses, domains, ASNs, or seller paths you submitted to /v1/verify, /v1/preflight, and related endpoints, with a timestamp. These are the destinations you asked us to evaluate — not your own connections.',
+          'Verdict records: the attestation we returned (allow / caution / deny, or per-lens score) and the evidence behind it, retained so signed receipts stay verifiable.',
+          'Payment metadata: prepaid-block billing dates via Stripe (separate subpoena to Stripe for card data) and, for agent micropayments, the x402 on-rail payment reference. We do not custody funds.',
         ]} />
         <P>
-          <strong>What we cannot provide:</strong> We do not have access to the
-          content of any network connection routed through WireGuard. WireGuard
-          is an encrypted transport — we see metadata at our TC hook, not payload.
-          We cannot provide decrypted traffic content because we do not possess it.
+          <strong>What we cannot provide:</strong> We are not in the path of your
+          traffic. We do not operate a VPN, tunnel, or proxy, and we do not capture
+          the content or payload of your network connections, your browsing history,
+          or DNS resolutions made by your device. We cannot produce traffic content
+          because we never possess it — we observe only the destinations you ask us
+          to evaluate.
         </P>
       </Section>
 

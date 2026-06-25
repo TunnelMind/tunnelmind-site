@@ -21,9 +21,9 @@ const REPORT = {
   accounts_suspended_abuse: 0,
   accounts_subject_to_legal_hold: 0,
   infrastructure_nodes: 1,
-  enrolled_peers: '< 50',
+  registered_accounts: '< 50',
   notes: [
-    'TunnelMind launched its first enrolled peer in Q1 2026.',
+    'TunnelMind opened external access to its attestation API in Q1 2026.',
     'No law enforcement or government agency has contacted TunnelMind as of this report.',
     'Zero data disclosures have been made to any third party.',
     'Warrant canary is current and intact at tunnelmind.ai/canary.json.',
@@ -48,9 +48,10 @@ export default function TransparencyReport() {
         <P>
           TunnelMind publishes a transparency report covering legal requests
           received, government interactions, and account enforcement actions.
-          We publish this report because radical transparency about what
-          infrastructure operators do in response to government pressure is
-          the minimum standard for a company whose product is transparency.
+          We publish this report because radical transparency about what an
+          infrastructure provider does in response to government pressure is the
+          minimum standard for a company that asks the agentic internet to trust
+          its attestations.
         </P>
         <P>
           The warrant canary at{' '}
@@ -86,7 +87,7 @@ export default function TransparencyReport() {
 
       <Section title="Infrastructure">
         <StatRow label="Server nodes" value={REPORT.infrastructure_nodes} />
-        <StatRow label="Enrolled peers" value={REPORT.enrolled_peers} />
+        <StatRow label="Registered accounts" value={REPORT.registered_accounts} />
         <StatRow label="Data subprocessors" value="Stripe, Cloudflare, Hetzner" />
         <StatRow label="LLM vendors with access to user data" value="None (local inference only)" />
       </Section>

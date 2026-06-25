@@ -2,10 +2,9 @@
 :root {
   /* ── Palette ─────────────────────────────────────────────────────────
      Deep slate-navy ground, lens accent colors, a restrained gold line.
-     (Reverted 2026-06-04 from the P-GEO cosmic/sacred-geometry skin.)
      "MONOSPACE CARRIES TRUTH" — every visual sits next to legible data. ── */
 
-  /* Chrome: deep slate-navy (reverted from P-GEO cosmic near-black) */
+  /* Chrome: deep slate-navy */
   --chrome-bg: #0f172a;
   --chrome-bg2: #1e293b;
   --chrome-border: #334155;

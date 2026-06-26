@@ -1,7 +1,7 @@
 {
   "$schema": "https://tunnelmind.ai/agent-manifest.schema.json",
   "manifest_version": "0.1",
-  "generated_at": "2026-05-24",
+  "generated_at": "2026-06-25",
   "operator": {
     "name": "TunnelMind AI, LLC",
     "oai": "OAI-2026-0000201",
@@ -18,9 +18,7 @@
     "investor_capital_received": false,
     "warrant_canary": "https://tunnelmind.ai/canary.json"
   },
-
   "thesis": "Four lenses on one signed corpus. Scry watches who is attacking; Sigil watches who can be trusted; Tracker watches who is paying whom; GhostRoute watches where the traffic actually goes — routing integrity and sovereignty. The join across the four is the thing no siloed incumbent can compute — and it is what an autonomous agent needs to answer the only question that matters when it transacts with a new endpoint: is this real?",
-
   "products": [
     {
       "id": "scry",
@@ -29,10 +27,26 @@
       "summary": "Signed observations of hostile network actors with actor-class enrichment and threat-feed overlap.",
       "rest_base": "https://api.tunnelmind.ai",
       "key_endpoints": [
-        {"method": "GET", "path": "/v1/check/{ip}",        "purpose": "Per-IP reputation lookup with actor classification"},
-        {"method": "GET", "path": "/v1/check-domain/{host}", "purpose": "Per-domain reputation lookup"},
-        {"method": "GET", "path": "/v1/recent",            "purpose": "Stream of recent hostile observations"},
-        {"method": "POST","path": "/v1/check/bulk",        "purpose": "Bulk IP lookup (paid tier)"}
+        {
+          "method": "GET",
+          "path": "/v1/check/{ip}",
+          "purpose": "Per-IP reputation lookup with actor classification"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/check-domain/{host}",
+          "purpose": "Per-domain reputation lookup"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/recent",
+          "purpose": "Stream of recent hostile observations"
+        },
+        {
+          "method": "POST",
+          "path": "/v1/check/bulk",
+          "purpose": "Bulk IP lookup (paid tier)"
+        }
       ]
     },
     {
@@ -42,10 +56,26 @@
       "summary": "Programmatic-advertising supply graph. Publishers, SSPs, DSPs, seats, OpenRTB SupplyChain, entity trust scoring.",
       "rest_base": "https://data.tunnelmind.ai",
       "key_endpoints": [
-        {"method": "GET", "path": "/v1/sigil/resolve/domain/{host}",         "purpose": "Resolve a domain to its sell-side presence in the supply graph"},
-        {"method": "GET", "path": "/v1/sigil/resolve/entity/{slug}",         "purpose": "Resolve an entity slug to its observed surface across the supply graph"},
-        {"method": "POST","path": "/v1/sigil/verify/supply_path",            "purpose": "Verify a SupplyChain path with a weighted-mean verdict"},
-        {"method": "POST","path": "/v1/sigil/atap/ait",                      "purpose": "Mint an ATAP capability token for the calling agent"}
+        {
+          "method": "GET",
+          "path": "/v1/sigil/resolve/domain/{host}",
+          "purpose": "Resolve a domain to its sell-side presence in the supply graph"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/sigil/resolve/entity/{slug}",
+          "purpose": "Resolve an entity slug to its observed surface across the supply graph"
+        },
+        {
+          "method": "POST",
+          "path": "/v1/sigil/verify/supply_path",
+          "purpose": "Verify a SupplyChain path with a weighted-mean verdict"
+        },
+        {
+          "method": "POST",
+          "path": "/v1/sigil/atap/ait",
+          "purpose": "Mint an ATAP capability token for the calling agent"
+        }
       ]
     },
     {
@@ -55,7 +85,11 @@
       "summary": "Surveillance-economy graph. Tracker entities, the resellers they buy from, the publishers they reach.",
       "rest_base": "https://data.tunnelmind.ai",
       "key_endpoints": [
-        {"method": "GET", "path": "/v1/tracker/resolve/{host}", "purpose": "Resolve a tracker host to its operating entity and reseller relationships"}
+        {
+          "method": "GET",
+          "path": "/v1/tracker/resolve/{host}",
+          "purpose": "Resolve a tracker host to its operating entity and reseller relationships"
+        }
       ]
     },
     {
@@ -65,9 +99,21 @@
       "summary": "Routing integrity and sovereignty. Origin AS, RPKI route validity (read first-party from our own corpus), the sovereign jurisdiction a service claims versus the one it egresses through, sanctions and AI-infrastructure ownership, and certificate-transparency logs witnessed against signature-verified roots we hold ourselves.",
       "rest_base": "https://data.tunnelmind.ai",
       "key_endpoints": [
-        {"method": "GET", "path": "/v1/ghostroute/check/{entity}",   "purpose": "Routing/sovereignty verdict for an IP, domain, or ASN (ephemeral; ?receipt=true for a durable signed receipt)"},
-        {"method": "GET", "path": "/v1/ghostroute/witness",          "purpose": "First-party CT witness health — signature-verified STH per trusted log + append-only regression scan"},
-        {"method": "GET", "path": "/v1/ghostroute/proofs",           "purpose": "Per-cert CT inclusion proofs witnessed against our verified roots (optional ?domain=)"}
+        {
+          "method": "GET",
+          "path": "/v1/ghostroute/check/{entity}",
+          "purpose": "Routing/sovereignty verdict for an IP, domain, or ASN (ephemeral; ?receipt=true for a durable signed receipt)"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/ghostroute/witness",
+          "purpose": "First-party CT witness health — signature-verified STH per trusted log + append-only regression scan"
+        },
+        {
+          "method": "GET",
+          "path": "/v1/ghostroute/proofs",
+          "purpose": "Per-cert CT inclusion proofs witnessed against our verified roots (optional ?domain=)"
+        }
       ]
     },
     {
@@ -77,13 +123,30 @@
       "summary": "The A2 join. Service-layer fusion of Scry × Sigil × GhostRoute for one node key. Returns the fused verdict, per-lens blocks (incl. ghostroute), a 5-minute signed sigil_token, and an optional ATAP witness event. An RPKI-INVALID origin or a sanctions match are hard floors the fusion cannot average away.",
       "rest_base": "https://data.tunnelmind.ai",
       "key_endpoints": [
-        {"method": "POST", "path": "/v1/verify/{node}", "purpose": "Fused cross-lens verdict for an IP, domain, ASN, or entity_slug. Optional ait field wraps the verdict in an ATAP cross_lens:verified witness event."}
+        {
+          "method": "POST",
+          "path": "/v1/verify/{node}",
+          "purpose": "Fused cross-lens verdict for an IP, domain, ASN, or entity_slug. Optional ait field wraps the verdict in an ATAP cross_lens:verified witness event."
+        }
       ],
-      "node_types": ["ip", "domain", "asn", "entity_slug"],
-      "response_shape": ["scry", "sigil", "ghostroute", "cross_lens", "sigil_token", "token_signed", "token_expires_at", "witnessed_event"]
+      "node_types": [
+        "ip",
+        "domain",
+        "asn",
+        "entity_slug"
+      ],
+      "response_shape": [
+        "scry",
+        "sigil",
+        "ghostroute",
+        "cross_lens",
+        "sigil_token",
+        "token_signed",
+        "token_expires_at",
+        "witnessed_event"
+      ]
     }
   ],
-
   "mcp_servers": [
     {
       "id": "tunnelmind-data-api",
@@ -114,7 +177,6 @@
       "summary": "Sigil-scoped MCP. Curated tool surface (incl. traverse_supply_chain). Includes cross_lens_verify with identical semantics to the data-api surface."
     }
   ],
-
   "cross_product_tools": [
     {
       "name": "cross_lens_verify",
@@ -125,7 +187,6 @@
       ]
     }
   ],
-
   "standards_published": [
     {
       "id": "oai",
@@ -150,7 +211,6 @@
       "reference_verifier": "https://tunnelmind.ai/atap/verify.sh"
     }
   ],
-
   "auth": {
     "model": "open_free_tier_plus_paid",
     "free_tier": {
@@ -162,55 +222,74 @@
       "key_issuance": "https://tunnelmind.ai/api"
     }
   },
-
   "agent_payments": {
-    "x402_enabled":      true,
-    "rail":              "USDC on Base",
-    "x402_version":      1,
-    "demo_endpoint":     "https://data.tunnelmind.ai/v1/x402/echo",
-    "discovery":         "https://tunnelmind.ai/.well-known/x402.json",
-    "summary":           "x402 is the agent-native rail. Stripe is the human rail. Demo endpoint accepts mode='demo' HMAC payments (no USDC required) for client-validation smoke. Real-mode mainnet USDC verification pending wallet provisioning + facilitator credentials. Pricing per endpoint lives in the OpenAPI x-tunnelmind-pricing extension."
+    "x402_enabled": true,
+    "rail": "USDC on Base",
+    "x402_version": 1,
+    "demo_endpoint": "https://data.tunnelmind.ai/v1/x402/echo",
+    "discovery": "https://tunnelmind.ai/.well-known/x402.json",
+    "summary": "x402 is the agent-native rail. Stripe is the human rail. Demo endpoint accepts mode='demo' HMAC payments (no USDC required) for client-validation smoke. Real-mode mainnet USDC verification pending wallet provisioning + facilitator credentials. Pricing per endpoint lives in the OpenAPI x-tunnelmind-pricing extension."
   },
-
   "discovery_artifacts": {
-    "ai_services_card":      "https://tunnelmind.ai/.well-known/ai-services.json",
-    "agent_onboarding":      "https://tunnelmind.ai/agent-onboarding.md",
+    "ai_services_card": "https://tunnelmind.ai/.well-known/ai-services.json",
+    "agent_onboarding": "https://tunnelmind.ai/agent-onboarding.md",
     "analyst_config_bundle": "https://data.tunnelmind.ai/v1/config/analyst",
-    "llms_txt":              "https://tunnelmind.ai/llms.txt",
-    "openapi":               "https://data.tunnelmind.ai/openapi.yaml",
-    "robots_txt":            "https://tunnelmind.ai/robots.txt",
-    "warrant_canary":        "https://tunnelmind.ai/canary.json",
-    "atap_discovery":        "https://tunnelmind.ai/.well-known/atap.json",
-    "receipt_signing_keys":  "https://tunnelmind.ai/.well-known/receipt-signing-key.json",
-    "receipt_revocations":   "https://tunnelmind.ai/.well-known/receipt-revocations.json",
-    "x402_discovery":        "https://tunnelmind.ai/.well-known/x402.json"
+    "llms_txt": "https://tunnelmind.ai/llms.txt",
+    "openapi": "https://data.tunnelmind.ai/openapi.yaml",
+    "robots_txt": "https://tunnelmind.ai/robots.txt",
+    "warrant_canary": "https://tunnelmind.ai/canary.json",
+    "atap_discovery": "https://tunnelmind.ai/.well-known/atap.json",
+    "receipt_signing_keys": "https://tunnelmind.ai/.well-known/receipt-signing-key.json",
+    "receipt_revocations": "https://tunnelmind.ai/.well-known/receipt-revocations.json",
+    "x402_discovery": "https://tunnelmind.ai/.well-known/x402.json"
   },
-
   "byom_analyst_config": {
     "summary": "BYOM (bring-your-own-model) config bundle that turns any LLM into a TunnelMind analyst. System prompt + tool subset + response schema + attestation-tier vocabulary. Customer brings the LLM and the tokens; TunnelMind earns on data API calls.",
-    "rest_endpoint":   "https://data.tunnelmind.ai/v1/config/analyst",
+    "rest_endpoint": "https://data.tunnelmind.ai/v1/config/analyst",
     "mcp_prompt_name": "tunnelmind_analyst",
-    "mcp_servers":     [
+    "mcp_servers": [
       "https://mcp-data.tunnelmind.ai/mcp",
       "https://mcp.tunnelmind.ai/mcp",
       "https://mcp.sigil.tunnelmind.ai/mcp"
     ],
     "default_surface_by_mcp": {
-      "https://mcp-data.tunnelmind.ai/mcp":  "data",
-      "https://mcp.tunnelmind.ai/mcp":       "scry",
+      "https://mcp-data.tunnelmind.ai/mcp": "data",
+      "https://mcp.tunnelmind.ai/mcp": "scry",
       "https://mcp.sigil.tunnelmind.ai/mcp": "sigil"
     },
-    "surfaces":        ["data", "scry", "sigil"],
-    "formats":         ["anthropic", "openai", "generic"],
-    "receipt_wrap":    "Add ?receipt=true to wrap the response in a signed Receipt v1.0 envelope",
-    "verification":    "Inline bundle_signature is Ed25519 over JCS(bundle minus bundle_signature). Verify against /.well-known/receipt-signing-key.json."
+    "surfaces": [
+      "data",
+      "scry",
+      "sigil"
+    ],
+    "formats": [
+      "anthropic",
+      "openai",
+      "generic"
+    ],
+    "receipt_wrap": "Add ?receipt=true to wrap the response in a signed Receipt v1.0 envelope",
+    "verification": "Inline bundle_signature is Ed25519 over JCS(bundle minus bundle_signature). Verify against /.well-known/receipt-signing-key.json."
   },
-
   "principles": [
-    {"id": "signed_at_source",      "summary": "Every observation is Ed25519-signed by the sensor that made it."},
-    {"id": "corpus_is_public",      "summary": "The radar shows a live sample to anyone, no account. Identifiers resolve for free."},
-    {"id": "stable_identifiers",    "summary": "Every observed actor gets a permanent handle (OAI)."},
-    {"id": "no_profile_poisoning",  "summary": "We make the watchers legible. We do not fabricate data."},
-    {"id": "local_first_for_people","summary": "Anything that analyzes a person's traffic runs on their machine."}
+    {
+      "id": "signed_at_source",
+      "summary": "Every observation is Ed25519-signed by the sensor that made it."
+    },
+    {
+      "id": "corpus_is_public",
+      "summary": "The radar shows a live sample to anyone, no account. Identifiers resolve for free."
+    },
+    {
+      "id": "stable_identifiers",
+      "summary": "Every observed actor gets a permanent handle (OAI)."
+    },
+    {
+      "id": "no_profile_poisoning",
+      "summary": "We make the watchers legible. We do not fabricate data."
+    },
+    {
+      "id": "local_first_for_people",
+      "summary": "Anything that analyzes a person's traffic runs on their machine."
+    }
   ]
 }

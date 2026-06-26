@@ -1,0 +1,234 @@
+// ── agent-manifest.json source ───────────────────────────────────────────────
+// The full structure of public/agent-manifest.json lives here. Drift-prone scalar
+// facts (lens slugs, rest_bases, MCP tool counts, standards status, rate limit,
+// operator id, x402 version) are pulled from canonical.mjs so they are single-sourced.
+// Prose summaries and endpoint lists are authored here. Run scripts/build-agent-manifest.mjs
+// to regenerate the published file; the surface guard then validates it.
+import { CANONICAL, mcpServer } from './canonical.mjs';
+
+// Stamp the last intentional regeneration. Kept as a constant (not build-time now())
+// so rebuilds are deterministic and don't churn the committed file.
+export const MANIFEST_GENERATED_AT = '2026-06-25';
+
+const lens = (name) => {
+  const l = CANONICAL.lenses.find((x) => x.name === name);
+  if (!l) throw new Error(`agent-manifest: no canonical lens named "${name}"`);
+  return l;
+};
+
+export function buildManifest() {
+  const data = mcpServer('data');
+  const scry = mcpServer('scry');
+  const sigil = mcpServer('sigil');
+
+  return {
+    $schema: 'https://tunnelmind.ai/agent-manifest.schema.json',
+    manifest_version: '0.1',
+    generated_at: MANIFEST_GENERATED_AT,
+    operator: {
+      name: 'TunnelMind AI, LLC',
+      oai: CANONICAL.operator.oai,
+      oai_resolver: `https://tunnelmind.ai/id/${CANONICAL.operator.oai}`,
+      homepage: 'https://tunnelmind.ai',
+      vision: 'https://tunnelmind.ai/vision',
+      roadmap: 'https://tunnelmind.ai/roadmap',
+      contact: {
+        agents: 'agents@tunnelmind.ai',
+        api: 'api@tunnelmind.ai',
+        legal: 'legal@tunnelmind.ai',
+      },
+      single_operator: CANONICAL.operator.single_operator,
+      investor_capital_received: CANONICAL.operator.investor_capital_received,
+      warrant_canary: 'https://tunnelmind.ai/canary.json',
+    },
+
+    thesis:
+      'Four lenses on one signed corpus. Scry watches who is attacking; Sigil watches who can be trusted; Tracker watches who is paying whom; GhostRoute watches where the traffic actually goes — routing integrity and sovereignty. The join across the four is the thing no siloed incumbent can compute — and it is what an autonomous agent needs to answer the only question that matters when it transacts with a new endpoint: is this real?',
+
+    products: [
+      {
+        id: 'scry',
+        name: 'Scry',
+        lens: lens('Scry').slug,
+        summary: 'Signed observations of hostile network actors with actor-class enrichment and threat-feed overlap.',
+        rest_base: lens('Scry').rest_base,
+        key_endpoints: [
+          { method: 'GET', path: '/v1/check/{ip}', purpose: 'Per-IP reputation lookup with actor classification' },
+          { method: 'GET', path: '/v1/check-domain/{host}', purpose: 'Per-domain reputation lookup' },
+          { method: 'GET', path: '/v1/recent', purpose: 'Stream of recent hostile observations' },
+          { method: 'POST', path: '/v1/check/bulk', purpose: 'Bulk IP lookup (paid tier)' },
+        ],
+      },
+      {
+        id: 'sigil',
+        name: 'Sigil',
+        lens: lens('Sigil').slug,
+        summary: 'Programmatic-advertising supply graph. Publishers, SSPs, DSPs, seats, OpenRTB SupplyChain, entity trust scoring.',
+        rest_base: lens('Sigil').rest_base,
+        key_endpoints: [
+          { method: 'GET', path: '/v1/sigil/resolve/domain/{host}', purpose: 'Resolve a domain to its sell-side presence in the supply graph' },
+          { method: 'GET', path: '/v1/sigil/resolve/entity/{slug}', purpose: 'Resolve an entity slug to its observed surface across the supply graph' },
+          { method: 'POST', path: '/v1/sigil/verify/supply_path', purpose: 'Verify a SupplyChain path with a weighted-mean verdict' },
+          { method: 'POST', path: '/v1/sigil/atap/ait', purpose: 'Mint an ATAP capability token for the calling agent' },
+        ],
+      },
+      {
+        id: 'tracker',
+        name: 'Tracker',
+        lens: lens('Tracker').slug,
+        summary: 'Surveillance-economy graph. Tracker entities, the resellers they buy from, the publishers they reach.',
+        rest_base: lens('Tracker').rest_base,
+        key_endpoints: [
+          { method: 'GET', path: '/v1/tracker/resolve/{host}', purpose: 'Resolve a tracker host to its operating entity and reseller relationships' },
+        ],
+      },
+      {
+        id: 'ghostroute',
+        name: 'GhostRoute',
+        lens: lens('GhostRoute').slug,
+        summary: 'Routing integrity and sovereignty. Origin AS, RPKI route validity (read first-party from our own corpus), the sovereign jurisdiction a service claims versus the one it egresses through, sanctions and AI-infrastructure ownership, and certificate-transparency logs witnessed against signature-verified roots we hold ourselves.',
+        rest_base: lens('GhostRoute').rest_base,
+        key_endpoints: [
+          { method: 'GET', path: '/v1/ghostroute/check/{entity}', purpose: 'Routing/sovereignty verdict for an IP, domain, or ASN (ephemeral; ?receipt=true for a durable signed receipt)' },
+          { method: 'GET', path: '/v1/ghostroute/witness', purpose: 'First-party CT witness health — signature-verified STH per trusted log + append-only regression scan' },
+          { method: 'GET', path: '/v1/ghostroute/proofs', purpose: 'Per-cert CT inclusion proofs witnessed against our verified roots (optional ?domain=)' },
+        ],
+      },
+      {
+        id: 'cross_lens',
+        name: 'Cross-lens verify',
+        lens: lens('Cross-lens verify').slug,
+        summary: 'The A2 join. Service-layer fusion of Scry × Sigil × GhostRoute for one node key. Returns the fused verdict, per-lens blocks (incl. ghostroute), a 5-minute signed sigil_token, and an optional ATAP witness event. An RPKI-INVALID origin or a sanctions match are hard floors the fusion cannot average away.',
+        rest_base: lens('Cross-lens verify').rest_base,
+        key_endpoints: [
+          { method: 'POST', path: '/v1/verify/{node}', purpose: 'Fused cross-lens verdict for an IP, domain, ASN, or entity_slug. Optional ait field wraps the verdict in an ATAP cross_lens:verified witness event.' },
+        ],
+        node_types: ['ip', 'domain', 'asn', 'entity_slug'],
+        response_shape: ['scry', 'sigil', 'ghostroute', 'cross_lens', 'sigil_token', 'token_signed', 'token_expires_at', 'witnessed_event'],
+      },
+    ],
+
+    mcp_servers: [
+      {
+        id: 'tunnelmind-data-api',
+        registry_name: data.registry_name,
+        url: data.url,
+        card_url: 'https://mcp-data.tunnelmind.ai/.well-known/mcp.json',
+        transport: 'streamable-http',
+        tool_count: data.toolCount,
+        auto_generated_from: 'https://data.tunnelmind.ai/openapi.yaml',
+        summary: 'Every Data API operation surfaced as an MCP tool. Tracker, Sigil, GhostRoute, and cross_lens_verify (with adversary_class) in one surface.',
+      },
+      {
+        id: 'scry-mcp',
+        registry_name: scry.registry_name,
+        url: scry.url,
+        card_url: 'https://mcp.tunnelmind.ai/.well-known/mcp.json',
+        transport: 'streamable-http',
+        tool_count: scry.toolCount,
+        summary: 'Scry-only MCP. Free IPv4 lookups against the attacker-observation corpus. No auth.',
+      },
+      {
+        id: 'sigil-mcp',
+        registry_name: sigil.registry_name,
+        url: sigil.url,
+        card_url: 'https://mcp.sigil.tunnelmind.ai/.well-known/mcp.json',
+        transport: 'streamable-http',
+        tool_count: sigil.toolCount,
+        summary: 'Sigil-scoped MCP. Curated tool surface (incl. traverse_supply_chain). Includes cross_lens_verify with identical semantics to the data-api surface.',
+      },
+    ],
+
+    cross_product_tools: [
+      {
+        name: 'cross_lens_verify',
+        summary: "Exposed on both Sigil and Data API MCP servers. The right answer for 'is this real?' should not depend on which MCP an agent landed at.",
+        available_on: [data.url, sigil.url],
+      },
+    ],
+
+    standards_published: [
+      {
+        id: 'oai',
+        name: 'OAI',
+        full_name: 'Observed Actor Identifier',
+        version: CANONICAL.standards.oai.version,
+        status: 'stable',
+        spec_url: 'https://tunnelmind.ai/oai/standard',
+        markdown_url: 'https://tunnelmind.ai/oai/OAI-STANDARD-v1.0.md',
+      },
+      {
+        id: 'atap',
+        name: 'ATAP',
+        full_name: 'Agent Trust Attestation Protocol',
+        version: CANONICAL.standards.atap.version,
+        status: 'public_comment',
+        public_comment_close: CANONICAL.standards.atap.publicCommentClose,
+        spec_url: 'https://tunnelmind.ai/atap/standard',
+        markdown_url: 'https://tunnelmind.ai/atap/ATAP-v0.1.md',
+        jsonld_context: 'https://tunnelmind.ai/atap/context.jsonld',
+        schemas_dir: 'https://tunnelmind.ai/atap/schemas/',
+        reference_verifier: 'https://tunnelmind.ai/atap/verify.sh',
+      },
+    ],
+
+    auth: {
+      model: 'open_free_tier_plus_paid',
+      free_tier: {
+        rate_limit_per_day: CANONICAL.freeTier.rateLimitPerDay,
+        scope: 'All identifier resolution is free, forever. Radar sample is public.',
+      },
+      paid_tier: {
+        summary: 'Stripe for humans; x402 USDC micropayments for agents. Per-endpoint pricing in OpenAPI x-tunnelmind-pricing.',
+        key_issuance: 'https://tunnelmind.ai/api',
+      },
+    },
+
+    agent_payments: {
+      x402_enabled: true,
+      rail: 'USDC on Base',
+      x402_version: CANONICAL.x402.version,
+      demo_endpoint: 'https://data.tunnelmind.ai/v1/x402/echo',
+      discovery: 'https://tunnelmind.ai/.well-known/x402.json',
+      summary: "x402 is the agent-native rail. Stripe is the human rail. Demo endpoint accepts mode='demo' HMAC payments (no USDC required) for client-validation smoke. Real-mode mainnet USDC verification pending wallet provisioning + facilitator credentials. Pricing per endpoint lives in the OpenAPI x-tunnelmind-pricing extension.",
+    },
+
+    discovery_artifacts: {
+      ai_services_card: 'https://tunnelmind.ai/.well-known/ai-services.json',
+      agent_onboarding: 'https://tunnelmind.ai/agent-onboarding.md',
+      analyst_config_bundle: 'https://data.tunnelmind.ai/v1/config/analyst',
+      llms_txt: 'https://tunnelmind.ai/llms.txt',
+      openapi: 'https://data.tunnelmind.ai/openapi.yaml',
+      robots_txt: 'https://tunnelmind.ai/robots.txt',
+      warrant_canary: 'https://tunnelmind.ai/canary.json',
+      atap_discovery: 'https://tunnelmind.ai/.well-known/atap.json',
+      receipt_signing_keys: 'https://tunnelmind.ai/.well-known/receipt-signing-key.json',
+      receipt_revocations: 'https://tunnelmind.ai/.well-known/receipt-revocations.json',
+      x402_discovery: 'https://tunnelmind.ai/.well-known/x402.json',
+    },
+
+    byom_analyst_config: {
+      summary: 'BYOM (bring-your-own-model) config bundle that turns any LLM into a TunnelMind analyst. System prompt + tool subset + response schema + attestation-tier vocabulary. Customer brings the LLM and the tokens; TunnelMind earns on data API calls.',
+      rest_endpoint: 'https://data.tunnelmind.ai/v1/config/analyst',
+      mcp_prompt_name: 'tunnelmind_analyst',
+      mcp_servers: [data.url, scry.url, sigil.url],
+      default_surface_by_mcp: {
+        [data.url]: 'data',
+        [scry.url]: 'scry',
+        [sigil.url]: 'sigil',
+      },
+      surfaces: ['data', 'scry', 'sigil'],
+      formats: ['anthropic', 'openai', 'generic'],
+      receipt_wrap: 'Add ?receipt=true to wrap the response in a signed Receipt v1.0 envelope',
+      verification: 'Inline bundle_signature is Ed25519 over JCS(bundle minus bundle_signature). Verify against /.well-known/receipt-signing-key.json.',
+    },
+
+    principles: [
+      { id: 'signed_at_source', summary: 'Every observation is Ed25519-signed by the sensor that made it.' },
+      { id: 'corpus_is_public', summary: 'The radar shows a live sample to anyone, no account. Identifiers resolve for free.' },
+      { id: 'stable_identifiers', summary: 'Every observed actor gets a permanent handle (OAI).' },
+      { id: 'no_profile_poisoning', summary: 'We make the watchers legible. We do not fabricate data.' },
+      { id: 'local_first_for_people', summary: "Anything that analyzes a person's traffic runs on their machine." },
+    ],
+  };
+}

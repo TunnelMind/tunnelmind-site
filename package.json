@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:oai && npm run build:atap && npm run build:eat && npm run build:receipt && npm run build:verdict && npm run build:standards && npm run build:og && npm run build:assets && vite build && npm run build:routes",
+    "build": "npm run check:surfaces && npm run build:oai && npm run build:atap && npm run build:eat && npm run build:receipt && npm run build:verdict && npm run build:standards && npm run build:og && npm run build:assets && vite build && npm run build:routes",
+    "check:surfaces": "node scripts/check-machine-surfaces.mjs",
     "build:oai": "node scripts/build-oai-page.js",
     "build:atap": "node scripts/build-atap-page.js",
     "build:eat": "node scripts/build-eat-page.js",
@@ -16,7 +17,7 @@
     "build:assets": "node scripts/build-brand-assets.js",
     "build:routes": "node scripts/build-route-stubs.js",
     "preview": "vite preview",
-    "test": "vitest run",
+    "test": "npm run check:surfaces && vitest run",
     "seed:oai": "node scripts/generate-oai-seed.js"
   },
   "dependencies": {

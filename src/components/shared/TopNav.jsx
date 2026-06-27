@@ -8,7 +8,6 @@ const NAV_ITEMS = {
     { label: 'Skills',       page: 'skills' },
     { label: 'Compare',      page: 'compare' },
     { label: 'Standards',    href: '/standards' },
-    { label: 'Roadmap',      page: 'roadmap' },
     { label: 'Pricing',      page: 'pricing' },
     { label: 'About',        page: 'about' },
     { label: 'Vision',       page: 'vision' },

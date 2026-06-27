@@ -3,8 +3,7 @@ import React from 'react'
 const LINKS = [
   { label: 'tunnelmind.ai',        href: 'https://tunnelmind.ai' },
   { label: 'API',                  href: '/api' },
-  { label: 'Roadmap',              href: '/roadmap' },
-  { label: 'Vision',               href: '/vision' },
+  { label: 'Vision & Roadmap',     href: '/vision' },
   { label: 'Whitepapers',          href: '/whitepapers' },
   { label: 'Pricing',              href: '/pricing' },
 ]

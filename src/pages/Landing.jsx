@@ -1,4 +1,5 @@
 import React from 'react'
+import { SECTIONS, Badge } from './Roadmap.jsx'
 
 // The /vision route. Plain prose — the thesis behind the pivot
 // (P25 Phase 2): TunnelMind reframed as the trust attestation layer for the
@@ -274,6 +275,35 @@ export default function Landing({ onNavigate }) {
 
         <div style={rule} />
 
+        {/* ── Roadmap (folded in from the former /roadmap page) ──────── */}
+        <section>
+          <div style={sectionLabel}>The roadmap</div>
+          <h2 style={{ ...h2, marginBottom: '24px' }}>What&apos;s shipped, what&apos;s building, what&apos;s queued.</h2>
+          {SECTIONS.map((section) => (
+            <div key={section.eyebrow} style={{ marginBottom: '32px' }}>
+              <div style={{ ...sectionLabel, color: 'var(--accent-green)' }}>{section.eyebrow}</div>
+              <h3 style={{ ...h2, fontSize: 'clamp(17px, 2.4vw, 20px)', marginBottom: '10px' }}>{section.title}</h3>
+              <p style={{ ...prose, fontSize: '14px', marginBottom: '16px' }}>{section.summary}</p>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                {section.items.map((item) => (
+                  <div key={item.name} style={{ background: 'var(--doc-paper)', border: '1px solid var(--chrome-border)', borderRadius: '4px', padding: '14px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '6px' }}>
+                      <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 600, color: 'var(--chrome-text-bright)' }}>{item.name}</span>
+                      <Badge status={item.status} />
+                    </div>
+                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)' }}>{item.desc}</div>
+                    {item.link && (
+                      <a href={item.link.href} style={{ display: 'inline-block', marginTop: '8px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-green)', textDecoration: 'none' }}>{item.link.label} →</a>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+
+        <div style={rule} />
+
         {/* ── Close ─────────────────────────────────────────────────── */}
         <section>
           <div style={sectionLabel}>Who builds it</div>
@@ -306,7 +336,7 @@ export default function Landing({ onNavigate }) {
             </button>
             <button
               type="button"
-              onClick={() => onNavigate && onNavigate('roadmap')}
+              onClick={() => onNavigate && onNavigate('api')}
               style={{
                 padding: '9px 20px',
                 background: 'transparent',
@@ -318,7 +348,7 @@ export default function Landing({ onNavigate }) {
                 cursor: 'pointer',
               }}
             >
-              Read the roadmap
+              Browse the API
             </button>
           </div>
         </section>

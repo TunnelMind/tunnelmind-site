@@ -46,6 +46,8 @@ function getPageFromPath() {
   if (!path) return 'landing'
   // 'manifesto' was renamed to 'vision' — keep old inbound links working.
   if (path === 'manifesto') return 'vision'
+  // Roadmap folded into Vision (2026-06-26) — /roadmap renders the combined page.
+  if (path === 'roadmap') return 'vision'
   // Only return known SPA pages; unknown paths fall through to landing
   // (Cloudflare Pages serves index.html for them via SPA fallback).
   return KNOWN_PAGES.has(path) ? path : 'landing'

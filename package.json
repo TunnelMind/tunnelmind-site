@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run build:manifest && npm run check:surfaces && npm run build:oai && npm run build:atap && npm run build:eat && npm run build:receipt && npm run build:verdict && npm run build:standards && npm run build:og && npm run build:assets && vite build && npm run build:routes",
+    "build": "npm run build:manifest && npm run build:ai-services && npm run build:mcp && npm run check:surfaces && npm run build:oai && npm run build:atap && npm run build:eat && npm run build:receipt && npm run build:verdict && npm run build:standards && npm run build:og && npm run build:assets && vite build && npm run build:routes",
     "build:manifest": "node scripts/build-agent-manifest.mjs",
+    "build:ai-services": "node scripts/build-ai-services.mjs",
+    "build:mcp": "node scripts/build-mcp-index.mjs",
     "check:surfaces": "node scripts/check-machine-surfaces.mjs",
     "build:oai": "node scripts/build-oai-page.js",
     "build:atap": "node scripts/build-atap-page.js",

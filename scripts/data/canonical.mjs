@@ -4,10 +4,14 @@
 // places that can disagree. Edit a fact HERE, then update the surfaces; the build runs
 // scripts/check-machine-surfaces.mjs and FAILS if any surface drifts from this file.
 //
-// This is the de-dup contract from P-SITE-SYNC GATE 3, enforced as an assertion rather
-// than full regeneration — so the hand-tuned prose in each surface is preserved while
-// the drift-prone scalar facts (tool counts, standards status, rate limits) can never
-// disagree across surfaces again.
+// This is the de-dup contract from P-SITE-SYNC GATE 3. Three structured surfaces are
+// now GENERATED from this file via per-surface data modules (scripts/data/*.data.mjs):
+//   agent-manifest.json     ← build-agent-manifest.mjs
+//   .well-known/ai-services.json ← build-ai-services.mjs
+//   .well-known/mcp.json    ← build-mcp-index.mjs
+// llms.txt stays hand-written (narrative prose) but is still asserted against this file
+// by scripts/check-machine-surfaces.mjs, so its scalar facts can never drift. Edit a
+// fact HERE; the generators re-render and the check fails the build on any disagreement.
 
 export const CANONICAL = {
   operator: {

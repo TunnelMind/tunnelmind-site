@@ -133,23 +133,23 @@
   },
 
   "discovery": {
-    "agent_manifest":      "https://tunnelmind.ai/agent-manifest.json",
-    "agent_onboarding":    "https://tunnelmind.ai/agent-onboarding.md",
-    "analyst_config":      "https://data.tunnelmind.ai/v1/config/analyst",
-    "llms_txt":            "https://tunnelmind.ai/llms.txt",
-    "robots_txt":          "https://tunnelmind.ai/robots.txt",
-    "canary":              "https://tunnelmind.ai/canary.json",
-    "ai_services":         "https://tunnelmind.ai/.well-known/ai-services.json",
-    "mcp_index":           "https://tunnelmind.ai/.well-known/mcp.json",
-    "atap_discovery":      "https://tunnelmind.ai/.well-known/atap.json",
-    "receipt_signing_keys":"https://tunnelmind.ai/.well-known/receipt-signing-key.json",
+    "agent_manifest": "https://tunnelmind.ai/agent-manifest.json",
+    "agent_onboarding": "https://tunnelmind.ai/agent-onboarding.md",
+    "analyst_config": "https://data.tunnelmind.ai/v1/config/analyst",
+    "llms_txt": "https://tunnelmind.ai/llms.txt",
+    "robots_txt": "https://tunnelmind.ai/robots.txt",
+    "canary": "https://tunnelmind.ai/canary.json",
+    "ai_services": "https://tunnelmind.ai/.well-known/ai-services.json",
+    "mcp_index": "https://tunnelmind.ai/.well-known/mcp.json",
+    "atap_discovery": "https://tunnelmind.ai/.well-known/atap.json",
+    "receipt_signing_keys": "https://tunnelmind.ai/.well-known/receipt-signing-key.json",
     "receipt_revocations": "https://tunnelmind.ai/.well-known/receipt-revocations.json",
-    "x402_discovery":      "https://tunnelmind.ai/.well-known/x402.json"
+    "x402_discovery": "https://tunnelmind.ai/.well-known/x402.json"
   },
 
   "byom_analyst_config": {
     "summary": "Bring-your-own-model config bundle. Configures any LLM (Claude, GPT, Gemini, local) as a TunnelMind analyst. Customer brings the model + tokens; TunnelMind earns on data API calls.",
-    "rest_endpoint":   "https://data.tunnelmind.ai/v1/config/analyst",
+    "rest_endpoint": "https://data.tunnelmind.ai/v1/config/analyst",
     "mcp_prompt_name": "tunnelmind_analyst",
     "available_on_mcp": [
       "https://mcp-data.tunnelmind.ai/mcp",
@@ -157,12 +157,20 @@
       "https://mcp.sigil.tunnelmind.ai/mcp"
     ],
     "default_surface_by_mcp": {
-      "https://mcp-data.tunnelmind.ai/mcp":  "data",
-      "https://mcp.tunnelmind.ai/mcp":       "scry",
+      "https://mcp-data.tunnelmind.ai/mcp": "data",
+      "https://mcp.tunnelmind.ai/mcp": "scry",
       "https://mcp.sigil.tunnelmind.ai/mcp": "sigil"
     },
-    "surfaces": ["data", "scry", "sigil"],
-    "formats":  ["anthropic", "openai", "generic"]
+    "surfaces": [
+      "data",
+      "scry",
+      "sigil"
+    ],
+    "formats": [
+      "anthropic",
+      "openai",
+      "generic"
+    ]
   },
 
   "transparency": {

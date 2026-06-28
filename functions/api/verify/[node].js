@@ -89,6 +89,7 @@ export async function onRequestGet(context) {
     scry:             d.scry              ?? null,
     sigil:            d.sigil             ?? null,
     ghostroute:       d.ghostroute        ?? null,
+    tracker:          d.tracker           ?? null,
     cross_lens:       d.cross_lens        ?? null,
     sigil_token:      body.sigil_token     ?? null,
     token_signed:     body.token_signed    ?? null,

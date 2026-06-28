@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>TunnelMind — trust attestation for the agentic internet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    /* ONE FACE — flip --display to bring Cinzel (or anything) back in a single line */
+    --display:"IBM Plex Mono",monospace;
+    --body:"IBM Plex Mono",monospace;
+
+    --void:#06080E;
+    --ink:#0B0F18;
+    --panel:#0E1422;
+    --line:#1A2233;
+    --line2:#262F44;
+    --bone:#E9E5D8;
+    --mute:#79839A;
+    --faint:#4A5061;
+    --gold:#C9A86A;
+    --gold-dim:#8A744A;
+    --hostile:#E25A40;
+    --clean:#5FB394;
+    --aether:#6A93D6;
+    --amber:#D9A23A;
+
+    --s1:8px; --s2:13px; --s3:21px; --s4:34px; --s5:55px; --s6:89px;
+    --maxw:1080px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--void);color:var(--bone);
+    font-family:var(--body);font-weight:400;line-height:1.6;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+
+  /* ================= ANIMATED RADAR BACKGROUND ================= */
+  .field{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .radar-sweep{
+    position:absolute;top:50%;left:50%;width:160vmax;height:160vmax;
+    transform:translate(-50%,-50%);
+    background:conic-gradient(from 0deg,transparent 0deg,transparent 300deg,rgba(201,168,106,.10) 350deg,rgba(201,168,106,.22) 360deg);
+    animation:sweep 9s linear infinite;
+    opacity:.7;
+  }
+  @keyframes sweep{to{transform:translate(-50%,-50%) rotate(360deg);}}
+  .rings{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:120vmax;height:120vmax;opacity:.10;}
+  .rings circle{fill:none;stroke:var(--gold);stroke-width:.4;}
+  .geo{position:absolute;color:var(--gold);}
+  .geo svg{width:100%;height:100%;}
+  .geo-tl{top:-140px;left:-140px;width:520px;height:520px;opacity:.07;animation:rot 80s linear infinite;}
+  .geo-br{bottom:-200px;right:-180px;width:660px;height:660px;color:var(--aether);opacity:.06;animation:rot 120s linear infinite reverse;}
+  @keyframes rot{to{transform:rotate(360deg);}}
+  .grid-drift{
+    position:absolute;inset:-2px;opacity:.5;
+    background-image:linear-gradient(rgba(38,47,68,.25) 1px,transparent 1px),linear-gradient(90deg,rgba(38,47,68,.25) 1px,transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(circle at 50% 38%,#000,transparent 72%);
+            mask-image:radial-gradient(circle at 50% 38%,#000,transparent 72%);
+    animation:drift 24s linear infinite;
+  }
+  @keyframes drift{to{background-position:46px 46px;}}
+
+  .wrap{position:relative;z-index:1;max-width:var(--maxw);margin:0 auto;padding:0 var(--s3);}
+
+  .display{font-family:var(--display);font-weight:600;letter-spacing:.04em;line-height:1.12;}
+  .eyebrow{font-size:11px;letter-spacing:.34em;text-transform:uppercase;color:var(--gold-dim);}
+
+  /* ================= NAV ================= */
+  header.nav{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;max-width:var(--maxw);margin:0 auto;padding:var(--s3);}
+  .wordmark{display:flex;align-items:center;gap:var(--s2);text-decoration:none;color:var(--bone);}
+  .wordmark .sigil{width:26px;height:26px;color:var(--gold);animation:rot 36s linear infinite;}
+  .wordmark .name{font-family:var(--display);font-weight:600;font-size:18px;letter-spacing:.18em;}
+  .navlinks{display:flex;gap:var(--s4);align-items:center;}
+  .navlinks a{font-size:12px;letter-spacing:.08em;color:var(--mute);text-decoration:none;transition:color .2s;}
+  .navlinks a:hover{color:var(--bone);}
+  .live-badge{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:.16em;color:var(--clean);text-transform:uppercase;}
+  .live-badge .b{width:7px;height:7px;border-radius:50%;background:var(--clean);box-shadow:0 0 8px var(--clean);animation:blink 1.6s ease-in-out infinite;}
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+  .navlinks a.cta{color:var(--gold);border:1px solid var(--gold-dim);padding:7px 14px;border-radius:2px;position:relative;overflow:hidden;}
+  .navlinks a.cta:hover{background:var(--gold);color:var(--void);box-shadow:0 0 22px rgba(201,168,106,.4);}
+  @media(max-width:820px){ .navlinks a:not(.cta):not(.live-badge){display:none;} }
+
+  /* ================= HERO ================= */
+  .hero{padding:var(--s5) 0 var(--s6);}
+  .hero h1{font-family:var(--display);font-weight:600;font-size:clamp(28px,5vw,52px);line-height:1.1;letter-spacing:.01em;max-width:16ch;text-transform:uppercase;}
+  .hero h1 .qt{color:var(--gold);text-shadow:0 0 26px rgba(201,168,106,.35);}
+  .hero .lede{margin-top:var(--s3);max-width:56ch;color:var(--mute);font-size:clamp(14px,1.6vw,16px);}
+  .hero .lede strong{color:var(--bone);font-weight:500;}
+
+  /* instrument */
+  .instrument{margin-top:var(--s5);border:1px solid var(--line);background:linear-gradient(180deg,rgba(14,20,34,.92),rgba(7,10,18,.94));border-radius:4px;overflow:hidden;position:relative;box-shadow:0 40px 130px -50px rgba(0,0,0,.95);}
+  .instrument::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,rgba(255,255,255,.012) 0 1px,transparent 1px 3px);}
+  .instrument::before{content:"";position:absolute;left:0;right:0;height:90px;top:-90px;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(201,168,106,.06),transparent);animation:scan 5.5s linear infinite;z-index:2;}
+  @keyframes scan{to{transform:translateY(calc(100% + 600px));}}
+  .inst-bar{display:flex;align-items:center;gap:var(--s2);padding:var(--s2) var(--s3);border-bottom:1px solid var(--line);background:rgba(0,0,0,.3);position:relative;z-index:1;}
+  .dot{width:9px;height:9px;border-radius:50%;background:var(--line2);}
+  .inst-bar .q{margin-left:var(--s2);font-size:13px;color:var(--mute);flex:1;overflow:hidden;white-space:nowrap;}
+  .inst-bar .q .term{color:var(--clean);}
+  .inst-bar .q .ent{color:var(--bone);}
+  .inst-bar .caret{color:var(--gold);font-weight:700;}
+  .inst-bar .tier{font-size:10px;letter-spacing:.12em;color:var(--amber);border:1px solid rgba(217,162,58,.4);padding:3px 8px;border-radius:2px;text-transform:uppercase;white-space:nowrap;opacity:0;transition:opacity .5s;}
+  .inst-bar .tier.on{opacity:1;box-shadow:0 0 14px rgba(217,162,58,.25);}
+
+  .inst-body{display:grid;grid-template-columns:1.15fr .85fr;position:relative;z-index:1;}
+  @media(max-width:840px){ .inst-body{grid-template-columns:1fr;} }
+
+  .verdict{padding:var(--s4);border-right:1px solid var(--line);}
+  @media(max-width:840px){ .verdict{border-right:none;border-bottom:1px solid var(--line);} }
+  .verdict .vlabel{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);}
+  .verdict .vmain{display:flex;align-items:baseline;gap:var(--s3);margin-top:var(--s2);flex-wrap:wrap;}
+  .verdict .vmain .word{font-family:var(--display);font-weight:700;font-size:clamp(34px,6vw,58px);color:var(--hostile);letter-spacing:.05em;line-height:1;text-shadow:0 0 30px rgba(226,90,64,.45);}
+  .verdict .vmain .word.scrambling{color:var(--amber);text-shadow:0 0 30px rgba(217,162,58,.4);}
+  .verdict .vmain .ent{font-size:14px;color:var(--mute);}
+  .verdict .vsub{margin-top:var(--s3);color:var(--bone);font-size:14px;max-width:42ch;line-height:1.55;opacity:0;transition:opacity .6s .2s;}
+  .verdict .vsub.on{opacity:1;}
+  .verdict .vsub b{color:var(--gold);font-weight:600;}
+
+  .lenses{margin-top:var(--s4);display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:3px;overflow:hidden;}
+  .lensrow{display:grid;grid-template-columns:96px 1fr auto;align-items:center;gap:var(--s2);background:var(--panel);padding:var(--s2) var(--s3);opacity:0;transform:translateX(-10px);transition:opacity .4s,transform .4s;}
+  .lensrow.on{opacity:1;transform:none;}
+  .lensrow .lname{font-family:var(--display);font-weight:700;font-size:12px;letter-spacing:.12em;text-transform:uppercase;}
+  .lensrow .lval{font-size:12px;color:var(--mute);}
+  .lensrow .lval b{color:var(--bone);font-weight:600;}
+  .pill{font-size:10px;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:2px;white-space:nowrap;}
+  .pill.hostile{color:var(--hostile);background:rgba(226,90,64,.12);border:1px solid rgba(226,90,64,.35);}
+  .pill.clean{color:var(--clean);background:rgba(95,179,148,.12);border:1px solid rgba(95,179,148,.35);}
+  .pill.na{color:var(--faint);border:1px solid var(--line2);}
+  .pill.beta{color:var(--amber);background:rgba(217,162,58,.1);border:1px solid rgba(217,162,58,.32);}
+  .scry{color:var(--hostile);} .sigil{color:var(--gold);} .tracker{color:var(--amber);} .ghost{color:var(--aether);}
+
+  .receipt{padding:var(--s4);background:rgba(0,0,0,.25);display:flex;flex-direction:column;}
+  .receipt .rlabel{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--faint);margin-bottom:var(--s2);}
+  pre.code{font-size:12px;line-height:1.7;color:var(--mute);white-space:pre;overflow-x:auto;flex:1;}
+  pre.code .k{color:var(--aether);} pre.code .s{color:var(--clean);} pre.code .n{color:var(--gold);} pre.code .sig{color:var(--hostile);}
+  .curl{margin-top:var(--s3);padding-top:var(--s3);border-top:1px solid var(--line);font-size:12px;color:var(--mute);white-space:nowrap;overflow-x:auto;}
+  .curl .p{color:var(--gold-dim);} .curl .u{color:var(--bone);}
+
+  /* ================= SECTIONS ================= */
+  section.block{padding:var(--s6) 0;border-top:1px solid var(--line);}
+  .sechead{display:flex;align-items:baseline;gap:var(--s3);margin-bottom:var(--s5);flex-wrap:wrap;}
+  .sechead h2{font-family:var(--display);font-weight:600;font-size:clamp(20px,3vw,30px);letter-spacing:.04em;text-transform:uppercase;}
+  .sechead p{color:var(--mute);max-width:46ch;font-size:14px;}
+
+  /* stat counters band */
+  .counters{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s3);margin-bottom:var(--s5);}
+  @media(max-width:760px){ .counters{grid-template-columns:repeat(2,1fr);} }
+  .counter{border:1px solid var(--line);border-radius:4px;padding:var(--s3);background:var(--ink);text-align:center;position:relative;overflow:hidden;}
+  .counter .num{font-family:var(--display);font-weight:700;font-size:30px;color:var(--gold);text-shadow:0 0 20px rgba(201,168,106,.3);}
+  .counter .lbl{font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-top:6px;}
+  .counter::after{content:"";position:absolute;left:-30%;top:0;width:30%;height:100%;background:linear-gradient(90deg,transparent,rgba(201,168,106,.08),transparent);animation:shimmer 4s ease-in-out infinite;}
+  @keyframes shimmer{0%{left:-30%;}60%,100%{left:130%;}}
+
+  /* JOIN */
+  .join{display:grid;grid-template-columns:1fr 1fr;gap:var(--s5);align-items:center;}
+  @media(max-width:840px){ .join{grid-template-columns:1fr;} }
+  .joindiag{position:relative;aspect-ratio:1;max-width:460px;width:100%;margin:0 auto;}
+  .joindiag svg{width:100%;height:100%;overflow:visible;}
+  .strand{stroke:var(--gold);stroke-width:1.4;fill:none;stroke-dasharray:6 10;animation:flow 1.4s linear infinite;filter:drop-shadow(0 0 4px rgba(201,168,106,.5));}
+  @keyframes flow{to{stroke-dashoffset:-32;}}
+  .jnode-c{animation:pulse 2.6s ease-in-out infinite;transform-origin:center;}
+  @keyframes pulse{0%,100%{opacity:.6;}50%{opacity:1;}}
+  .jlabel{font-family:var(--display);font-size:11px;letter-spacing:.08em;font-weight:600;}
+  .joincopy h3{font-family:var(--display);font-weight:600;font-size:18px;margin-bottom:var(--s2);letter-spacing:.04em;text-transform:uppercase;}
+  .joincopy p{color:var(--mute);margin-bottom:var(--s3);font-size:14px;}
+  .joincopy .moat{font-size:13px;color:var(--bone);border-left:2px solid var(--gold);padding:var(--s2) 0 var(--s2) var(--s3);background:linear-gradient(90deg,rgba(201,168,106,.07),transparent);}
+
+  /* LENS CARDS */
+  .lensgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s3);}
+  @media(max-width:760px){ .lensgrid{grid-template-columns:1fr;} }
+  .lcard{border:1px solid var(--line);border-radius:4px;padding:var(--s4);background:var(--ink);transition:border-color .25s,transform .25s,box-shadow .25s;position:relative;overflow:hidden;}
+  .lcard:hover{border-color:var(--gold-dim);transform:translateY(-3px);box-shadow:0 24px 60px -30px rgba(201,168,106,.25);}
+  .lcard .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:var(--s2);}
+  .lcard .lh{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:.1em;text-transform:uppercase;}
+  .lcard p{color:var(--mute);font-size:13px;margin-bottom:var(--s3);min-height:40px;}
+  .lcard .stat{font-size:12px;color:var(--bone);}
+  .lcard .stat b{color:var(--gold);font-weight:600;}
+  .lcard a{font-size:12px;color:var(--aether);text-decoration:none;}
+  .lcard a:hover{text-decoration:underline;}
+  .status{font-size:10px;letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border-radius:2px;}
+  .status.live{color:var(--clean);border:1px solid rgba(95,179,148,.4);}
+  .status.live::before{content:"● ";}
+  .status.beta{color:var(--amber);border:1px solid rgba(217,162,58,.4);}
+  .status.soon{color:var(--faint);border:1px solid var(--line2);}
+
+  /* OPEN / MONETIZE */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:var(--s3);}
+  @media(max-width:760px){ .split{grid-template-columns:1fr;} }
+  .col{border:1px solid var(--line);border-radius:4px;padding:var(--s4);background:var(--ink);}
+  .col.open{border-color:rgba(95,179,148,.3);}
+  .col.paid{border-color:rgba(201,168,106,.3);}
+  .col .ch{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:var(--s3);}
+  .col .ch h3{font-family:var(--display);font-weight:600;font-size:17px;letter-spacing:.04em;text-transform:uppercase;}
+  .col .ch .tag{font-size:10px;letter-spacing:.14em;text-transform:uppercase;}
+  .col.open .tag{color:var(--clean);} .col.paid .tag{color:var(--gold);}
+  .col ul{list-style:none;}
+  .col li{font-size:13px;color:var(--mute);padding:var(--s1) 0;border-bottom:1px solid var(--line);display:flex;gap:var(--s2);}
+  .col li:last-child{border-bottom:none;}
+  .col li .m{color:var(--gold-dim);} .col li b{color:var(--bone);font-weight:600;}
+  .col .foot{font-size:12px;color:var(--faint);margin-top:var(--s3);}
+
+  /* PRICING */
+  .price{display:grid;grid-template-columns:1fr 1fr 1fr;gap:var(--s3);}
+  @media(max-width:760px){ .price{grid-template-columns:1fr;} }
+  .pcard{border:1px solid var(--line);border-radius:4px;padding:var(--s4);background:var(--ink);transition:transform .25s,box-shadow .25s,border-color .25s;}
+  .pcard:hover{transform:translateY(-3px);border-color:var(--gold-dim);box-shadow:0 24px 60px -30px rgba(201,168,106,.25);}
+  .pcard .who{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-dim);}
+  .pcard .amt{font-family:var(--display);font-weight:700;font-size:30px;margin:var(--s2) 0;color:var(--bone);}
+  .pcard .amt small{font-size:13px;font-weight:400;color:var(--mute);}
+  .pcard .desc{color:var(--mute);font-size:13px;line-height:1.55;}
+  .pcard .desc b{color:var(--bone);font-weight:600;}
+  .pcard .rail{font-size:11px;color:var(--faint);margin-top:var(--s3);padding-top:var(--s2);border-top:1px solid var(--line);}
+
+  /* MCP */
+  .mcp{display:flex;flex-direction:column;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:4px;overflow:hidden;}
+  .mcprow{display:grid;grid-template-columns:1fr auto auto;gap:var(--s3);align-items:center;background:var(--ink);padding:var(--s3) var(--s4);transition:background .2s;}
+  .mcprow:hover{background:var(--panel);}
+  @media(max-width:620px){ .mcprow{grid-template-columns:1fr;gap:var(--s1);} }
+  .mcprow .u{font-size:13px;color:var(--bone);}
+  .mcprow .d{font-size:12px;color:var(--mute);}
+  .mcprow .t{font-size:11px;color:var(--gold);white-space:nowrap;}
+
+  /* FOOTER */
+  footer{border-top:1px solid var(--line);padding:var(--s5) 0 var(--s6);margin-top:var(--s4);}
+  .foot-grid{display:flex;justify-content:space-between;flex-wrap:wrap;gap:var(--s4);align-items:flex-start;}
+  .foot-grid .fcol h4{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:var(--s2);}
+  .foot-grid .fcol a{display:block;font-size:13px;color:var(--mute);text-decoration:none;padding:3px 0;}
+  .foot-grid .fcol a:hover{color:var(--bone);}
+  .foot-grid .sign{max-width:30ch;}
+  .foot-grid .sign .name{font-family:var(--display);font-weight:600;font-size:16px;letter-spacing:.16em;color:var(--bone);}
+  .foot-grid .sign p{color:var(--faint);font-size:12px;margin-top:var(--s2);line-height:1.7;}
+
+  a.inline{color:var(--aether);text-decoration:none;border-bottom:1px solid rgba(106,147,214,.3);}
+  a.inline:hover{border-color:var(--aether);}
+
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease;}
+  .reveal.in{opacity:1;transform:none;}
+
+  @media(prefers-reduced-motion:reduce){
+    *,*::before,*::after{animation:none!important;}
+    .reveal{opacity:1;transform:none;transition:none;}
+    .lensrow,.verdict .vsub,.inst-bar .tier{opacity:1!important;transform:none!important;}
+    html{scroll-behavior:auto;}
+  }
+  :focus-visible{outline:2px solid var(--gold);outline-offset:3px;}
+</style>
+</head>
+<body>
+
+<div class="field" aria-hidden="true">
+  <div class="radar-sweep"></div>
+  <svg class="rings" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid meet"><circle cx="50" cy="50" r="18"/><circle cx="50" cy="50" r="30"/><circle cx="50" cy="50" r="42"/></svg>
+  <div class="geo geo-tl"><svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="0.6"><circle cx="100" cy="100" r="34"/><circle cx="100" cy="66" r="34"/><circle cx="100" cy="134" r="34"/><circle cx="71" cy="83" r="34"/><circle cx="129" cy="83" r="34"/><circle cx="71" cy="117" r="34"/><circle cx="129" cy="117" r="34"/></svg></div>
+  <div class="geo geo-br"><svg viewBox="0 0 200 200" fill="none" stroke="currentColor" stroke-width="0.5"><polygon points="100,20 169,140 31,140"/><polygon points="100,180 31,60 169,60"/><circle cx="100" cy="100" r="80"/><circle cx="100" cy="100" r="46"/></svg></div>
+  <div class="grid-drift"></div>
+</div>
+
+<header class="nav">
+  <a href="#" class="wordmark">
+    <svg class="sigil" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="3"><polygon points="50,8 88,72 12,72"/><polygon points="50,92 12,28 88,28"/><circle cx="50" cy="50" r="44"/></svg>
+    <span class="name">TUNNELMIND</span>
+  </a>
+  <nav class="navlinks">
+    <span class="live-badge"><span class="b"></span>radar live</span>
+    <a href="#join">The join</a>
+    <a href="#lenses">Lenses</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#agents">For agents</a>
+    <a href="https://data.tunnelmind.ai" class="cta">Run a check</a>
+  </nav>
+</header>
+
+<main class="wrap">
+
+  <section class="hero">
+    <p class="eyebrow">Trust attestation · the agentic internet</p>
+    <h1>Ask one question. Get a verdict <span class="qt">no single feed can return.</span></h1>
+    <p class="lede">The web is filling with traffic no human ever typed. TunnelMind resolves any IP, ASN, domain, or ad-tech entity through four correlated lenses and returns <strong>one signed verdict</strong> — every observation Ed25519-signed at the source, so the data proves where it came from.</p>
+
+    <div class="instrument reveal" id="inst">
+      <div class="inst-bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="q"><span class="term">POST</span> /v1/verify/<span class="ent" id="typed"></span><span class="caret" id="caret">▍</span></span>
+        <span class="tier" id="tier">attestation: software</span>
+      </div>
+      <div class="inst-body">
+        <div class="verdict">
+          <div class="vlabel">Fused verdict</div>
+          <div class="vmain">
+            <span class="word" id="verdictWord">·······</span>
+            <span class="ent">AS205100 · DE</span>
+          </div>
+          <p class="vsub" id="vsub">A hostile actor on a <b>routing-legitimate, RPKI-valid network.</b> Block the actor — the network itself is clean. Most feeds can't tell you both at once.</p>
+
+          <div class="lenses">
+            <div class="lensrow" data-i="0"><span class="lname scry">Scry</span><span class="lval"><b>tor_exit</b> · cred-stuffing · 4 feeds · 1,284 obs</span><span class="pill hostile">hostile</span></div>
+            <div class="lensrow" data-i="1"><span class="lname sigil">Sigil</span><span class="lval">no authorized-seller presence in any <b>sellers.json</b></span><span class="pill na">n/a</span></div>
+            <div class="lensrow" data-i="2"><span class="lname tracker">Tracker</span><span class="lval">no tracker-operator entity resolved</span><span class="pill beta">beta</span></div>
+            <div class="lensrow" data-i="3"><span class="lname ghost">GhostRoute</span><span class="lval">origin <b>AS205100</b> · RPKI <b>valid</b> · claim DE = egress DE</span><span class="pill clean">clean</span></div>
+          </div>
+        </div>
+
+        <div class="receipt">
+          <div class="rlabel">Signed receipt</div>
+<pre class="code"><span class="k">"entity"</span>:      <span class="s">"185.220.101.47"</span>,
+<span class="k">"verdict"</span>:     <span class="sig">"hostile"</span>,
+<span class="k">"tier"</span>:        <span class="s">"software"</span>,
+<span class="k">"scry"</span>:        { class:<span class="s">"tor_exit"</span>, obs:<span class="n">1284</span> },
+<span class="k">"sigil"</span>:       { seller:<span class="k">null</span> },
+<span class="k">"tracker"</span>:     { status:<span class="s">"beta"</span> },
+<span class="k">"ghostroute"</span>:  { rpki:<span class="s">"valid"</span>, claim:<span class="s">"DE"</span> },
+<span class="k">"sig"</span>:         <span class="sig">"ed25519:9f2c…b4e1"</span>,
+<span class="k">"ts"</span>:          <span class="s">"2026-06-25T14:02:11Z"</span></pre>
+          <div class="curl"><span class="p">$</span> curl -X POST <span class="u">https://data.tunnelmind.ai/v1/verify/185.220.101.47</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="join">
+    <div class="sechead"><h2>The moat is the join</h2><p>Any incumbent sells you one lens. None can compute the verdict where the lenses meet — that fused result is the product.</p></div>
+
+    <div class="counters">
+      <div class="counter reveal"><div class="num" data-to="306000" data-suffix="k" data-div="1000">0</div><div class="lbl">Scry observations</div></div>
+      <div class="counter reveal"><div class="num" data-to="1690000" data-suffix="M" data-div="1000000" data-dec="2">0</div><div class="lbl">Sigil seller links</div></div>
+      <div class="counter reveal"><div class="num" data-to="91" data-suffix="">0</div><div class="lbl">MCP tools live</div></div>
+      <div class="counter reveal"><div class="num" data-to="4" data-suffix="">0</div><div class="lbl">correlated lenses</div></div>
+    </div>
+
+    <div class="join">
+      <div class="joindiag reveal" aria-hidden="true">
+        <svg viewBox="0 0 400 400">
+          <path class="strand" d="M200,200 L200,56"/>
+          <path class="strand" d="M200,200 L324,272" style="animation-delay:.35s"/>
+          <path class="strand" d="M200,200 L76,272" style="animation-delay:.7s"/>
+          <path class="strand" d="M200,200 L200,344" style="animation-delay:1.05s"/>
+          <g stroke="#1A2233" stroke-width="1" fill="none"><polygon points="200,40 339,280 61,280"/><polygon points="200,360 61,120 339,120"/></g>
+          <g fill="#0E1422" stroke-width="1.6">
+            <circle class="jnode-c" cx="200" cy="56"  r="30" stroke="#E25A40"/>
+            <circle class="jnode-c" cx="324" cy="272" r="30" stroke="#C9A86A" style="animation-delay:.6s"/>
+            <circle class="jnode-c" cx="76"  cy="272" r="30" stroke="#6A93D6" style="animation-delay:1.2s"/>
+            <circle class="jnode-c" cx="200" cy="344" r="30" stroke="#D9A23A" style="animation-delay:1.8s"/>
+          </g>
+          <circle cx="200" cy="200" r="42" fill="#0B0F18" stroke="#C9A86A" stroke-width="1.6"/>
+          <circle cx="200" cy="200" r="42" fill="none" stroke="#C9A86A" stroke-width="1.6" opacity="0.5" class="jnode-c"/>
+          <text class="jlabel" x="200" y="197" text-anchor="middle" fill="#E9E5D8" style="font-size:12px">VERDICT</text>
+          <text class="jlabel" x="200" y="212" text-anchor="middle" fill="#79839A" style="font-size:9px">+ receipt</text>
+          <text class="jlabel" x="200" y="60"  text-anchor="middle" fill="#E25A40">SCRY</text>
+          <text class="jlabel" x="324" y="276" text-anchor="middle" fill="#C9A86A">SIGIL</text>
+          <text class="jlabel" x="76"  y="276" text-anchor="middle" fill="#6A93D6">GHOST</text>
+          <text class="jlabel" x="200" y="348" text-anchor="middle" fill="#D9A23A">TRACK</text>
+        </svg>
+      </div>
+      <div class="joincopy reveal">
+        <h3>One graph, four questions</h3>
+        <p>Who is attacking · who can be trusted to transact · who is watching · and where the traffic actually goes. One correlated graph, queried in a single call.</p>
+        <div class="moat">attack&nbsp;×&nbsp;trust&nbsp;×&nbsp;tracker&nbsp;×&nbsp;routing<br>= a verdict no siloed feed can produce.</div>
+        <p style="margin-top:21px">The hero is the proof: GreyNoise says the actor is hostile. An RPKI validator says the route is clean. <strong style="color:var(--bone);font-weight:500">Only the join knows they're the same entity — and what to do about it.</strong></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="lenses">
+    <div class="sechead"><h2>Four lenses</h2><p>Status shown straight. Two are live and queryable today; two are still being built — we won't pretend otherwise.</p></div>
+    <div class="lensgrid">
+      <div class="lcard reveal"><div class="top"><span class="lh scry">Scry</span><span class="status live">live</span></div><p>Signed observations of hostile network actors — IPs, ASNs, behaviors, threat-feed overlap, actor classification.</p><div class="stat">Familiar honeypots + Augur crawler · <b>306k+</b> observations</div><div class="stat" style="margin-top:8px"><a href="https://api.tunnelmind.ai">api.tunnelmind.ai →</a></div></div>
+      <div class="lcard reveal"><div class="top"><span class="lh sigil">Sigil</span><span class="status live">live</span></div><p>Programmatic-advertising supply-graph trust. Publishers, SSPs, DSPs, OpenRTB SupplyChain, entity trust scoring.</p><div class="stat">ads.txt / sellers.json · <b>1.69M</b> seller relationships</div><div class="stat" style="margin-top:8px"><a href="https://data.tunnelmind.ai">data.tunnelmind.ai →</a></div></div>
+      <div class="lcard reveal"><div class="top"><span class="lh ghost">GhostRoute</span><span class="status beta">beta</span></div><p>Routing integrity and sovereignty. Origin AS, RPKI validity, claimed vs. actual sovereign zone, first-party CT witnessing.</p><div class="stat">BGP / RPKI / certificate transparency</div><div class="stat" style="margin-top:8px"><a href="https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com">/v1/ghostroute/check →</a></div></div>
+      <div class="lcard reveal"><div class="top"><span class="lh tracker">Tracker</span><span class="status soon">scaffolded</span></div><p>The demand-side graph: who is watching whom on the open web. Recurring SDK fingerprints, tracker-operator entities.</p><div class="stat" style="color:var(--faint)">Schema live · ingestion in progress</div></div>
+    </div>
+  </section>
+
+  <section class="block" id="model">
+    <div class="sechead"><h2>Open the protocol, sell the node</h2><p>The format anyone can implement is free. The graph that's expensive to build is the business. Clean line, no bait.</p></div>
+    <div class="split">
+      <div class="col open reveal"><div class="ch"><h3>Open protocol</h3><span class="tag">free · open</span></div>
+        <ul><li><span class="m">▸</span><b>OAI</b> — free-to-resolve handle for every actor</li><li><span class="m">▸</span><b>ATAP</b> — capability tokens, witness chains, receipts</li><li><span class="m">▸</span><b>Receipt format</b> — the signed verdict envelope</li><li><span class="m">▸</span><b>Reference verifier + SDK</b></li></ul>
+        <p class="foot">Value = ubiquity. The more who verify, the stronger the standard.</p></div>
+      <div class="col paid reveal"><div class="ch"><h3>Monetized node</h3><span class="tag">metered</span></div>
+        <ul><li><span class="m">▸</span><b>Hosted /v1/verify</b> — the live fused graph</li><li><span class="m">▸</span><b>Graph data</b> — bulk, historical, deltas</li><li><span class="m">▸</span><b>Verticals</b> — ad-tech, threat, sovereignty feeds</li><li><span class="m">▸</span><b>SLA + private deployment</b></li></ul>
+        <p class="foot">Value = scarcity. The corpus is the moat; the format isn't.</p></div>
+    </div>
+  </section>
+
+  <section class="block" id="pricing">
+    <div class="sechead"><h2>Pricing</h2><p>Identifiers resolve free, forever. 50 checks/day free. Beyond that: machines pay per call, humans buy keys.</p></div>
+    <div class="price">
+      <div class="pcard reveal"><div class="who">Free tier</div><div class="amt">50<small> / day</small></div><p class="desc">Every OAI resolves free, forever. The radar sample is public. <b>50 Data-API checks a day</b>, no account.</p><div class="rail">rail · open · no key</div></div>
+      <div class="pcard reveal" style="border-color:var(--gold-dim)"><div class="who">For agents</div><div class="amt">x402<small> · USDC</small></div><p class="desc">Pay-per-call <b>stablecoin micropayments</b>. No account, settles inline over HTTP 402. Per-endpoint pricing in the OpenAPI extension.</p><div class="rail">rail · x402 · machine-native</div></div>
+      <div class="pcard reveal"><div class="who">For humans</div><div class="amt">Stripe<small> · key</small></div><p class="desc">API key via Stripe for depth and scale. No subscription trap — buy capacity, top up when you run out.</p><div class="rail">rail · Stripe · hello@tunnelmind.ai</div></div>
+    </div>
+  </section>
+
+  <section class="block" id="agents">
+    <div class="sechead"><h2>For autonomous agents</h2><p>Streamable HTTP, JSON-RPC 2.0, all three listed in the official MCP registry. Point your agent and go.</p></div>
+    <div class="mcp">
+      <div class="mcprow reveal"><span class="u">mcp-data.tunnelmind.ai/mcp</span><span class="d">ai.tunnelmind/data</span><span class="t">67 tools</span></div>
+      <div class="mcprow reveal"><span class="u">mcp.tunnelmind.ai/mcp</span><span class="d">ai.tunnelmind/scry</span><span class="t">12 tools</span></div>
+      <div class="mcprow reveal"><span class="u">mcp.sigil.tunnelmind.ai/mcp</span><span class="d">ai.tunnelmind/sigil</span><span class="t">12 tools</span></div>
+    </div>
+    <p style="font-size:12px;color:var(--mute);margin-top:21px">Discovery · <a class="inline" href="/.well-known/ai-services.json">ai-services.json</a> · <a class="inline" href="/agent-onboarding.md">agent-onboarding.md</a> · <a class="inline" href="/llms.txt">llms.txt</a></p>
+  </section>
+
+  <section class="block" id="standards">
+    <div class="sechead"><h2>Standards we edit</h2><p>Attestation only works if it's open. We publish the specs the verdicts are built on — citation-grade, free.</p></div>
+    <div class="lensgrid">
+      <div class="lcard reveal"><div class="top"><span class="lh" style="color:var(--gold)">OAI</span><span class="status live">v1.0</span></div><p>Observed Actor Identifier — a permanent, free-to-resolve handle for every actor on the network. A resolver, never an identity issuer.</p><div class="stat"><a href="https://tunnelmind.ai/oai/standard">Read the spec →</a></div></div>
+      <div class="lcard reveal"><div class="top"><span class="lh" style="color:var(--aether)">ATAP</span><span class="status beta">v0.1</span></div><p>Agent Trust Attestation Protocol — tiers a verdict's attestation: self-asserted → software → tee-tpm → silicon-root. Public comment through 2026-08-12.</p><div class="stat"><a href="https://tunnelmind.ai/atap/standard">Read the spec →</a> · <a href="https://tunnelmind.ai/atap/profiles">profiles</a></div></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap"><div class="foot-grid">
+    <div class="sign"><div class="name">TUNNELMIND</div><p>The internet has no memory.<br>We're building one — signed, open, attested.<br><br>Single operator · no VC · no board<br>Cabot, Arkansas · est. 2026</p></div>
+    <div class="fcol"><h4>Product</h4><a href="#join">The join</a><a href="#lenses">Lenses</a><a href="#pricing">Pricing</a><a href="https://data.tunnelmind.ai">Run a check</a></div>
+    <div class="fcol"><h4>Build</h4><a href="#agents">MCP servers</a><a href="/agent-onboarding.md">Agent onboarding</a><a href="/llms.txt">llms.txt</a><a href="https://github.com/TunnelMind">GitHub</a></div>
+    <div class="fcol"><h4>Resolve</h4><a href="https://api.tunnelmind.ai">api · Scry</a><a href="https://data.tunnelmind.ai">data · fused verdict</a><a href="mailto:agents@tunnelmind.ai">agents@tunnelmind.ai</a></div>
+  </div></div>
+</footer>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // scroll reveal
+  var io = new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }});
+  },{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+
+  // count-up
+  function countUp(el){
+    var to=+el.dataset.to, div=+(el.dataset.div||1), dec=+(el.dataset.dec||0), suf=el.dataset.suffix||'';
+    if(reduce){ el.textContent=(to/div).toFixed(dec)+suf; return; }
+    var start=performance.now(), dur=1400;
+    function step(t){
+      var p=Math.min((t-start)/dur,1), e=1-Math.pow(1-p,3), v=(to*e)/div;
+      el.textContent=v.toFixed(dec)+(p<1?'':suf);
+      if(p<1) requestAnimationFrame(step); else el.textContent=(to/div).toFixed(dec)+suf;
+    }
+    requestAnimationFrame(step);
+  }
+  var cio=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ countUp(e.target.querySelector('.num')); cio.unobserve(e.target); }});
+  },{threshold:0.5});
+  document.querySelectorAll('.counter').forEach(function(c){ cio.observe(c); });
+
+  // hero sequence: type IP -> scramble verdict -> reveal lenses
+  var typed=document.getElementById('typed');
+  var caret=document.getElementById('caret');
+  var word=document.getElementById('verdictWord');
+  var rows=document.querySelectorAll('.lensrow');
+  var tier=document.getElementById('tier');
+  var vsub=document.getElementById('vsub');
+  var target="185.220.101.47";
+
+  function showAllStatic(){
+    typed.textContent=target; word.textContent="HOSTILE";
+    rows.forEach(function(r){ r.classList.add('on'); });
+    tier.classList.add('on'); vsub.classList.add('on');
+  }
+
+  if(reduce){ caret.style.display='none'; showAllStatic(); return; }
+
+  var chars="ABCDEF0123456789·#@%";
+  function scramble(el,final,done){
+    var frames=18,f=0;
+    var iv=setInterval(function(){
+      var out='';
+      for(var i=0;i<final.length;i++){
+        out += (i < final.length*(f/frames)) ? final[i] : chars[Math.floor(Math.random()*chars.length)];
+      }
+      el.textContent=out; f++;
+      if(f>frames){ clearInterval(iv); el.textContent=final; if(done)done(); }
+    },45);
+  }
+
+  function runHero(){
+    var i=0;
+    (function type(){
+      if(i<=target.length){ typed.textContent=target.slice(0,i); i++; setTimeout(type,55); }
+      else {
+        // resolving flash
+        word.classList.add('scrambling');
+        var dots=0, rv=setInterval(function(){ word.textContent='RESOLVING'+'.'.repeat(dots%4); dots++; },180);
+        setTimeout(function(){
+          clearInterval(rv);
+          scramble(word,"HOSTILE",function(){ word.classList.remove('scrambling'); vsub.classList.add('on'); });
+          tier.classList.add('on');
+          rows.forEach(function(r,idx){ setTimeout(function(){ r.classList.add('on'); }, 200+idx*180); });
+        },1100);
+      }
+    })();
+  }
+
+  // start when instrument enters view
+  var hio=new IntersectionObserver(function(es){
+    es.forEach(function(e){ if(e.isIntersecting){ runHero(); hio.unobserve(e.target); }});
+  },{threshold:0.3});
+  hio.observe(document.getElementById('inst'));
+})();
+</script>
+</body>
+</html>

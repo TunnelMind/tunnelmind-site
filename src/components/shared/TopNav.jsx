@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 
 const NAV_ITEMS = {
   tunnelmind: [
+    { label: 'Radar',        page: 'radar' },
     { label: 'Tools',        page: 'tools' },
     { label: 'Lenses',       page: 'glassbox' },
     { label: 'API',          page: 'api' },

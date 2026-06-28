@@ -3,6 +3,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 import TopNav from './components/shared/TopNav.jsx'
 import Footer from './components/shared/Footer.jsx'
 
+import Home from './pages/Home.jsx'
 import Radar from './pages/Radar.jsx'
 import Landing from './pages/Landing.jsx'
 import Tools from './pages/Tools.jsx'
@@ -28,7 +29,7 @@ import Glassbox from './pages/Glassbox.jsx'
 // inbound links keep working.
 
 const KNOWN_PAGES = new Set([
-  'landing','vision','tools','api','skills','whitepapers','about','pricing','products','roadmap','compare',
+  'landing','radar','vision','tools','api','skills','whitepapers','about','pricing','products','roadmap','compare',
   'privacy','terms','law-enforcement','abuse','transparency','account-risk',
   'glassbox',
 ])
@@ -77,7 +78,8 @@ export default function App() {
   }, [])
 
   const pageComponent = {
-    landing:      <Radar onNavigate={handleNavigate} />,
+    landing:      <Home onNavigate={handleNavigate} />,
+    radar:        <Radar onNavigate={handleNavigate} />,
     vision:       <Landing onNavigate={handleNavigate} />,
     tools:        <Tools onNavigate={handleNavigate} />,
     api:          <Api onNavigate={handleNavigate} />,

@@ -96,7 +96,10 @@ function HeroInstrument() {
     let alive = true
     fetch(`/api/verify/${encodeURIComponent(DEMO_NODE)}`, { headers: { Accept: 'application/json' } })
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (alive && d && d.cross_lens) setResult(d) })
+      // Keep the genuine captured receipt if the live response is a GhostRoute-
+      // pending partial (those omit the receipt) — it's a real receipt for this
+      // same IP+verdict, so the signed-receipt block never goes blank.
+      .then((d) => { if (alive && d && d.cross_lens) setResult({ ...d, receipt: d.receipt || SEED.receipt }) })
       .catch(() => { /* keep the real captured seed */ })
     return () => { alive = false }
   }, [])

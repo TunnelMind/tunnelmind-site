@@ -18,11 +18,12 @@ const SEED = {
   node: { type: 'ip', value: '93.123.72.183', ip_version: 4 },
   scry: { available: true, category: 'actor', observed: true, observation_count: 852, actor_class: 'unknown', asn: '206264', country: 'SC' },
   sigil: { available: true, in_supply_graph: false, reason: 'sigil_does_not_index_by_ip_v1' },
-  ghostroute: { available: false, reason: 'ghostroute_pending' },
+  ghostroute: { available: true, origin_as: 'AS206264', origin_asn_name: 'AMARUTU-TECHNOLOGY - Amarutu Technology Ltd, SC', rpki_status: 'VALID', sanctions_match: false, is_ai_infrastructure: false },
+  tracker: { available: false, reason: 'tracker_does_not_index_by_ip' },
   cross_lens: {
     verdict: 'warn',
-    trust_score: 0.6154,
-    confidence: 0.8,
+    trust_score: 0.6824,
+    confidence: 0.94,
     adversary_class: { classification: 'human_hacker' },
   },
   receipt: {
@@ -60,7 +61,18 @@ function lensRows(r) {
       ? { val: 'present in the ad supply graph', pill: 'in graph', tone: 'clean' }
       : { val: 'not indexed by IP (domains/entities only)', pill: 'n/a', tone: 'na' }
 
-  const trackerRow = { val: 'no tracker-operator entity resolved', pill: 'beta', tone: 'beta' }
+  const tr = r.tracker || {}
+  const trEntity = tr.entity || (tr.domain && tr.domain.entity) || null
+  const trackerRow = !tr.available
+    ? (tr.reason === 'tracker_does_not_index_by_ip' || tr.reason === 'tracker_does_not_index_asn'
+        ? { val: 'not indexed by IP/ASN (domains/entities only)', pill: 'n/a', tone: 'na' }
+        : { val: 'no tracker-operator data', pill: 'n/a', tone: 'na' })
+    : tr.in_tracker_corpus
+      ? { val: trEntity
+            ? `${trEntity.name || trEntity.slug}${trEntity.industry ? ` · ${trEntity.industry}` : ''}`
+            : (tr.domain ? `${tr.domain.category || 'tracker'} · prevalence ${tr.domain.prevalence != null ? tr.domain.prevalence.toFixed(2) : '—'}` : 'in tracker corpus'),
+          pill: 'in corpus', tone: 'hostile' }
+      : { val: 'resolved, not a known tracker', pill: 'clean', tone: 'clean' }
 
   const grRow = (gr.reason === 'ghostroute_pending' || !gr.available)
     ? { val: 'RPKI / sovereignty still resolving', pill: 'warming', tone: 'beta' }
@@ -168,7 +180,7 @@ function HeroInstrument() {
             <span className="hm-vent">{result.scry && result.scry.asn ? `AS${result.scry.asn}` : SEED.node.value} · {(result.scry && result.scry.country) || 'SC'}</span>
           </div>
           <p className={`hm-vsub ${resolved ? 'on' : ''}`}>
-            A <b>live, signed verdict</b> on a genuinely-observed attacker — Scry has it in the corpus; routing analysis (GhostRoute) is still warming. One call returns the fused answer <b>and</b> a receipt you can verify offline.
+            A <b>live, signed verdict</b> on a genuinely-observed attacker — Scry has it in the corpus and GhostRoute resolves the origin route. One call returns the fused answer across every lens <b>and</b> a receipt you can verify offline.
           </p>
           <div className="hm-lenses">
             {rows.map((row, i) => (
@@ -188,8 +200,10 @@ function HeroInstrument() {
 <span className="hm-k">"tier"</span>:        <span className="hm-s">"{rcpt.attestation_strength || 'software'}"</span>,
 <span className="hm-k">"scry"</span>:        {'{'} obs:<span className="hm-n">{result.scry && result.scry.observation_count != null ? result.scry.observation_count : 0}</span>, class:<span className="hm-s">"{(cl.adversary_class && cl.adversary_class.classification) || 'unknown'}"</span> {'}'},
 <span className="hm-k">"sigil"</span>:       {'{'} indexed:<span className="hm-k">false</span> {'}'},
-<span className="hm-k">"ghostroute"</span>:  {'{'} status:<span className="hm-s">"warming"</span> {'}'},
-<span className="hm-k">"trust"</span>:       <span className="hm-n">{typeof cl.trust_score === 'number' ? cl.trust_score.toFixed(4) : '0.6154'}</span>,
+<span className="hm-k">"ghostroute"</span>:  {result.ghostroute && result.ghostroute.available
+  ? <>{'{'} as:<span className="hm-s">"{result.ghostroute.origin_as || '—'}"</span>, rpki:<span className="hm-s">"{(result.ghostroute.rpki_status || 'unknown').toLowerCase()}"</span> {'}'}</>
+  : <>{'{'} status:<span className="hm-s">"warming"</span> {'}'}</>},
+<span className="hm-k">"trust"</span>:       <span className="hm-n">{typeof cl.trust_score === 'number' ? cl.trust_score.toFixed(4) : '0.6824'}</span>,
 <span className="hm-k">"sig"</span>:         <span className="hm-sig">"{sigShort}"</span>,
 <span className="hm-k">"ts"</span>:          <span className="hm-s">"{rcpt.timestamp || SEED.receipt.timestamp}"</span>
           </pre>

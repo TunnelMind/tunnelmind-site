@@ -280,24 +280,29 @@ export default function Home({ onNavigate }) {
           <div className="hm-join">
             <div className="hm-joindiag" aria-hidden="true">
               <svg viewBox="0 0 400 400">
+                {/* Four lenses at the points of a diamond — four sides, four lenses —
+                    each one's evidence converging on the verdict at the centre. */}
+                <g stroke="#1A2233" strokeWidth="1" fill="none">
+                  <polygon points="200,56 344,200 200,344 56,200" />
+                  <polygon points="200,114 286,200 200,286 114,200" />
+                </g>
                 <path className="hm-strand" d="M200,200 L200,56" />
-                <path className="hm-strand" d="M200,200 L324,272" style={{ animationDelay: '.35s' }} />
-                <path className="hm-strand" d="M200,200 L76,272" style={{ animationDelay: '.7s' }} />
-                <path className="hm-strand" d="M200,200 L200,344" style={{ animationDelay: '1.05s' }} />
-                <g stroke="#1A2233" strokeWidth="1" fill="none"><polygon points="200,40 339,280 61,280" /><polygon points="200,360 61,120 339,120" /></g>
+                <path className="hm-strand" d="M200,200 L344,200" style={{ animationDelay: '.35s' }} />
+                <path className="hm-strand" d="M200,200 L200,344" style={{ animationDelay: '.7s' }} />
+                <path className="hm-strand" d="M200,200 L56,200" style={{ animationDelay: '1.05s' }} />
                 <g fill="#0E1422" strokeWidth="1.6">
                   <circle className="hm-jnode" cx="200" cy="56" r="30" stroke="#E25A40" />
-                  <circle className="hm-jnode" cx="324" cy="272" r="30" stroke="#C9A86A" style={{ animationDelay: '.6s' }} />
-                  <circle className="hm-jnode" cx="76" cy="272" r="30" stroke="#6A93D6" style={{ animationDelay: '1.2s' }} />
-                  <circle className="hm-jnode" cx="200" cy="344" r="30" stroke="#D9A23A" style={{ animationDelay: '1.8s' }} />
+                  <circle className="hm-jnode" cx="344" cy="200" r="30" stroke="#C9A86A" style={{ animationDelay: '.6s' }} />
+                  <circle className="hm-jnode" cx="200" cy="344" r="30" stroke="#D9A23A" style={{ animationDelay: '1.2s' }} />
+                  <circle className="hm-jnode" cx="56" cy="200" r="30" stroke="#6A93D6" style={{ animationDelay: '1.8s' }} />
                 </g>
                 <circle cx="200" cy="200" r="42" fill="#0B0F18" stroke="#C9A86A" strokeWidth="1.6" />
                 <text className="hm-jlabel" x="200" y="197" textAnchor="middle" fill="#E9E5D8" style={{ fontSize: '12px' }}>VERDICT</text>
                 <text className="hm-jlabel" x="200" y="212" textAnchor="middle" fill="#79839A" style={{ fontSize: '9px' }}>+ receipt</text>
                 <text className="hm-jlabel" x="200" y="60" textAnchor="middle" fill="#E25A40">SCRY</text>
-                <text className="hm-jlabel" x="324" y="276" textAnchor="middle" fill="#C9A86A">SIGIL</text>
-                <text className="hm-jlabel" x="76" y="276" textAnchor="middle" fill="#6A93D6">GHOST</text>
+                <text className="hm-jlabel" x="344" y="204" textAnchor="middle" fill="#C9A86A">SIGIL</text>
                 <text className="hm-jlabel" x="200" y="348" textAnchor="middle" fill="#D9A23A">TRACK</text>
+                <text className="hm-jlabel" x="56" y="204" textAnchor="middle" fill="#6A93D6">GHOST</text>
               </svg>
             </div>
             <div className="hm-joincopy">

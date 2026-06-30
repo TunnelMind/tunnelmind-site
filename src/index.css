@@ -666,6 +666,81 @@ a:hover {
   border-color: var(--accent-blue);
   font-weight: 600;
 }
+/* witnessed-measurement axis (ADR-009) — verified-tier conduct from our own
+   signed fleet; the part a commodity lookup can't return */
+.tm-vv-measure {
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--accent-green-dim);
+  border-radius: 6px;
+  background: var(--accent-green-faint);
+}
+.tm-vv-measure-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--chrome-text-bright);
+}
+.tm-vv-measure-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-green);
+}
+.tm-vv-measure-tier {
+  margin-left: auto;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--accent-green);
+}
+.tm-vv-measure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(108px, 1fr));
+  gap: 8px;
+  margin-top: 10px;
+}
+.tm-vv-measure-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.tm-vv-measure-cell.is-mono { grid-column: 1 / -1; }
+.tm-vv-measure-val {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--chrome-text-bright);
+}
+.tm-vv-measure-cell.is-mono .tm-vv-measure-val {
+  font-size: 12px;
+  word-break: break-all;
+  color: var(--accent-green);
+}
+.tm-vv-measure-k {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--chrome-text-dim);
+}
+.tm-vv-measure-note {
+  font-family: var(--font-serif);
+  font-size: 10.5px;
+  line-height: 1.35;
+  color: var(--doc-text-dim);
+}
+.tm-vv-measure-foot {
+  margin: 10px 0 0;
+  font-family: var(--font-serif);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--doc-text-dim);
+}
+.tm-vv-measure-foot strong { color: var(--chrome-text-bright); }
 /* the curl that replays this exact verdict — flash next to hard, runnable data */
 .tm-vv-curl {
   margin-top: 10px;

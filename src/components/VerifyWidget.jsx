@@ -55,7 +55,10 @@ const SEED = {
 // A couple of warm, curated examples so a curious visitor gets an instant
 // second data point without typing — and so the convergence reads as "this
 // works on anything," not one cherry-picked host.
-const EXAMPLES = ['api.anthropic.com', '8.8.8.8', 'openai.com']
+// The last example is a real scanner IP our fleet has observed from all five
+// vantages — clicking it reveals the witnessed-measurement panel (the others are
+// a domain / clean IPs with no first-party observation, so the panel stays hidden).
+const EXAMPLES = ['api.anthropic.com', 'openai.com', '8.8.8.8', '45.198.224.92']
 
 // ── Map a verify result into four lens rows ───────────────────────────────
 // Verify returns scry / sigil / ghostroute blocks plus a cross_lens verdict
@@ -194,6 +197,56 @@ function TierLadder({ tier }) {
           {t}
         </span>
       ))}
+    </div>
+  )
+}
+
+// The witnessed-measurement axis (ADR-009) — the verified-tier conduct our own
+// signed sensor fleet captured for an observed node: how many distinct signed
+// vantages saw it (an un-fakeable device-count), observation breadth, connection
+// durations, and the JA4 client fingerprint when a TLS probe was seen. This is
+// the part a lookup can never return — measurement we witnessed and signed, not
+// modelled. Hidden for domains / unobserved IPs (honest absence), so it only
+// lights up when ip_intel.measurement is actually present.
+function MeasurementPanel({ measurement }) {
+  if (!measurement) return null
+  const v = (f) => (f && f.value != null ? f.value : null)
+  const vantages = v(measurement.distinct_vantages)
+  const obs      = v(measurement.observation_count)
+  const ports    = v(measurement.distinct_dest_ports)
+  const avg      = v(measurement.avg_duration_ms)
+  const max      = v(measurement.max_duration_ms)
+  const ja4List  = v(measurement.ja4_fingerprints)
+  const ja4      = Array.isArray(ja4List) && ja4List.length ? ja4List[0] : null
+
+  const cells = []
+  if (vantages != null) cells.push({ k: 'signed vantages', val: vantages, note: 'distinct sensors — an un-fakeable device-count' })
+  if (obs != null)      cells.push({ k: 'observations',    val: obs.toLocaleString() })
+  if (ports != null)    cells.push({ k: 'ports probed',    val: ports })
+  if (avg != null)      cells.push({ k: 'duration',        val: max != null ? `${avg}–${max} ms` : `${avg} ms` })
+  // JA4 only when the fleet actually captured a TLS ClientHello for this host.
+  if (ja4)              cells.push({ k: 'JA4 fingerprint', val: ja4, mono: true })
+  if (!cells.length) return null
+
+  return (
+    <div className="tm-vv-measure">
+      <div className="tm-vv-measure-head">
+        <span className="tm-vv-measure-dot" aria-hidden="true" />
+        Witnessed measurement
+        <span className="tm-vv-measure-tier">verified · our signed fleet</span>
+      </div>
+      <div className="tm-vv-measure-grid">
+        {cells.map((c) => (
+          <div key={c.k} className={`tm-vv-measure-cell${c.mono ? ' is-mono' : ''}`}>
+            <span className="tm-vv-measure-val">{c.val}</span>
+            <span className="tm-vv-measure-k">{c.k}</span>
+            {c.note && <span className="tm-vv-measure-note">{c.note}</span>}
+          </div>
+        ))}
+      </div>
+      <p className="tm-vv-measure-foot">
+        Conduct we <strong>witnessed and signed</strong> — measurement a commodity IP lookup can model but cannot prove.
+      </p>
     </div>
   )
 }
@@ -415,6 +468,8 @@ export default function VerifyWidget({ onNavigate }) {
           {result.receipt && result.receipt.attestation_strength && (
             <TierLadder tier={result.receipt.attestation_strength} />
           )}
+          {/* The witnessed-measurement axis — only present for an observed node. */}
+          <MeasurementPanel measurement={result.ip_intel && result.ip_intel.measurement} />
           <div className="tm-vv-curl" aria-label="Replay this verdict yourself">
             <code>curl https://data.tunnelmind.ai/v1/verify/{(result.node && result.node.value) || host}</code>
           </div>

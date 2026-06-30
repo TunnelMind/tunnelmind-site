@@ -86,6 +86,9 @@ export async function onRequestGet(context) {
   // intact rather than being trimmed to a boolean.
   const payload = {
     node:             d.node              ?? { value: node },
+    // The provenance-tagged base record — the widget draws its verified-tier
+    // measurement axis (witnessed conduct no commodity vendor can sign).
+    ip_intel:         d.ip_intel          ?? null,
     scry:             d.scry              ?? null,
     sigil:            d.sigil             ?? null,
     ghostroute:       d.ghostroute        ?? null,

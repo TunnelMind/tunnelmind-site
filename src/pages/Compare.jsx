@@ -252,7 +252,7 @@ export default function Compare() {
             <li><strong style={bright}>Sigil supply graph</strong> — {seats} exchange seats and {sellPaths} sell-path edges across {entities} entities, derived from sellers.json / ads.txt / OpenRTB and re-crawled weekly; more than half of seats resolve to a named owner.</li>
             <li><strong style={bright}>Augur</strong> — eight live threat feeds (URLhaus, ThreatFox, Tor, Spamhaus DROP, Feodo, certificate transparency, and more).</li>
             <li><strong style={bright}>GhostRoute</strong> — first-party RPKI (our own validator, not a resold feed) plus tamper-evident certificate-transparency witnessing.</li>
-            <li><strong style={bright}>Scry fleet</strong> — Familiar sensors signing observations at the edge.</li>
+            <li><strong style={bright}>Scry fleet</strong> — Familiar sensors signing observations at the edge. Those signed observations surface on every verify as a <em>verified-tier</em> measurement axis — observation breadth, the count of distinct signed vantages that witnessed an actor (an un-fakeable device-count), connection durations — witnessed conduct a commodity vendor can model but cannot sign.</li>
           </ul>
           <p style={{
             fontFamily: 'var(--font-mono)', fontSize: '10px',

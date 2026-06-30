@@ -127,7 +127,7 @@ const DATA_GROUPS = [
     name: 'Cross-lens & agent decisions',
     desc: 'The moat: one verdict over all the lenses, plus the calls an agent makes before it acts.',
     endpoints: [
-      ['POST', '/v1/verify/{node}', 'Fused Scry × Sigil × GhostRoute verdict for an IP, domain, ASN, or entity — naming the adversary_class behind it (human_hacker / rogue_agent / surveillance_bigtech / clean) and flagging routing/sovereignty mismatches.'],
+      ['POST', '/v1/verify/{node}', 'Fused Scry × Sigil × GhostRoute verdict for an IP, domain, ASN, or entity, over a base ip_intel record (geo / ASN / WHOIS / routing) whose every field is provenance-tagged verified/derived/trusted — including a verified-tier measurement axis (observation breadth, distinct signed vantages, durations) from our own fleet that a commodity vendor cannot sign — naming the adversary_class behind it (human_hacker / rogue_agent / surveillance_bigtech / clean) and flagging routing/sovereignty mismatches.'],
       ['POST', '/v1/preflight', 'Agent-facing "should I act?" consultation — allow / caution / deny + a signed consultation receipt.'],
       ['POST', '/v1/profile', 'Cross-lens fused profile (Scry × Sigil × Tracker × GhostRoute) + confidence + signed receipt.'],
       ['GET', '/v1/entity/{node}', 'Fan-out lookup of a node across all four lenses — no fusion, the raw join.'],

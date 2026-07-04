@@ -8,7 +8,7 @@
 // /REDACTION-LIST.md; the full discovery map in /GLASSBOX-MANIFEST.md (published).
 //
 // Build-states are determined by inspection (§0.2), not assumed:
-//   scry LIVE · sigil LIVE · tracker PARTIAL · ghostroute LIVE.
+//   scry LIVE · sigil LIVE · tracker LIVE · ghostroute LIVE.
 
 import { ATTESTATION_TIERS } from './facts.js'
 
@@ -143,29 +143,30 @@ export function parseAdsTxt(raw) {
     key: 'tracker',
     name: 'Tracker',
     accent: 'purple',
-    buildState: 'PARTIAL',
+    buildState: 'LIVE',
     watches: 'The demand-side graph of who watches whom on the open web.',
-    // Honest PARTIAL: tables + counts + cross-lens join + inspector tab are real;
-    // there is NO Tracker-owned verify/receipt route. The receipt node renders as
-    // blueprint line-art, not a working path (§0.2).
+    // LIVE since 2026-07-04: GET /v1/tracker/verify/{node} is the Tracker-owned
+    // verify + Receipt v1.0 route (was the missing piece behind the old PARTIAL).
     pipeline: [
       { stage: 'SOURCE',    label: 'tracker disclosure + crawl', lang: 'HTTP' },
       { stage: 'COLLECT',   label: 'ingest → tracker_entities', lang: 'Node' },
       { stage: 'NORMALIZE', label: 'entity-resolution.js', lang: 'Node' },
       { stage: 'STORE',     label: 'Supabase — tracker_entities · entity_domain', lang: 'SQL' },
-      { stage: 'VERIFY',    label: 'cross-lens fuse only', lang: 'Node' },
-      { stage: 'SERVE',     label: '/api/corpus/tracker · POST /v1/verify', lang: 'HTTP', blueprint: true },
+      { stage: 'VERIFY',    label: 'tracker-verify.js → signed Receipt v1.0', lang: 'Node' },
+      { stage: 'SERVE',     label: 'GET /v1/tracker/verify/{node} · POST /v1/verify', lang: 'HTTP' },
     ],
     specimens: [
       {
-        path: 'tunnelmind-data-api/api/routes/cross-lens-verify.js',
-        lang: 'JavaScript', lines: '1–16',
-        code: `// A2 — Cross-lens verification (Scry × Sigil × GhostRoute).
-//   POST /v1/verify/{node}
-// Fuses the lenses into one verdict for an IP, domain, ASN, or entity_slug.
-// Returns each single-lens block separately for transparency AND a fused
-// \`cross_lens\` block — the fused block is the moat (no siloed competitor
-// owns all the halves). Fusion: weighted-mean + co_observation_bonus.`,
+        path: 'tunnelmind-data-api/api/routes/tracker-verify.js',
+        lang: 'JavaScript', lines: '1–18',
+        code: `// Tracker lens-owned verify — the per-node verdict + receipt surface that
+// makes Tracker a full lens beside Scry (/v1/check), Sigil (/v1/sigil/verify/*)
+// and GhostRoute.
+//   GET /v1/tracker/verify/{node}[?receipt=true]
+// The answer is the raw corpus record, not an invented tier: \`tracking\` is
+// true/false/null plus the normalized DDG/IAB/Disconnect lens block.
+// Tracker is domain/entity-indexed: ip and asn nodes honestly return
+// tracking:null with a reason, never a fabricated miss.`,
       },
     ],
     schema: {
@@ -180,7 +181,7 @@ export function parseAdsTxt(raw) {
       ],
     },
     metric: { label: 'tracker entities', path: ['tracker', 'entities'], fmt: 'int' },
-    curl: 'curl https://tunnelmind.ai/api/corpus/tracker/doubleclick.net',
+    curl: 'curl "https://data.tunnelmind.ai/v1/tracker/verify/doubleclick.net?receipt=true"',
   },
 
   {

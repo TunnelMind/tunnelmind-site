@@ -54,12 +54,12 @@ deliberately reverted 2026-06-04. Operator confirmed: keep the shipped system.
 - **Headline metric:** `/v1/stats` `.sigil` (publishers / SSPs / DSPs / sell paths / seats).
 - **Specimen targets:** ads.txt/sellers.json parse excerpt from `sigil-crawler`; entity-scoring excerpt from data-api.
 
-### Tracker — build-state: **PARTIAL**
+### Tracker — build-state: **LIVE** (upgraded from PARTIAL 2026-07-04)
 - **Watches:** the demand-side graph of who watches whom on the open web.
-- **Why PARTIAL (honest label):** tables + counts + cross-lens join + a corpus inspector tab exist, but there is **no** dedicated `routes/tracker.js`, no Tracker-owned signed-receipt verify route. It is served *through* stats + cross-lens + the corpus proxy.
+- **Why LIVE now:** the previously missing Tracker-owned signed-receipt verify route exists and is deployed: `GET /v1/tracker/verify/{node}[?receipt=true]` (`data-api/api/routes/tracker-verify.js`) — per-node verdict over the DDG/IAB/Disconnect corpus, `tracking` true/false/null (ip/asn honestly null), optional Ed25519 Receipt v1.0 verifiable offline with `@tunnelmindai/receipt-verify`.
 - **Tables:** `tracker_entities`, `entity_domain` (slug-keyed, counted in `/v1/stats` `.tracker`).
-- **Serve paths:** site `/api/corpus/tracker/[domain]`; `data-api/api/routes/cross-lens-verify.js`, `cross-lens-entity.js`.
-- **Render:** STORE→VERIFY→SERVE shown live; a Tracker-owned receipt path shown as **blueprint line-art** (does not exist yet).
+- **Serve paths:** `data-api/api/routes/tracker-verify.js` (lens-owned); site `/api/corpus/tracker/[domain]`; `cross-lens-verify.js`, `cross-lens-entity.js`. **MCP:** `tracker_verify`.
+- **Render:** full SOURCE→SERVE pipeline shown live; no blueprint nodes remain.
 - **Headline metric:** `/v1/stats` `.tracker` (entities / domains).
 
 ### GhostRoute — build-state: **LIVE**
@@ -86,7 +86,7 @@ trigger collection from the public page:
 
 ## Build-state legend rendered on site (§0.2)
 - LIVE = real data through a real route. PARTIAL = part real, part blueprint. SCAFFOLDED = types/tables only.
-- Scry LIVE · Sigil LIVE · Tracker PARTIAL · GhostRoute LIVE.
+- Scry LIVE · Sigil LIVE · Tracker LIVE (2026-07-04) · GhostRoute LIVE.
 
 ## Open / monetize split honored (§0.4)
 - Open in full: receipt JCS format, verification logic, normalization/transform code, schemas (columns+types), endpoint shapes, languages, architecture.

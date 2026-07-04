@@ -22,6 +22,7 @@ import AbusePolicy from './pages/legal/AbusePolicy.jsx'
 import TransparencyReport from './pages/legal/TransparencyReport.jsx'
 import AccountRiskDisclosure from './pages/legal/AccountRiskDisclosure.jsx'
 import Glassbox from './pages/Glassbox.jsx'
+import Agents from './pages/Agents.jsx'
 
 // ── History Router (clean URLs, indexable per-route) ───────────────
 // Migrated from hash routing 2026-05-31 for SEO (#47). Old hash URLs
@@ -31,7 +32,7 @@ import Glassbox from './pages/Glassbox.jsx'
 const KNOWN_PAGES = new Set([
   'landing','radar','vision','tools','api','skills','whitepapers','about','pricing','products','roadmap','compare',
   'privacy','terms','law-enforcement','abuse','transparency','account-risk',
-  'glassbox',
+  'glassbox','agents',
 ])
 
 function getPageFromPath() {
@@ -97,6 +98,7 @@ export default function App() {
     roadmap:      <Roadmap />,
     compare:      <Compare />,
     glassbox:     <Glassbox />,
+    agents:       <Agents />,
   }
 
   const currentPageEl = pageComponent[page] || pageComponent.landing

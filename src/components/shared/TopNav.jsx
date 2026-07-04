@@ -7,6 +7,7 @@ const NAV_ITEMS = {
     { label: 'Lenses',       page: 'glassbox' },
     { label: 'API',          page: 'api' },
     { label: 'Skills',       page: 'skills' },
+    { label: 'Agents',       page: 'agents' },
     { label: 'Compare',      page: 'compare' },
     { label: 'Standards',    href: '/standards' },
     { label: 'Pricing',      page: 'pricing' },

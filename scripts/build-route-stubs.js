@@ -27,6 +27,15 @@ const shell = readFileSync(SHELL_PATH, 'utf8');
 // <noscript> fallback content that the SEO crawler sees pre-hydration.
 const ROUTES = [
   {
+    slug: 'agents',
+    title: 'TunnelMind — Agents: MCP-native framework interop',
+    description:
+      'TunnelMind is MCP-native. Claude, Gemini (Google ADK), and any MCP-capable agent framework connect the same way: a standard MCP client pointed at mcp.tunnelmind.ai (Scry, 12 tools), mcp.sigil.tunnelmind.ai (Sigil, 12 tools), and mcp-data.tunnelmind.ai (full data plane, 69 tools). Streamable HTTP JSON-RPC, unauthenticated discovery, working ADK code included.',
+    h1:    'MCP-native. Bring any agent.',
+    body:
+      'The tool surface is the Model Context Protocol itself — no SDK, no shim. Tools are enumerated at connect time. Verdict responses carry an Ed25519-signed receipt whose attestation_strength field (self-asserted, software, tee-tpm, silicon-root) states exactly how strong the evidence chain is, verifiable offline with @tunnelmindai/receipt-verify.',
+  },
+  {
     slug: 'glassbox',
     title: 'TunnelMind — Lenses: the transparent lens exhibit',
     description:

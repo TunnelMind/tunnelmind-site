@@ -210,8 +210,8 @@ export default function Tools({ onNavigate }) {
               color: 'var(--doc-text-dim)',
               margin: 0,
             }}>
-              The defender tier unlocks full campaign membership, payload
-              signatures, and unmetered lookups across every surface.
+              A prepaid $20 call block unlocks full campaign membership,
+              payload signatures, and bulk corpus export.
             </p>
           </div>
           <button

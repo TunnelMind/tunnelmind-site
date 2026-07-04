@@ -283,7 +283,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     }
 
     // Edges: heuristic — actors observed inside a campaign's time window.
-    // The public API does not expose campaign-actor membership (defender
+    // The public API does not expose campaign-actor membership (paid
     // tier), so this approximates: link an actor to a campaign when their
     // observation windows overlap. Looks coherent; not a precise relation.
     for (const r of recentList) {
@@ -955,7 +955,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
 
     // ── Visible members ──────────────────────────────────────────
     // The public /v1/campaigns surface doesn't expose membership (that's
-    // defender tier), but `rebuildGraph` already linked actors → campaigns
+    // the paid tier), but `rebuildGraph` already linked actors → campaigns
     // by time-window overlap and stored that in campaignsByMember. So
     // every IP whose membership list contains THIS campaign id is visible
     // on the radar right now and is, by our heuristic, in the cluster.
@@ -1014,7 +1014,7 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     html += '<div class="attestation">' +
       '<strong>How a campaign is drawn.</strong> Materialized when ≥5 actors share a ' +
       'tool, span ≥3 ASNs, hit ≤5 destination ports, and persist ≥1h. The full ' +
-      'member list, payload signatures, and tool fingerprints are the defender tier.' +
+      'member list, payload signatures, and tool fingerprints are the paid tier ($20 call blocks).' +
       '</div>';
     html += '<div class="attestation">' +
       'Go deeper in <a href="https://chat.tunnelmind.ai" target="_blank" rel="noopener">the chat</a> ' +

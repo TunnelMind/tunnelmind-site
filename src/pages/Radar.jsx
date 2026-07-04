@@ -8,7 +8,7 @@ import VerifyWidget from '../components/VerifyWidget.jsx'
 //
 //   [ hero: headline + subhead + live stat strip + CTA row ]
 //   [ live radar — graph + live intel panel + activity ticker ]
-//   [ what this is · read it four ways · three ways in · defender tier ]
+//   [ what this is · read it four ways · three ways in · paid tier ]
 //
 // The force graph is vanilla JS (initRadar.js). React owns markup +
 // lifecycle; initRadar attaches to the container ref and returns a
@@ -325,8 +325,9 @@ export default function Radar({ onNavigate }) {
 
         <div className="radar-sample-note">
           A <strong>live sample</strong> of the Scry corpus, refreshed every 10s.
-          The full corpus, campaign membership, and defender intel are the paid
-          defender tier — the sample is the point of the product, not a teaser.
+          The full corpus, campaign membership, and payload intel are the paid
+          tier — prepaid $20 call blocks — the sample is the point of the
+          product, not a teaser.
         </div>
 
         <main className="radar-main">

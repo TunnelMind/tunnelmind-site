@@ -1,218 +1,13 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import VerifyWidget from '../components/VerifyWidget.jsx'
 
-// Home — the radar-terminal landing (P-SITE-SYNC GATE 2). Ported from the
-// approved spec design/landing-reference.html into the real React stack, with
-// the hero wired to a REAL /v1/verify verdict via the same-origin proxy.
-//
-// Honest-attacker hero (ruling 2026-06-27): the spec mocked a HOSTILE verdict on
-// a Tor exit, but live that IP fuses to "pass" and GhostRoute is dark. So the
-// hero resolves a genuinely-observed attacker (93.123.72.183 → fused "warn",
-// 852 obs, human_hacker) and shows GhostRoute honestly as still warming. Every
-// field below is captured live and re-verifiable; nothing is fabricated.
-
-// ── Real captured verdict + signed receipt for the demo attacker ───────────
-// Pulled live from data.tunnelmind.ai/v1/verify/93.123.72.183 (2026-06-27).
-// Used as the instant seed + the fallback if the live call 504s on a cold node.
-// The signature is genuine — "verify the receipt" really verifies.
-const SEED = {
-  node: { type: 'ip', value: '93.123.72.183', ip_version: 4 },
-  scry: { available: true, category: 'actor', observed: true, observation_count: 852, actor_class: 'unknown', asn: '206264', country: 'SC' },
-  sigil: { available: true, in_supply_graph: false, reason: 'sigil_does_not_index_by_ip_v1' },
-  ghostroute: { available: true, origin_as: 'AS206264', origin_asn_name: 'AMARUTU-TECHNOLOGY - Amarutu Technology Ltd, SC', rpki_status: 'VALID', sanctions_match: false, is_ai_infrastructure: false },
-  tracker: { available: false, reason: 'tracker_does_not_index_by_ip' },
-  cross_lens: {
-    verdict: 'warn',
-    trust_score: 0.6824,
-    confidence: 0.94,
-    adversary_class: { classification: 'human_hacker' },
-  },
-  receipt: {
-    receipt_id: '019f0b32-476e-7253-bbb6-5277292ac554',
-    attestation_strength: 'software',
-    timestamp: '2026-06-27T22:27:52Z',
-    signature: { algorithm: 'Ed25519', key_id: 'tm-receipt-2026-05', value: 'SyruVZioT/m/vtNSUpC7Caxm7mwvEmgq/IrfWpvP6tsW+OhAUzYLGA/bzHfT8UZfYzuGfWTGPfqz0z71aV+0Bg==' },
-    subject: '93.123.72.183',
-  },
-}
-
-const DEMO_NODE = SEED.node.value
-
-// verdict → display word + tone class (matches VerifyWidget's mapping)
-const VERDICT_WORD = { pass: 'PASS', warn: 'CAUTION', fail: 'BLOCK', mismatch: 'MISMATCH', unknown: 'UNKNOWN' }
-const VERDICT_TONE = { pass: 'clean', warn: 'warn', fail: 'hostile', mismatch: 'hostile', unknown: 'na' }
-const verdictWord = (v) => VERDICT_WORD[v] || (v ? v.toUpperCase() : '·······')
-const verdictTone = (v) => VERDICT_TONE[v] || 'na'
-
-// Map a verify result to the four hero lens rows (honest about what's lit).
-function lensRows(r) {
-  const scry = r.scry || {}
-  const sigil = r.sigil || {}
-  const gr = r.ghostroute || {}
-  const obs = scry.observation_count
-  const scryRow = scry.observed
-    ? { val: `${scry.category || 'actor'} · ${obs != null ? obs.toLocaleString() : '—'} obs · ${(r.cross_lens && r.cross_lens.adversary_class && r.cross_lens.adversary_class.classification) || scry.actor_class || 'unknown'}`, pill: 'observed', tone: 'hostile' }
-    : scry.available
-      ? { val: 'resolved, not in the attacker corpus', pill: 'clean', tone: 'clean' }
-      : { val: 'no hostile signal', pill: 'n/a', tone: 'na' }
-
-  const sigilRow = !sigil.available
-    ? { val: 'no supply-graph data', pill: 'n/a', tone: 'na' }
-    : sigil.in_supply_graph
-      ? { val: 'present in the ad supply graph', pill: 'in graph', tone: 'clean' }
-      : { val: 'not indexed by IP (domains/entities only)', pill: 'n/a', tone: 'na' }
-
-  const tr = r.tracker || {}
-  const trEntity = tr.entity || (tr.domain && tr.domain.entity) || null
-  const trackerRow = !tr.available
-    ? (tr.reason === 'tracker_does_not_index_by_ip' || tr.reason === 'tracker_does_not_index_asn'
-        ? { val: 'not indexed by IP/ASN (domains/entities only)', pill: 'n/a', tone: 'na' }
-        : { val: 'no tracker-operator data', pill: 'n/a', tone: 'na' })
-    : tr.in_tracker_corpus
-      ? { val: trEntity
-            ? `${trEntity.name || trEntity.slug}${trEntity.industry ? ` · ${trEntity.industry}` : ''}`
-            : (tr.domain ? `${tr.domain.category || 'tracker'} · prevalence ${tr.domain.prevalence != null ? tr.domain.prevalence.toFixed(2) : '—'}` : 'in tracker corpus'),
-          pill: 'in corpus', tone: 'hostile' }
-      : { val: 'resolved, not a known tracker', pill: 'clean', tone: 'clean' }
-
-  const grRow = (gr.reason === 'ghostroute_pending' || !gr.available)
-    ? { val: 'RPKI / sovereignty still resolving', pill: 'warming', tone: 'beta' }
-    : {
-        val: `origin ${gr.origin_as || '—'} · RPKI ${gr.rpki_status || '—'}${gr.claimed_sovereign_zone ? ` · claim ${gr.claimed_sovereign_zone}` : ''}`,
-        pill: gr.sanctions_match ? 'sanctioned' : gr.rpki_status === 'INVALID' ? 'invalid' : 'clean',
-        tone: gr.sanctions_match || gr.rpki_status === 'INVALID' ? 'hostile' : 'clean',
-      }
-
-  return [
-    { key: 'scry', name: 'Scry', ...scryRow },
-    { key: 'sigil', name: 'Sigil', ...sigilRow },
-    { key: 'tracker', name: 'Tracker', ...trackerRow },
-    { key: 'ghost', name: 'GhostRoute', ...grRow },
-  ]
-}
-
-// ── Hero instrument: types the node, resolves the live verdict ─────────────
-function HeroInstrument() {
-  const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  const [result, setResult] = useState(SEED)
-  const [typed, setTyped] = useState(reduce ? DEMO_NODE : '')
-  const [word, setWord] = useState(reduce ? verdictWord(SEED.cross_lens.verdict) : '·······')
-  const [reveal, setReveal] = useState(reduce ? 4 : 0)   // lens rows shown
-  const [resolved, setResolved] = useState(reduce)        // verdict + receipt shown
-  const ref = useRef(null)
-  const timers = useRef([])
-  const started = useRef(false)
-  const push = (t) => timers.current.push(t)
-
-  // Background live lookup — progressive enhancement over the captured seed.
-  useEffect(() => {
-    let alive = true
-    fetch(`/api/verify/${encodeURIComponent(DEMO_NODE)}`, { headers: { Accept: 'application/json' } })
-      .then((r) => (r.ok ? r.json() : null))
-      // Keep the genuine captured receipt if the live response is a GhostRoute-
-      // pending partial (those omit the receipt) — it's a real receipt for this
-      // same IP+verdict, so the signed-receipt block never goes blank.
-      .then((d) => { if (alive && d && d.cross_lens) setResult({ ...d, receipt: d.receipt || SEED.receipt }) })
-      .catch(() => { /* keep the real captured seed */ })
-    return () => { alive = false }
-  }, [])
-
-  // Typing → verdict-scramble → lens reveal, started when the hero enters view.
-  useEffect(() => {
-    if (reduce) return
-    const node = ref.current
-    if (!node) return
-    const io = new IntersectionObserver((es) => {
-      es.forEach((e) => {
-        if (e.isIntersecting && !started.current) {
-          started.current = true
-          io.unobserve(e.target)
-          runSequence()
-        }
-      })
-    }, { threshold: 0.3 })
-    io.observe(node)
-    return () => { io.disconnect(); timers.current.forEach(clearTimeout); timers.current = [] }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reduce])
-
-  function runSequence() {
-    let i = 0
-    const type = () => {
-      if (i <= DEMO_NODE.length) { setTyped(DEMO_NODE.slice(0, i)); i++; push(setTimeout(type, 55)) }
-      else {
-        const chars = 'ABCDEF0123456789·#@%'
-        const final = verdictWord(SEED.cross_lens.verdict)
-        let f = 0
-        const frames = 18
-        const iv = setInterval(() => {
-          let out = ''
-          for (let j = 0; j < final.length; j++) out += (j < final.length * (f / frames)) ? final[j] : chars[Math.floor(Math.random() * chars.length)]
-          setWord(out); f++
-          if (f > frames) { clearInterval(iv); setWord(final); setResolved(true) }
-        }, 45)
-        timers.current.push({ clear: () => clearInterval(iv) })
-        for (let k = 1; k <= 4; k++) push(setTimeout(() => setReveal(k), 250 + k * 180))
-      }
-    }
-    type()
-  }
-
-  const rows = lensRows(result)
-  const cl = result.cross_lens || {}
-  const live = resolved ? verdictWord(cl.verdict) : word
-  const tone = verdictTone(cl.verdict)
-  const rcpt = result.receipt || {}
-  const sig = rcpt.signature || {}
-  const sigShort = sig.value ? `ed25519:${sig.value.slice(0, 4)}…${sig.value.slice(-4)}` : '—'
-
-  return (
-    <div className="hm-instrument hm-reveal is-in" ref={ref}>
-      <div className="hm-inst-bar">
-        <span className="hm-dot" /><span className="hm-dot" /><span className="hm-dot" />
-        <span className="hm-q"><span className="hm-term">POST</span> /v1/verify/<span className="hm-ent">{typed}</span>{!resolved && !reduce && <span className="hm-caret">▍</span>}</span>
-        <span className={`hm-tier ${resolved ? 'on' : ''}`}>attestation: {rcpt.attestation_strength || 'software'}</span>
-      </div>
-      <div className="hm-inst-body">
-        <div className="hm-verdict">
-          <div className="hm-vlabel">Fused verdict</div>
-          <div className="hm-vmain">
-            <span className={`hm-word hm-tone-${tone} ${!resolved ? 'scrambling' : ''}`}>{live}</span>
-            <span className="hm-vent">{result.scry && result.scry.asn ? `AS${result.scry.asn}` : SEED.node.value} · {(result.scry && result.scry.country) || 'SC'}</span>
-          </div>
-          <p className={`hm-vsub ${resolved ? 'on' : ''}`}>
-            A <b>live, signed verdict</b> on a genuinely-observed attacker — Scry has it in the corpus and GhostRoute resolves the origin route. One call returns the fused answer across every lens <b>and</b> a receipt you can verify offline.
-          </p>
-          <div className="hm-lenses">
-            {rows.map((row, i) => (
-              <div key={row.key} className={`hm-lensrow ${reveal > i ? 'on' : ''}`}>
-                <span className={`hm-lname hm-${row.key}`}>{row.name}</span>
-                <span className="hm-lval">{row.val}</span>
-                <span className={`hm-pill hm-pill-${row.tone}`}>{row.pill}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className="hm-receipt">
-          <div className="hm-rlabel">Signed receipt</div>
-          <pre className="hm-code">
-<span className="hm-k">"entity"</span>:      <span className="hm-s">"{result.node ? result.node.value : DEMO_NODE}"</span>,
-<span className="hm-k">"verdict"</span>:     <span className={`hm-${tone === 'clean' ? 's' : 'sig'}`}>"{cl.verdict || 'warn'}"</span>,
-<span className="hm-k">"tier"</span>:        <span className="hm-s">"{rcpt.attestation_strength || 'software'}"</span>,
-<span className="hm-k">"scry"</span>:        {'{'} obs:<span className="hm-n">{result.scry && result.scry.observation_count != null ? result.scry.observation_count : 0}</span>, class:<span className="hm-s">"{(cl.adversary_class && cl.adversary_class.classification) || 'unknown'}"</span> {'}'},
-<span className="hm-k">"sigil"</span>:       {'{'} indexed:<span className="hm-k">false</span> {'}'},
-<span className="hm-k">"ghostroute"</span>:  {result.ghostroute && result.ghostroute.available
-  ? <>{'{'} as:<span className="hm-s">"{result.ghostroute.origin_as || '—'}"</span>, rpki:<span className="hm-s">"{(result.ghostroute.rpki_status || 'unknown').toLowerCase()}"</span> {'}'}</>
-  : <>{'{'} status:<span className="hm-s">"warming"</span> {'}'}</>},
-<span className="hm-k">"trust"</span>:       <span className="hm-n">{typeof cl.trust_score === 'number' ? cl.trust_score.toFixed(4) : '0.6824'}</span>,
-<span className="hm-k">"sig"</span>:         <span className="hm-sig">"{sigShort}"</span>,
-<span className="hm-k">"ts"</span>:          <span className="hm-s">"{rcpt.timestamp || SEED.receipt.timestamp}"</span>
-          </pre>
-          <div className="hm-curl"><span className="hm-p">$</span> curl -X POST <span className="hm-u">https://data.tunnelmind.ai/v1/verify/{DEMO_NODE}</span></div>
-        </div>
-      </div>
-    </div>
-  )
-}
+// Home — the root. As of 2026-07 the hero IS the live product: the interactive
+// cross-lens Verify console (src/components/VerifyWidget.jsx), not a scripted
+// auto-demo. A visitor types any host and gets a real, signed verdict on the
+// spot — the free tier, right on the landing page. Below it: what the four
+// lenses are, and the two doors to go deeper (humans → $20 block, agents →
+// x402). ponytail: the old HeroInstrument scripted demo was retired — the real
+// console does everything it faked, and better.
 
 // ── Live counters ─────────────────────────────────────────────────────────
 function Counters() {
@@ -271,7 +66,7 @@ export default function Home({ onNavigate }) {
           <p className="hm-eyebrow">Trust attestation · the agentic internet</p>
           <h1 className="hm-h1">Ask one question. Get a verdict <span className="hm-qt">no single feed can return.</span></h1>
           <p className="hm-lede">The web is filling with traffic no human ever typed. TunnelMind resolves any IP, ASN, domain, or ad-tech entity through four correlated lenses and returns <strong>one signed verdict</strong> — every observation Ed25519-signed at the source, so the data proves where it came from.</p>
-          <HeroInstrument />
+          <VerifyWidget onNavigate={onNavigate} />
         </section>
 
         <section className="hm-block" id="join">
@@ -337,12 +132,12 @@ export default function Home({ onNavigate }) {
         </section>
 
         <section className="hm-block" id="pricing">
-          <div className="hm-sechead"><h2>Pricing</h2><p>Identifiers resolve free, forever. 50 checks/day free. Beyond that: machines pay per call, humans buy keys. <a className="hm-inline" href="/pricing" onClick={go('pricing')}>Full pricing →</a></p></div>
+          <div className="hm-sechead"><h2>Go deeper</h2><p>The verdict above is free — 50 checks a day, no account. When you need depth or scale, two doors. <a className="hm-inline" href="/pricing" onClick={go('pricing')}>Full pricing →</a></p></div>
           <div className="hm-price">
-            <div className="hm-pcard"><div className="hm-who">Free tier</div><div className="hm-amt">50<small> / day</small></div><p className="hm-desc">Every OAI resolves free, forever. The radar sample is public. <b>50 Data-API checks a day</b>, no account.</p><div className="hm-rail">rail · open · no key</div></div>
-            <div className="hm-pcard" style={{ borderColor: 'var(--hm-gold-dim)' }}><div className="hm-who">For agents</div><div className="hm-amt">x402<small> · USDC</small></div><p className="hm-desc">Pay-per-call <b>stablecoin micropayments</b>. No account, settles inline over HTTP 402. Per-endpoint pricing in the OpenAPI extension.</p><div className="hm-rail">rail · x402 · machine-native</div></div>
-            <div className="hm-pcard"><div className="hm-who">For humans</div><div className="hm-amt">Stripe<small> · key</small></div><p className="hm-desc">API key via Stripe for depth and scale. No subscription trap — buy a prepaid block, top up when you run out.</p><div className="hm-rail">rail · Stripe · <a className="hm-inline" href="/pricing" onClick={go('pricing')}>details</a></div></div>
+            <div className="hm-pcard" style={{ borderColor: 'var(--hm-gold-dim)' }}><div className="hm-who">Humans</div><div className="hm-amt">$20<small> · block</small></div><p className="hm-desc">Buy a prepaid block of checks and get an API key on the spot via Stripe. No subscription — top up when you run out.</p><div className="hm-rail"><a className="hm-inline" href="/pricing" onClick={go('pricing')}>Buy a block →</a></div></div>
+            <div className="hm-pcard"><div className="hm-who">Agents</div><div className="hm-amt">x402<small> · USDC</small></div><p className="hm-desc">Machine-native pay-per-call. No account, settles inline over HTTP 402. Point your agent and go.</p><div className="hm-rail"><a className="hm-inline" href="/pricing" onClick={go('pricing')}>Agent rail →</a></div></div>
           </div>
+          <p style={{ fontSize: 12, color: 'var(--hm-mute)', marginTop: 16, textAlign: 'center' }}>Building? <a className="hm-inline" href="/api" onClick={go('api')}>Docs &amp; API</a> · <a className="hm-inline" href="/llms.txt">llms.txt</a> · MCP at <a className="hm-inline" href="/api" onClick={go('api')}>mcp.tunnelmind.ai</a></p>
         </section>
 
         <section className="hm-block" id="agents">

@@ -1,10 +1,19 @@
 import React from 'react'
 
+// Demoted-from-nav pages live here now (nav went 11 → 4). Everything is still
+// reachable by URL for humans and agents; only the top bar got lean.
 const LINKS = [
-  { label: 'tunnelmind.ai',        href: 'https://tunnelmind.ai' },
-  { label: 'API',                  href: '/api' },
-  { label: 'Vision & Roadmap',     href: '/vision' },
+  { label: 'Radar',                href: '/radar' },
+  { label: 'Lenses',               href: '/glassbox' },
+  { label: 'Tools',                href: '/tools' },
+  { label: 'Docs / API',           href: '/api' },
+  { label: 'Skills',               href: '/skills' },
+  { label: 'Agents',               href: '/agents' },
+  { label: 'Compare',              href: '/compare' },
+  { label: 'Products',             href: '/products' },
+  { label: 'Standards',            href: '/standards' },
   { label: 'Whitepapers',          href: '/whitepapers' },
+  { label: 'Vision & Roadmap',     href: '/vision' },
   { label: 'Pricing',              href: '/pricing' },
 ]
 

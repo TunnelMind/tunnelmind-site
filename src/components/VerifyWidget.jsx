@@ -307,7 +307,12 @@ export default function VerifyWidget({ onNavigate }) {
     setPendingLens(false)
     try {
       const res = await fetch(`/api/verify/${encodeURIComponent(node)}`, {
-        headers: { Accept: 'application/json' },
+        // Tag console-originated verifies so the /v1/traction demand gauge can
+        // exclude our own landing-page traffic (else the live root inflates
+        // v1_verify with self-traffic). ponytail: header only; backend must
+        // honour X-TM-Source to actually exclude it — tracked in the conversion
+        // instrumentation follow-up.
+        headers: { Accept: 'application/json', 'X-TM-Source': 'web-console' },
       })
       if (!res.ok) throw new Error(String(res.status))
       const data = await res.json()
@@ -339,7 +344,12 @@ export default function VerifyWidget({ onNavigate }) {
   async function refetchQuiet(node, warmTries) {
     try {
       const res = await fetch(`/api/verify/${encodeURIComponent(node)}`, {
-        headers: { Accept: 'application/json' },
+        // Tag console-originated verifies so the /v1/traction demand gauge can
+        // exclude our own landing-page traffic (else the live root inflates
+        // v1_verify with self-traffic). ponytail: header only; backend must
+        // honour X-TM-Source to actually exclude it — tracked in the conversion
+        // instrumentation follow-up.
+        headers: { Accept: 'application/json', 'X-TM-Source': 'web-console' },
       })
       if (!res.ok || activeNode.current !== node) return
       const data = await res.json()

@@ -1,18 +1,15 @@
 import React, { useState } from 'react'
 
+// Lean nav (2026-07): 11 → 4. The root IS the product now (live Verify
+// console), so the primary paths are just: use it · build on it · pay · who.
+// Everything else stays reachable via the footer + its own URL — nothing was
+// removed, only demoted from the top bar.
 const NAV_ITEMS = {
   tunnelmind: [
-    { label: 'Radar',        page: 'radar' },
-    { label: 'Tools',        page: 'tools' },
-    { label: 'Lenses',       page: 'glassbox' },
-    { label: 'API',          page: 'api' },
-    { label: 'Skills',       page: 'skills' },
-    { label: 'Agents',       page: 'agents' },
-    { label: 'Compare',      page: 'compare' },
-    { label: 'Standards',    href: '/standards' },
-    { label: 'Pricing',      page: 'pricing' },
-    { label: 'About',        page: 'about' },
-    { label: 'Vision',       page: 'vision' },
+    { label: 'Verify',   page: 'landing' },
+    { label: 'Docs',     page: 'api' },
+    { label: 'Pricing',  page: 'pricing' },
+    { label: 'About',    page: 'about' },
   ],
 }
 

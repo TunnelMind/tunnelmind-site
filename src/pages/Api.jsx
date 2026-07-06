@@ -349,6 +349,22 @@ export default function Api({ onNavigate }) {
           agents — every Data API endpoint is also a tool. JSON in, JSON out, CORS open. The free tier needs no key.
         </p>
 
+        {/* Related builder surfaces (demoted from the top nav 2026-07 — kept
+            one click away here so Docs is the single builder hub). */}
+        <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--chrome-text-dim)', marginBottom: '28px', display: 'flex', flexWrap: 'wrap', gap: '6px 14px' }}>
+          <span style={{ color: 'var(--chrome-text-dim)' }}>also:</span>
+          {[
+            { label: 'Claude Skills', page: 'skills' },
+            { label: 'Agents / MCP', page: 'agents' },
+            { label: 'Products', page: 'products' },
+            { label: 'Compare', page: 'compare' },
+            { label: 'Whitepapers', page: 'whitepapers' },
+          ].map(l => (
+            <span key={l.page} onClick={() => onNavigate && onNavigate(l.page)} style={{ color: 'var(--accent-blue)', cursor: 'pointer' }}>{l.label}</span>
+          ))}
+          <a href="/standards" style={{ color: 'var(--accent-blue)', textDecoration: 'none' }}>Standards ↗</a>
+        </div>
+
         {/* Machine-legible discovery */}
         <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-cyan)', borderRadius: '4px', marginBottom: '8px' }}>
           <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-cyan)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '12px' }}>Machine-legible · start here if you are an agent</div>

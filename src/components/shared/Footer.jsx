@@ -62,12 +62,12 @@ export default function Footer() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px 16px', alignItems: 'center' }}>
-          {LINKS.map(({ label, href }) => (
+          {LINKS.map(({ label, href, external }) => (
             <a
               key={href}
               href={href}
-              target="_blank"
-              rel="noopener noreferrer"
+              target={external ? '_blank' : undefined}
+              rel={external ? 'noopener noreferrer' : undefined}
               style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', textDecoration: 'none', transition: 'color var(--transition)' }}
               onMouseEnter={e => e.currentTarget.style.color = 'var(--chrome-text-bright)'}
               onMouseLeave={e => e.currentTarget.style.color = 'var(--chrome-text-dim)'}

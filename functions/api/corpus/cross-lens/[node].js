@@ -57,6 +57,8 @@ async function fetchVerify(node) {
         // _lib's fetchWithTimeout doesn't auto-add UA; data.tunnelmind.ai
         // doesn't require one, but be polite + traceable.
         'User-Agent': 'TunnelMindCorpus/1.0 (+https://tunnelmind.ai)',
+        // Site self-traffic — split out of the /v1/traction demand count.
+        'X-TM-Source': 'web-console',
       },
       body: '{}',
     },

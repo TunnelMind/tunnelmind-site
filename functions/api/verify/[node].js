@@ -30,6 +30,11 @@ const VERIFY_HEADERS = {
   'Content-Type': 'application/json',
   Accept: 'application/json',
   'User-Agent': 'TunnelMindSite/1.0 (+https://tunnelmind.ai)',
+  // Tag console-originated verifies so /v1/traction can split our own
+  // landing-page self-traffic out of the external-demand count. This is the
+  // real chokepoint: the browser's own X-TM-Source never reaches upstream —
+  // this proxy re-originates the request, so the tag must be set here.
+  'X-TM-Source': 'web-console',
 }
 
 // Fire-and-forget: run the verify to completion with a generous deadline so the

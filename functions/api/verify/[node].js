@@ -99,10 +99,10 @@ export async function onRequestGet(context) {
     ghostroute:       d.ghostroute        ?? null,
     tracker:          d.tracker           ?? null,
     cross_lens:       d.cross_lens        ?? null,
-    sigil_token:      body.sigil_token     ?? null,
-    token_signed:     body.token_signed    ?? null,
-    token_expires_at: body.token_expires_at ?? null,
-    receipt:          body.receipt          ?? null,
+    sigil_token:      d.sigil_token     ?? null,
+    token_signed:     d.token_signed    ?? null,
+    token_expires_at: d.token_expires_at ?? null,
+    receipt:          d.receipt          ?? null,
   }
 
   // GhostRoute races a 5s deadline upstream: a cold node returns a fast

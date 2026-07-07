@@ -105,7 +105,7 @@ export function buildAiServices() {
         transport: 'streamable-http',
         tool_count: mcpServer('sigil').toolCount,
         summary:
-          'Sigil-scoped MCP surface: supply verification (incl. traverse_supply_chain) + cross_lens_verify with identical semantics to the data-api surface. Agents get the right answer no matter which entry point they landed at.',
+          'Sigil-scoped MCP surface: supply verification (incl. sigil_traverse_supply_chain) + cross_lens_verify with identical semantics to the data-api surface. Agents get the right answer no matter which entry point they landed at.',
       },
     ],
 

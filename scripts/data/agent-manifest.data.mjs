@@ -135,7 +135,7 @@ export function buildManifest() {
         card_url: 'https://mcp.sigil.tunnelmind.ai/.well-known/mcp.json',
         transport: 'streamable-http',
         tool_count: sigil.toolCount,
-        summary: 'Sigil-scoped MCP. Curated tool surface (incl. traverse_supply_chain). Includes cross_lens_verify with identical semantics to the data-api surface.',
+        summary: 'Sigil-scoped MCP. Curated tool surface (incl. sigil_traverse_supply_chain). Includes cross_lens_verify with identical semantics to the data-api surface.',
       },
     ],
 

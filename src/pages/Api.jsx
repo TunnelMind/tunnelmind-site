@@ -82,7 +82,7 @@ const MCP_SERVERS = [
       ['cross_lens_verify', 'Fuse Scry + Sigil into one verdict on a node (with adversary_class).'],
       ['sigil_verify_supply_path', 'The core pre-bid check — compose ads.txt, IP, fraud, and bundle into one trust verdict + signed token.'],
       ['sigil_verify_supply_chain', 'Verify a full OpenRTB SupplyChain (schain) object, node by node.'],
-      ['traverse_supply_chain', 'Reconstruct a publisher\'s sell paths from the graph — itemized and classified.'],
+      ['sigil_traverse_supply_chain', 'Reconstruct a publisher\'s sell paths from the graph — itemized and classified.'],
       ['sigil_verify_ads_txt', 'Is this exchange authorized to sell this publisher\'s inventory?'],
       ['sigil_verify_ip_type', 'Classify an IP as datacenter / residential / mobile — the CTV-fraud signal.'],
       ['sigil_verify_app_bundle', 'Does this app bundle ID actually exist in its store?'],

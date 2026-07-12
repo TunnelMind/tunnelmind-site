@@ -23,7 +23,7 @@ export const CANONICAL = {
   // The three MCP servers in the official registry. tool_count is the field that
   // drifts hardest — it changes every time the Data API adds an operation.
   mcpServers: [
-    { id: 'data',  registry_name: 'ai.tunnelmind/data',  url: 'https://mcp-data.tunnelmind.ai/mcp',       toolCount: 67, auth: 'oauth2' },
+    { id: 'data',  registry_name: 'ai.tunnelmind/data',  url: 'https://mcp-data.tunnelmind.ai/mcp',       toolCount: 78, auth: 'oauth2' },
     { id: 'scry',  registry_name: 'ai.tunnelmind/scry',  url: 'https://mcp.tunnelmind.ai/mcp',            toolCount: 12, auth: 'none'   },
     { id: 'sigil', registry_name: 'ai.tunnelmind/sigil', url: 'https://mcp.sigil.tunnelmind.ai/mcp',      toolCount: 12, auth: 'oauth2' },
   ],
@@ -48,7 +48,7 @@ export const CANONICAL = {
   x402: { version: 1 },
 };
 
-// Total surfaced MCP tools — the headline "91" (67 + 12 + 12). Derived, never stored.
+// Total surfaced MCP tools — the headline "102" (78 + 12 + 12). Derived, never stored.
 export const TOTAL_MCP_TOOLS = CANONICAL.mcpServers.reduce((n, s) => n + s.toolCount, 0);
 
 export function mcpServer(id) {

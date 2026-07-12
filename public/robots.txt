@@ -11,7 +11,7 @@
 # rendered HTML.
 #
 # MCP servers (Streamable HTTP, all listed in the official MCP registry):
-#   https://mcp-data.tunnelmind.ai/mcp      (ai.tunnelmind/data  — 67 tools)
+#   https://mcp-data.tunnelmind.ai/mcp      (ai.tunnelmind/data  — 78 tools)
 #   https://mcp.tunnelmind.ai/mcp           (ai.tunnelmind/scry  — 12 tools)
 #   https://mcp.sigil.tunnelmind.ai/mcp     (ai.tunnelmind/sigil — 12 tools)
 #

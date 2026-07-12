@@ -24,13 +24,15 @@ Every observation in the corpus is Ed25519-signed at the sensor before it reache
 - [Data API (Sigil + GhostRoute + Cross-lens)](https://data.tunnelmind.ai): `POST /v1/verify/{node}` is the fused-verdict endpoint
 - [GhostRoute (routing / sovereignty)](https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com): origin AS, RPKI validity, claimed-vs-actual sovereign zone, first-party CT witness; `/v1/ghostroute/{check,witness,proofs}`
 - [Scry API](https://api.tunnelmind.ai): `GET /v1/check/{ip}` and `/v1/check-domain/{host}`
-- [OpenAPI 3.1 spec](https://data.tunnelmind.ai/openapi.yaml)
+- [Agent verification](https://data.tunnelmind.ai/v1/verify/agent/66.249.64.10?ua=Googlebot): is a claimed crawler real? UA claim vs the operator's published IP ranges (Googlebot, Bingbot, GPTBot, PerplexityBot)
+- Safety scans (public, no key): `POST /v1/scan/mcp` reads another MCP server's tools/list and scans it for injection patterns + over-broad capabilities before you wire it in; `POST /v1/scan/injection` scans any text before it reaches your model
+- [OpenAPI 3.1 spec](https://data.tunnelmind.ai/openapi.yaml) — also the non-MCP entry: Gemini / Google ADK function-calling consume it directly
 
 ## MCP servers (agent-native entry)
 
 All three are listed in the official MCP registry at `registry.modelcontextprotocol.io`. Look them up by name to get the canonical record.
 
-- `ai.tunnelmind/data` — Data API surface at `https://mcp-data.tunnelmind.ai/mcp` (Streamable HTTP, 67 tools, auto-generated from OpenAPI, OAuth) — as of 2026-06-21
+- `ai.tunnelmind/data` — Data API surface at `https://mcp-data.tunnelmind.ai/mcp` (Streamable HTTP, 78 tools, auto-generated from OpenAPI, OAuth) — as of 2026-07-12
 - `ai.tunnelmind/scry` — Scry-only surface at `https://mcp.tunnelmind.ai/mcp` (Streamable HTTP, 12 tools, no auth)
 - `ai.tunnelmind/sigil` — Sigil-scoped surface at `https://mcp.sigil.tunnelmind.ai/mcp` (Streamable HTTP, 12 tools, OAuth)
 

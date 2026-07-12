@@ -110,12 +110,12 @@ export default function Home({ onNavigate }) {
         </section>
 
         <section className="hm-block" id="lenses">
-          <div className="hm-sechead"><h2>Four lenses</h2><p>Status shown straight. Two are live and queryable today; two are still being built — we won't pretend otherwise.</p></div>
+          <div className="hm-sechead"><h2>Four lenses</h2><p>Status shown straight — and today that status is: all four live. Each lens also answers on its own, so you can query the join's inputs yourself.</p></div>
           <div className="hm-lensgrid">
             <div className="hm-lcard"><div className="hm-ltop"><span className="hm-lh hm-scry">Scry</span><span className="hm-status live">live</span></div><p>Signed observations of hostile network actors — IPs, ASNs, behaviors, threat-feed overlap, actor classification.</p><div className="hm-stat">Familiar honeypots + Augur crawler</div><div className="hm-stat" style={{ marginTop: 8 }}><a href="https://api.tunnelmind.ai">api.tunnelmind.ai →</a></div></div>
             <div className="hm-lcard"><div className="hm-ltop"><span className="hm-lh hm-sigil">Sigil</span><span className="hm-status live">live</span></div><p>Programmatic-advertising supply-graph trust. Publishers, SSPs, DSPs, OpenRTB SupplyChain, entity trust scoring.</p><div className="hm-stat">ads.txt / sellers.json supply graph</div><div className="hm-stat" style={{ marginTop: 8 }}><a href="https://data.tunnelmind.ai">data.tunnelmind.ai →</a></div></div>
-            <div className="hm-lcard"><div className="hm-ltop"><span className="hm-lh hm-ghost">GhostRoute</span><span className="hm-status beta">beta</span></div><p>Routing integrity and sovereignty. Origin AS, RPKI validity, claimed vs. actual sovereign zone, first-party CT witnessing.</p><div className="hm-stat">BGP / RPKI / certificate transparency</div><div className="hm-stat" style={{ marginTop: 8 }}><a href="https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com">/v1/ghostroute/check →</a></div></div>
-            <div className="hm-lcard"><div className="hm-ltop"><span className="hm-lh hm-tracker">Tracker</span><span className="hm-status soon">scaffolded</span></div><p>The demand-side graph: who is watching whom on the open web. Recurring SDK fingerprints, tracker-operator entities.</p><div className="hm-stat" style={{ color: 'var(--hm-faint)' }}>Schema live · ingestion in progress</div></div>
+            <div className="hm-lcard"><div className="hm-ltop"><span className="hm-lh hm-ghost">GhostRoute</span><span className="hm-status live">live</span></div><p>Routing integrity and sovereignty. Origin AS, RPKI validity, claimed vs. actual sovereign zone, first-party CT witnessing.</p><div className="hm-stat">BGP / RPKI / certificate transparency</div><div className="hm-stat" style={{ marginTop: 8 }}><a href="https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com">/v1/ghostroute/check →</a></div></div>
+            <div className="hm-lcard"><div className="hm-ltop"><span className="hm-lh hm-tracker">Tracker</span><span className="hm-status live">live</span></div><p>The demand-side graph: who is watching whom on the open web. DDG / IAB / Disconnect normalized into one surveillance graph with a lens-owned verdict.</p><div className="hm-stat">80k domains · 3k entities</div><div className="hm-stat" style={{ marginTop: 8 }}><a href="https://data.tunnelmind.ai/v1/tracker/verify/doubleclick.net">/v1/tracker/verify →</a></div></div>
           </div>
         </section>
 
@@ -141,13 +141,13 @@ export default function Home({ onNavigate }) {
         </section>
 
         <section className="hm-block" id="agents">
-          <div className="hm-sechead"><h2>For autonomous agents</h2><p>Streamable HTTP, JSON-RPC 2.0, all three listed in the official MCP registry. Point your agent and go.</p></div>
+          <div className="hm-sechead"><h2>For autonomous agents</h2><p>Streamable HTTP, JSON-RPC 2.0, all three listed in the official MCP registry. Point your agent and go. Beyond the verdict: verify a claimed crawler's IP, safety-scan an MCP server before wiring it in, preflight any action — <a className="hm-inline" href="/api" onClick={go('api')}>all in the docs</a>.</p></div>
           <div className="hm-mcp">
-            <div className="hm-mcprow"><span className="hm-mu">mcp-data.tunnelmind.ai/mcp</span><span className="hm-md">ai.tunnelmind/data</span><span className="hm-mt">67 tools</span></div>
+            <div className="hm-mcprow"><span className="hm-mu">mcp-data.tunnelmind.ai/mcp</span><span className="hm-md">ai.tunnelmind/data</span><span className="hm-mt">78 tools</span></div>
             <div className="hm-mcprow"><span className="hm-mu">mcp.tunnelmind.ai/mcp</span><span className="hm-md">ai.tunnelmind/scry</span><span className="hm-mt">12 tools</span></div>
             <div className="hm-mcprow"><span className="hm-mu">mcp.sigil.tunnelmind.ai/mcp</span><span className="hm-md">ai.tunnelmind/sigil</span><span className="hm-mt">12 tools</span></div>
           </div>
-          <p style={{ fontSize: 12, color: 'var(--hm-mute)', marginTop: 21 }}>Discovery · <a className="hm-inline" href="/.well-known/ai-services.json">ai-services.json</a> · <a className="hm-inline" href="/agent-onboarding.md">agent-onboarding.md</a> · <a className="hm-inline" href="/llms.txt">llms.txt</a></p>
+          <p style={{ fontSize: 12, color: 'var(--hm-mute)', marginTop: 21 }}>Discovery · <a className="hm-inline" href="/.well-known/ai-services.json">ai-services.json</a> · <a className="hm-inline" href="/agent-onboarding.md">agent-onboarding.md</a> · <a className="hm-inline" href="/llms.txt">llms.txt</a> · No MCP? The same surface is <a className="hm-inline" href="https://data.tunnelmind.ai/openapi.yaml">OpenAPI 3.1</a> — Gemini and Google ADK function-calling consume it directly.</p>
         </section>
 
         <section className="hm-block" id="standards">

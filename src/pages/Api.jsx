@@ -55,7 +55,7 @@ const MCP_SERVERS = [
     name: 'Data MCP',
     host: 'mcp-data.tunnelmind.ai',
     registry: 'ai.tunnelmind/data',
-    count: 54,
+    count: 78,
     blurb: 'The full Data API as tools. Every REST endpoint below is also an MCP tool, generated 1:1 from OpenAPI. Flagship decision tools highlighted; call tools/list for the complete set.',
     mirror: true,
     tools: [
@@ -70,6 +70,8 @@ const MCP_SERVERS = [
       ['signal_team_signal', 'Coordinated-operation detection via shared identifiers.'],
       ['get_analyst_config', 'BYOM bundle — configure any LLM as a TunnelMind analyst (bring your own tokens).'],
       ['x402_echo', 'Validate an agent\'s x402 payment-rail client implementation.'],
+      ['scan_mcp', 'Safety-scan another MCP server before wiring it in — injection patterns + capability heuristics over its tools/list.'],
+      ['scan_injection', 'Scan text for prompt-injection signals before it reaches your model.'],
     ],
   },
   {
@@ -131,6 +133,15 @@ const DATA_GROUPS = [
       ['POST', '/v1/preflight', 'Agent-facing "should I act?" consultation — allow / caution / deny + a signed consultation receipt.'],
       ['POST', '/v1/profile', 'Cross-lens fused profile (Scry × Sigil × Tracker × GhostRoute) + confidence + signed receipt.'],
       ['GET', '/v1/entity/{node}', 'Fan-out lookup of a node across all four lenses — no fusion, the raw join.'],
+      ['GET', '/v1/verify/agent/{ip}', 'Is a claimed crawler really who it says? Checks the UA claim against the operator\'s published IP ranges (Googlebot, Bingbot, GPTBot, PerplexityBot) — verified / spoofed / unverifiable, never a guess.'],
+    ],
+  },
+  {
+    name: 'Agent safety scans',
+    desc: 'Before an agent wires in a tool or ingests a page: is it safe? Signals, not verdicts — both public, no key.',
+    endpoints: [
+      ['POST', '/v1/scan/mcp', 'Point it at any MCP server: reads its tools/list and scans every tool description for prompt-injection patterns and over-broad capability combinations.'],
+      ['POST', '/v1/scan/injection', 'Scan any text or fetched content for prompt-injection signals before it reaches your model.'],
     ],
   },
   {

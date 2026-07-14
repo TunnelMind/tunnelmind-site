@@ -1,0 +1,25 @@
+name: Live MCP tool-count drift guard
+
+# canonical.mjs pins each MCP server's toolCount and every machine surface is
+# generated/asserted from it — but the count changes on the API side with no
+# site commit to trigger the build-time check (surfaces said 67 for a month
+# while the server served 78). This asks the live servers daily and goes red
+# (+ ntfy) when canonical falls behind. Fix: edit toolCount in
+# scripts/data/canonical.mjs, npm run build, commit the regenerated surfaces.
+
+on:
+  schedule:
+    - cron: '23 14 * * *'   # daily, offset from the estate sweep (13:41 UTC)
+  workflow_dispatch:
+
+jobs:
+  live-counts:
+    name: tools/list vs canonical.mjs
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/check-live-counts.mjs

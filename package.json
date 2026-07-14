@@ -10,6 +10,7 @@
     "build:ai-services": "node scripts/build-ai-services.mjs",
     "build:mcp": "node scripts/build-mcp-index.mjs",
     "check:surfaces": "node scripts/check-machine-surfaces.mjs",
+    "check:live": "node scripts/check-live-counts.mjs",
     "build:oai": "node scripts/build-oai-page.js",
     "build:atap": "node scripts/build-atap-page.js",
     "build:eat": "node scripts/build-eat-page.js",

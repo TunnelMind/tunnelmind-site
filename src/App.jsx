@@ -103,29 +103,66 @@ export default function App() {
 
   const currentPageEl = pageComponent[page] || pageComponent.landing
 
+  // P55 wp-mac shell: the whole site is one Mac window on a dithered desktop.
+  // Title bar boxes are spans, not buttons — decorative chrome stays out of
+  // the tab order.
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      background: 'var(--chrome-bg)',
-      position: 'relative',
-    }}>
-      <TopNav site="tunnelmind" currentPage={page} onNavigate={handleNavigate} />
+    <div className="wpm wpm-desktop app-desktop">
+      <div className="wpm-window app-window">
+        <div className="wpm-titlebar">
+          <span className="wpm-closebox app-decor" aria-hidden="true" />
+          <span className="wpm-titlebar-title">TunnelMind</span>
+          <span className="wpm-zoombox app-decor" aria-hidden="true" />
+        </div>
 
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: 0,
-        overflow: 'hidden',
-        position: 'relative',
-        zIndex: 1,
-      }}>
-        {currentPageEl}
+        <TopNav site="tunnelmind" currentPage={page} onNavigate={handleNavigate} />
+
+        <div className="app-content">
+          {currentPageEl}
+        </div>
+
+        <Footer />
+        <StatusBar page={page} />
       </div>
+    </div>
+  )
+}
 
-      <Footer />
+// ── Status bar — the "Doc 1 Pg 1 Ln 1 Pos 1" strip, repurposed for live
+// stats (moved here from Home's Counters in P55; same fetches, same facts).
+const PAGE_LABELS = { landing: 'Verify' }
+
+function StatusBar({ page }) {
+  const [stats, setStats] = useState(null)
+
+  useEffect(() => {
+    let alive = true
+    const get = (u) => fetch(u, { headers: { Accept: 'application/json' } }).then((r) => (r.ok ? r.json() : null)).catch(() => null)
+    Promise.all([get('/api/ecosystem-stats'), get('/api/stats')]).then(([eco, scry]) => {
+      if (!alive) return
+      const d = eco && (eco.data || eco)
+      const sigil = d && d.lenses && d.lenses.sigil
+      const scryObs = (scry && typeof scry.total_observations === 'number') ? scry.total_observations
+        : (d && d.lenses && d.lenses.scry && d.lenses.scry.observations_total) || null
+      setStats({
+        scryObs,
+        sigilLinks: sigil ? sigil.sell_paths : null,
+      })
+    })
+    return () => { alive = false }
+  }, [])
+
+  const fmtK = (n) => (n >= 1000 ? (n / 1000).toFixed(0) + 'k' : String(n))
+  const fmtM = (n) => (n >= 1e6 ? (n / 1e6).toFixed(2) + 'M' : (n / 1000).toFixed(0) + 'k')
+  const label = PAGE_LABELS[page] || (page ? page[0].toUpperCase() + page.slice(1) : 'Verify')
+
+  return (
+    <div className="wpm-statusbar" aria-label="Live stats">
+      <span className="wpm-status-cell">Doc: {label}</span>
+      <span className="wpm-status-cell">Scry {stats && stats.scryObs != null ? fmtK(stats.scryObs) : '-'} obs</span>
+      <span className="wpm-status-cell">Sigil {stats && stats.sigilLinks != null ? fmtM(stats.sigilLinks) : '-'} links</span>
+      <span className="wpm-status-cell">91 MCP tools</span>
+      <span className="wpm-status-cell">4 lenses live</span>
     </div>
   )
 }

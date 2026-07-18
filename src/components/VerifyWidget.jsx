@@ -485,7 +485,7 @@ export default function VerifyWidget({ onNavigate }) {
           </div>
           <p className="tm-vv-foot">
             A lookup hands back an answer. TunnelMind hands back a{' '}
-            <strong>verifiable receipt</strong> — the difference between a score and proof.
+            <strong>verifiable receipt</strong>: the difference between a score and proof.
           </p>
         </div>
       )}

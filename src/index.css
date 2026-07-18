@@ -2126,17 +2126,32 @@ h1, h2 {
    is GATE 4). All classes are hm- prefixed to avoid clobbering index.css.
    ========================================================================= */
 .hm-page {
-  --display: "IBM Plex Mono", ui-monospace, monospace;
-  --hm-void: #06080E; --hm-ink: #0B0F18; --hm-panel: #0E1422;
-  --hm-line: #1A2233; --hm-line2: #262F44; --hm-bone: #E9E5D8;
-  --hm-mute: #79839A; --hm-faint: #4A5061; --hm-gold: #C9A86A;
-  --hm-gold-dim: #8A744A; --hm-hostile: #E25A40; --hm-clean: #5FB394;
-  --hm-aether: #6A93D6; --hm-amber: #D9A23A;
+  /* P55 wp-mac: the old dark palette collapses to 1-bit ink/paper (BW1).
+     Every hm-/tm- rule below keeps reading these vars — re-valuing them here
+     IS the reskin; only pattern/glow/gradient rules get explicit overrides in
+     the P55 section at the end of this file. */
+  --display: 'ChicagoFLF', 'Geneva', sans-serif;
+  --hm-void: var(--wpm-paper); --hm-ink: var(--wpm-paper); --hm-panel: var(--wpm-paper);
+  --hm-line: var(--wpm-ink); --hm-line2: var(--wpm-ink); --hm-bone: var(--wpm-ink);
+  --hm-mute: var(--wpm-ink); --hm-faint: var(--wpm-ink); --hm-gold: var(--wpm-ink);
+  --hm-gold-dim: var(--wpm-ink); --hm-hostile: var(--wpm-ink); --hm-clean: var(--wpm-ink);
+  --hm-aether: var(--wpm-ink); --hm-amber: var(--wpm-ink);
+  /* widget + chrome vars consumed by tm- rules, re-scoped monochrome */
+  --scry: var(--wpm-ink); --sigil: var(--wpm-ink); --tracker: var(--wpm-ink);
+  --accent-green: var(--wpm-ink); --accent-blue: var(--wpm-ink);
+  --accent-amber: var(--wpm-ink); --accent-red: var(--wpm-ink);
+  --accent-purple: var(--wpm-ink);
+  --chrome-bg: var(--wpm-paper); --chrome-bg2: var(--wpm-paper);
+  --chrome-border: var(--wpm-ink); --chrome-text: var(--wpm-ink);
+  --chrome-text-dim: var(--wpm-ink); --chrome-text-bright: var(--wpm-ink);
+  --doc-text: var(--wpm-ink); --doc-text-dim: var(--wpm-ink);
+  --font-serif: var(--wpm-font-chrome); --font-display: var(--wpm-font-chrome);
   --s1: 8px; --s2: 13px; --s3: 21px; --s4: 34px; --s5: 55px; --s6: 89px;
   height: 100%; overflow-y: auto; overflow-x: hidden;
-  background: var(--hm-void); color: var(--hm-bone);
+  background: var(--wpm-paper); color: var(--wpm-ink);
   font-family: var(--display); font-weight: 400; line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: none;
+  font-size: 16px;
 }
 .hm-page a { color: inherit; }
 .hm-page b { font-weight: 600; }
@@ -2166,20 +2181,22 @@ h1, h2 {
    treatment the retired HeroInstrument wore. Semantic lens colors inside
    (scry/sigil/tracker) stay; only the frame and input chrome are reconciled.
    ponytail: frame + input heal the dominant seam; inner card radii left soft. */
+/* P55: the console is a window-in-a-window — 2px ink border, hard offset
+   shadow, paper ground. No gradients, no blur. */
 .hm-hero .tm-verify {
   margin: var(--s4) 0 0;
   padding: var(--s3) clamp(16px,3vw,28px) var(--s4);
-  border: 1px solid var(--hm-line);
-  border-radius: 4px;
-  background: linear-gradient(180deg,rgba(14,20,34,.92),rgba(7,10,18,.94));
-  box-shadow: 0 40px 130px -50px rgba(0,0,0,.95);
+  border: var(--wpm-border);
+  border-radius: 0;
+  background: var(--wpm-paper);
+  box-shadow: var(--wpm-shadow);
 }
 .hm-hero .tm-verify-input {
-  border-color: var(--hm-line2);
-  background: var(--hm-ink);
-  border-radius: 3px;
+  border: var(--wpm-border);
+  background: var(--wpm-paper);
+  border-radius: 0;
 }
-.hm-hero .tm-verify-eyebrow { color: var(--hm-gold-dim); letter-spacing: .2em; }
+.hm-hero .tm-verify-eyebrow { color: var(--wpm-ink); letter-spacing: .2em; }
 
 /* instrument */
 .hm-instrument { margin-top: var(--s5); border: 1px solid var(--hm-line); background: linear-gradient(180deg,rgba(14,20,34,.92),rgba(7,10,18,.94)); border-radius: 4px; overflow: hidden; position: relative; box-shadow: 0 40px 130px -50px rgba(0,0,0,.95); }
@@ -2313,3 +2330,140 @@ h1, h2 {
   .hm-reveal { opacity: 1; transform: none; transition: none; }
   .hm-lensrow, .hm-vsub, .hm-tier { opacity: 1 !important; transform: none !important; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   P55 — wp-mac retro pass (Gate 2: shell + landing).
+   The .hm-page var re-value above does most of the work; this section only
+   (a) lays out the Mac-window app shell, (b) neutralizes hardcoded
+   glow/gradient/rgba effects the vars can't reach, (c) holds the guardrail
+   floor on type sizes. Tokens come from /wp-mac/wp-mac.css (v0.1.0).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ---------- app shell: desktop → window → content ---------- */
+.app-desktop {
+  height: 100%;
+  box-sizing: border-box;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.app-window {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  box-shadow: var(--wpm-shadow);
+}
+.app-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+  background: var(--wpm-paper);
+}
+.app-decor { cursor: default; }
+@media (max-width: 640px) { .app-desktop { padding: 4px; } }
+
+.tm-menubar-logo { font-weight: normal; }
+.wpm-menubar .wpm-menu-item { border: none; background: none; font: inherit; }
+
+/* ---------- footer: 1-bit strip above the status bar ---------- */
+.tm-footer {
+  border-top: var(--wpm-border);
+  background: var(--wpm-paper);
+  padding: 10px 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  flex-shrink: 0;
+}
+.tm-footer-id { display: flex; flex-direction: column; }
+.tm-footer-name { font-family: var(--wpm-font-chrome); font-size: 13px; }
+.tm-footer-copy { font-family: var(--wpm-font-mono); font-size: 12px; }
+.tm-footer-links { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+.tm-footer-row { display: flex; flex-wrap: wrap; gap: 2px 14px; justify-content: flex-end; }
+.tm-footer a {
+  font-family: var(--wpm-font-mono);
+  font-size: 12px;
+  color: var(--wpm-ink);
+  text-decoration: none;
+}
+.tm-footer a:hover { background: var(--wpm-ink); color: var(--wpm-paper); }
+
+/* ---------- landing: neutralize hardcoded effects ---------- */
+.hm-page .hm-qt { text-shadow: none; background: var(--wpm-ink); color: var(--wpm-paper); padding: 0 6px; }
+.hm-page .hm-moat { background: none; border-left: 4px solid var(--wpm-ink); font-size: 14px; }
+.hm-page .hm-inline { color: var(--wpm-ink); border-bottom: 1px solid var(--wpm-ink); }
+.hm-page .hm-inline:hover { background: var(--wpm-ink); color: var(--wpm-paper); }
+.hm-page .hm-status.live, .hm-page .hm-status.beta {
+  color: var(--wpm-paper); background: var(--wpm-ink);
+  border: var(--wpm-hairline); font-size: 12px;
+}
+.hm-page .hm-col.hm-open, .hm-page .hm-col.hm-paid { border: var(--wpm-border); }
+.hm-page .hm-lcard, .hm-page .hm-pcard, .hm-page .hm-col, .hm-page .hm-mcp {
+  border: var(--wpm-border);
+  border-radius: 0;
+  background: var(--wpm-paper);
+  box-shadow: var(--wpm-shadow);
+}
+.hm-page .hm-stat, .hm-page .hm-tag, .hm-page .hm-foot { font-size: 13px; font-family: var(--wpm-font-mono); }
+.hm-page .hm-num { text-shadow: none; }
+.hm-page .hm-buildnote { font-size: 14px; margin-top: 16px; text-align: center; }
+.hm-page .hm-mu, .hm-page .hm-md, .hm-page .hm-mt { font-family: var(--wpm-font-mono); font-size: 13px; }
+
+/* ---------- verify console widget (visual only — logic untouched) ---------- */
+.hm-page .tm-verify::before, .hm-page .tm-verify::after { display: none; }
+.hm-page .tm-verify-method {
+  background: var(--wpm-ink);
+  color: var(--wpm-paper);
+  border: none;
+  font-family: var(--wpm-font-mono);
+}
+.hm-page .tm-verify-input input {
+  background: var(--wpm-paper);
+  color: var(--wpm-ink);
+  font-family: var(--wpm-font-mono);
+  font-size: 15px;
+}
+.hm-page .tm-verify-input button {
+  background: var(--wpm-paper);
+  color: var(--wpm-ink);
+  border: var(--wpm-border);
+  border-radius: var(--wpm-radius);
+  font-family: var(--wpm-font-chrome);
+  font-size: 15px;
+}
+.hm-page .tm-verify-input button:hover { background: var(--wpm-paper); }
+.hm-page .tm-verify-input button:active { background: var(--wpm-ink); color: var(--wpm-paper); }
+.hm-page .tm-verify-examples button {
+  color: var(--wpm-ink);
+  background: none;
+  border: none;
+  border-bottom: 1px dotted var(--wpm-ink);
+  font-family: var(--wpm-font-mono);
+  font-size: 13px;
+}
+.hm-page .tm-verify-examples button:hover { background: var(--wpm-ink); color: var(--wpm-paper); }
+.hm-page .tm-vl { border-bottom: 1px dotted var(--wpm-ink); }
+.hm-page .tm-vl-dot { box-shadow: none; }
+/* 1-bit tone encoding: bad = inverted chip (color alone can't carry it) */
+.hm-page .tm-vl-status[data-tone="bad"] {
+  background: var(--wpm-ink);
+  color: var(--wpm-paper);
+  padding: 0 4px;
+}
+.hm-page .tm-vv-receipt, .hm-page .tm-vv-curl, .hm-page .tm-vv-measure {
+  border: var(--wpm-hairline);
+  background: var(--wpm-paper);
+  border-radius: 0;
+  font-family: var(--wpm-font-mono);
+}
+.hm-page .tm-vv-curl code, .hm-page .tm-vv-receipt code { font-size: 13px; }
+.hm-page .tm-vl-detail { font-family: var(--wpm-font-mono); color: var(--wpm-ink); }
+.hm-page .tm-vv-foot { color: var(--wpm-ink); }
+.hm-page .tm-verify-eyebrow { font-size: 12px; }
+.hm-page .tm-vv-label, .hm-page .tm-vv-score { font-size: 11px; color: var(--wpm-ink); }

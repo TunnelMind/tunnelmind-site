@@ -19,8 +19,9 @@ export const LENSES = [
 export const ATTESTATION_TIERS = ['self-asserted', 'software', 'tee-tpm', 'silicon-root']
 
 // MCP tool counts, per server. Live source: POST tools/list to each /mcp.
-// as of 2026-06-21.
-export const MCP_TOOLS = { data: 67, scry: 12, sigil: 12 }
+// as of 2026-07-19.
+export const MCP_TOOLS = { data: 78, scry: 12, sigil: 12 }
+export const MCP_TOOL_TOTAL = Object.values(MCP_TOOLS).reduce((a, b) => a + b, 0)
 
 // Corpus-stat fallbacks for /compare. Live source: GET data.tunnelmind.ai/v1/stats
 // (proxied via /api/ecosystem-stats). These literals are shown ONLY if the live

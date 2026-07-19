@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 
+import { MCP_TOOL_TOTAL } from './config/facts.js'
 import TopNav from './components/shared/TopNav.jsx'
 import Footer from './components/shared/Footer.jsx'
 
@@ -161,7 +162,7 @@ function StatusBar({ page }) {
       <span className="wpm-status-cell">Doc: {label}</span>
       <span className="wpm-status-cell">Scry {stats && stats.scryObs != null ? fmtK(stats.scryObs) : '-'} obs</span>
       <span className="wpm-status-cell">Sigil {stats && stats.sigilLinks != null ? fmtM(stats.sigilLinks) : '-'} links</span>
-      <span className="wpm-status-cell">91 MCP tools</span>
+      <span className="wpm-status-cell">{MCP_TOOL_TOTAL} MCP tools</span>
       <span className="wpm-status-cell">4 lenses live</span>
     </div>
   )

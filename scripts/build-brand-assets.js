@@ -1,8 +1,9 @@
 // Build the brand visual assets (public/assets/*.png) from hand-authored SVG.
 //
-// Two frames, both in the live slate-navy design system (no external image-gen,
-// no P-GEO). Reproducible: pure string templates rendered by sharp/librsvg with
-// generic font fallbacks, so every build is byte-stable.
+// Two frames, both in the P55 wp-mac 1-bit design system (BW1: strict black on
+// white, tone carried by words and inversion, never color). Reproducible: pure
+// string templates rendered by sharp/librsvg with generic font fallbacks, so
+// every build is byte-stable.
 //
 //   how-it-works.png   — customer-facing: one query -> four lenses -> signed verdict
 //   the-moat.png       — investor-facing: four lenses on one graph, the join is the moat
@@ -20,24 +21,26 @@ const OUTDIR = join(ROOT, 'public', 'assets')
 mkdirSync(OUTDIR, { recursive: true })
 
 // --- design tokens (mirror of src/index.css + facts.js) ----------------------
-const BG = '#0f172a'
-const PANEL = '#13203a'
-const STROKE = '#243352'
-const TEXT = '#f1f5f9'
-const MUTED = '#94a3b8'
-const FAINT = '#64748b'
-const SERIF = "Georgia, 'Times New Roman', serif"
+const BG = '#ffffff'
+const PANEL = '#ffffff'
+const STROKE = '#000000'
+const TEXT = '#000000'
+const MUTED = '#000000'
+const FAINT = '#000000'
+const SERIF = "'ChicagoFLF', Geneva, 'Helvetica Neue', sans-serif"
 const MONO = "'JetBrains Mono', 'Courier New', monospace"
+const INK = '#000000'
 
 // Four lenses, lowest->highest trust tier order kept in facts.js.
+// BW1: no per-lens color — the name IS the identity.
 const LENSES = [
-  { name: 'Scry',       color: '#00d4ff', blurb: 'hostile network actors' },
-  { name: 'Sigil',      color: '#3dba8a', blurb: 'ad supply-graph trust' },
-  { name: 'Tracker',    color: '#9b6fd4', blurb: 'who watches whom' },
-  { name: 'GhostRoute', color: '#c9a84c', blurb: 'routing integrity' },
+  { name: 'Scry',       color: INK, blurb: 'hostile network actors' },
+  { name: 'Sigil',      color: INK, blurb: 'ad supply-graph trust' },
+  { name: 'Tracker',    color: INK, blurb: 'who watches whom' },
+  { name: 'GhostRoute', color: INK, blurb: 'routing integrity' },
 ]
 const TIERS = ['self-asserted', 'software', 'tee-tpm', 'silicon-root']
-const GREEN = '#3dba8a'
+const GREEN = '#000000'
 
 const W = 1600
 const H = 1000
@@ -50,8 +53,10 @@ function footer() {
     <text x="${W - 80}" y="${H - 56}" text-anchor="end" font-family="${MONO}" font-size="18" fill="${FAINT}">Trust attestation layer for the agentic internet</text>`
 }
 function frame() {
+  // wp-mac window frame: outer 2px rule + inner 1px rule, square corners.
   return `<rect width="${W}" height="${H}" fill="${BG}"/>
-    <rect x="1" y="1" width="${W - 2}" height="${H - 2}" fill="none" stroke="${STROKE}" stroke-width="2"/>`
+    <rect x="2" y="2" width="${W - 4}" height="${H - 4}" fill="none" stroke="${STROKE}" stroke-width="3"/>
+    <rect x="10" y="10" width="${W - 20}" height="${H - 20}" fill="none" stroke="${STROKE}" stroke-width="1"/>`
 }
 
 // --- Asset 1: customer-facing — how it works ---------------------------------
@@ -68,11 +73,11 @@ function howItWorks() {
   LENSES.forEach((l, i) => {
     const y = lensY[i]
     // query -> lens
-    edges += `<path d="M ${cxQuery + 130} 550 C ${cxQuery + 320} 550, ${cxLens - 320} ${y}, ${cxLens - 95} ${y}" stroke="${l.color}" stroke-width="2" fill="none" opacity="0.55"/>`
+    edges += `<path d="M ${cxQuery + 130} 550 C ${cxQuery + 320} 550, ${cxLens - 320} ${y}, ${cxLens - 95} ${y}" stroke="${l.color}" stroke-width="2" fill="none"/>`
     // lens -> verdict
-    edges += `<path d="M ${cxLens + 95} ${y} C ${cxLens + 300} ${y}, ${cxVerdict - 300} ${verdictY}, ${cxVerdict - 130} ${verdictY}" stroke="${l.color}" stroke-width="2" fill="none" opacity="0.55"/>`
+    edges += `<path d="M ${cxLens + 95} ${y} C ${cxLens + 300} ${y}, ${cxVerdict - 300} ${verdictY}, ${cxVerdict - 130} ${verdictY}" stroke="${l.color}" stroke-width="2" fill="none"/>`
     nodes += `<g>
-      <rect x="${cxLens - 95}" y="${y - 26}" width="190" height="52" rx="9" fill="${PANEL}" stroke="${l.color}" stroke-width="1.5"/>
+      <rect x="${cxLens - 95}" y="${y - 26}" width="190" height="52" rx="0" fill="${PANEL}" stroke="${l.color}" stroke-width="1.5"/>
       <circle cx="${cxLens - 70}" cy="${y}" r="6" fill="${l.color}"/>
       <text x="${cxLens - 52}" y="${y + 5}" font-family="${MONO}" font-size="20" fill="${TEXT}">${l.name}</text>
     </g>`
@@ -92,7 +97,7 @@ function howItWorks() {
 
     <!-- query node -->
     <g>
-      <rect x="${cxQuery - 130}" y="510" width="260" height="80" rx="12" fill="${PANEL}" stroke="${STROKE}" stroke-width="1.5"/>
+      <rect x="${cxQuery - 130}" y="510" width="260" height="80" rx="0" fill="${PANEL}" stroke="${STROKE}" stroke-width="1.5"/>
       <text x="${cxQuery}" y="545" text-anchor="middle" font-family="${MONO}" font-size="19" fill="${MUTED}">your agent asks</text>
       <text x="${cxQuery}" y="572" text-anchor="middle" font-family="${MONO}" font-size="20" fill="${TEXT}">verify(destination)</text>
     </g>
@@ -101,9 +106,9 @@ function howItWorks() {
 
     <!-- verdict node -->
     <g>
-      <rect x="${cxVerdict - 130}" y="${verdictY - 55}" width="260" height="110" rx="12" fill="${PANEL}" stroke="${GREEN}" stroke-width="2"/>
-      <text x="${cxVerdict}" y="${verdictY - 18}" text-anchor="middle" font-family="${MONO}" font-size="16" fill="${MUTED}">cross-lens verdict</text>
-      <text x="${cxVerdict}" y="${verdictY + 22}" text-anchor="middle" font-family="${SERIF}" font-size="42" fill="${GREEN}">ALLOW</text>
+      <rect x="${cxVerdict - 130}" y="${verdictY - 55}" width="260" height="110" rx="0" fill="${INK}"/>
+      <text x="${cxVerdict}" y="${verdictY - 18}" text-anchor="middle" font-family="${MONO}" font-size="16" fill="${BG}">cross-lens verdict</text>
+      <text x="${cxVerdict}" y="${verdictY + 22}" text-anchor="middle" font-family="${SERIF}" font-size="42" fill="${BG}">ALLOW</text>
     </g>
     <text x="${cxVerdict - 110}" y="${verdictY + 120}" font-family="${MONO}" font-size="15" fill="${MUTED}">+ Ed25519 receipt &#183; attestation tier:</text>
     ${tierLadder}
@@ -126,9 +131,9 @@ function theMoat() {
   let nodes = ''
   LENSES.forEach((l, i) => {
     const y = lensY[i]
-    edges += `<path d="M ${lensX + 150} ${y} C ${lensX + 360} ${y}, ${coreX - 260} ${coreY}, ${coreX - 92} ${coreY}" stroke="${l.color}" stroke-width="2.5" fill="none" opacity="0.6"/>`
+    edges += `<path d="M ${lensX + 150} ${y} C ${lensX + 360} ${y}, ${coreX - 260} ${coreY}, ${coreX - 92} ${coreY}" stroke="${l.color}" stroke-width="2.5" fill="none"/>`
     nodes += `<g>
-      <rect x="${lensX - 150}" y="${y - 32}" width="300" height="64" rx="10" fill="${PANEL}" stroke="${l.color}" stroke-width="1.5"/>
+      <rect x="${lensX - 150}" y="${y - 32}" width="300" height="64" rx="0" fill="${PANEL}" stroke="${l.color}" stroke-width="1.5"/>
       <circle cx="${lensX - 122}" cy="${y}" r="7" fill="${l.color}"/>
       <text x="${lensX - 102}" y="${y - 4}" font-family="${MONO}" font-size="20" fill="${TEXT}">${l.name}</text>
       <text x="${lensX - 102}" y="${y + 19}" font-family="${MONO}" font-size="14" fill="${MUTED}">${l.blurb}</text>
@@ -153,7 +158,7 @@ function theMoat() {
     </g>
 
     <!-- moat callout -->
-    <rect x="${coreX - 230}" y="${coreY + 150}" width="460" height="120" rx="12" fill="${PANEL}" stroke="${STROKE}" stroke-width="1.5"/>
+    <rect x="${coreX - 230}" y="${coreY + 150}" width="460" height="120" rx="0" fill="${PANEL}" stroke="${STROKE}" stroke-width="1.5"/>
     <text x="${coreX}" y="${coreY + 188}" text-anchor="middle" font-family="${MONO}" font-size="16" fill="${MUTED}">the cross-lens join nobody else has</text>
     <text x="${coreX}" y="${coreY + 222}" text-anchor="middle" font-family="${SERIF}" font-size="26" fill="${GREEN}">agent-native, signed, witnessable</text>
     <text x="${coreX}" y="${coreY + 252}" text-anchor="middle" font-family="${MONO}" font-size="14" fill="${FAINT}">open protocol on the edge &#183; the data graph is paid</text>

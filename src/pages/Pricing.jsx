@@ -37,11 +37,11 @@ function readCheckoutParams() {
 }
 
 const HUMAN_FEATURES = [
-  'The whole corpus — Tracker, Scry, Sigil, and GhostRoute endpoints',
-  'No public sampling — full campaigns, signatures, supply paths',
+  'The whole corpus. Tracker, Scry, Sigil, and GhostRoute endpoints',
+  'No public sampling, full campaigns, signatures, supply paths',
   'Bearer API key + the MCP endpoint',
   'Bulk export (JSON / CSV), ASN / country slicing at scale',
-  'Blocks never expire — stack them whenever you need to',
+  'Blocks never expire, stack them whenever you need to',
 ]
 
 // ── Human rail — prepaid Stripe blocks ──────────────────────────────
@@ -67,11 +67,11 @@ function HumanCard() {
       }
       window.location.href =
         'mailto:hello@tunnelmind.ai?subject=' +
-        encodeURIComponent('TunnelMind — API access')
+        encodeURIComponent('TunnelMind API access')
     } catch {
       window.location.href =
         'mailto:hello@tunnelmind.ai?subject=' +
-        encodeURIComponent('TunnelMind — API access')
+        encodeURIComponent('TunnelMind API access')
     } finally {
       setBusy(false)
     }
@@ -102,7 +102,7 @@ function HumanCard() {
         </div>
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.55', color: 'var(--doc-text-dim)', margin: '10px 0 0' }}>
           One block is <strong style={{ color: 'var(--chrome-text-bright)' }}>{n(human.callsPerBlock)} API calls</strong>.
-          Stack as many as you need — no subscription, no expiry, no negotiation.
+          Stack as many as you need, no subscription, no expiry, no negotiation.
         </p>
       </div>
 
@@ -117,7 +117,7 @@ function HumanCard() {
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '12px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
           Spend <strong style={{ color: 'var(--chrome-text-bright)' }}>{usd(human.volume.thresholdUsd)}</strong> total
           ({human.volume.thresholdUsd / human.blockPriceUsd} blocks) and every block after holds{' '}
-          <strong style={{ color: accent }}>{n(human.volume.callsPerBlock)} calls</strong> — same {usd(human.blockPriceUsd)}.
+          <strong style={{ color: accent }}>{n(human.volume.callsPerBlock)} calls</strong>, same {usd(human.blockPriceUsd)}.
           The volume rate sticks for good.
         </p>
       </div>
@@ -137,7 +137,7 @@ function HumanCard() {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="you@example.com — for your receipt and the volume rate"
+            placeholder="you@example.com, for your receipt and the volume rate"
             style={{
               padding: '9px 10px', background: 'var(--doc-bg)',
               border: '1px solid var(--chrome-border)', borderRadius: '3px',
@@ -155,7 +155,7 @@ function HumanCard() {
               opacity: busy ? 0.6 : 1,
             }}
           >
-            {busy ? 'Starting checkout…' : `Buy blocks — from ${usd(human.blockPriceUsd)}`}
+            {busy ? 'Starting checkout…' : `Buy blocks, from ${usd(human.blockPriceUsd)}`}
           </button>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--chrome-text-dim)', margin: 0, lineHeight: '1.6' }}>
             Choose how many blocks at checkout.
@@ -213,7 +213,7 @@ function AgentCard() {
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.55', color: 'var(--doc-text-dim)', margin: '10px 0 0' }}>
           No signup, no API key. An agent calls an endpoint, gets back{' '}
           <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: accent }}>402 Payment Required</code>,
-          settles in {agent.settlementAsset}, and retries — the response comes back paid.
+          settles in {agent.settlementAsset}, and retries, the response comes back paid.
         </p>
       </div>
 
@@ -235,9 +235,9 @@ function AgentCard() {
       </div>
 
       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '12px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0, flex: 1 }}>
-        Price tracks endpoint complexity — a domain check is not a full
+        Price tracks endpoint complexity, a domain check is not a full
         attestation receipt. Settlement is {agent.settlementAsset} on a fast
-        L2; x402 is a payment rail, nothing more — no token, no account, no
+        L2; x402 is a payment rail, nothing more, no token, no account, no
         DeFi.
       </p>
 
@@ -302,7 +302,7 @@ function KeyReveal({ apiKey, calls }) {
         </button>
       </div>
       <p style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-amber)', margin: '8px 0 0' }}>
-        ⚠ Store this now — it is shown once and cannot be recovered.
+        ⚠ Store this now, it is shown once and cannot be recovered.
       </p>
     </div>
   )
@@ -349,19 +349,19 @@ function CheckoutBanner({ status, session }) {
     }}>
       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.7', color: 'var(--doc-text-dim)', margin: 0 }}>
         {!ok &&
-          'Checkout was cancelled — no charge was made. Your blocks are here whenever you are ready.'}
+          'Checkout was cancelled, no charge was made. Your blocks are here whenever you are ready.'}
         {ok && phase === 'loading' &&
-          'Payment received — crediting your calls…'}
+          'Payment received, crediting your calls…'}
         {ok && phase === 'key' &&
-          'Payment received — thank you. Here is your API key:'}
+          'Payment received, thank you. Here is your API key:'}
         {ok && phase === 'topup' &&
-          `Payment received — thank you. ${info.credited ? n(info.credited) + ' calls were added to' : 'Your calls were credited to'} your existing key ${info.prefix || ''}${
-            Number.isFinite(info.remaining) ? ` — balance is now ${n(info.remaining)} calls` : ''
+          `Payment received, thank you. ${info.credited ? n(info.credited) + ' calls were added to' : 'Your calls were credited to'} your existing key ${info.prefix || ''}${
+            Number.isFinite(info.remaining) ? `, balance is now ${n(info.remaining)} calls` : ''
           }. The raw key was shown only at first purchase; if you no longer have it, email support@tunnelmind.ai to rotate it.`}
         {ok && phase === 'pending' &&
-          'Payment received — thank you. Your calls are being credited and your key will arrive by email shortly. If nothing arrives within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
+          'Payment received, thank you. Your calls are being credited and your key will arrive by email shortly. If nothing arrives within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
         {ok && (phase === 'error' || phase === 'idle') &&
-          'Payment received — thank you. Your calls are being credited and your key will arrive by email shortly. If nothing appears within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
+          'Payment received, thank you. Your calls are being credited and your key will arrive by email shortly. If nothing appears within a few minutes, email support@tunnelmind.ai with your Stripe receipt.'}
       </p>
       {ok && phase === 'key' && <KeyReveal apiKey={apiKey} calls={info.calls} />}
     </div>
@@ -391,7 +391,7 @@ export default function Pricing() {
           fontFamily: 'var(--font-serif)', fontSize: '15px', lineHeight: '1.7',
           color: 'var(--doc-text-dim)', marginBottom: '40px', maxWidth: '600px',
         }}>
-          The radar, chat, the sample API, and the MCP endpoint stay free — no
+          The radar, chat, the sample API, and the MCP endpoint stay free, no
           account, no key. Beyond the sample there are two ways to pay for the
           whole corpus: prepaid blocks if you are a person, per-query
           micropayments if you are an agent. No tiers, no sales calls.
@@ -415,7 +415,7 @@ export default function Pricing() {
           borderRadius: '4px', marginBottom: '32px',
         }}>
           <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.7', color: 'var(--doc-text-dim)', margin: 0 }}>
-            Blocks are bought through Stripe — pay, and your Bearer API key is
+            Blocks are bought through Stripe, pay, and your Bearer API key is
             issued on the spot. TunnelMind never sees card data. The x402 rail
             settles in {agent.settlementAsset} directly between an agent and the
             endpoint; it is a payment mechanism, not an account.

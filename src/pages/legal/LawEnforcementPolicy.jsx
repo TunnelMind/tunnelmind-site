@@ -17,8 +17,8 @@ export default function LawEnforcementPolicy() {
       <Section title="1. Our general posture">
         <P>
           TunnelMind operates a trust attestation layer for the agentic internet:
-          you (or your agent) ask us to evaluate a destination — an IP address,
-          domain, ASN, or seller path — and we return a signed verdict. We are not
+          you (or your agent) ask us to evaluate a destination, an IP address,
+          domain, ASN, or seller path, and we return a signed verdict. We are not
           in the path of your traffic and we do not route, proxy, or tunnel your
           connections. We take seriously both our legal obligations to cooperate
           with valid lawful process and our obligation to protect users from
@@ -34,12 +34,12 @@ export default function LawEnforcementPolicy() {
       <Section title="2. What we can provide">
         <P>
           We hold account records and the metadata of the attestation requests you
-          make — not your network traffic. The following data exists and may be
+          make, not your network traffic. The following data exists and may be
           produced in response to valid legal process:
         </P>
         <UL items={[
           'Account records: email address, API key SHA-256 hash, WebAuthn passkey credential ID, Terms of Service acceptance timestamp, Stripe customer ID.',
-          'Query metadata: the IP addresses, domains, ASNs, or seller paths you submitted to /v1/verify, /v1/preflight, and related endpoints, with a timestamp. These are the destinations you asked us to evaluate — not your own connections.',
+          'Query metadata: the IP addresses, domains, ASNs, or seller paths you submitted to /v1/verify, /v1/preflight, and related endpoints, with a timestamp. These are the destinations you asked us to evaluate, not your own connections.',
           'Verdict records: the attestation we returned (allow / caution / deny, or per-lens score) and the evidence behind it, retained so signed receipts stay verifiable.',
           'Payment metadata: prepaid-block billing dates via Stripe (separate subpoena to Stripe for card data) and, for agent micropayments, the x402 on-rail payment reference. We do not custody funds.',
         ]} />
@@ -48,7 +48,7 @@ export default function LawEnforcementPolicy() {
           traffic. We do not operate a VPN, tunnel, or proxy, and we do not capture
           the content or payload of your network connections, your browsing history,
           or DNS resolutions made by your device. We cannot produce traffic content
-          because we never possess it — we observe only the destinations you ask us
+          because we never possess it, we observe only the destinations you ask us
           to evaluate.
         </P>
       </Section>
@@ -107,7 +107,7 @@ export default function LawEnforcementPolicy() {
 
       <ContactBox>
         Law enforcement contact: legal@tunnelmind.ai (subject: LAW ENFORCEMENT REQUEST)<br />
-        Emergency after-hours: same address — monitored daily<br />
+        Emergency after-hours: same address, monitored daily<br />
         Mailing address: TunnelMind AI, LLC · legal@tunnelmind.ai<br />
         Response time: 3 business days for non-emergency requests
       </ContactBox>

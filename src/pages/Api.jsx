@@ -35,20 +35,20 @@ const MCP_SERVERS = [
     host: 'mcp.tunnelmind.ai',
     registry: 'ai.tunnelmind/scry',
     count: 12,
-    blurb: 'The attacker corpus as callable tools — who is hostile on the open internet, observed first-hand by the sensor fleet.',
+    blurb: 'The attacker corpus as callable tools, who is hostile on the open internet, observed first-hand by the sensor fleet.',
     tools: [
-      ['scry_check', 'Corpus knowledge for one IPv4 — first/last seen, category, actor class, ASN, ports.'],
+      ['scry_check', 'Corpus knowledge for one IPv4, first/last seen, category, actor class, ASN, ports.'],
       ['scry_check_bulk', 'Look up to 100 IPs in one call; same per-IP shape as scry_check.'],
       ['scry_recent', 'Recent observations feed, aggregated by source IP within a window. Cursor-paginated.'],
-      ['scry_top', 'Top-N source dimensions over a window — where is the activity right now.'],
-      ['scry_timeseries', 'Bucketed observation counts over time — detect bursts and trends.'],
-      ['scry_asn', 'Corpus roll-up for one ASN — observation count, distinct IPs, actor mix.'],
+      ['scry_top', 'Top-N source dimensions over a window, where is the activity right now.'],
+      ['scry_timeseries', 'Bucketed observation counts over time, detect bursts and trends.'],
+      ['scry_asn', 'Corpus roll-up for one ASN, observation count, distinct IPs, actor mix.'],
       ['scry_country', 'Corpus roll-up by ISO country code.'],
-      ['scry_tools', 'Detected attack tools — (protocol, payload, path) tuples from 3+ distinct sources.'],
+      ['scry_tools', 'Detected attack tools, (protocol, payload, path) tuples from 3+ distinct sources.'],
       ['scry_tool', 'Single attack-tool detail by id.'],
-      ['scry_campaigns', 'Active threat campaigns — coordinated attacker activity above the noise floor.'],
+      ['scry_campaigns', 'Active threat campaigns, coordinated attacker activity above the noise floor.'],
       ['scry_campaign', 'Single campaign detail by id.'],
-      ['scry_stats', 'Aggregate corpus telemetry — totals, distinct sources, protocol breakdown.'],
+      ['scry_stats', 'Aggregate corpus telemetry, totals, distinct sources, protocol breakdown.'],
     ],
   },
   {
@@ -59,18 +59,18 @@ const MCP_SERVERS = [
     blurb: 'The full Data API as tools. Every REST endpoint below is also an MCP tool, generated 1:1 from OpenAPI. Flagship decision tools highlighted; call tools/list for the complete set.',
     mirror: true,
     tools: [
-      ['cross_lens_verify', 'A2 — fused Scry × Sigil × GhostRoute verdict for a node, now carrying its adversary_class.'],
-      ['preflight_should_i_act', 'The single call an agent makes before transacting — allow / caution / deny + signed receipt.'],
+      ['cross_lens_verify', 'A2, fused Scry × Sigil × GhostRoute verdict for a node, now carrying its adversary_class.'],
+      ['preflight_should_i_act', 'The single call an agent makes before transacting, allow / caution / deny + signed receipt.'],
       ['profile_entity', 'Cross-lens fused profile (Scry × Sigil × Tracker × GhostRoute) + confidence + signed receipt.'],
-      ['cross_lens_lookup', 'All four lens views for a node, no fusion — the raw join.'],
-      ['sigil_traverse', 'Walk a publisher\'s supply graph — itemized, classified sell paths.'],
+      ['cross_lens_lookup', 'All four lens views for a node, no fusion, the raw join.'],
+      ['sigil_traverse', 'Walk a publisher\'s supply graph, itemized, classified sell paths.'],
       ['signal_dark_pool_risk', 'Two-sided opacity of a publisher\'s declared supply chain.'],
       ['signal_tracker_density', 'Footprint of one tracker entity across the surveillance supply graph.'],
       ['signal_halo_score', 'Peer-reputation halo from an entity\'s supply-graph neighbours.'],
       ['signal_team_signal', 'Coordinated-operation detection via shared identifiers.'],
-      ['get_analyst_config', 'BYOM bundle — configure any LLM as a TunnelMind analyst (bring your own tokens).'],
+      ['get_analyst_config', 'BYOM bundle, configure any LLM as a TunnelMind analyst (bring your own tokens).'],
       ['x402_echo', 'Validate an agent\'s x402 payment-rail client implementation.'],
-      ['scan_mcp', 'Safety-scan another MCP server before wiring it in — injection patterns + capability heuristics over its tools/list.'],
+      ['scan_mcp', 'Safety-scan another MCP server before wiring it in, injection patterns + capability heuristics over its tools/list.'],
       ['scan_injection', 'Scan text for prompt-injection signals before it reaches your model.'],
     ],
   },
@@ -79,20 +79,20 @@ const MCP_SERVERS = [
     host: 'mcp.sigil.tunnelmind.ai',
     registry: 'ai.tunnelmind/sigil',
     count: 12,
-    blurb: 'The ad supply-chain trust surface for media-buying agents — verify a path, score an entity, attest the buy.',
+    blurb: 'The ad supply-chain trust surface for media-buying agents, verify a path, score an entity, attest the buy.',
     tools: [
       ['cross_lens_verify', 'Fuse Scry + Sigil into one verdict on a node (with adversary_class).'],
-      ['sigil_verify_supply_path', 'The core pre-bid check — compose ads.txt, IP, fraud, and bundle into one trust verdict + signed token.'],
+      ['sigil_verify_supply_path', 'The core pre-bid check, compose ads.txt, IP, fraud, and bundle into one trust verdict + signed token.'],
       ['sigil_verify_supply_chain', 'Verify a full OpenRTB SupplyChain (schain) object, node by node.'],
-      ['sigil_traverse_supply_chain', 'Reconstruct a publisher\'s sell paths from the graph — itemized and classified.'],
+      ['sigil_traverse_supply_chain', 'Reconstruct a publisher\'s sell paths from the graph, itemized and classified.'],
       ['sigil_verify_ads_txt', 'Is this exchange authorized to sell this publisher\'s inventory?'],
-      ['sigil_verify_ip_type', 'Classify an IP as datacenter / residential / mobile — the CTV-fraud signal.'],
+      ['sigil_verify_ip_type', 'Classify an IP as datacenter / residential / mobile, the CTV-fraud signal.'],
       ['sigil_verify_app_bundle', 'Does this app bundle ID actually exist in its store?'],
       ['sigil_score_entity', 'Pre-computed 0–1 trust score for one supply-chain entity.'],
       ['sigil_score_batch', 'Trust scores for up to 200 entities in one round-trip.'],
       ['sigil_atap_register_ait', 'Register an ATAP Agent Identity Token for a media-buying agent.'],
       ['sigil_atap_witness', 'Witness one agent-reported bid/budget event onto a hash-chained AIT.'],
-      ['sigil_generate_receipt', 'Generate the ATAP compliance Receipt for an AIT — portable, signed.'],
+      ['sigil_generate_receipt', 'Generate the ATAP compliance Receipt for an AIT, portable, signed.'],
     ],
   },
 ]
@@ -102,8 +102,8 @@ const SCRY_GROUPS = [
   {
     name: 'Lookup',
     endpoints: [
-      ['GET', '/v1/check/{ip}', 'Look up one IP — category, confidence, protocols/ports, ASN, country, observation count.'],
-      ['POST', '/v1/check/bulk', 'Check up to 100 IPs in one round trip — a whole block list at once.'],
+      ['GET', '/v1/check/{ip}', 'Look up one IP, category, confidence, protocols/ports, ASN, country, observation count.'],
+      ['POST', '/v1/check/bulk', 'Check up to 100 IPs in one round trip, a whole block list at once.'],
       ['GET', '/v1/recent', 'Most recently observed hostile source IPs, newest first. Cursor-paginated.'],
     ],
   },
@@ -111,7 +111,7 @@ const SCRY_GROUPS = [
     name: 'Threat structure',
     endpoints: [
       ['GET', '/v1/campaigns', 'Coordinated clusters of actors sharing a payload signature across networks.'],
-      ['GET', '/v1/tools', 'Distinct attacker tools — actor clusters sharing a payload pattern.'],
+      ['GET', '/v1/tools', 'Distinct attacker tools, actor clusters sharing a payload pattern.'],
     ],
   },
   {
@@ -129,43 +129,43 @@ const DATA_GROUPS = [
     name: 'Cross-lens & agent decisions',
     desc: 'The moat: one verdict over all the lenses, plus the calls an agent makes before it acts.',
     endpoints: [
-      ['POST', '/v1/verify/{node}', 'Fused Scry × Sigil × GhostRoute verdict for an IP, domain, ASN, or entity, over a base ip_intel record (geo / ASN / WHOIS / routing) whose every field is provenance-tagged verified/derived/trusted — including a verified-tier measurement axis (observation breadth, distinct signed vantages, durations) from our own fleet that a commodity vendor cannot sign — naming the adversary_class behind it (human_hacker / rogue_agent / surveillance_bigtech / clean) and flagging routing/sovereignty mismatches.'],
-      ['POST', '/v1/preflight', 'Agent-facing "should I act?" consultation — allow / caution / deny + a signed consultation receipt.'],
+      ['POST', '/v1/verify/{node}', 'Fused Scry × Sigil × GhostRoute verdict for an IP, domain, ASN, or entity, over a base ip_intel record (geo / ASN / WHOIS / routing) whose every field is provenance-tagged verified/derived/trusted, including a verified-tier measurement axis (observation breadth, distinct signed vantages, durations) from our own fleet that a commodity vendor cannot sign, naming the adversary_class behind it (human_hacker / rogue_agent / surveillance_bigtech / clean) and flagging routing/sovereignty mismatches.'],
+      ['POST', '/v1/preflight', 'Agent-facing "should I act?" consultation, allow / caution / deny + a signed consultation receipt.'],
       ['POST', '/v1/profile', 'Cross-lens fused profile (Scry × Sigil × Tracker × GhostRoute) + confidence + signed receipt.'],
-      ['GET', '/v1/entity/{node}', 'Fan-out lookup of a node across all four lenses — no fusion, the raw join.'],
-      ['GET', '/v1/verify/agent/{ip}', 'Is a claimed crawler really who it says? Checks the UA claim against the operator\'s published IP ranges (Googlebot, Bingbot, GPTBot, PerplexityBot) — verified / spoofed / unverifiable, never a guess.'],
+      ['GET', '/v1/entity/{node}', 'Fan-out lookup of a node across all four lenses, no fusion, the raw join.'],
+      ['GET', '/v1/verify/agent/{ip}', 'Is a claimed crawler really who it says? Checks the UA claim against the operator\'s published IP ranges (Googlebot, Bingbot, GPTBot, PerplexityBot), verified / spoofed / unverifiable, never a guess.'],
     ],
   },
   {
     name: 'Agent safety scans',
-    desc: 'Before an agent wires in a tool or ingests a page: is it safe? Signals, not verdicts — both public, no key.',
+    desc: 'Before an agent wires in a tool or ingests a page: is it safe? Signals, not verdicts, both public, no key.',
     endpoints: [
       ['POST', '/v1/scan/mcp', 'Point it at any MCP server: reads its tools/list and scans every tool description for prompt-injection patterns and over-broad capability combinations.'],
       ['POST', '/v1/scan/injection', 'Scan any text or fetched content for prompt-injection signals before it reaches your model.'],
     ],
   },
   {
-    name: 'Sigil — ad supply-chain verification',
+    name: 'Sigil, ad supply-chain verification',
     desc: 'Is this programmatic ad supply genuine? ads.txt, sellers.json, schain, datacenter IP, app bundle.',
     endpoints: [
-      ['POST', '/v1/sigil/verify/supply_path', 'The core pre-bid call — composes ads.txt, datacenter-IP, fraud, and bundle into one trust verdict + signed token.'],
-      ['POST', '/v1/sigil/verify/supply_chain', 'Verify an OpenRTB SupplyChain (schain) object you bring — per-node and aggregate.'],
-      ['GET', '/v1/sigil/traverse', 'Walk a publisher\'s supply graph from our own crawl — itemized, classified sell paths + downstream resellers.'],
+      ['POST', '/v1/sigil/verify/supply_path', 'The core pre-bid call, composes ads.txt, datacenter-IP, fraud, and bundle into one trust verdict + signed token.'],
+      ['POST', '/v1/sigil/verify/supply_chain', 'Verify an OpenRTB SupplyChain (schain) object you bring, per-node and aggregate.'],
+      ['GET', '/v1/sigil/traverse', 'Walk a publisher\'s supply graph from our own crawl, itemized, classified sell paths + downstream resellers.'],
       ['POST', '/v1/sigil/verify/ads_txt', 'Is an exchange authorized to sell a publisher\'s inventory, per ads.txt?'],
-      ['POST', '/v1/sigil/verify/ads_txt/batch', 'Batch ads.txt verification — up to 100 in one call.'],
+      ['POST', '/v1/sigil/verify/ads_txt/batch', 'Batch ads.txt verification, up to 100 in one call.'],
       ['GET', '/v1/sigil/verify/domain', 'Verify publisher domain ownership via a DNS TXT record.'],
-      ['GET', '/v1/sigil/verify/ip_type', 'Classify an IP as datacenter / residential / mobile — the CTV-fraud signal.'],
+      ['GET', '/v1/sigil/verify/ip_type', 'Classify an IP as datacenter / residential / mobile, the CTV-fraud signal.'],
       ['GET', '/v1/sigil/verify/adscert', 'Does a domain publish ads.cert DNS records?'],
       ['POST', '/v1/sigil/verify/app_bundle', 'Verify a mobile/CTV app bundle ID exists in its store.'],
       ['GET', '/v1/sigil/verify/token/{token}', 'Verify a sigil_token issued by a supply-path check.'],
       ['GET', '/v1/sigil/score/{entity_id}', 'Pre-computed 0–1 trust score for one supply-chain entity.'],
       ['POST', '/v1/sigil/score/batch', 'Trust scores for up to 200 entities in one call.'],
       ['GET', '/v1/sigil/score/weights', 'The published, versioned default trust-score weights.'],
-      ['GET', '/v1/sigil/publisher/{domain}/ads_txt/history', 'A publisher\'s ads.txt change log — one entry per crawl with changes.'],
+      ['GET', '/v1/sigil/publisher/{domain}/ads_txt/history', 'A publisher\'s ads.txt change log, one entry per crawl with changes.'],
     ],
   },
   {
-    name: 'Sigil — ATAP attestation',
+    name: 'Sigil. ATAP attestation',
     desc: 'Agentic Trust & Attestation Protocol: a hash-chained, signed record of what a buying agent did.',
     endpoints: [
       ['POST', '/v1/sigil/atap/ait', 'Register an ATAP Agent Identity Token.'],
@@ -176,23 +176,23 @@ const DATA_GROUPS = [
     ],
   },
   {
-    name: 'GhostRoute — routing integrity & CT witness',
-    desc: 'The fourth lens: is this infrastructure where it claims to be, owned by whom it claims, and provably certificate-logged? Includes TunnelMind\'s first-party Certificate-Transparency witness — we hold our own signature-verified roots.',
+    name: 'GhostRoute: routing integrity & CT witness',
+    desc: 'The fourth lens: is this infrastructure where it claims to be, owned by whom it claims, and provably certificate-logged? Includes TunnelMind\'s first-party Certificate-Transparency witness; we hold our own signature-verified roots.',
     endpoints: [
       ['GET', '/v1/ghostroute/check/{entity}', 'Routing-integrity & sovereignty verdict for an IP, domain, ASN, or cert. Add ?receipt=true to sign + persist a GR-receipt.'],
       ['GET', '/v1/ghostroute/witness', 'Certificate-Transparency witness health: latest signature-verified Signed Tree Head per trusted (non-Google) log, plus append-only regression detection (rewind / fork / bad STH signature).'],
-      ['GET', '/v1/ghostroute/proofs', 'Per-cert CT inclusion-proof rollup — corpus-wide, or ?domain= for one host. Proves the exact cert a host serves is included in a log whose root we verified.'],
+      ['GET', '/v1/ghostroute/proofs', 'Per-cert CT inclusion-proof rollup, corpus-wide, or ?domain= for one host. Proves the exact cert a host serves is included in a log whose root we verified.'],
       ['GET', '/v1/ghostroute/alerts', 'Durable, deduplicated feed of CT append-only regression events. A healthy ecosystem returns empty; any row is a serious trust event.'],
-      ['GET', '/v1/ghostroute/asn/{asn}', 'ASN ownership and sovereign zone — registrant + jurisdiction from RIR RDAP.'],
-      ['GET', '/v1/ghostroute/cert/{domain}', 'Recent CT certificate observations for a domain — issuing CA and chain provenance.'],
+      ['GET', '/v1/ghostroute/asn/{asn}', 'ASN ownership and sovereign zone, registrant + jurisdiction from RIR RDAP.'],
+      ['GET', '/v1/ghostroute/cert/{domain}', 'Recent CT certificate observations for a domain, issuing CA and chain provenance.'],
       ['GET', '/v1/ghostroute/ai/{entity}', 'Curated AI-infrastructure match for a domain or ASN.'],
-      ['POST', '/v1/ghostroute/batch', 'Batch routing-integrity check — up to 50 subjects in one call.'],
+      ['POST', '/v1/ghostroute/batch', 'Batch routing-integrity check, up to 50 subjects in one call.'],
       ['GET', '/v1/ghostroute/verify/{receipt_id}', 'Fetch a persisted GR-receipt (GR-YYYY-NNNNNNN).'],
     ],
   },
   {
     name: 'Adversary & tracker signals',
-    desc: 'Read-only signals over the surveillance supply graph — the building blocks of adversary classification.',
+    desc: 'Read-only signals over the surveillance supply graph, the building blocks of adversary classification.',
     endpoints: [
       ['GET', '/v1/signals/dark-pool-risk/{domain}', 'Two-sided opacity of a publisher\'s declared supply chain (ads.txt × sellers.json).'],
       ['GET', '/v1/signals/tracker-density/{entity_slug}', 'How much of the surveillance supply graph one entity occupies.'],
@@ -213,33 +213,33 @@ const DATA_GROUPS = [
   },
   {
     name: 'Domain intelligence',
-    desc: 'Live probes of a destination\'s public surface — what it runs, who it lets in, how it treats agents.',
+    desc: 'Live probes of a destination\'s public surface, what it runs, who it lets in, how it treats agents.',
     endpoints: [
       ['GET', '/v1/intel/http', 'HTTP headers, redirect chain, and security posture.'],
-      ['GET', '/v1/intel/stack', 'Technology stack — CMS, framework, CDN, analytics.'],
+      ['GET', '/v1/intel/stack', 'Technology stack. CMS, framework, CDN, analytics.'],
       ['GET', '/v1/intel/robots', 'robots.txt parsed, with AI-crawler policy detection.'],
-      ['GET', '/v1/intel/agent', 'The AI-agent surface a domain exposes — llms.txt, MCP, OpenAPI, plugins.'],
+      ['GET', '/v1/intel/agent', 'The AI-agent surface a domain exposes, llms.txt, MCP, OpenAPI, plugins.'],
       ['GET', '/v1/intel/inject', 'Scan a domain\'s public surface for prompt-injection signals.'],
-      ['GET', '/v1/intel/optout', 'AI-training opt-out signals — TDM, noai, license.'],
+      ['GET', '/v1/intel/optout', 'AI-training opt-out signals. TDM, noai, license.'],
     ],
   },
   {
-    name: 'Provenance — receipts & certificates',
+    name: 'Provenance, receipts & certificates',
     desc: 'Signed, verifiable artifacts: surveillance receipts, jurisdiction certs, and the BYOM analyst config.',
     endpoints: [
       ['POST', '/v1/receipt/generate', 'Generate a signed surveillance receipt for a list of domains.'],
       ['GET', '/v1/receipt/revoked', 'Check whether a receipt signing key or individual receipt is revoked.'],
       ['POST', '/verify', 'Verify a surveillance receipt\'s integrity by hash + signature.'],
       ['GET', '/verify/{receipt_id}', 'Look up a receipt by ID in the public registry.'],
-      ['GET', '/v1/config/analyst', 'BYOM analyst config bundle — system prompt + tool subset + response schema, signed.'],
+      ['GET', '/v1/config/analyst', 'BYOM analyst config bundle, system prompt + tool subset + response schema, signed.'],
       ['GET', '/v1/audit/export', 'Export signed, hash-chained audit log entries scoped to the caller.'],
     ],
   },
   {
     name: 'Agent payment rail',
-    desc: 'x402 micropayments — how an autonomous agent pays for a metered call and verifies the receipt.',
+    desc: 'x402 micropayments, how an autonomous agent pays for a metered call and verifies the receipt.',
     endpoints: [
-      ['POST', '/v1/x402/echo', 'x402 demo — 402 challenge → X-PAYMENT retry → echo with settlement header.'],
+      ['POST', '/v1/x402/echo', 'x402 demo, 402 challenge → X-PAYMENT retry → echo with settlement header.'],
     ],
   },
   {
@@ -352,12 +352,12 @@ export default function Api({ onNavigate }) {
         {/* Header */}
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '12px' }}>● APIs &amp; MCP</div>
         <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 400, color: 'var(--chrome-text-bright)', marginBottom: '10px' }}>
-          The whole surface — for humans and agents.
+          The whole surface, for humans and agents.
         </h1>
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '28px', maxWidth: '640px' }}>
           One signed corpus, two rails. <strong style={{ color: 'var(--chrome-text)' }}>REST</strong> over
           the Scry attacker corpus and the Data API; <strong style={{ color: 'var(--chrome-text)' }}>MCP</strong> for
-          agents — every Data API endpoint is also a tool. JSON in, JSON out, CORS open. The free tier needs no key.
+          agents, every Data API endpoint is also a tool. JSON in, JSON out, CORS open. The free tier needs no key.
         </p>
 
         {/* Related builder surfaces (demoted from the top nav 2026-07 — kept
@@ -412,9 +412,9 @@ export default function Api({ onNavigate }) {
         ))}
 
         {/* REST: Scry corpus */}
-        <SectionTitle eyebrow="REST · attacker corpus">Scry API — api.tunnelmind.ai</SectionTitle>
+        <SectionTitle eyebrow="REST · attacker corpus">Scry API, api.tunnelmind.ai</SectionTitle>
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
-          The signed corpus the radar draws — real source IPs, campaigns, attacker tools, and rolling stats, observed first-hand by the sensor fleet.
+          The signed corpus the radar draws, real source IPs, campaigns, attacker tools, and rolling stats, observed first-hand by the sensor fleet.
         </p>
         {SCRY_GROUPS.map(g => (
           <Collapsible key={g.name} title={g.name} defaultOpen>
@@ -423,7 +423,7 @@ export default function Api({ onNavigate }) {
         ))}
 
         {/* REST: Data API */}
-        <SectionTitle eyebrow="REST · the agentic surface">Data API — data.tunnelmind.ai</SectionTitle>
+        <SectionTitle eyebrow="REST · the agentic surface">Data API, data.tunnelmind.ai</SectionTitle>
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
           The cross-lens moat, the Sigil supply graph, tracker signals, provenance, and the agent payment rail. Every endpoint here is also an MCP tool on <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent-amber)' }}>mcp-data.tunnelmind.ai</code>.
         </p>
@@ -439,14 +439,14 @@ export default function Api({ onNavigate }) {
           <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-green)', borderRadius: '4px' }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Authentication</div>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
-              No key needed for the free tier — call it straight from the browser or an agent. Pass{' '}
+              No key needed for the free tier, call it straight from the browser or an agent. Pass{' '}
               <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>Authorization: Bearer &lt;key&gt;</code>{' '}for a paid tier.
             </p>
           </div>
           <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-amber)', borderRadius: '4px' }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-amber)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Rate limits</div>
             <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
-              Per-IP on the free tier — every response carries{' '}
+              Per-IP on the free tier, every response carries{' '}
               <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>X-RateLimit-*</code>{' '}headers so agents back off cleanly.
             </p>
           </div>

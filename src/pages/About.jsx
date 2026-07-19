@@ -47,7 +47,7 @@ export default function About() {
           The internet should be legible. We&apos;re building the layer that makes it so.
         </h1>
         <p style={{ ...prose, fontSize: '16px', maxWidth: '600px', marginBottom: '48px' }}>
-          TunnelMind builds the trust attestation layer for the agentic internet — a
+          TunnelMind builds the trust attestation layer for the agentic internet, a
           public, signed corpus of who is acting on the network and what they
           have done. When the consumers of the web are machines, identifying the
           entity behind a request stops being a nicety and becomes the question
@@ -63,7 +63,7 @@ export default function About() {
             <strong style={{ color: 'var(--chrome-text-bright)' }}>TunnelMind AI, LLC</strong> is
             a single-operator project: no venture
             funding, no board, no runway clock. Growth is measured in sensors
-            online, sources ingested, and standards shipped — not in burn.
+            online, sources ingested, and standards shipped, not in burn.
           </p>
           <p style={{ ...prose, marginBottom: 0 }}>
             The order things ship in is decided by what unblocks the most
@@ -81,7 +81,7 @@ export default function About() {
           <p style={prose}>
             Two pipelines feed the corpus.{' '}
             <strong style={{ color: 'var(--chrome-text-bright)' }}>Familiar</strong> is a
-            distributed fleet of passive sensors — each one signs every
+            distributed fleet of passive sensors. Each one signs every
             observation with an Ed25519 key before submitting it, so the data
             carries cryptographic proof of where it came from.{' '}
             <strong style={{ color: 'var(--chrome-text-bright)' }}>Augur</strong> is a
@@ -90,7 +90,7 @@ export default function About() {
             transparency, among others.
           </p>
           <p style={{ ...prose, marginBottom: 0 }}>
-            Together they produce a record of hostile network activity — real
+            Together they produce a record of hostile network activity, real
             source IPs, the protocols they attacked, the tools they share, the
             campaigns they cluster into. Every observation is signed at the
             source. Data that cannot prove its own provenance does not enter the
@@ -107,14 +107,14 @@ export default function About() {
             The corpus is built from hostile infrastructure, not from people. We
             do not collect or store personally identifying information, and we do
             not build profiles of users. Anything that analyzes a person&apos;s
-            own traffic runs locally on their device — it is never transmitted to
+            own traffic runs locally on their device; it is never transmitted to
             TunnelMind.
           </p>
           <p style={{ ...prose, marginBottom: 0 }}>
             We do not poison feeds, fabricate observations, or fight noise with
             noise. The product is honest observation: naming what is real and
             signing it so anyone can check. The radar on the front page shows a
-            live public sample of the corpus, free and with no account — because
+            live public sample of the corpus, free and with no account, because
             the right to look should not be metered.
           </p>
         </section>

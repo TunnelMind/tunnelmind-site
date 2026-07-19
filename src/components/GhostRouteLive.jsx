@@ -59,7 +59,7 @@ export default function GhostRouteLive() {
     <section className="gb-live" aria-label="GhostRoute live routing pulse">
       <div className="gb-live-head">
         <div>
-          <h3 className="gb-live-title">GhostRoute — live routing pulse</h3>
+          <h3 className="gb-live-title">GhostRoute: live routing pulse</h3>
           <p className="gb-live-sub">
             Already-collected CT inclusion proofs, streamed read-only. The public page triggers no collection.
           </p>
@@ -78,7 +78,7 @@ export default function GhostRouteLive() {
         </span>
         <span className={alertTotal ? 'text-red' : 'text-green'}>
           {alertTotal == null ? '' : alertTotal === 0
-            ? '· 0 equivocation events — append-only integrity holding'
+            ? '· 0 equivocation events, append-only integrity holding'
             : `· ${alertTotal} EQUIVOCATION EVENTS`}
         </span>
       </div>

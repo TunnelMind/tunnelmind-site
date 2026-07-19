@@ -34,10 +34,10 @@ export default function AbusePolicy() {
         <P>We act on credible reports of the following:</P>
         <UL items={[
           'Use of TunnelMind attestations or corpus data to target, attack, or facilitate harm against third-party systems or people.',
-          'Misrepresenting a TunnelMind verdict or receipt — forging, altering, or falsely claiming an attestation we did not issue.',
+          'Misrepresenting a TunnelMind verdict or receipt, forging, altering, or falsely claiming an attestation we did not issue.',
           'Automated scraping, credential sharing, or circumvention of rate limits, prepaid balances, or the x402 payment rail.',
           'Payment fraud, chargebacks in bad faith, or identity theft in connection with an account.',
-          'Submission of unlawful content — including child sexual abuse material (CSAM) — as a query input or in any field sent to us.',
+          'Submission of unlawful content, including child sexual abuse material (CSAM), as a query input or in any field sent to us.',
           'Any use that violates our Acceptable Use Policy.',
         ]} />
       </Section>
@@ -64,7 +64,7 @@ export default function AbusePolicy() {
         <P>
           TunnelMind is an attestation API, not a network operator. We are not in
           the path of anyone's traffic: we see the destinations a customer asks us
-          to evaluate and the verdicts we returned — not communications content,
+          to evaluate and the verdicts we returned, not communications content,
           not browsing history, not HTTPS payloads. We cannot reconstruct what a
           third party transmitted. Our evidentiary capability is limited to the
           account records and query metadata described in our Privacy Policy.

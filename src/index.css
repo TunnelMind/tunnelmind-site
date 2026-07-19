@@ -1,51 +1,47 @@
 /* ── TunnelMind Design System ─────────────────────────────────────── */
 :root {
   /* ── Palette ─────────────────────────────────────────────────────────
-     Deep slate-navy ground, lens accent colors, a restrained gold line.
-     "MONOSPACE CARRIES TRUTH" — every visual sits next to legible data. ── */
+     P55 wp-mac: BW1 strict 1-bit. Ink on paper, no accent colors.
+     Faint/dim tint variants map to paper — in 1-bit, structure is carried
+     by borders and inversion, never by tinted panels. Legacy var names are
+     kept so every page keeps reading the same tokens. ── */
 
-  /* Chrome: deep slate-navy */
-  --chrome-bg: #0f172a;
-  --chrome-bg2: #1e293b;
-  --chrome-border: #334155;
-  --chrome-text: #cbd5e1;
-  --chrome-text-dim: #94a3b8;
-  --chrome-text-bright: #e2e8f0;
+  --chrome-bg: var(--wpm-paper);
+  --chrome-bg2: var(--wpm-paper);
+  --chrome-border: var(--wpm-ink);
+  --chrome-text: var(--wpm-ink);
+  --chrome-text-dim: var(--wpm-ink);
+  --chrome-text-bright: var(--wpm-ink);
 
-  /* Document: slate, one step up from chrome for readable body */
-  --doc-bg: #1e293b;
-  --doc-paper: #243044;
-  --doc-text: #e2e8f0;
-  --doc-text-dim: #cbd5e1;
-  --doc-text-faint: #94a3b8;
+  --doc-bg: var(--wpm-paper);
+  --doc-paper: var(--wpm-paper);
+  --doc-text: var(--wpm-ink);
+  --doc-text-dim: var(--wpm-ink);
+  --doc-text-faint: var(--wpm-ink);
 
-  /* Accent system — mapped to the four lenses + gold line.
-     green = Sigil, purple = Tracker, cyan/blue = Scry, amber/gold = GhostRoute & geometry. */
-  --accent-green: #3dba8a;                       /* Sigil lens */
-  --accent-green-faint: rgba(61, 186, 138, 0.05);
-  --accent-green-dim: rgba(61, 186, 138, 0.15);
-  --accent-green-mid: rgba(61, 186, 138, 0.3);
-  --accent-green-glow: rgba(61, 186, 138, 0.2);
-  --accent-amber: #c9a84c;                        /* geometry gold */
-  --accent-amber-dim: rgba(201, 168, 76, 0.15);
-  --accent-red: #f87171;                          /* risk/error — kept */
-  --accent-red-dim: rgba(248, 113, 113, 0.15);
-  --accent-purple: #9b6fd4;                        /* Tracker lens */
-  --accent-purple-dim: rgba(155, 111, 212, 0.15);
-  --accent-blue: #00d4ff;                          /* Scry lens */
-  --accent-cyan: #00d4ff;                          /* Scry lens */
+  --accent-green: var(--wpm-ink);
+  --accent-green-faint: var(--wpm-paper);
+  --accent-green-dim: var(--wpm-paper);
+  --accent-green-mid: var(--wpm-ink);
+  --accent-green-glow: var(--wpm-paper);
+  --accent-amber: var(--wpm-ink);
+  --accent-amber-dim: var(--wpm-paper);
+  --accent-red: var(--wpm-ink);
+  --accent-red-dim: var(--wpm-paper);
+  --accent-purple: var(--wpm-ink);
+  --accent-purple-dim: var(--wpm-paper);
+  --accent-blue: var(--wpm-ink);
+  --accent-cyan: var(--wpm-ink);
 
-  /* Lens accent tokens */
-  --scry: #00d4ff;
-  --sigil: #3dba8a;
-  --tracker: #9b6fd4;
-  /* Attestation-tier ramp (spiral inward = higher trust) */
-  --attest-self: #4a5568;
-  --attest-software: #7a8499;
-  --attest-tee: #c9a84c;
-  --attest-silicon: #00d4ff;
+  --scry: var(--wpm-ink);
+  --sigil: var(--wpm-ink);
+  --tracker: var(--wpm-ink);
+  --attest-self: var(--wpm-ink);
+  --attest-software: var(--wpm-ink);
+  --attest-tee: var(--wpm-ink);
+  --attest-silicon: var(--wpm-ink);
 
-  /* φ spacing scale */
+/* φ spacing scale */
   --phi-1: 8px;
   --phi-2: 13px;
   --phi-3: 21px;
@@ -54,16 +50,16 @@
   --phi-6: 89px;
   --phi-7: 144px;
 
-  /* Interactive states */
-  --hover-overlay: rgba(255, 255, 255, 0.05);
-  --selected-overlay: rgba(61, 186, 138, 0.08);
-  --vote-up: #3dba8a;
-  --vote-down: #f87171;
+  /* Interactive states — retro Mac: hover does nothing, active inverts */
+  --hover-overlay: var(--wpm-paper);
+  --selected-overlay: var(--wpm-paper);
+  --vote-up: var(--wpm-ink);
+  --vote-down: var(--wpm-ink);
 
   /* Typography */
   --font-mono: 'JetBrains Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
-  --font-serif: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;
-  --font-display: 'Crimson Pro', Georgia, Palatino, 'Times New Roman', serif;  /* serif display face */
+  --font-serif: 'ChicagoFLF', 'Geneva', sans-serif;
+  --font-display: 'ChicagoFLF', 'Geneva', sans-serif;
 
   /* Layout */
   --nav-height: 38px;
@@ -74,7 +70,7 @@
   --content-max: 720px;
 
   /* Transitions */
-  --transition: 150ms ease;
+  --transition: 0ms; /* P55: no motion */
 }
 
 *, *::before, *::after {
@@ -90,8 +86,7 @@ html, body {
   font-family: var(--font-mono);
   font-size: 15px;
   line-height: 1.5;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: none;
 }
 
 #root {
@@ -102,15 +97,16 @@ html, body {
 
 /* Scrollbar styling */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 14px;
+  height: 14px;
 }
 ::-webkit-scrollbar-track {
   background: var(--chrome-bg);
 }
 ::-webkit-scrollbar-thumb {
-  background: var(--chrome-border);
-  border-radius: 3px;
+  background: var(--wpm-paper);
+  border: 1px solid var(--wpm-ink);
+  border-radius: 0;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--chrome-text-dim);
@@ -118,23 +114,23 @@ html, body {
 
 /* Selection */
 ::selection {
-  background: rgba(96, 165, 250, 0.25);
-  color: var(--doc-text);
+  background: var(--wpm-ink);
+  color: var(--wpm-paper);
 }
 
 /* Links */
 a {
-  color: var(--accent-blue);
-  text-decoration: none;
+  color: var(--wpm-ink);
+  text-decoration: underline;
 }
 a:hover {
-  text-decoration: underline;
-  color: var(--accent-cyan);
+  background: var(--wpm-ink);
+  color: var(--wpm-paper);
 }
 
 /* Focus ring */
 :focus-visible {
-  outline: 1px solid var(--accent-green);
+  outline: 2px dotted var(--wpm-ink);
   outline-offset: 2px;
 }
 
@@ -2367,7 +2363,8 @@ h1, h2 {
 @media (max-width: 640px) { .app-desktop { padding: 4px; } }
 
 .tm-menubar-logo { font-weight: normal; }
-.wpm-menubar .wpm-menu-item { border: none; background: none; font: inherit; }
+/* :where() keeps specificity at zero so the package's [aria-current] invert wins */
+:where(.wpm-menubar) :where(.wpm-menu-item) { border: none; background: none; font: inherit; }
 
 /* ---------- footer: 1-bit strip above the status bar ---------- */
 .tm-footer {

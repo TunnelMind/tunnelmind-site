@@ -50,7 +50,7 @@ export default function LensAnatomy({ lens, stats }) {
               <span className="gb-node-stage mono">{n.stage}</span>
               <span className="gb-node-label">
                 {n.label}
-                {n.sensitive && <span className="gb-node-lock" title="shape only — identifier abstracted (REDACTION-LIST)"> shape only</span>}
+                {n.sensitive && <span className="gb-node-lock" title="shape only, identifier abstracted (REDACTION-LIST)"> shape only</span>}
               </span>
               {n.lang && <span className="gb-node-lang mono">{n.lang}</span>}
               {i < lens.pipeline.length - 1 && <span className="gb-node-arrow" aria-hidden="true">→</span>}
@@ -61,7 +61,7 @@ export default function LensAnatomy({ lens, stats }) {
 
       {/* 3. Specimen — verbatim code, captioned with real file path */}
       <div className="gb-section">
-        <div className="gb-section-h mono">specimen — real code, this repo</div>
+        <div className="gb-section-h mono">specimen: real code, this repo</div>
         {lens.specimens.map((s) => (
           <figure key={s.path} className="gb-specimen">
             <figcaption className="gb-specimen-cap mono">
@@ -91,14 +91,14 @@ export default function LensAnatomy({ lens, stats }) {
 
       {/* 5. Reproduce it — the curl that regenerates this lens's output */}
       <div className="gb-section">
-        <div className="gb-section-h mono">reproduce — run it yourself</div>
+        <div className="gb-section-h mono">reproduce: run it yourself</div>
         <pre className="gb-curl mono"><code>{lens.curl}</code></pre>
       </div>
 
       {/* 6. Live metric — fetched, never hardcoded */}
       <div className="gb-metric">
         {metricVal == null ? (
-          <span className="gb-metric-na mono" title="upstream reported null — momentarily unavailable, never a silent zero">
+          <span className="gb-metric-na mono" title="upstream reported null, momentarily unavailable, never a silent zero">
             metric momentarily unavailable
           </span>
         ) : (

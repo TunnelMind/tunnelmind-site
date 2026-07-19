@@ -126,7 +126,7 @@ const verdictLabel = (v) => ({
 const verdictTone = (v) =>
   v === 'pass' ? 'clean'
     : (v === 'fail' || v === 'mismatch') ? 'bad'
-    : v === 'unknown' ? 'neutral'   // no data ≠ caution — render it as neutral, not amber
+    : v === 'unknown' ? 'neutral'   // no data ≠ caution, render it as neutral, not amber
     : 'warn'
 
 // Lens accent per the design system (Scry cyan, Sigil green, Tracker purple,
@@ -220,7 +220,7 @@ function MeasurementPanel({ measurement }) {
   const ja4      = Array.isArray(ja4List) && ja4List.length ? ja4List[0] : null
 
   const cells = []
-  if (vantages != null) cells.push({ k: 'signed vantages', val: vantages, note: 'distinct sensors — an un-fakeable device-count' })
+  if (vantages != null) cells.push({ k: 'signed vantages', val: vantages, note: 'distinct sensors, an un-fakeable device-count' })
   if (obs != null)      cells.push({ k: 'observations',    val: obs.toLocaleString() })
   if (ports != null)    cells.push({ k: 'ports probed',    val: ports })
   if (avg != null)      cells.push({ k: 'duration',        val: max != null ? `${avg}–${max} ms` : `${avg} ms` })
@@ -245,7 +245,7 @@ function MeasurementPanel({ measurement }) {
         ))}
       </div>
       <p className="tm-vv-measure-foot">
-        Conduct we <strong>witnessed and signed</strong> — measurement a commodity IP lookup can model but cannot prove.
+        Conduct we <strong>witnessed and signed</strong>, measurement a commodity IP lookup can model but cannot prove.
       </p>
     </div>
   )
@@ -431,7 +431,7 @@ export default function VerifyWidget({ onNavigate }) {
         <div className="tm-verify-verdict is-error">
           <div className="tm-vv-head">Warming up.</div>
           <p className="tm-vv-note">
-            First lookup of <code>{host}</code> is computing in the background — give
+            First lookup of <code>{host}</code> is computing in the background; give
             it a few seconds, then{' '}
             <button type="button" className="tm-link" onClick={() => verify(host)}>retry</button>
             {' '}or{' '}
@@ -461,7 +461,7 @@ export default function VerifyWidget({ onNavigate }) {
           {pendingLens && (
             <div className="tm-vv-pending">
               <span className="tm-vv-pending-dot" aria-hidden="true" />
-              routing still verifying — the 4th lens lands in a moment and the verdict may sharpen
+              routing still verifying, the 4th lens lands in a moment and the verdict may sharpen
             </div>
           )}
           {sig ? (

@@ -20,7 +20,7 @@ const GROUPS = [
       },
       {
         name: 'Augur',
-        desc: 'A continuous clearnet recon pipeline. Ingests public threat intelligence — URLhaus, ThreatFox, Tor exit lists, Spamhaus DROP, certificate transparency, and more — and folds it into the corpus alongside the sensor feed.',
+        desc: 'A continuous clearnet recon pipeline. Ingests public threat intelligence. URLhaus, ThreatFox, Tor exit lists, Spamhaus DROP, certificate transparency, and more, and folds it into the corpus alongside the sensor feed.',
         tag: 'Live',
       },
     ],
@@ -28,11 +28,11 @@ const GROUPS = [
   {
     label: '◎ Surfaces',
     color: 'var(--accent-blue)',
-    note: 'Different ways to query the same corpus — all free to start.',
+    note: 'Different ways to query the same corpus, all free to start.',
     items: [
       {
         name: 'Scry Radar',
-        desc: 'The live attacker corpus as a force-directed graph. A public sample, refreshed every 10 seconds — the front page of tunnelmind.ai.',
+        desc: 'The live attacker corpus as a force-directed graph. A public sample, refreshed every 10 seconds, the front page of tunnelmind.ai.',
         url: 'https://tunnelmind.ai',
         label: 'tunnelmind.ai',
         tag: 'Live · Free',
@@ -46,7 +46,7 @@ const GROUPS = [
       },
       {
         name: 'Corpus API',
-        desc: 'REST over the corpus — single and bulk IP checks, recent actors, campaigns, tools, and rolling stats. CORS open, free tier, no key.',
+        desc: 'REST over the corpus, single and bulk IP checks, recent actors, campaigns, tools, and rolling stats. CORS open, free tier, no key.',
         url: 'https://api.tunnelmind.ai',
         label: 'api.tunnelmind.ai',
         tag: 'Live · Free tier',
@@ -66,14 +66,14 @@ const GROUPS = [
     note: 'Open specifications, published for public comment before the code locks.',
     items: [
       {
-        name: 'OAI — Observed Actor Identifier',
-        desc: 'An open identifier standard giving every observed actor — tracker, scanner, ad network, threat actor, sensor — a permanent, free-to-resolve handle. CVE-style editorial model. v1.0 in public comment.',
+        name: 'OAI: Observed Actor Identifier',
+        desc: 'An open identifier standard giving every observed actor, tracker, scanner, ad network, threat actor, sensor, a permanent, free-to-resolve handle. CVE-style editorial model. v1.0 in public comment.',
         url: '/standards',
         label: 'tunnelmind.ai/standards',
         tag: 'Public comment',
       },
       {
-        name: 'ATAP — Agent Trust Attestation Protocol',
+        name: 'ATAP. Agent Trust Attestation Protocol',
         desc: 'A protocol, receipt format, and reference verifier that let one agent check another’s claims against signed evidence. v0.1 published; reference verifier and JSON Schemas shipped.',
         url: 'https://tunnelmind.ai/atap/standard',
         label: 'tunnelmind.ai/atap/standard',
@@ -84,25 +84,25 @@ const GROUPS = [
   {
     label: '◆ Verification',
     color: 'var(--accent-purple)',
-    note: 'The trust layer built on top of OAI and ATAP — fused into one cross-lens verdict at POST /v1/verify.',
+    note: 'The trust layer built on top of OAI and ATAP, fused into one cross-lens verdict at POST /v1/verify.',
     items: [
       {
         name: 'Sigil',
-        desc: 'An agentic supply-verification layer — "who can you trust" for the agentic internet. Entity trust scoring and signed verification endpoints, with programmatic advertising as the first application.',
+        desc: 'An agentic supply-verification layer, "who can you trust" for the agentic internet. Entity trust scoring and signed verification endpoints, with programmatic advertising as the first application.',
         url: 'https://data.tunnelmind.ai',
         label: 'data.tunnelmind.ai',
         tag: 'Live',
       },
       {
         name: 'GhostRoute',
-        desc: 'The fourth lens — routing integrity and sovereignty. Resolves the origin AS, the RPKI validity of the route, the sovereign jurisdiction a service claims versus the one it actually egresses through, and certificate-transparency logs we witness against our own signature-verified roots. Fused into the /v1/verify verdict and queryable directly under /v1/ghostroute/.',
+        desc: 'The fourth lens, routing integrity and sovereignty. Resolves the origin AS, the RPKI validity of the route, the sovereign jurisdiction a service claims versus the one it actually egresses through, and certificate-transparency logs we witness against our own signature-verified roots. Fused into the /v1/verify verdict and queryable directly under /v1/ghostroute/.',
         url: 'https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com',
         label: 'data.tunnelmind.ai/v1/ghostroute',
         tag: 'Live',
       },
       {
         name: 'Tracker',
-        desc: 'The demand-side lens — the surveillance-economy graph of who watches whom on the open web. Recurring SDK and tracker-operator fingerprints map the entities, the resellers they buy from, and the publishers they reach. Joinable with the other three lenses in the cross-lens verdict.',
+        desc: 'The demand-side lens, the surveillance-economy graph of who watches whom on the open web. Recurring SDK and tracker-operator fingerprints map the entities, the resellers they buy from, and the publishers they reach. Joinable with the other three lenses in the cross-lens verdict.',
         url: 'https://data.tunnelmind.ai',
         label: 'data.tunnelmind.ai',
         tag: 'Scaffolded',
@@ -206,22 +206,25 @@ export default function Products() {
     <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
       <PageDesc
         title="products"
-        desc="The trust attestation layer for the agentic internet, end to end — the pipelines that build the signed corpus, the surfaces onto it, the open standards on top, and the verification layer they support."
+        desc="The trust attestation layer for the agentic internet, end to end, the pipelines that build the signed corpus, the surfaces onto it, the open standards on top, and the verification layer they support."
       />
 
       <div style={{ padding: 'clamp(12px, 4vw, 32px)', maxWidth: '960px', margin: '0 auto' }}>
         <figure style={{ margin: '0 0 36px', textAlign: 'center' }}>
           <img
             src="/assets/how-it-works.png"
-            alt="One query to verify(destination) fans out across four lenses — Scry, Sigil, Tracker, GhostRoute — and converges into a single cross-lens ALLOW verdict with an Ed25519 receipt and an attestation tier."
+            alt="One query to verify(destination) fans out across four lenses. Scry, Sigil, Tracker, GhostRoute, and converges into a single cross-lens ALLOW verdict with an Ed25519 receipt and an attestation tier."
             loading="lazy"
             width="1600"
             height="1000"
             style={{
               width: '100%',
               height: 'auto',
-              borderRadius: '4px',
-              border: '1px solid var(--chrome-border)',
+              // ponytail: content image stays (a 1991 doc can hold a figure);
+              // grayscale keeps the 1-bit page honest without redrawing the art
+              filter: 'grayscale(1)',
+              borderRadius: 0,
+              border: '2px solid var(--wpm-ink)',
               display: 'block',
             }}
           />

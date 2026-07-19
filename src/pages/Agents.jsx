@@ -25,7 +25,7 @@ const SERVERS = [
     tools: 12,
     accent: '--accent-cyan',
     name: 'Sigil',
-    blurb: 'Supply verification: ads.txt authorization, IP classification, app bundles, supply paths, entity trust scoring, ATAP receipts — plus cross_lens_verify, the fused Scry × Sigil verdict.',
+    blurb: 'Supply verification: ads.txt authorization, IP classification, app bundles, supply paths, entity trust scoring, ATAP receipts, plus cross_lens_verify, the fused Scry × Sigil verdict.',
   },
   {
     url: 'mcp-data.tunnelmind.ai',
@@ -36,7 +36,7 @@ const SERVERS = [
   },
 ]
 
-const ADK_SNIPPET = `# Google ADK — works as-is (pip install google-adk google-genai mcp)
+const ADK_SNIPPET = `# Google ADK, works as-is (pip install google-adk google-genai mcp)
 from google.adk.agents import LlmAgent
 from google.adk.tools import McpToolset
 from google.adk.tools.mcp_tool.mcp_session_manager import (
@@ -79,17 +79,17 @@ export default function Agents() {
   return (
     <div style={{ maxWidth: '860px', margin: '0 auto', padding: '48px 24px 80px', overflowY: 'auto' }}>
       <div style={{ ...mono, fontSize: '10px', color: 'var(--chrome-text-dim)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '10px' }}>
-        /agents — framework interop
+        /agents, framework interop
       </div>
       <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '30px', color: 'var(--chrome-text-bright)', margin: '0 0 14px' }}>
         MCP-native. Bring any agent.
       </h1>
       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 28px' }}>
-        TunnelMind's tool surface is the Model Context Protocol itself — not an SDK with an
+        TunnelMind's tool surface is the Model Context Protocol itself, not an SDK with an
         MCP wrapper bolted on. Claude, Gemini (via Google's Agent Development Kit), and any
         other MCP-capable framework connect the same way: point a standard MCP client at the
         servers below. Streamable HTTP JSON-RPC, stateless, discovery unauthenticated.
-        Tools are enumerated at connect time — your agent always sees the current surface.
+        Tools are enumerated at connect time, your agent always sees the current surface.
       </p>
 
       {SERVERS.map(s => (
@@ -119,7 +119,7 @@ export default function Agents() {
         Gemini / ADK in one file
       </h2>
       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 12px' }}>
-        This is the working reference agent, verbatim — ADK's <code style={{ ...mono, fontSize: '12.5px' }}>McpToolset</code> is
+        This is the working reference agent, verbatim. ADK's <code style={{ ...mono, fontSize: '12.5px' }}>McpToolset</code> is
         a standard MCP client, so there is nothing TunnelMind-specific to install. The
         <code style={{ ...mono, fontSize: '12.5px' }}> tool_name_prefix</code> on the third server disambiguates the
         few tool names it shares with Sigil.
@@ -131,16 +131,16 @@ export default function Agents() {
       </h2>
       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 8px' }}>
         Verdict responses carry a signed receipt whose <code style={{ ...mono, fontSize: '12.5px' }}>attestation_strength</code> field
-        states exactly how strong the underlying evidence chain is — <code style={{ ...mono, fontSize: '12.5px' }}>self-asserted</code>,{' '}
+        states exactly how strong the underlying evidence chain is, <code style={{ ...mono, fontSize: '12.5px' }}>self-asserted</code>,{' '}
         <code style={{ ...mono, fontSize: '12.5px' }}>software</code>, <code style={{ ...mono, fontSize: '12.5px' }}>tee-tpm</code>, or{' '}
         <code style={{ ...mono, fontSize: '12.5px' }}>silicon-root</code>. The receipt is Ed25519-signed and verifiable offline
-        with <code style={{ ...mono, fontSize: '12.5px' }}>@tunnelmindai/receipt-verify</code>; the tier field is the claim — nothing
+        with <code style={{ ...mono, fontSize: '12.5px' }}>@tunnelmindai/receipt-verify</code>; the tier field is the claim, nothing
         stronger is implied. Agents should report it verbatim rather than translating it
         into their own confidence language.
       </p>
       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: 1.7, color: 'var(--chrome-text-dim)', margin: '16px 0 0' }}>
         Anonymous calls run on the free rate-limited tier. A Bearer token (see{' '}
-        <a href="/pricing" style={{ color: 'var(--accent-cyan)' }}>pricing</a>) lifts the limits — same tools, same protocol.
+        <a href="/pricing" style={{ color: 'var(--accent-cyan)' }}>pricing</a>) lifts the limits, same tools, same protocol.
       </p>
     </div>
   )

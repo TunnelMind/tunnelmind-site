@@ -5,14 +5,14 @@ import React from 'react'
 const PAPERS = [
   {
     id: 'oai',
-    title: 'OAI v1.0 — Observed Actor Identifier',
-    abstract: 'A permanent, free-to-resolve handle for every observed actor on the network — tracker, scanner, ad network, threat actor, or sensor. CVE-style editorial model, stable identifiers instead of vibes. Public comment.',
+    title: 'OAI v1.0: Observed Actor Identifier',
+    abstract: 'A permanent, free-to-resolve handle for every observed actor on the network, tracker, scanner, ad network, threat actor, or sensor. CVE-style editorial model, stable identifiers instead of vibes. Public comment.',
     href: '/oai/standard',
     status: 'live',
   },
   {
     id: 'atap',
-    title: 'ATAP v0.1 — Agent Trust Attestation Protocol',
+    title: 'ATAP v0.1: Agent Trust Attestation Protocol',
     abstract: 'Capability tokens, witness chains, and signed receipts that let one agent verify another’s claims against signed evidence. Reference verifier and JSON Schemas shipped; public comment through 2026-08-12.',
     href: '/atap/standard',
     status: 'live',
@@ -20,7 +20,7 @@ const PAPERS = [
   {
     id: 'reconciliation-verdict',
     title: 'Reconciliation Verdict v1.0',
-    abstract: 'The attestation reconciliation layer: read every root of trust (App Attest, Play Integrity, TPM, iSIM/EID, bare keys), normalize them into one comparable tier — self-asserted → software → tee-tpm → silicon-root — and emit a portable, self-verifying verdict.',
+    abstract: 'The attestation reconciliation layer: read every root of trust (App Attest, Play Integrity, TPM, iSIM/EID, bare keys), normalize them into one comparable tier, self-asserted → software → tee-tpm → silicon-root, and emit a portable, self-verifying verdict.',
     href: '/standards/reconciliation-verdict/v1',
     status: 'live',
   },
@@ -166,7 +166,7 @@ export default function Whitepapers() {
           marginBottom: '40px',
           maxWidth: '560px',
         }}>
-          The open standards behind the trust attestation layer — identity, provenance,
+          The open standards behind the trust attestation layer, identity, provenance,
           and witnessability. Every spec is free, citation-grade, and independently
           verifiable. The unified index lives at{' '}
           <a href="/standards" style={{ color: 'var(--accent-green)' }}>tunnelmind.ai/standards</a>.

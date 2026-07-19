@@ -14,7 +14,7 @@ const SURFACES = [
   },
   {
     name: 'Chat',
-    desc: 'Ask the corpus in plain language. Sourced, real-time answers about IPs, networks, campaigns, and threats — grounded in signed observations, not in vibes. No account required to start.',
+    desc: 'Ask the corpus in plain language. Sourced, real-time answers about IPs, networks, campaigns, and threats, grounded in signed observations, not in vibes. No account required to start.',
     href: 'https://chat.tunnelmind.ai',
     label: 'chat.tunnelmind.ai',
     tag: 'Live · Free',
@@ -30,7 +30,7 @@ const SURFACES = [
   },
   {
     name: 'MCP Server',
-    desc: 'Wire the corpus into any AI agent. JSON-RPC 2.0 over streamable HTTP — agent-native, because the agents are the new internet. Point a Model Context Protocol client at the endpoint and the corpus becomes a tool.',
+    desc: 'Wire the corpus into any AI agent. JSON-RPC 2.0 over streamable HTTP, agent-native, because the agents are the new internet. Point a Model Context Protocol client at the endpoint and the corpus becomes a tool.',
     href: 'https://mcp.tunnelmind.ai',
     label: 'mcp.tunnelmind.ai',
     tag: 'Live · Free',
@@ -38,7 +38,7 @@ const SURFACES = [
   },
   {
     name: 'Standards & Verification',
-    desc: 'Resolve an OAI identifier, verify an ATAP attestation, or check an entity trust score. The naming and verification layers on top of the corpus — open specs, free resolution.',
+    desc: 'Resolve an OAI identifier, verify an ATAP attestation, or check an entity trust score. The naming and verification layers on top of the corpus, open specs, free resolution.',
     href: '/standards',
     label: 'tunnelmind.ai/standards',
     tag: 'Live · Public',
@@ -46,7 +46,7 @@ const SURFACES = [
   },
   {
     name: 'GhostRoute',
-    desc: 'The fourth lens — routing integrity and sovereignty. Check the origin AS, RPKI route validity, and the sovereign jurisdiction a service claims versus the one it actually egresses through; inspect certificate-transparency proofs witnessed against roots we verify ourselves. Fused into /v1/verify, queryable under /v1/ghostroute/.',
+    desc: 'The fourth lens, routing integrity and sovereignty. Check the origin AS, RPKI route validity, and the sovereign jurisdiction a service claims versus the one it actually egresses through; inspect certificate-transparency proofs witnessed against roots we verify ourselves. Fused into /v1/verify, queryable under /v1/ghostroute/.',
     href: 'https://data.tunnelmind.ai/v1/ghostroute/check/api.anthropic.com',
     label: 'data.tunnelmind.ai/v1/ghostroute',
     tag: 'Live · Free',
@@ -166,7 +166,7 @@ export default function Tools({ onNavigate }) {
           maxWidth: '580px',
         }}>
           The attacker corpus is one source of truth. These are the surfaces onto
-          it — pick the one that fits how you work. Every one of them is free to
+          it, pick the one that fits how you work. Every one of them is free to
           start, and no, you don&apos;t need an account to look around.
         </p>
 

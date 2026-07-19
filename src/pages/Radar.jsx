@@ -37,7 +37,7 @@ const CURL_EXAMPLES = [
   },
   {
     title: 'Recent attacker IPs (what the radar draws)',
-    note: 'The same feed behind the graph — paginated, geo-enriched.',
+    note: 'The same feed behind the graph, paginated, geo-enriched.',
     cmd: "curl -s 'https://api.tunnelmind.ai/v1/recent?limit=50'",
   },
   {
@@ -46,7 +46,7 @@ const CURL_EXAMPLES = [
     cmd: 'curl -s https://api.tunnelmind.ai/v1/country/NL\ncurl -s https://api.tunnelmind.ai/v1/asn/213373',
   },
   {
-    title: 'MCP — JSON-RPC 2.0 from any agent',
+    title: 'MCP: JSON-RPC 2.0 from any agent',
     note: 'Agent-native. The same corpus, wired straight into a model.',
     cmd: 'curl -s -X POST https://mcp.tunnelmind.ai/mcp \\\n  -H "Content-Type: application/json" \\\n  -d \'{"jsonrpc":"2.0","id":1,"method":"tools/list"}\'',
   },
@@ -56,17 +56,17 @@ const CURL_EXAMPLES = [
 const SURFACES = [
   {
     name: 'Chat',
-    blurb: 'Ask in plain language. Sourced, real-time answers about domains, networks, and threats — grounded in the corpus, not in vibes.',
+    blurb: 'Ask in plain language. Sourced, real-time answers about domains, networks, and threats, grounded in the corpus, not in vibes.',
     href: 'https://chat.tunnelmind.ai',
   },
   {
     name: 'Tracker Data API',
-    blurb: 'Build on the corpus directly. REST over the same data the radar draws — free tier to start, paid plans for scale.',
+    blurb: 'Build on the corpus directly. REST over the same data the radar draws, free tier to start, paid plans for scale.',
     href: 'https://api.tunnelmind.ai',
   },
   {
     name: 'MCP',
-    blurb: 'Wire the corpus into any AI agent. JSON-RPC 2.0 over streamable HTTP — agent-native, because the agents are the new internet.',
+    blurb: 'Wire the corpus into any AI agent. JSON-RPC 2.0 over streamable HTTP, agent-native, because the agents are the new internet.',
     href: 'https://mcp.tunnelmind.ai',
   },
 ]
@@ -76,7 +76,7 @@ const SURFACES = [
 const AUDIENCES = [
   {
     who: 'For the analyst',
-    text: 'ASN, ports, payload-hash prefixes, confidence buckets, campaign membership. Click any node — or flip to the JSON view for the raw record.',
+    text: 'ASN, ports, payload-hash prefixes, confidence buckets, campaign membership. Click any node, or flip to the JSON view for the raw record.',
   },
   {
     who: 'For the executive',
@@ -84,7 +84,7 @@ const AUDIENCES = [
   },
   {
     who: 'For the builder & the agent',
-    text: 'The exact same corpus over REST and MCP. JSON-RPC 2.0, streamable HTTP — structured for a model to consume, not just a human.',
+    text: 'The exact same corpus over REST and MCP. JSON-RPC 2.0, streamable HTTP, structured for a model to consume, not just a human.',
   },
   {
     who: 'For the merely curious',
@@ -101,25 +101,25 @@ const PILLARS = [
     label: 'RFC-TUNNELMIND-001',
     tone: 'standard',
     head: 'The protocol belongs to everyone.',
-    body: 'The receipt format is Apache-2.0. The OAI threat namespace is public. Any node, any vendor, any agent implements it. No licensing. No gate. Ubiquity is the strategy — the moat is not the format, it is what signs it.',
+    body: 'The receipt format is Apache-2.0. The OAI threat namespace is public. Any node, any vendor, any agent implements it. No licensing. No gate. Ubiquity is the strategy, the moat is not the format, it is what signs it.',
   },
   {
     label: 'ARCH-LENS-003',
     tone: 'graph',
     head: 'One graph. Four lenses. No blind spots.',
-    body: 'IPs, ASNs, domains, entities, supply paths, routes — one correlated abuse/identity graph. Scry reads who is attacking. Sigil reads who to trust. Tracker reads who is watching. GhostRoute reads where the traffic actually goes — origin AS, RPKI validity, claimed-versus-actual sovereign jurisdiction. Correlated because the infrastructure is the same: the botnet running your ad fraud is the botnet scanning your edge.',
+    body: 'IPs, ASNs, domains, entities, supply paths, routes, one correlated abuse/identity graph. Scry reads who is attacking. Sigil reads who to trust. Tracker reads who is watching. GhostRoute reads where the traffic actually goes, origin AS, RPKI validity, claimed-versus-actual sovereign jurisdiction. Correlated because the infrastructure is the same: the botnet running your ad fraud is the botnet scanning your edge.',
   },
   {
     label: 'ATTEST-TIER-004',
     tone: 'receipts',
     head: 'Proof, not promises.',
-    body: 'Every verdict carries an attestation tier — self-asserted to silicon-root. The receipt is machine-readable, cryptographically signed, and embeddable in any agent workflow, audit trail, or supply-chain report. Trust is not a score. It is evidence.',
+    body: 'Every verdict carries an attestation tier, self-asserted to silicon-root. The receipt is machine-readable, cryptographically signed, and embeddable in any agent workflow, audit trail, or supply-chain report. Trust is not a score. It is evidence.',
   },
   {
     label: 'WITNESS-CT-005',
     tone: 'witness',
     head: 'We witness the logs ourselves.',
-    body: 'GhostRoute holds its own signature-verified roots for the public Certificate Transparency logs — not a crt.sh resell. The exact certificate an AI host serves can be proven included in an append-only log we independently check, and any log that rewinds its history, forks its root, or serves an unverifiable signature trips a regression alert. Provenance you can re-derive, not take on faith.',
+    body: 'GhostRoute holds its own signature-verified roots for the public Certificate Transparency logs, not a crt.sh resell. The exact certificate an AI host serves can be proven included in an append-only log we independently check, and any log that rewinds its history, forks its root, or serves an unverifiable signature trips a regression alert. Provenance you can re-derive, not take on faith.',
   },
 ]
 
@@ -216,13 +216,13 @@ export default function Radar({ onNavigate }) {
         </h1>
         <p>
           Every IP address, every domain, every ad-tech entity, every agent
-          endpoint — one correlated graph of who is attacking, who is watching,
+          endpoint, one correlated graph of who is attacking, who is watching,
           and who can be trusted. Signed receipts. Open protocol. Attestation
           that scales from self-asserted identity to silicon-root hardware trust.
         </p>
         <p className="tm-hero-sell">
           ipinfo tells your agent <em>where</em> an IP is. TunnelMind tells it
-          <em> whether to trust</em> the actor — and hands back a signed receipt
+          <em> whether to trust</em> the actor, and hands back a signed receipt
           it can prove later.
         </p>
         <div className="tm-lens-strip" aria-label="One corpus, four lenses">
@@ -232,11 +232,11 @@ export default function Radar({ onNavigate }) {
           <div className="tm-lens-grid">
             <div className="tm-lens">
               <div className="tm-lens-name">Scry</div>
-              <div className="tm-lens-blurb">Signed observations of hostile network actors — IPs, ASNs, behaviors, threat-feed overlap.</div>
+              <div className="tm-lens-blurb">Signed observations of hostile network actors. IPs, ASNs, behaviors, threat-feed overlap.</div>
             </div>
             <div className="tm-lens">
               <div className="tm-lens-name">Sigil</div>
-              <div className="tm-lens-blurb">Programmatic-advertising supply-graph trust — publishers, SSPs, DSPs, entity scoring.</div>
+              <div className="tm-lens-blurb">Programmatic-advertising supply-graph trust, publishers, SSPs, DSPs, entity scoring.</div>
             </div>
             <div className="tm-lens">
               <div className="tm-lens-name">Tracker</div>
@@ -244,11 +244,11 @@ export default function Radar({ onNavigate }) {
             </div>
             <div className="tm-lens">
               <div className="tm-lens-name">GhostRoute</div>
-              <div className="tm-lens-blurb">Routing integrity and sovereignty — origin AS, RPKI validity, claimed-versus-actual jurisdiction, first-party CT witness.</div>
+              <div className="tm-lens-blurb">Routing integrity and sovereignty, origin AS, RPKI validity, claimed-versus-actual jurisdiction, first-party CT witness.</div>
             </div>
           </div>
           <div className="tm-lens-kicker">
-            The moat is the <span className="tm-accent">join</span> — a fused verdict no siloed incumbent can compute.
+            The moat is the <span className="tm-accent">join</span>, a fused verdict no siloed incumbent can compute.
           </div>
         </div>
         <VerifyWidget onNavigate={onNavigate} />
@@ -326,7 +326,7 @@ export default function Radar({ onNavigate }) {
         <div className="radar-sample-note">
           A <strong>live sample</strong> of the Scry corpus, refreshed every 10s.
           The full corpus, campaign membership, and payload intel are the paid
-          tier — prepaid $20 call blocks — the sample is the point of the
+          tier, prepaid $20 call blocks, the sample is the point of the
           product, not a teaser.
         </div>
 
@@ -357,27 +357,27 @@ export default function Radar({ onNavigate }) {
 
           <section id="viewJson" className="radar-view">
             <p className="radar-view-intro">
-              The exact payloads behind the graph — what an API client or an AI
+              The exact payloads behind the graph, what an API client or an AI
               agent receives. Every field is documented at{' '}
               <a href="https://api.tunnelmind.ai">api.tunnelmind.ai</a>.
             </p>
             <div className="block">
-              <h3>GET /v1/recent — last hour, top 50, hostile only</h3>
+              <h3>GET /v1/recent, last hour, top 50, hostile only</h3>
               <pre id="json-recent">loading…</pre>
             </div>
             <div className="block">
-              <h3>GET /v1/campaigns — coordinated activity</h3>
+              <h3>GET /v1/campaigns, coordinated activity</h3>
               <pre id="json-campaigns">loading…</pre>
             </div>
             <div className="block">
-              <h3>GET /v1/stats — corpus-wide counters</h3>
+              <h3>GET /v1/stats, corpus-wide counters</h3>
               <pre id="json-stats">loading…</pre>
             </div>
           </section>
 
           <section id="viewCurl" className="radar-view">
             <p className="radar-view-intro">
-              Copy, paste, run. No key required for any of these — the free
+              Copy, paste, run. No key required for any of these, the free
               tier is a real tier, not a trial.
             </p>
             {CURL_EXAMPLES.map((ex) => (
@@ -407,10 +407,10 @@ export default function Radar({ onNavigate }) {
           <div className="tm-section-label">What you're looking at</div>
           <p className="tm-prose">
             Every dot is a real source IP a TunnelMind sensor watched attack
-            something in the last hour — and no, none of them are here to make
+            something in the last hour, and no, none of them are here to make
             friends. Amber hubs are coordinated campaigns: a cluster of actors
             running the same tool across multiple networks. Nothing here is a
-            guess — each observation is cryptographically signed at the sensor
+            guess, each observation is cryptographically signed at the sensor
             before it ever reaches the corpus. New arrivals slide in along the
             bottom; the panel on the right is the corpus reading itself back to
             you.
@@ -432,7 +432,7 @@ export default function Radar({ onNavigate }) {
 
         {/* Three ways in */}
         <section className="tm-block">
-          <div className="tm-section-label">Three ways in — all free to start</div>
+          <div className="tm-section-label">Three ways in, all free to start</div>
           <div className="tm-surfaces">
             {SURFACES.map((s) => (
               <a key={s.name} className="tm-surface" href={s.href}>
@@ -450,7 +450,7 @@ export default function Radar({ onNavigate }) {
             <div>
               <div className="tm-section-label">Full corpus access</div>
               <p className="tm-prose" style={{ margin: 0 }}>
-                The radar samples the corpus. Paid access gets the whole thing —
+                The radar samples the corpus. Paid access gets the whole thing:
                 full campaign membership, payload signatures, tool
                 fingerprints, and unmetered lookups. Same data, no velvet rope.
               </p>

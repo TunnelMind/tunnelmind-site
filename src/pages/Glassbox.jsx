@@ -42,13 +42,13 @@ export default function Glassbox() {
         <p className="gb-hero-kicker mono">the transparent lens exhibit</p>
         <h1 className="gb-hero-title">A trust layer whose own workings are public.</h1>
         <p className="gb-hero-lede">
-          Four lenses watch one corpus. This page shows each one as a glass box — the real
+          Four lenses watch one corpus. This page shows each one as a glass box, the real
           pipeline, the real code from this repository, the real schema, the real signed
           receipts. Every claim below links to a file. Every number is fetched live. We do
           not decorate over the machine; the machine <em>is</em> the exhibit.
         </p>
         <div className="gb-hero-affords mono">
-          <a href="/GLASSBOX-MANIFEST.md" className="gb-afford">▸ the manifest — every claim → a file</a>
+          <a href="/GLASSBOX-MANIFEST.md" className="gb-afford">▸ the manifest: every claim → a file</a>
           <a href="#gb-lenses" className="gb-afford">▸ the four glass boxes</a>
           <a href="/standards" className="gb-afford">▸ the open verification layer</a>
         </div>
@@ -66,7 +66,7 @@ export default function Glassbox() {
 
       {/* The receipt — JCS + Ed25519, the open verification layer */}
       <section className="gb-receipt">
-        <div className="gb-section-h mono">the receipt — reproducible trust</div>
+        <div className="gb-section-h mono">the receipt: reproducible trust</div>
         <h2 className="gb-receipt-title">{RECEIPT_FORMAT.title}</h2>
         <p className="gb-receipt-note">{RECEIPT_FORMAT.note}</p>
         <figure className="gb-specimen">
@@ -94,7 +94,7 @@ export default function Glassbox() {
           graph rows that are the product. Schema is open; rows are gated.
         </p>
         <p className="gb-foot-sub mono">
-          the boundary above is enforced, not aspirational — each pipeline's collection
+          the boundary above is enforced, not aspirational, each pipeline's collection
           stage shows shape only; every schema is open; no bulk row is fetched by this page.
           discovery map: <a href="/GLASSBOX-MANIFEST.md">manifest</a> · redaction boundary:{' '}
           <a href="/REDACTION-LIST.md">what's gated &amp; why</a> · open verifier:{' '}

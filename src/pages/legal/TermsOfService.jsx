@@ -24,7 +24,7 @@ export default function TermsOfService() {
         <P>
           TunnelMind operates a trust attestation layer for the agentic internet: a
           distributed fleet of attested sensors and a continuous recon pipeline
-          that together produce the Scry corpus — a signed, continuously-updated
+          that together produce the Scry corpus, a signed, continuously-updated
           record of hostile and automated network activity, including source
           addresses, protocols, tools, and campaigns. On top of the corpus sit a
           naming layer (OAI, the Observed Actor Identifier) and a verification
@@ -33,9 +33,9 @@ export default function TermsOfService() {
         <P>
           The live radar, the chat interface, the free API tier, OAI resolution,
           and the MCP endpoint are provided free of charge as a public sample.
-          Beyond the sample, full depth and scale — the full corpus, complete
+          Beyond the sample, full depth and scale, the full corpus, complete
           campaign membership, full payload signatures, bulk export, and
-          programmatic access — are available by purchasing prepaid access blocks
+          programmatic access, are available by purchasing prepaid access blocks
           (through Stripe, for humans) or by paying per query over the x402 rail
           (for agents), under the license set out in Section 5.
         </P>
@@ -45,14 +45,14 @@ export default function TermsOfService() {
         <P>
           You must be at least 18 years old to use TunnelMind. The free surfaces
           require no account. Purchasing a prepaid access block provisions one API
-          key — a Bearer credential that authenticates every request made under it.
+          key, a Bearer credential that authenticates every request made under it.
         </P>
         <P>
           Treat your API key as a secret. Do not share it, publish it, or embed it
           in client-side or otherwise distributable code. You are responsible for
           all activity conducted with your key. We will revoke a key for any AUP
           violation. If your
-          key is lost or exposed, email support@tunnelmind.ai — we will revoke the
+          key is lost or exposed, email support@tunnelmind.ai; we will revoke the
           compromised key and issue a replacement.
         </P>
       </Section>
@@ -61,7 +61,7 @@ export default function TermsOfService() {
         <P>
           Human purchases are made through Stripe as one-time prepaid blocks of
           API calls. TunnelMind never receives or stores your card details. There
-          is no subscription and nothing renews automatically — a block is a
+          is no subscription and nothing renews automatically, a block is a
           one-time purchase, its calls do not expire, and you buy another only when
           you choose to. Autonomous agents may instead pay per query over the x402
           rail (USDC), with no account and no stored balance.
@@ -78,25 +78,25 @@ export default function TermsOfService() {
         ]} />
       </Section>
 
-      <Section title="5. Corpus data — license and permitted use">
+      <Section title="5. Corpus data, license and permitted use">
         <P>
           The Scry corpus, the underlying database, and its structure and
           compilation are the property of TunnelMind AI, LLC. A purchased access
           block (or paid x402 query) grants you a non-exclusive, non-transferable,
-          revocable license to access and use the corpus — including bulk export —
+          revocable license to access and use the corpus, including bulk export,
           for your own internal security operations, threat research, and product
           integrations.
         </P>
         <P>You may not:</P>
         <UL items={[
           'Resell, sublicense, or publicly redistribute the raw corpus or bulk exports, or use them to build or train a competing data product or feed.',
-          'Use corpus records — including observed IP addresses and actor identifiers — to harass, dox, retaliate against, attack, or otherwise target any person or system.',
+          'Use corpus records, including observed IP addresses and actor identifiers, to harass, dox, retaliate against, attack, or otherwise target any person or system.',
           'Represent the corpus or any substantial extract of it as your own original work, or strip its provenance when redistributing permitted derivatives.',
           'Continue to use, retain for operational use, or redistribute bulk exports after your access block is exhausted or your key is revoked, beyond a reasonable archival copy of your own historical analysis.',
         ]} />
         <P>
           The corpus identifies network infrastructure observed conducting hostile
-          or automated activity. Inclusion is a record of observation — not an
+          or automated activity. Inclusion is a record of observation, not an
           accusation, a legal determination, or a statement about any individual.
           The data carries no warranty of accuracy or completeness; you should not
           make automated punitive decisions solely on a corpus record without

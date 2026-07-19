@@ -31,7 +31,7 @@ const SKILLS = [
     name: 'verify-actor',
     invoke: '/tunnelmind-trust:verify-actor',
     accent: '--accent-cyan',
-    question: 'Who is this, really — and do its claims hold?',
+    question: 'Who is this, really, and do its claims hold?',
     blurb: 'The investigation / attestation call. Fuses Scry × Sigil × GhostRoute into one verdict and names the adversary class behind a node.',
     returns: 'a fused pass / warn / fail verdict + adversary classification + a durable, independently re-checkable receipt',
     when: [
@@ -102,7 +102,7 @@ export default function Skills({ onNavigate }) {
         </h1>
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '28px', maxWidth: '660px' }}>
           The API answers <em>“is this real?”</em> A Skill teaches your Claude agent <strong style={{ color: 'var(--chrome-text)' }}>when to ask</strong> and{' '}
-          <strong style={{ color: 'var(--chrome-text)' }}>what to do with the answer</strong> — and to keep the signed receipt. Two skills, one install, no servers to run.
+          <strong style={{ color: 'var(--chrome-text)' }}>what to do with the answer</strong>, and to keep the signed receipt. Two skills, one install, no servers to run.
         </p>
 
         {/* Install */}
@@ -116,7 +116,7 @@ export default function Skills({ onNavigate }) {
           <a href={MARKETPLACE} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-blue)', textDecoration: 'none' }}>source ↗</a>
         </p>
         <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: '10px 0 0', maxWidth: '660px' }}>
-          The skills call the public TunnelMind API — the free tier needs no key. They drive the same{' '}
+          The skills call the public TunnelMind API; the free tier needs no key. They drive the same{' '}
           <span onClick={() => onNavigate && onNavigate('api')} style={{ color: 'var(--accent-blue)', cursor: 'pointer', textDecoration: 'underline' }}>endpoints and MCP tools</span>{' '}
           documented on the API page; they don't replace them.
         </p>
@@ -132,10 +132,10 @@ export default function Skills({ onNavigate }) {
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', letterSpacing: '0.16em', textTransform: 'uppercase', margin: '44px 0 10px' }}>Why a skill, not just an API call</div>
         <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-cyan)', borderRadius: '4px' }}>
           <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.7', color: 'var(--doc-text)', margin: '0 0 12px' }}>
-            An endpoint is passive — the agent has to already know to call it. A Skill carries the decision logic: <em>consult before you transact; on a deny, stop; on a caution, get a human; always keep the receipt.</em> That last habit is the point — every check leaves a signed, replayable artifact your agent attaches to its action log, so a decision can be proven later, not just asserted.
+            An endpoint is passive; the agent has to already know to call it. A Skill carries the decision logic: <em>consult before you transact; on a deny, stop; on a caution, get a human; always keep the receipt.</em> That last habit is the point, every check leaves a signed, replayable artifact your agent attaches to its action log, so a decision can be proven later, not just asserted.
           </p>
           <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.65', color: 'var(--doc-text-dim)', margin: 0 }}>
-            Built claude-first. The skills are a Claude packaging artifact on the paid edge — the open, vendor-neutral standards (ATAP, OAI, Receipt Format) live under{' '}
+            Built claude-first. The skills are a Claude packaging artifact on the paid edge, the open, vendor-neutral standards (ATAP, OAI, Receipt Format) live under{' '}
             <a href="/standards" style={{ color: 'var(--accent-blue)', textDecoration: 'none' }}>/standards ↗</a>.
           </p>
         </div>

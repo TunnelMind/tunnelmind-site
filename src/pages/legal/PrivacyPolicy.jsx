@@ -8,7 +8,7 @@ export default function PrivacyPolicy() {
       <Section title="1. What TunnelMind is">
         <P>
           TunnelMind AI, LLC ("TunnelMind," "we," "us") operates a trust
-          attestation layer for the agentic internet. You — or your agent — ask
+          attestation layer for the agentic internet. You, or your agent, ask
           us to evaluate a destination (an IP address, domain, ASN, or seller
           path), and we return a signed verdict drawn from our intelligence
           corpus across four lenses (Scry, Sigil, Tracker, GhostRoute). We
@@ -20,14 +20,14 @@ export default function PrivacyPolicy() {
       <Section title="2. Data we collect">
         <P>The following data is collected when you use TunnelMind:</P>
         <UL items={[
-          'Email address — collected at account creation and/or Stripe checkout.',
-          'API key — issued to you for programmatic access. We store only a SHA-256 hash; the raw key is shown once at creation and never stored.',
-          'Query inputs — the IP addresses, domains, ASNs, or seller paths you submit to /v1/verify, /v1/preflight, and related endpoints, with a timestamp. These are the subjects you ask us to evaluate, not your own network traffic.',
-          'Verdict and reason — the attestation we returned (allow / caution / deny, or per-lens score) and the evidence behind it, retained so receipts remain verifiable.',
-          'Stripe customer ID — stored in our database if you purchase a prepaid block.',
-          'x402 payment metadata — for agent micropayments, the on-rail payment reference associated with a call. We do not custody funds.',
-          'WebAuthn credential ID and public key — stored if you use a passkey for dashboard sign-in. Your private key never leaves your device.',
-          'Terms of Service acceptance timestamp — recorded when you complete registration.',
+          'Email address, collected at account creation and/or Stripe checkout.',
+          'API key, issued to you for programmatic access. We store only a SHA-256 hash; the raw key is shown once at creation and never stored.',
+          'Query inputs, the IP addresses, domains, ASNs, or seller paths you submit to /v1/verify, /v1/preflight, and related endpoints, with a timestamp. These are the subjects you ask us to evaluate, not your own network traffic.',
+          'Verdict and reason, the attestation we returned (allow / caution / deny, or per-lens score) and the evidence behind it, retained so receipts remain verifiable.',
+          'Stripe customer ID, stored in our database if you purchase a prepaid block.',
+          'x402 payment metadata, for agent micropayments, the on-rail payment reference associated with a call. We do not custody funds.',
+          'WebAuthn credential ID and public key, stored if you use a passkey for dashboard sign-in. Your private key never leaves your device.',
+          'Terms of Service acceptance timestamp, recorded when you complete registration.',
         ]} />
         <P>
           <strong>What we do not collect:</strong> the content or payload of your
@@ -43,7 +43,7 @@ export default function PrivacyPolicy() {
           'Enforce usage and rate limits and account for prepaid call balances.',
           'Process payments via Stripe (prepaid blocks) and the x402 rail (agent micropayments).',
           'Send transactional email (receipts, balance and security alerts) if you opt in.',
-          'Aggregate anonymized destination observations to improve the TunnelMind intelligence corpus. Individual account identifiers are never included in aggregates — only statistical derivatives.',
+          'Aggregate anonymized destination observations to improve the TunnelMind intelligence corpus. Individual account identifiers are never included in aggregates, only statistical derivatives.',
         ]} />
       </Section>
 
@@ -59,9 +59,9 @@ export default function PrivacyPolicy() {
       <Section title="5. Data sharing and subprocessors">
         <P>We share data with the following subprocessors only:</P>
         <UL items={[
-          'Stripe, Inc. — payment processing for prepaid blocks. Stripe receives your email and payment card. Stripe Privacy Policy: stripe.com/privacy.',
-          'Cloudflare, Inc. — CDN, Pages, Workers, and edge storage for tunnelmind.ai and data.tunnelmind.ai. Cloudflare Privacy Policy: cloudflare.com/privacypolicy.',
-          'Hetzner Online GmbH — VPS hosting (Frankfurt, Germany). Hetzner Privacy Policy: hetzner.com/legal/privacy-policy.',
+          'Stripe, Inc., payment processing for prepaid blocks. Stripe receives your email and payment card. Stripe Privacy Policy: stripe.com/privacy.',
+          'Cloudflare, Inc.. CDN, Pages, Workers, and edge storage for tunnelmind.ai and data.tunnelmind.ai. Cloudflare Privacy Policy: cloudflare.com/privacypolicy.',
+          'Hetzner Online GmbH. VPS hosting (Frankfurt, Germany). Hetzner Privacy Policy: hetzner.com/legal/privacy-policy.',
         ]} />
         <P>
           We do not sell, rent, or trade your personal data. We do not share data
@@ -92,12 +92,12 @@ export default function PrivacyPolicy() {
           Regardless of your jurisdiction, you have the following rights:
         </P>
         <UL items={[
-          'Access — request a copy of the personal data we hold about you.',
-          'Correction — correct inaccurate personal data.',
-          'Deletion — permanently delete your account and associated personal data. Email legal@tunnelmind.ai.',
-          'Portability — receive your data in machine-readable format.',
-          'Restriction — ask us to stop processing your data while a dispute is pending.',
-          'Objection — object to processing based on legitimate interests.',
+          'Access, request a copy of the personal data we hold about you.',
+          'Correction, correct inaccurate personal data.',
+          'Deletion, permanently delete your account and associated personal data. Email legal@tunnelmind.ai.',
+          'Portability, receive your data in machine-readable format.',
+          'Restriction, ask us to stop processing your data while a dispute is pending.',
+          'Objection, object to processing based on legitimate interests.',
         ]} />
         <P>
           EU and UK residents have these rights under GDPR and UK GDPR respectively.
@@ -109,7 +109,7 @@ export default function PrivacyPolicy() {
       <Section title="8. Security">
         <P>
           Traffic between your client and the TunnelMind API is encrypted in
-          transit with TLS. API keys are stored as SHA-256 hashes — the raw key is
+          transit with TLS. API keys are stored as SHA-256 hashes, the raw key is
           displayed once at creation and never stored. WebAuthn private keys never
           leave your device. Verdicts and receipts are Ed25519-signed and
           hash-chained for tamper evidence. We do not store passwords.
@@ -121,7 +121,7 @@ export default function PrivacyPolicy() {
           See our separate Law Enforcement Policy for how we respond to lawful process.
           We do not proactively share data with law enforcement absent a valid legal
           order. The data we can produce in response to legal process is limited to
-          account records and query metadata — we have no traffic payload content to
+          account records and query metadata, we have no traffic payload content to
           disclose.
         </P>
       </Section>

@@ -133,7 +133,7 @@ export default function Compare() {
           Short answer: they answer <em>&ldquo;what is this IP?&rdquo;</em> TunnelMind
           answers <em>&ldquo;should my agent trust this actor right now, on whose
           authority, and can I prove the decision later?&rdquo;</em> Those are different
-          categories. We don&apos;t try to out-scale ipinfo on raw geolocation — and
+          categories. We don&apos;t try to out-scale ipinfo on raw geolocation, and
           we don&apos;t need to.
         </p>
 
@@ -144,7 +144,7 @@ export default function Compare() {
           <div style={sectionLabel}>A different question</div>
           <p style={prose}>
             <strong style={bright}>ipinfo</strong> (and MaxMind, Spur) is an
-            enrichment lookup: you hand it an address, it hands back attributes —
+            enrichment lookup: you hand it an address, it hands back attributes:
             geo, ASN, company, VPN/proxy flags. They win the raw-scale game
             decisively, and you should not try to beat them there.{' '}
             <strong style={bright}>GreyNoise</strong> tells you whether an IP is
@@ -153,7 +153,7 @@ export default function Compare() {
           </p>
           <p style={{ ...prose, marginBottom: 0 }}>
             TunnelMind is a <strong style={bright}>trust-attestation layer for
-            agents</strong>. The atom is not a lookup row — it&apos;s a signed
+            agents</strong>. The atom is not a lookup row, it&apos;s a signed
             observation. Everything else is composition.
           </p>
         </section>
@@ -219,18 +219,18 @@ export default function Compare() {
         <section style={{ marginBottom: '48px' }}>
           <div style={sectionLabel}>The three things a lookup can&apos;t do</div>
           <p style={prose}>
-            <strong style={bright}>Destination intelligence</strong> — the only
+            <strong style={bright}>Destination intelligence</strong>, the only
             axis the enrichment vendors touch, and only a thin geo/ASN slice of
             it.
           </p>
           <p style={prose}>
-            <strong style={bright}>Provenance</strong> — every observation is
+            <strong style={bright}>Provenance</strong>, every observation is
             signed at the source (Ed25519 at the sensor, ATAP-witnessed). A lookup
             gives you an answer; it can&apos;t give you a signed, attributable
             chain for <em>why</em>.
           </p>
           <p style={{ ...prose, marginBottom: 0 }}>
-            <strong style={bright}>Witnessability</strong> — a replayable receipt
+            <strong style={bright}>Witnessability</strong>, a replayable receipt
             an auditor, human or machine, can verify after the fact. ipinfo and
             GreyNoise have no concept of this.
           </p>
@@ -242,17 +242,17 @@ export default function Compare() {
         <section style={{ marginBottom: '48px' }}>
           <div style={sectionLabel}>&ldquo;Don&apos;t you need vast scale of intelligence?&rdquo;</div>
           <p style={prose}>
-            Honest answer: not ipinfo&apos;s kind, and that&apos;s deliberate — but
+            Honest answer: not ipinfo&apos;s kind, and that&apos;s deliberate, but
             yes, the kind that matters here. The insight is that the data is{' '}
             <strong style={bright}>public and self-replenishing</strong>, so the
             problem is aggregation and join, not building a planet-scale probe
             network:
           </p>
           <ul style={{ ...prose, marginBottom: '10px', paddingLeft: '22px' }}>
-            <li><strong style={bright}>Sigil supply graph</strong> — {seats} exchange seats and {sellPaths} sell-path edges across {entities} entities, derived from sellers.json / ads.txt / OpenRTB and re-crawled weekly; more than half of seats resolve to a named owner.</li>
-            <li><strong style={bright}>Augur</strong> — eight live threat feeds (URLhaus, ThreatFox, Tor, Spamhaus DROP, Feodo, certificate transparency, and more).</li>
-            <li><strong style={bright}>GhostRoute</strong> — first-party RPKI (our own validator, not a resold feed) plus tamper-evident certificate-transparency witnessing.</li>
-            <li><strong style={bright}>Scry fleet</strong> — Familiar sensors signing observations at the edge. Those signed observations surface on every verify as a <em>verified-tier</em> measurement axis — observation breadth, the count of distinct signed vantages that witnessed an actor (an un-fakeable device-count), connection durations — witnessed conduct a commodity vendor can model but cannot sign.</li>
+            <li><strong style={bright}>Sigil supply graph</strong>, {seats} exchange seats and {sellPaths} sell-path edges across {entities} entities, derived from sellers.json / ads.txt / OpenRTB and re-crawled weekly; more than half of seats resolve to a named owner.</li>
+            <li><strong style={bright}>Augur</strong>, eight live threat feeds (URLhaus, ThreatFox, Tor, Spamhaus DROP, Feodo, certificate transparency, and more).</li>
+            <li><strong style={bright}>GhostRoute</strong>, first-party RPKI (our own validator, not a resold feed) plus tamper-evident certificate-transparency witnessing.</li>
+            <li><strong style={bright}>Scry fleet</strong>. Familiar sensors signing observations at the edge. Those signed observations surface on every verify as a <em>verified-tier</em> measurement axis, observation breadth, the count of distinct signed vantages that witnessed an actor (an un-fakeable device-count), connection durations, witnessed conduct a commodity vendor can model but cannot sign.</li>
           </ul>
           <p style={{
             fontFamily: 'var(--font-mono)', fontSize: '10px',
@@ -260,11 +260,11 @@ export default function Compare() {
           }}>
             ↳ supply-graph counts pulled live from the public{' '}
             <a href="https://data.tunnelmind.ai/v1/stats" style={{ color: 'var(--accent-green)' }}>/v1/stats</a>{' '}
-            scoreboard{stats?.asOf ? `, as of ${stats.asOf}` : ''} — they track the weekly crawl, not this page.
+            scoreboard{stats?.asOf ? `, as of ${stats.asOf}` : ''}, they track the weekly crawl, not this page.
           </p>
           <p style={{ ...prose, marginBottom: 0 }}>
             That&apos;s data scale of a <em>different shape</em> than an IP-geo
-            database — and it&apos;s the shape an agent needs before it transacts.
+            database, and it&apos;s the shape an agent needs before it transacts.
           </p>
         </section>
 
@@ -283,7 +283,7 @@ export default function Compare() {
           <p style={{ ...prose, marginBottom: 0 }}>
             GreyNoise and Spur own one half. DV, IAS and HUMAN own another. The
             agent-behavior surface barely exists as a product anywhere. TunnelMind
-            is the only place all four live in one graph — and the only one of
+            is the only place all four live in one graph, and the only one of
             them designed for an agent customer, not a human dashboard.
           </p>
         </section>
@@ -300,7 +300,7 @@ export default function Compare() {
             fontStyle: 'italic', margin: 0,
           }}>
             ipinfo tells your agent where an IP is. TunnelMind tells your agent
-            whether to trust an actor, on whose authority — and leaves a receipt
+            whether to trust an actor, on whose authority, and leaves a receipt
             it can prove later.
           </p>
         </div>

@@ -15,7 +15,7 @@ const RISK_SIGNALS = [
     what_you_can_do: [
       'Review your tracker graph to identify the highest-risk domains.',
       'Enable DNS sinkholing for data brokers and fingerprinting domains in your policy settings.',
-      'Check your highest-scoring data categories — CREDENTIALS and HEALTH have escalated risk.',
+      'Check your highest-scoring data categories. CREDENTIALS and HEALTH have escalated risk.',
     ],
     severity: 'medium',
   },
@@ -24,7 +24,7 @@ const RISK_SIGNALS = [
     verdict: 'BLOCK',
     title: 'Credential Data Destined for Surveillance Actor',
     trigger: 'Traffic classified as CREDENTIALS data category is destined for a SURVEILLANCE or DATA_BROKER destination.',
-    what_it_means: 'Something on your network is transmitting data TunnelMind has classified as credential-adjacent to a known surveillance destination. This is a high-severity signal — it may indicate a credential-harvesting SDK, a browser extension with overly broad access, or malware.',
+    what_it_means: 'Something on your network is transmitting data TunnelMind has classified as credential-adjacent to a known surveillance destination. This is a high-severity signal, it may indicate a credential-harvesting SDK, a browser extension with overly broad access, or malware.',
     what_you_can_do: [
       'Check the specific domain flagged in your attestation event log.',
       'Identify which application generated the traffic (by time correlation and device).',
@@ -38,7 +38,7 @@ const RISK_SIGNALS = [
     verdict: 'AUDIT',
     title: 'Traffic Routed to Government-Attributed Destination',
     trigger: 'Your traffic has been routed to an IP or domain classified as GOV_ATTRIBUTED.',
-    what_it_means: 'TunnelMind\'s surveillance database has classified this destination as attributed to a government entity. This is not necessarily malicious — many legitimate services (CDNs, cloud providers, analytics platforms contracted by governments) carry this classification. However, it warrants awareness.',
+    what_it_means: 'TunnelMind\'s surveillance database has classified this destination as attributed to a government entity. This is not necessarily malicious, many legitimate services (CDNs, cloud providers, analytics platforms contracted by governments) carry this classification. However, it warrants awareness.',
     what_you_can_do: [
       'Review the specific domain in your tracker graph for ownership and jurisdiction details.',
       'Check the jurisdiction of the attributed entity.',
@@ -64,7 +64,7 @@ const RISK_SIGNALS = [
     verdict: 'AUDIT',
     title: 'Persistent Beacon Pattern Detected',
     trigger: 'A domain on your network is being queried at a regular, periodic interval consistent with a tracking heartbeat.',
-    what_it_means: 'One or more of your devices is regularly phoning home to the same domain on a predictable schedule. This is consistent with ad-tech heartbeat requests, telemetry SDKs, or persistent tracking pixels — but could also be legitimate app behavior.',
+    what_it_means: 'One or more of your devices is regularly phoning home to the same domain on a predictable schedule. This is consistent with ad-tech heartbeat requests, telemetry SDKs, or persistent tracking pixels, but could also be legitimate app behavior.',
     what_you_can_do: [
       'Identify the beaconing domain in your surveillance graph.',
       'Cross-reference with the TunnelMind actor database to see who operates this domain.',
@@ -75,14 +75,14 @@ const RISK_SIGNALS = [
 ]
 
 const SEVERITY_COLOR = {
-  critical: 'var(--accent-red, #ff4444)',
-  medium:   'var(--accent-yellow, #f5a623)',
+  critical: 'var(--accent-red)',
+  medium:   'var(--accent-amber)',
   low:      'var(--accent-green)',
 }
 
 const VERDICT_COLOR = {
-  BLOCK: 'var(--accent-red, #ff4444)',
-  WARN:  'var(--accent-yellow, #f5a623)',
+  BLOCK: 'var(--accent-red)',
+  WARN:  'var(--accent-amber)',
   AUDIT: 'var(--accent-green)',
   ALLOW: 'var(--chrome-text-dim)',
 }
@@ -170,23 +170,23 @@ export default function AccountRiskDisclosure() {
       <Section title="How verdicts are generated">
         <P>
           All verdicts are produced by TunnelMind's attestation policy engine,
-          which runs locally on our VPS using your traffic metadata — never by a
+          which runs locally on our VPS using your traffic metadata, never by a
           cloud AI service. The policy engine matches each event against a set of
           rules you can review and modify in your policy settings. Default rules
           reflect TunnelMind's baseline risk assessment of surveillance actor categories.
         </P>
         <UL items={[
-          'ALLOW — traffic is permitted and logged.',
-          'WARN — traffic is permitted but flagged for your review.',
-          'BLOCK — traffic is dropped and you are notified.',
-          'AUDIT — traffic is permitted and a signed attestation receipt is generated.',
+          'ALLOW: traffic is permitted and logged.',
+          'WARN: traffic is permitted but flagged for your review.',
+          'BLOCK: traffic is dropped and you are notified.',
+          'AUDIT: traffic is permitted and a signed attestation receipt is generated.',
         ]} />
       </Section>
 
       <Section title="Account actions we may take">
         <P>
           TunnelMind does not automatically restrict your account based on surveillance
-          risk scores — those signals exist for your benefit, not ours. However, we
+          risk scores, those signals exist for your benefit, not ours. However, we
           may take account action in the following circumstances:
         </P>
         <UL items={[

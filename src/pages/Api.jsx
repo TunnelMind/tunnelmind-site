@@ -1,4 +1,55 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
+
+// P56 — live API playground: drives the real NDJSON stream through the
+// same-origin /api/verify-stream proxy (CSP is connect-src 'self').
+// Events render at real lens-completion timing; nothing is paced.
+function LivePlayground() {
+  const traceRef = useRef(null)
+  const [node, setNode] = useState('')
+  const [running, setRunning] = useState(false)
+
+  useEffect(() => {
+    const el = traceRef.current
+    if (!el) return
+    const done = () => setRunning(false)
+    el.addEventListener('verify:done', done)
+    el.addEventListener('verify:error', done)
+    return () => { el.removeEventListener('verify:done', done); el.removeEventListener('verify:error', done) }
+  }, [])
+
+  const run = (e) => {
+    e.preventDefault()
+    const v = node.trim().toLowerCase()
+    if (!v || !traceRef.current) return
+    setRunning(true)
+    traceRef.current.setAttribute('node', v)
+    traceRef.current.play()
+  }
+
+  return (
+    <div style={{ margin: '0 0 28px' }}>
+      <div style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '10px' }}>
+        Live playground · POST /v1/verify with accept: application/x-ndjson
+      </div>
+      <form onSubmit={run} style={{ display: 'flex', gap: '10px', marginBottom: '12px', flexWrap: 'wrap' }}>
+        <input
+          value={node}
+          onChange={(e) => setNode(e.target.value)}
+          placeholder="8.8.8.8 or a domain"
+          aria-label="Node to verify"
+          style={{ fontFamily: 'var(--wpm-font-mono)', fontSize: '15px', padding: '6px 10px', border: '2px solid var(--wpm-ink)', background: 'var(--wpm-paper)', color: 'var(--wpm-ink)', flex: '1 1 220px' }}
+        />
+        <button type="submit" disabled={running} className="wpm-btn" style={{ fontSize: '15px' }}>
+          {running ? 'tracing…' : 'trace it live'}
+        </button>
+      </form>
+      <verify-trace ref={traceRef} mode="live" src="/api/verify-stream" style={{ maxWidth: '640px', display: 'block' }} />
+      <p style={{ fontFamily: 'var(--wpm-font-mono)', fontSize: '12px', marginTop: '8px' }}>
+        Each row lands when that lens actually resolves. The bar is the real timing, not an animation.
+      </p>
+    </div>
+  )
+}
 
 // /api — the full TunnelMind surface catalog, for humans and agents.
 //
@@ -359,6 +410,8 @@ export default function Api({ onNavigate }) {
           the Scry attacker corpus and the Data API; <strong style={{ color: 'var(--chrome-text)' }}>MCP</strong> for
           agents, every Data API endpoint is also a tool. JSON in, JSON out, CORS open. The free tier needs no key.
         </p>
+
+        <LivePlayground />
 
         {/* Related builder surfaces (demoted from the top nav 2026-07 — kept
             one click away here so Docs is the single builder hub). */}

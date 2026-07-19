@@ -1,5 +1,37 @@
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import VerifyWidget from '../components/VerifyWidget.jsx'
+
+// P56: canned trace for the <verify-trace> marketing loop in the join
+// section. Deliberately a HOSTILE example (the hero's live console defaults
+// to a clean one) so both outcomes are on the page. This is illustrative
+// and labeled as such below the component; the live path is the console.
+const CANNED_TRACE = {
+  node: '203.0.113.45',
+  steps: [
+    { lens: 'Scry',       finding: '3 hostile observations · last 4h · Familiar SFO-2', status: 'HOSTILE', bad: true },
+    { lens: 'Sigil',      finding: '1,204 sells_through edges · 2 unauthorized paths',  status: 'SPOOFED', bad: true },
+    { lens: 'Tracker',    finding: '5 demand beacons · matches surveillance vendor',    status: 'FLAGGED', bad: true },
+    { lens: 'GhostRoute', finding: 'RPKI invalid · origin AS mismatch',                 status: 'INVALID', bad: true },
+  ],
+  verdict: {
+    verdict: 'UNTRUSTED', score: 0.12, tier: 'software-attested',
+    summary: 'attack + supply + routing corroborate', bad: true,
+  },
+}
+
+function TraceDemo() {
+  const ref = useRef(null)
+  useEffect(() => { if (ref.current) ref.current.data = CANNED_TRACE }, [])
+  return (
+    <div className="hm-tracedemo">
+      <verify-trace ref={ref} autoplay="" loop="" />
+      <p className="hm-tracelabel">
+        Illustrative example: a canned trace of a hostile node, played on a loop.
+        The console above runs the real thing.
+      </p>
+    </div>
+  )
+}
 
 // Home — the root. As of 2026-07 the hero IS the live product: an interactive
 // cross-lens Verify console (src/components/VerifyWidget.jsx), not a scripted
@@ -69,6 +101,7 @@ export default function Home({ onNavigate }) {
               <p style={{ marginTop: '21px' }}>A threat feed says the actor is hostile. An RPKI validator says the route is clean. <strong>Only the join knows they're the same entity, and what to do about it.</strong></p>
             </div>
           </div>
+          <TraceDemo />
         </section>
 
         <section className="hm-block" id="lenses">

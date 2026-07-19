@@ -2464,3 +2464,8 @@ h1, h2 {
 .hm-page .tm-vv-foot { color: var(--wpm-ink); }
 .hm-page .tm-verify-eyebrow { font-size: 12px; }
 .hm-page .tm-vv-label, .hm-page .tm-vv-score { font-size: 11px; color: var(--wpm-ink); }
+
+/* P56: VerifyTrace marketing loop in the join section */
+.hm-tracedemo { margin-top: var(--s4); max-width: 620px; }
+.hm-tracedemo verify-trace { box-shadow: var(--wpm-shadow); display: block; }
+.hm-tracelabel { font-family: var(--wpm-font-mono); font-size: 12px; margin-top: 10px; }

@@ -110,20 +110,24 @@ export default function App() {
   return (
     <div className="wpm wpm-desktop app-desktop">
       <div className="wpm-window app-window">
-        <div className="wpm-titlebar">
+        <header className="wpm-titlebar">
           <span className="wpm-closebox app-decor" aria-hidden="true" />
           <span className="wpm-titlebar-title">TunnelMind</span>
           <span className="wpm-zoombox app-decor" aria-hidden="true" />
-        </div>
+        </header>
 
         <TopNav site="tunnelmind" currentPage={page} onNavigate={handleNavigate} />
 
-        <div className="app-content">
+        {/* tabIndex: the window body is the scroll container — keyboard users
+            must be able to focus it to scroll (axe scrollable-region-focusable) */}
+        <main className="app-content" tabIndex={0}>
           {currentPageEl}
-        </div>
+        </main>
 
-        <Footer />
-        <StatusBar page={page} />
+        <footer>
+          <Footer />
+          <StatusBar page={page} />
+        </footer>
       </div>
     </div>
   )

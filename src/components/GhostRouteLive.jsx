@@ -59,7 +59,7 @@ export default function GhostRouteLive() {
     <section className="gb-live" aria-label="GhostRoute live routing pulse">
       <div className="gb-live-head">
         <div>
-          <h3 className="gb-live-title">GhostRoute: live routing pulse</h3>
+          <h2 className="gb-live-title">GhostRoute: live routing pulse</h2>
           <p className="gb-live-sub">
             Already-collected CT inclusion proofs, streamed read-only. The public page triggers no collection.
           </p>

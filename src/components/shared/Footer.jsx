@@ -30,7 +30,7 @@ const LEGAL_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className="tm-footer">
+    <div className="tm-footer">
       <div className="tm-footer-id">
         <span className="tm-footer-name">TunnelMind AI, LLC</span>
         <span className="tm-footer-copy">&copy; {new Date().getFullYear()}</span>
@@ -61,6 +61,6 @@ export default function Footer() {
           ))}
         </div>
       </div>
-    </footer>
+    </div>
   )
 }

@@ -56,7 +56,7 @@ export default function Home({ onNavigate }) {
         <a className="wpm-bb-btn" href="#lens-ghostroute">GhostRoute</a>
       </div>
 
-      <main className="hm-wrap" id="top">
+      <div className="hm-wrap" id="top">
         <section className="hm-hero">
           <p className="hm-eyebrow">Trust attestation &middot; the agentic internet</p>
           <h1 className="hm-h1">Ask one question. Get a verdict <span className="hm-qt">no single feed can return.</span></h1>
@@ -152,7 +152,7 @@ export default function Home({ onNavigate }) {
             <div className="hm-lcard"><div className="hm-ltop"><span className="hm-lh">ATAP</span><span className="hm-status beta">v0.1</span></div><p>Agent Trust Attestation Protocol: tiers a verdict's attestation from self-asserted through software and tee-tpm to silicon-root. Public comment through 2026-08-12.</p><div className="hm-stat"><a href="https://tunnelmind.ai/atap/standard">Read the spec &rarr;</a></div></div>
           </div>
         </section>
-      </main>
+      </div>
     </div>
   )
 }

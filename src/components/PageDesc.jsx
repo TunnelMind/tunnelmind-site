@@ -9,16 +9,17 @@ export default function PageDesc({ title, desc }) {
       alignItems: 'baseline',
       gap: '16px',
     }}>
-      <span style={{
+      <h1 style={{
         fontFamily: 'var(--font-mono)',
         fontSize: '12px',
         fontWeight: 600,
         color: 'var(--accent-green)',
         whiteSpace: 'nowrap',
         flexShrink: 0,
+        margin: 0,
       }}>
         {title}
-      </span>
+      </h1>
       <span style={{
         fontFamily: 'var(--font-mono)',
         fontSize: '12px',

@@ -36,7 +36,7 @@ export default function Glassbox() {
   }, [])
 
   return (
-    <main className="gb-page">
+    <div className="gb-page">
       {/* Hero — the thesis, plainly. No mystique. */}
       <section className="gb-hero">
         <p className="gb-hero-kicker mono">the transparent lens exhibit</p>
@@ -101,6 +101,6 @@ export default function Glassbox() {
           <a href="/standards">standards</a> · the endpoints: <a href="/api">API</a>
         </p>
       </footer>
-    </main>
+    </div>
   )
 }

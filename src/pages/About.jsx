@@ -31,7 +31,7 @@ const rule = { height: '1px', background: 'var(--chrome-border)', marginBottom: 
 
 export default function About() {
   return (
-    <div style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
+    <div tabIndex={0} style={{ flex: 1, overflowY: 'auto', background: 'var(--doc-bg)' }}>
       <div style={{ maxWidth: '720px', margin: '0 auto', padding: 'clamp(32px, 6vw, 56px) clamp(16px, 4vw, 32px)' }}>
 
         {/* ── Mission ──────────────────────────────────────────────── */}

@@ -301,7 +301,7 @@ export default function Radar({ onNavigate }) {
         {PILLARS.map((p) => (
           <article key={p.label} className={`tm-pillar tm-pillar-${p.tone}`}>
             <div className="tm-pillar-label">{p.label}</div>
-            <h3 className="tm-pillar-head">{p.head}</h3>
+            <h2 className="tm-pillar-head">{p.head}</h2>
             <p className="tm-pillar-body">{p.body}</p>
           </article>
         ))}
@@ -330,7 +330,7 @@ export default function Radar({ onNavigate }) {
           product, not a teaser.
         </div>
 
-        <main className="radar-main">
+        <div className="radar-main">
           <section id="viewVisual" className="radar-view active">
             <div id="graphArea">
               <svg id="graphSvg" xmlns="http://www.w3.org/2000/svg"></svg>
@@ -391,7 +391,7 @@ export default function Radar({ onNavigate }) {
               </React.Fragment>
             ))}
           </section>
-        </main>
+        </div>
 
         <footer className="radar-foot">
           <span>tunnelmind.ai · live SSE feed · refreshes every 10s</span>

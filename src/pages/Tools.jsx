@@ -96,7 +96,7 @@ function SurfaceCard({ tool, onNavigate }) {
       </div>
       <p style={{
         fontFamily: 'var(--font-serif)',
-        fontSize: '14px',
+        fontSize: '16px',
         lineHeight: '1.7',
         color: 'var(--doc-text)',
         margin: 0,
@@ -149,7 +149,7 @@ export default function Tools({ onNavigate }) {
 
         <h1 style={{
           fontFamily: 'var(--font-serif)',
-          fontSize: 'clamp(22px, 4vw, 32px)',
+          fontSize: '32px',
           fontWeight: 400,
           color: 'var(--chrome-text-bright)',
           marginBottom: '10px',
@@ -159,7 +159,7 @@ export default function Tools({ onNavigate }) {
         </h1>
         <p style={{
           fontFamily: 'var(--font-serif)',
-          fontSize: '15px',
+          fontSize: '16px',
           lineHeight: '1.7',
           color: 'var(--doc-text-dim)',
           marginBottom: '40px',
@@ -206,7 +206,7 @@ export default function Tools({ onNavigate }) {
             </div>
             <p style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '13px',
+              fontSize: '16px',
               color: 'var(--doc-text-dim)',
               margin: 0,
             }}>

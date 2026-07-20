@@ -38,7 +38,7 @@ const sectionLabel = {
 }
 const prose = {
   fontFamily: 'var(--font-serif)',
-  fontSize: '15px',
+  fontSize: '16px',
   lineHeight: '1.8',
   color: 'var(--doc-text-dim)',
   marginBottom: '14px',
@@ -121,7 +121,7 @@ export default function Compare() {
         <div style={eyebrow('var(--accent-green)')}>● Compare</div>
         <h1 style={{
           fontFamily: 'var(--font-serif)',
-          fontSize: 'clamp(24px, 4vw, 36px)',
+          fontSize: '32px',
           fontWeight: 400,
           lineHeight: '1.25',
           color: 'var(--chrome-text-bright)',
@@ -196,7 +196,7 @@ export default function Compare() {
                     <td style={{
                       padding: '11px 8px 11px 0',
                       borderBottom: '1px solid var(--chrome-border)',
-                      fontSize: '13.5px', lineHeight: '1.5',
+                      fontSize: '16px', lineHeight: '1.5',
                       color: 'var(--doc-text-dim)',
                     }}>{label}</td>
                     {cells.map((k, i) => <Cell key={i} kind={k} />)}
@@ -295,7 +295,7 @@ export default function Compare() {
           marginTop: '8px',
         }}>
           <p style={{
-            fontFamily: 'var(--font-serif)', fontSize: '17px',
+            fontFamily: 'var(--font-serif)', fontSize: '16px',
             lineHeight: '1.7', color: 'var(--chrome-text-bright)',
             fontStyle: 'italic', margin: 0,
           }}>

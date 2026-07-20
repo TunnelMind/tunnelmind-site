@@ -69,7 +69,7 @@ function Code({ children }) {
       background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)',
       borderLeft: '3px solid var(--accent-green)', borderRadius: '4px',
       padding: '16px 18px', margin: '0 0 18px', overflowX: 'auto',
-      ...mono, fontSize: '12.5px', lineHeight: 1.55,
+      ...mono, fontSize: '16px', lineHeight: 1.55,
       color: 'var(--chrome-text-bright)',
     }}>{children}</pre>
   )
@@ -78,13 +78,13 @@ function Code({ children }) {
 export default function Agents() {
   return (
     <div style={{ maxWidth: '860px', margin: '0 auto', padding: '48px 24px 80px', overflowY: 'auto' }}>
-      <div style={{ ...mono, fontSize: '10px', color: 'var(--chrome-text-dim)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '10px' }}>
+      <div style={{ ...mono, fontSize: '16px', color: 'var(--chrome-text-dim)', textTransform: 'uppercase', letterSpacing: '0.14em', marginBottom: '10px' }}>
         /agents, framework interop
       </div>
-      <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '30px', color: 'var(--chrome-text-bright)', margin: '0 0 14px' }}>
+      <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', color: 'var(--chrome-text-bright)', margin: '0 0 14px' }}>
         MCP-native. Bring any agent.
       </h1>
-      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 28px' }}>
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 28px' }}>
         TunnelMind's tool surface is the Model Context Protocol itself, not an SDK with an
         MCP wrapper bolted on. Claude, Gemini (via Google's Agent Development Kit), and any
         other MCP-capable framework connect the same way: point a standard MCP client at the
@@ -99,46 +99,46 @@ export default function Agents() {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '8px' }}>
             <code style={{ ...mono, fontSize: '13.5px', fontWeight: 700, color: `var(${s.accent})` }}>{s.url}</code>
-            <span style={{ ...mono, fontSize: '11px', color: 'var(--chrome-text-dim)' }}>{s.tools} tools · POST /mcp</span>
+            <span style={{ ...mono, fontSize: '16px', color: 'var(--chrome-text-dim)' }}>{s.tools} tools · POST /mcp</span>
           </div>
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: 1.6, color: 'var(--doc-text-dim)', margin: '8px 0 0' }}>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: 1.6, color: 'var(--doc-text-dim)', margin: '8px 0 0' }}>
             <strong style={{ color: 'var(--chrome-text-bright)' }}>{s.name}.</strong> {s.blurb}
           </p>
         </div>
       ))}
 
-      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', color: 'var(--chrome-text-bright)', margin: '36px 0 10px' }}>
+      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', color: 'var(--chrome-text-bright)', margin: '36px 0 10px' }}>
         See the tools first
       </h2>
-      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 12px' }}>
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 12px' }}>
         Discovery needs no account and no key:
       </p>
       <Code>{DISCOVER_CURL}</Code>
 
-      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', color: 'var(--chrome-text-bright)', margin: '36px 0 10px' }}>
+      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', color: 'var(--chrome-text-bright)', margin: '36px 0 10px' }}>
         Gemini / ADK in one file
       </h2>
-      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 12px' }}>
-        This is the working reference agent, verbatim. ADK's <code style={{ ...mono, fontSize: '12.5px' }}>McpToolset</code> is
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 12px' }}>
+        This is the working reference agent, verbatim. ADK's <code style={{ ...mono, fontSize: '16px' }}>McpToolset</code> is
         a standard MCP client, so there is nothing TunnelMind-specific to install. The
-        <code style={{ ...mono, fontSize: '12.5px' }}> tool_name_prefix</code> on the third server disambiguates the
+        <code style={{ ...mono, fontSize: '16px' }}> tool_name_prefix</code> on the third server disambiguates the
         few tool names it shares with Sigil.
       </p>
       <Code>{ADK_SNIPPET}</Code>
 
-      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '20px', color: 'var(--chrome-text-bright)', margin: '36px 0 10px' }}>
+      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', color: 'var(--chrome-text-bright)', margin: '36px 0 10px' }}>
         What the responses guarantee
       </h2>
-      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 8px' }}>
-        Verdict responses carry a signed receipt whose <code style={{ ...mono, fontSize: '12.5px' }}>attestation_strength</code> field
-        states exactly how strong the underlying evidence chain is, <code style={{ ...mono, fontSize: '12.5px' }}>self-asserted</code>,{' '}
-        <code style={{ ...mono, fontSize: '12.5px' }}>software</code>, <code style={{ ...mono, fontSize: '12.5px' }}>tee-tpm</code>, or{' '}
-        <code style={{ ...mono, fontSize: '12.5px' }}>silicon-root</code>. The receipt is Ed25519-signed and verifiable offline
-        with <code style={{ ...mono, fontSize: '12.5px' }}>@tunnelmindai/receipt-verify</code>; the tier field is the claim, nothing
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: 1.7, color: 'var(--doc-text-dim)', margin: '0 0 8px' }}>
+        Verdict responses carry a signed receipt whose <code style={{ ...mono, fontSize: '16px' }}>attestation_strength</code> field
+        states exactly how strong the underlying evidence chain is, <code style={{ ...mono, fontSize: '16px' }}>self-asserted</code>,{' '}
+        <code style={{ ...mono, fontSize: '16px' }}>software</code>, <code style={{ ...mono, fontSize: '16px' }}>tee-tpm</code>, or{' '}
+        <code style={{ ...mono, fontSize: '16px' }}>silicon-root</code>. The receipt is Ed25519-signed and verifiable offline
+        with <code style={{ ...mono, fontSize: '16px' }}>@tunnelmindai/receipt-verify</code>; the tier field is the claim, nothing
         stronger is implied. Agents should report it verbatim rather than translating it
         into their own confidence language.
       </p>
-      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: 1.7, color: 'var(--chrome-text-dim)', margin: '16px 0 0' }}>
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: 1.7, color: 'var(--chrome-text-dim)', margin: '16px 0 0' }}>
         Anonymous calls run on the free rate-limited tier. A Bearer token (see{' '}
         <a href="/pricing" style={{ color: 'var(--accent-cyan)' }}>pricing</a>) lifts the limits, same tools, same protocol.
       </p>

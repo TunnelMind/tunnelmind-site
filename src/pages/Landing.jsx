@@ -31,7 +31,7 @@ const prose = {
 }
 const h2 = {
   fontFamily: 'var(--font-serif)',
-  fontSize: 'clamp(20px, 3vw, 26px)',
+  fontSize: '32px',
   fontWeight: 400,
   lineHeight: '1.3',
   color: 'var(--chrome-text-bright)',
@@ -77,7 +77,7 @@ export default function Landing({ onNavigate }) {
         <div style={eyebrow}>● Vision</div>
         <h1 style={{
           fontFamily: 'var(--font-display)',
-          fontSize: 'clamp(26px, 4.6vw, 42px)',
+          fontSize: '32px',
           fontWeight: 600,
           lineHeight: '1.22',
           letterSpacing: '0.01em',
@@ -86,7 +86,7 @@ export default function Landing({ onNavigate }) {
         }}>
           The internet is being repopulated by software that never sleeps.
         </h1>
-        <p style={{ ...prose, fontSize: '18px' }}>
+        <p style={{ ...prose, fontSize: '16px' }}>
           Most of the traffic hitting a public endpoint today was not typed by
           a person. Crawlers, scanners, scrapers, agents, and outright attackers
           now make up the majority of requests on the open web. The dead
@@ -261,7 +261,7 @@ export default function Landing({ onNavigate }) {
                 </div>
                 <div style={{
                   fontFamily: 'var(--font-serif)',
-                  fontSize: '14px',
+                  fontSize: '16px',
                   lineHeight: '1.7',
                   color: 'var(--doc-text-dim)',
                 }}>
@@ -281,8 +281,8 @@ export default function Landing({ onNavigate }) {
           {SECTIONS.map((section) => (
             <div key={section.eyebrow} style={{ marginBottom: '32px' }}>
               <div style={{ ...sectionLabel, color: 'var(--accent-green)' }}>{section.eyebrow}</div>
-              <h3 style={{ ...h2, fontSize: 'clamp(17px, 2.4vw, 20px)', marginBottom: '10px' }}>{section.title}</h3>
-              <p style={{ ...prose, fontSize: '14px', marginBottom: '16px' }}>{section.summary}</p>
+              <h3 style={{ ...h2, fontSize: '32px', marginBottom: '10px' }}>{section.title}</h3>
+              <p style={{ ...prose, fontSize: '16px', marginBottom: '16px' }}>{section.summary}</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {section.items.map((item) => (
                   <div key={item.name} style={{ background: 'var(--doc-paper)', border: '1px solid var(--chrome-border)', borderRadius: '4px', padding: '14px 16px' }}>
@@ -290,7 +290,7 @@ export default function Landing({ onNavigate }) {
                       <span style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', fontWeight: 600, color: 'var(--chrome-text-bright)' }}>{item.name}</span>
                       <Badge status={item.status} />
                     </div>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)' }}>{item.desc}</div>
+                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.6', color: 'var(--doc-text-dim)' }}>{item.desc}</div>
                     {item.link && (
                       <a href={item.link.href} style={{ display: 'inline-block', marginTop: '8px', fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-green)', textDecoration: 'none' }}>{item.link.label} →</a>
                     )}

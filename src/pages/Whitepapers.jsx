@@ -61,7 +61,7 @@ function PaperCard({ paper }) {
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
         <h2 style={{
           fontFamily: 'var(--font-serif)',
-          fontSize: '18px',
+          fontSize: '16px',
           fontWeight: 400,
           color: 'var(--chrome-text-bright)',
           margin: 0,
@@ -97,7 +97,7 @@ function PaperCard({ paper }) {
 
       <p style={{
         fontFamily: 'var(--font-serif)',
-        fontSize: '14px',
+        fontSize: '16px',
         lineHeight: '1.75',
         color: 'var(--doc-text-dim)',
         margin: 0,
@@ -151,7 +151,7 @@ export default function Whitepapers() {
         </div>
         <h1 style={{
           fontFamily: 'var(--font-serif)',
-          fontSize: 'clamp(22px, 4vw, 32px)',
+          fontSize: '32px',
           fontWeight: 400,
           color: 'var(--chrome-text-bright)',
           marginBottom: '10px',
@@ -160,7 +160,7 @@ export default function Whitepapers() {
         </h1>
         <p style={{
           fontFamily: 'var(--font-serif)',
-          fontSize: '15px',
+          fontSize: '16px',
           lineHeight: '1.7',
           color: 'var(--doc-text-dim)',
           marginBottom: '40px',

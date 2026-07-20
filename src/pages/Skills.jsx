@@ -72,20 +72,20 @@ function SkillCard({ s }) {
       <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', fontStyle: 'italic', color: 'var(--chrome-text-bright)', margin: '10px 0 6px' }}>
         “{s.question}”
       </p>
-      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: '0 0 14px' }}>{s.blurb}</p>
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: '0 0 14px' }}>{s.blurb}</p>
 
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: c, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '8px' }}>Use it before</div>
       <div style={{ marginBottom: '14px' }}>
         {s.when.map(([k, v]) => (
           <div key={k} style={{ display: 'flex', gap: '10px', alignItems: 'baseline', padding: '5px 0', borderBottom: '1px solid var(--chrome-border)' }}>
             <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)', minWidth: '92px', flexShrink: 0 }}>{k}</code>
-            <span style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', color: 'var(--doc-text-dim)' }}>{v}</span>
+            <span style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--doc-text-dim)' }}>{v}</span>
           </div>
         ))}
       </div>
 
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: c, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: '6px' }}>Returns</div>
-      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.55', color: 'var(--doc-text)', margin: 0 }}>{s.returns}</p>
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.55', color: 'var(--doc-text)', margin: 0 }}>{s.returns}</p>
     </div>
   )
 }
@@ -97,10 +97,10 @@ export default function Skills({ onNavigate }) {
 
         {/* Header */}
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '12px' }}>● Claude Skills</div>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 400, color: 'var(--chrome-text-bright)', marginBottom: '10px' }}>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, color: 'var(--chrome-text-bright)', marginBottom: '10px' }}>
           Drop TunnelMind into your agent.
         </h1>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '28px', maxWidth: '660px' }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '28px', maxWidth: '660px' }}>
           The API answers <em>“is this real?”</em> A Skill teaches your Claude agent <strong style={{ color: 'var(--chrome-text)' }}>when to ask</strong> and{' '}
           <strong style={{ color: 'var(--chrome-text)' }}>what to do with the answer</strong>, and to keep the signed receipt. Two skills, one install, no servers to run.
         </p>
@@ -115,7 +115,7 @@ export default function Skills({ onNavigate }) {
           tunnelmind-trust v0.1.0 · Apache-2.0 · version-pinned (deliberate updates, no silent HEAD) ·{' '}
           <a href={MARKETPLACE} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent-blue)', textDecoration: 'none' }}>source ↗</a>
         </p>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: '10px 0 0', maxWidth: '660px' }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: '10px 0 0', maxWidth: '660px' }}>
           The skills call the public TunnelMind API; the free tier needs no key. They drive the same{' '}
           <span onClick={() => onNavigate && onNavigate('api')} style={{ color: 'var(--accent-blue)', cursor: 'pointer', textDecoration: 'underline' }}>endpoints and MCP tools</span>{' '}
           documented on the API page; they don't replace them.
@@ -123,7 +123,7 @@ export default function Skills({ onNavigate }) {
 
         {/* The two skills */}
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', letterSpacing: '0.16em', textTransform: 'uppercase', margin: '44px 0 10px' }}>The kit</div>
-        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 400, color: 'var(--chrome-text-bright)', margin: '0 0 18px' }}>
+        <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, color: 'var(--chrome-text-bright)', margin: '0 0 18px' }}>
           Two questions every agent should ask first
         </h2>
         {SKILLS.map(s => <SkillCard key={s.name} s={s} />)}
@@ -131,10 +131,10 @@ export default function Skills({ onNavigate }) {
         {/* Why a skill */}
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', letterSpacing: '0.16em', textTransform: 'uppercase', margin: '44px 0 10px' }}>Why a skill, not just an API call</div>
         <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-cyan)', borderRadius: '4px' }}>
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.7', color: 'var(--doc-text)', margin: '0 0 12px' }}>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.7', color: 'var(--doc-text)', margin: '0 0 12px' }}>
             An endpoint is passive; the agent has to already know to call it. A Skill carries the decision logic: <em>consult before you transact; on a deny, stop; on a caution, get a human; always keep the receipt.</em> That last habit is the point, every check leaves a signed, replayable artifact your agent attaches to its action log, so a decision can be proven later, not just asserted.
           </p>
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.65', color: 'var(--doc-text-dim)', margin: 0 }}>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.65', color: 'var(--doc-text-dim)', margin: 0 }}>
             Built claude-first. The skills are a Claude packaging artifact on the paid edge, the open, vendor-neutral standards (ATAP, OAI, Receipt Format) live under{' '}
             <a href="/standards" style={{ color: 'var(--accent-blue)', textDecoration: 'none' }}>/standards ↗</a>.
           </p>

@@ -121,19 +121,19 @@ function RiskCard({ signal }) {
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)', margin: '12px 0 8px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             Trigger condition
           </p>
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '16px' }}>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '16px' }}>
             {signal.trigger}
           </p>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)', margin: '0 0 8px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             What it means
           </p>
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '16px' }}>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '16px' }}>
             {signal.what_it_means}
           </p>
           <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)', margin: '0 0 8px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
             What you can do
           </p>
-          <ul style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.8', color: 'var(--doc-text-dim)', paddingLeft: '18px' }}>
+          <ul style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.8', color: 'var(--doc-text-dim)', paddingLeft: '18px' }}>
             {signal.what_you_can_do.map((item, i) => <li key={i}>{item}</li>)}
           </ul>
         </div>

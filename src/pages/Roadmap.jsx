@@ -96,7 +96,7 @@ export default function Roadmap() {
         </div>
         <h1 style={{
           fontFamily: 'var(--font-serif)',
-          fontSize: 'clamp(24px, 4vw, 36px)',
+          fontSize: '32px',
           fontWeight: 400,
           lineHeight: '1.25',
           color: 'var(--chrome-text-bright)',
@@ -137,7 +137,7 @@ export default function Roadmap() {
             </div>
             <h2 style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: 'clamp(20px, 3vw, 26px)',
+              fontSize: '32px',
               fontWeight: 400,
               lineHeight: '1.3',
               color: 'var(--chrome-text-bright)',
@@ -147,7 +147,7 @@ export default function Roadmap() {
             </h2>
             <p style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '15px',
+              fontSize: '16px',
               lineHeight: '1.7',
               color: 'var(--doc-text-dim)',
               marginBottom: '28px',
@@ -177,7 +177,7 @@ export default function Roadmap() {
                   </div>
                   <div style={{
                     fontFamily: 'var(--font-serif)',
-                    fontSize: '14px',
+                    fontSize: '16px',
                     lineHeight: '1.6',
                     color: 'var(--doc-text-dim)',
                   }}>
@@ -221,7 +221,7 @@ export default function Roadmap() {
         </div>
         <p style={{
           fontFamily: 'var(--font-serif)',
-          fontSize: '14px',
+          fontSize: '16px',
           lineHeight: '1.7',
           color: 'var(--doc-text-dim)',
           maxWidth: '600px',

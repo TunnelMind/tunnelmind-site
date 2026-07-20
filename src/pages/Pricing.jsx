@@ -100,7 +100,7 @@ function HumanCard() {
             / block
           </span>
         </div>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.55', color: 'var(--doc-text-dim)', margin: '10px 0 0' }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.55', color: 'var(--doc-text-dim)', margin: '10px 0 0' }}>
           One block is <strong style={{ color: 'var(--chrome-text-bright)' }}>{n(human.callsPerBlock)} API calls</strong>.
           Stack as many as you need, no subscription, no expiry, no negotiation.
         </p>
@@ -114,7 +114,7 @@ function HumanCard() {
         borderLeft: `3px solid ${accent}`,
         borderRadius: '3px',
       }}>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '12px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
           Spend <strong style={{ color: 'var(--chrome-text-bright)' }}>{usd(human.volume.thresholdUsd)}</strong> total
           ({human.volume.thresholdUsd / human.blockPriceUsd} blocks) and every block after holds{' '}
           <strong style={{ color: accent }}>{n(human.volume.callsPerBlock)} calls</strong>, same {usd(human.blockPriceUsd)}.
@@ -124,7 +124,7 @@ function HumanCard() {
 
       <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
         {HUMAN_FEATURES.map(f => (
-          <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.5', color: 'var(--doc-text-dim)' }}>
+          <li key={f} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.5', color: 'var(--doc-text-dim)' }}>
             <span style={{ color: accent, flexShrink: 0, marginTop: '1px' }}>✓</span>
             {f}
           </li>
@@ -210,7 +210,7 @@ function AgentCard() {
             Per query
           </span>
         </div>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.55', color: 'var(--doc-text-dim)', margin: '10px 0 0' }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.55', color: 'var(--doc-text-dim)', margin: '10px 0 0' }}>
           No signup, no API key. An agent calls an endpoint, gets back{' '}
           <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: accent }}>402 Payment Required</code>,
           settles in {agent.settlementAsset}, and retries, the response comes back paid.
@@ -224,7 +224,7 @@ function AgentCard() {
             display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             padding: '10px 12px', background: 'var(--doc-bg)',
           }}>
-            <span style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', color: 'var(--doc-text-dim)' }}>
+            <span style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--doc-text-dim)' }}>
               {q.label}
             </span>
             <span style={{ fontFamily: 'var(--font-mono)', fontSize: '13px', fontWeight: 600, color: 'var(--chrome-text-bright)' }}>
@@ -234,7 +234,7 @@ function AgentCard() {
         ))}
       </div>
 
-      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '12px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0, flex: 1 }}>
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0, flex: 1 }}>
         Price tracks endpoint complexity, a domain check is not a full
         attestation receipt. Settlement is {agent.settlementAsset} on a fast
         L2; x402 is a payment rail, nothing more, no token, no account, no
@@ -347,7 +347,7 @@ function CheckoutBanner({ status, session }) {
       border: '1px solid var(--chrome-border)', borderLeft: `3px solid var(${accent})`,
       borderRadius: '4px', marginBottom: '24px',
     }}>
-      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.7', color: 'var(--doc-text-dim)', margin: 0 }}>
+      <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.7', color: 'var(--doc-text-dim)', margin: 0 }}>
         {!ok &&
           'Checkout was cancelled, no charge was made. Your blocks are here whenever you are ready.'}
         {ok && phase === 'loading' &&
@@ -382,13 +382,13 @@ export default function Pricing() {
           ● Pricing
         </div>
         <h1 style={{
-          fontFamily: 'var(--font-serif)', fontSize: 'clamp(22px, 4vw, 32px)',
+          fontFamily: 'var(--font-serif)', fontSize: '32px',
           fontWeight: 400, color: 'var(--chrome-text-bright)', marginBottom: '10px',
         }}>
           The right to look is free. Depth and scale are the product.
         </h1>
         <p style={{
-          fontFamily: 'var(--font-serif)', fontSize: '15px', lineHeight: '1.7',
+          fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.7',
           color: 'var(--doc-text-dim)', marginBottom: '40px', maxWidth: '600px',
         }}>
           The radar, chat, the sample API, and the MCP endpoint stay free, no
@@ -414,7 +414,7 @@ export default function Pricing() {
           border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-amber)',
           borderRadius: '4px', marginBottom: '32px',
         }}>
-          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.7', color: 'var(--doc-text-dim)', margin: 0 }}>
+          <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.7', color: 'var(--doc-text-dim)', margin: 0 }}>
             Blocks are bought through Stripe, pay, and your Bearer API key is
             issued on the spot. TunnelMind never sees card data. The x402 rail
             settles in {agent.settlementAsset} directly between an agent and the

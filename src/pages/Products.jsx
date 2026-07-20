@@ -178,7 +178,7 @@ function ProductCard({ tool }) {
 
       <p style={{
         fontFamily: 'var(--font-serif)',
-        fontSize: '15px',
+        fontSize: '16px',
         lineHeight: '1.6',
         color: 'var(--doc-text)',
         margin: 0,
@@ -253,7 +253,7 @@ export default function Products() {
             </div>
             <div style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '14px',
+              fontSize: '16px',
               color: 'var(--doc-text-dim)',
               marginBottom: '14px',
               lineHeight: '1.6',

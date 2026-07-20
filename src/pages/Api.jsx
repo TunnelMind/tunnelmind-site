@@ -39,7 +39,7 @@ function LivePlayground() {
           aria-label="Node to verify"
           style={{ fontFamily: 'var(--wpm-font-mono)', fontSize: '15px', padding: '6px 10px', border: '2px solid var(--wpm-ink)', background: 'var(--wpm-paper)', color: 'var(--wpm-ink)', flex: '1 1 220px' }}
         />
-        <button type="submit" disabled={running} className="wpm-btn" style={{ fontSize: '15px' }}>
+        <button type="submit" disabled={running} className="wpm-btn" style={{ fontSize: '16px' }}>
           {running ? 'tracing…' : 'trace it live'}
         </button>
       </form>
@@ -334,7 +334,7 @@ function EndpointRow({ row }) {
           color: 'var(--chrome-text-bright)', wordBreak: 'break-all',
         }}>{path}</code>
         <p style={{
-          fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.5',
+          fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.5',
           color: 'var(--doc-text-dim)', margin: '4px 0 0 0',
         }}>{desc}</p>
       </div>
@@ -347,7 +347,7 @@ function ToolRow({ tool }) {
   return (
     <div style={{ padding: '9px 0', borderBottom: '1px solid var(--chrome-border)' }}>
       <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-cyan)' }}>{name}</code>
-      <span style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', color: 'var(--doc-text-dim)', marginLeft: '8px' }}>{desc}</span>
+      <span style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--doc-text-dim)', marginLeft: '8px' }}>{desc}</span>
     </div>
   )
 }
@@ -368,7 +368,7 @@ function Collapsible({ title, badge, badgeColor, subtitle, link, defaultOpen, ch
             border: `1px solid var(${badgeColor || '--accent-green'})`, borderRadius: '2px', padding: '1px 5px',
           }}>{badge}</span>
         )}
-        {subtitle && <span style={{ fontFamily: 'var(--font-serif)', fontSize: '12px', color: 'var(--doc-text-dim)', flex: 1, minWidth: 0 }}>{subtitle}</span>}
+        {subtitle && <span style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--doc-text-dim)', flex: 1, minWidth: 0 }}>{subtitle}</span>}
         <span style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)', marginLeft: 'auto' }}>{open ? '▲' : '▼'}</span>
       </div>
       {open && (
@@ -390,7 +390,7 @@ function SectionTitle({ eyebrow, children }) {
   return (
     <>
       <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', letterSpacing: '0.16em', textTransform: 'uppercase', margin: '44px 0 10px' }}>{eyebrow}</div>
-      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(18px, 3vw, 24px)', fontWeight: 400, color: 'var(--chrome-text-bright)', margin: '0 0 18px' }}>{children}</h2>
+      <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, color: 'var(--chrome-text-bright)', margin: '0 0 18px' }}>{children}</h2>
     </>
   )
 }
@@ -402,10 +402,10 @@ export default function Api({ onNavigate }) {
 
         {/* Header */}
         <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: '12px' }}>● APIs &amp; MCP</div>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'clamp(22px, 4vw, 32px)', fontWeight: 400, color: 'var(--chrome-text-bright)', marginBottom: '10px' }}>
+        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '32px', fontWeight: 400, color: 'var(--chrome-text-bright)', marginBottom: '10px' }}>
           The whole surface, for humans and agents.
         </h1>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '15px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '28px', maxWidth: '640px' }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.7', color: 'var(--doc-text-dim)', marginBottom: '28px', maxWidth: '640px' }}>
           One signed corpus, two rails. <strong style={{ color: 'var(--chrome-text)' }}>REST</strong> over
           the Scry attacker corpus and the Data API; <strong style={{ color: 'var(--chrome-text)' }}>MCP</strong> for
           agents, every Data API endpoint is also a tool. JSON in, JSON out, CORS open. The free tier needs no key.
@@ -435,14 +435,14 @@ export default function Api({ onNavigate }) {
           {DISCOVERY.map(d => (
             <div key={d.url} style={{ marginBottom: '10px' }}>
               <a href={d.url} target="_blank" rel="noopener noreferrer" style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-blue)', textDecoration: 'none' }}>{d.label} ↗</a>
-              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', color: 'var(--doc-text-dim)', marginLeft: '8px' }}>{d.desc}</span>
+              <span style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', color: 'var(--doc-text-dim)', marginLeft: '8px' }}>{d.desc}</span>
             </div>
           ))}
         </div>
 
         {/* MCP servers */}
         <SectionTitle eyebrow="MCP · agent-native">Three MCP servers</SectionTitle>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
           JSON-RPC 2.0 over streamable HTTP. Point any MCP-capable agent at a server and call <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent-amber)' }}>tools/list</code> to discover what is available. All three are in the public MCP registry.
         </p>
         {MCP_SERVERS.map(s => (
@@ -454,7 +454,7 @@ export default function Api({ onNavigate }) {
             subtitle={s.host}
             link={`https://${s.host}`}
           >
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text)', margin: '8px 0 12px' }}>{s.blurb}</p>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.6', color: 'var(--doc-text)', margin: '8px 0 12px' }}>{s.blurb}</p>
             {s.mirror && (
               <p style={{ fontFamily: 'var(--font-mono)', fontSize: '10px', color: 'var(--chrome-text-dim)', margin: '0 0 10px' }}>
                 ↳ all {s.count} tools mirror the Data API endpoints below, 1:1. Highlights:
@@ -466,7 +466,7 @@ export default function Api({ onNavigate }) {
 
         {/* REST: Scry corpus */}
         <SectionTitle eyebrow="REST · attacker corpus">Scry API, api.tunnelmind.ai</SectionTitle>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
           The signed corpus the radar draws, real source IPs, campaigns, attacker tools, and rolling stats, observed first-hand by the sensor fleet.
         </p>
         {SCRY_GROUPS.map(g => (
@@ -477,7 +477,7 @@ export default function Api({ onNavigate }) {
 
         {/* REST: Data API */}
         <SectionTitle eyebrow="REST · the agentic surface">Data API, data.tunnelmind.ai</SectionTitle>
-        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '14px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
+        <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.65', color: 'var(--doc-text-dim)', marginBottom: '18px' }}>
           The cross-lens moat, the Sigil supply graph, tracker signals, provenance, and the agent payment rail. Every endpoint here is also an MCP tool on <code style={{ fontFamily: 'var(--font-mono)', fontSize: '12px', color: 'var(--accent-amber)' }}>mcp-data.tunnelmind.ai</code>.
         </p>
         {DATA_GROUPS.map(g => (
@@ -491,21 +491,21 @@ export default function Api({ onNavigate }) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', marginBottom: '40px' }}>
           <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-green)', borderRadius: '4px' }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-green)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Authentication</div>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
               No key needed for the free tier, call it straight from the browser or an agent. Pass{' '}
               <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>Authorization: Bearer &lt;key&gt;</code>{' '}for a paid tier.
             </p>
           </div>
           <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-amber)', borderRadius: '4px' }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-amber)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Rate limits</div>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
               Per-IP on the free tier, every response carries{' '}
               <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>X-RateLimit-*</code>{' '}headers so agents back off cleanly.
             </p>
           </div>
           <div style={{ padding: '18px 20px', background: 'var(--chrome-bg2)', border: '1px solid var(--chrome-border)', borderLeft: '3px solid var(--accent-blue)', borderRadius: '4px' }}>
             <div style={{ fontFamily: 'var(--font-mono)', fontSize: '9px', color: 'var(--accent-blue)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '8px' }}>Payment</div>
-            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '13px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
+            <p style={{ fontFamily: 'var(--font-serif)', fontSize: '16px', lineHeight: '1.6', color: 'var(--doc-text-dim)', margin: 0 }}>
               Identifier resolution is free, forever. Metered calls: a $20 prepaid block (Stripe, for humans) or{' '}
               <code style={{ fontFamily: 'var(--font-mono)', fontSize: '11px', color: 'var(--accent-amber)' }}>x402</code>{' '}USDC on Base (for agents).{' '}
               <span onClick={() => onNavigate && onNavigate('pricing')} style={{ color: 'var(--accent-blue)', cursor: 'pointer', textDecoration: 'underline' }}>See pricing</span>.

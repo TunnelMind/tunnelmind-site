@@ -23,10 +23,8 @@
  * Reduced motion: static mode renders every step at once; live mode appends
  * in real time (real timing is information, not decoration) with animation off.
  *
- * ChiKareGo2 must be @font-face'd at DOCUMENT level (wp-mac.css does this);
+ * ChicagoFLF must be @font-face'd at DOCUMENT level (wp-mac.css does this);
  * shadow DOM does not scope @font-face but does resolve document-level faces.
- * P57: all sizes are locked to the wp-mac pixel grid via inherited tokens
- * (--wpm-sz 16 / --wpm-sz-lg 32). No off-grid sizes may be introduced.
  */
 
 const ICONS = {
@@ -46,27 +44,19 @@ const CSS = `
   display: block;
   --vt-ink: var(--wpm-ink, #000);
   --vt-paper: var(--wpm-paper, #fff);
-  --vt-sz: var(--wpm-sz, 16px);
-  --vt-sz-lg: var(--wpm-sz-lg, 32px);
-  --vt-font: var(--wpm-font, 'ChiKareGo2', 'ChicagoFLF', 'Geneva', sans-serif);
-  --vt-mono: var(--wpm-mono, 'Monaco', 'Courier New', monospace);
-  font-family: var(--vt-font);
-  font-size: var(--vt-sz);
+  font-family: 'ChicagoFLF', 'Geneva', sans-serif;
   color: var(--vt-ink);
   background: var(--vt-paper);
-  -webkit-font-smoothing: none;
-  -moz-osx-font-smoothing: grayscale;
 }
 * { box-sizing: border-box; }
 .frame { border: 2px solid var(--vt-ink); background: var(--vt-paper); }
 .head {
   display: flex; align-items: center; gap: 8px;
   padding: 5px 10px; border-bottom: 2px solid var(--vt-ink);
-  font-size: var(--vt-sz);
+  font-size: 13px;
 }
-.head .node { font-family: var(--vt-mono); flex: 1; min-width: 0;
-  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.head .watch { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: var(--vt-sz); }
+.head .node { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+.head .watch { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; }
 .bar {
   display: flex; height: 12px; border-bottom: 2px solid var(--vt-ink);
 }
@@ -83,20 +73,20 @@ const CSS = `
   grid-template-columns: 18px 92px 1fr auto;
   align-items: center; gap: 8px;
   padding: 5px 10px;
-  font-size: var(--vt-sz);
+  font-size: 13px;
   border-bottom: 1px dotted var(--vt-ink);
 }
 .row:last-child { border-bottom: none; }
 .row .icon { display: inline-flex; }
-.row .lens { font-size: var(--vt-sz); }
+.row .lens { font-size: 13px; }
 .row .finding {
-  font-family: var(--vt-mono);
-  font-size: var(--vt-sz);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 12px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 .row .finding.pending { font-style: italic; }
 .chip {
-  font-size: var(--vt-sz); letter-spacing: .08em;
+  font-size: 11px; letter-spacing: .08em;
   border: 1px solid var(--vt-ink);
   padding: 1px 7px;
   display: inline-flex; align-items: center; gap: 4px;
@@ -108,26 +98,24 @@ const CSS = `
   display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
   border-top: 2px solid var(--vt-ink);
   padding: 8px 10px;
-  font-size: var(--vt-sz);
+  font-size: 14px;
 }
 .verdict .v {
   border: 2px solid var(--vt-ink);
   padding: 2px 10px;
-  font-size: var(--vt-sz-lg);
-  line-height: 1.1;
+  font-size: 14px;
 }
 .verdict .v.bad { background: var(--vt-ink); color: var(--vt-paper); }
-.verdict .meta { font-family: var(--vt-mono); font-size: var(--vt-sz); }
-.verdict .summary { flex-basis: 100%; font-size: var(--vt-sz); font-family: var(--vt-mono); }
-.verdict .join-line { flex-basis: 100%; font-size: var(--vt-sz); }
+.verdict .meta { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 12px; }
+.verdict .summary { flex-basis: 100%; font-size: 12px; font-family: 'JetBrains Mono', ui-monospace, monospace; }
 .error {
   padding: 8px 10px; border-top: 2px solid var(--vt-ink);
-  font-size: var(--vt-sz);
+  font-size: 13px;
   display: flex; align-items: center; gap: 8px;
 }
 .error::before { content: '\\26A0'; font-size: 16px; }
 @media (prefers-reduced-motion: no-preference) {
-  .row { animation: vt-appear .18s steps(2, end); }
+  .row { animation: vt-appear 120ms steps(2, end); }
   @keyframes vt-appear { from { opacity: 0; } to { opacity: 1; } }
 }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
@@ -208,7 +196,6 @@ export class VerifyTrace extends HTMLElement {
     const d = this._data
     if (!d) return
     this._el.node.textContent = d.node || ''
-    this._el.node.title = d.node || ''
     const steps = d.steps || []
     if (reduced()) {
       steps.forEach((s, i) => { this._lensStart(s.lens); this._lensResult(s, i) })
@@ -236,7 +223,6 @@ export class VerifyTrace extends HTMLElement {
     const node = this.getAttribute('node')
     if (!node) return
     this._el.node.textContent = node
-    this._el.node.title = node
     this._abort = new AbortController()
     let sawVerdict = false
     let i = 0
@@ -321,7 +307,6 @@ export class VerifyTrace extends HTMLElement {
       <span class="v${v.bad ? ' bad' : ''}">${v.verdict || ''}</span>
       <span class="meta">score ${v.score != null ? v.score : '?'} · ${v.tier || ''}</span>
       ${v.summary ? `<span class="summary">${v.summary}</span>` : ''}
-      <span class="join-line">No single lens sees this. The join is the product.</span>
       <span class="sr">verify complete: ${v.verdict}</span>`
     this._el.frame.appendChild(el)
     const vseg = this._el.segs[this._el.segs.length - 1]

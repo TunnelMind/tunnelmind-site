@@ -86,8 +86,7 @@ export default function Home({ onNavigate }) {
                   <circle className="hm-jnode" cx="56" cy="200" r="30" />
                 </g>
                 <circle cx="200" cy="200" r="42" fill="#000" stroke="#000" strokeWidth="2" />
-                <text className="hm-jlabel" x="200" y="197" textAnchor="middle" fill="#fff" style={{ fontSize: '12px' }}>VERDICT</text>
-                <text className="hm-jlabel" x="200" y="212" textAnchor="middle" fill="#fff" style={{ fontSize: '9px' }}>+ receipt</text>
+                <text className="hm-jlabel" x="200" y="206" textAnchor="middle" fill="#fff">VERDICT</text>
                 <text className="hm-jlabel" x="200" y="60" textAnchor="middle" fill="#000">SCRY</text>
                 <text className="hm-jlabel" x="344" y="204" textAnchor="middle" fill="#000">SIGIL</text>
                 <text className="hm-jlabel" x="200" y="348" textAnchor="middle" fill="#000">TRACK</text>

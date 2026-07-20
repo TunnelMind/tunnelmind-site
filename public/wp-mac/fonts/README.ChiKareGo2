@@ -1,0 +1,9 @@
+ChiKareGo2 — by Giles Booth
+A true 16px-grid pixel recreation of Susan Kare's Chicago.
+
+Source: https://www.pentacom.jp/pentacom/bitfontmaker2/gallery/?id=3780 (BitFontMaker2)
+License: Creative Commons Attribution (CC BY) — verified on the gallery page 2026-07-19.
+Obligation: visible credit "Font: ChiKareGo2 by Giles Booth" on every surface that embeds it.
+
+Files: ChiKareGo2.ttf (as downloaded), ChiKareGo2.woff2 (fonttools conversion, no glyph changes).
+Pixel-grid rule: crisp ONLY at 16px and integer multiples (32/48). Never render off-grid.

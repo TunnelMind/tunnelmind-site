@@ -34,6 +34,7 @@ export default function Footer() {
       <div className="tm-footer-id">
         <span className="tm-footer-name">TunnelMind AI, LLC</span>
         <span className="tm-footer-copy">&copy; {new Date().getFullYear()}</span>
+        <span className="tm-footer-copy">Font: ChiKareGo2 by Giles Booth (CC BY)</span>
       </div>
       <div className="tm-footer-links">
         <div className="tm-footer-row">

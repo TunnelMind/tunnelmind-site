@@ -111,9 +111,10 @@ export default function App() {
     <div className="wpm wpm-desktop app-desktop">
       <div className="wpm-window app-window">
         <header className="wpm-titlebar">
-          <span className="wpm-closebox app-decor" aria-hidden="true" />
-          <span className="wpm-titlebar-title">TunnelMind</span>
-          <span className="wpm-zoombox app-decor" aria-hidden="true" />
+          <span className="wpm-close" aria-hidden="true" />
+          <span className="wpm-pinstripe" aria-hidden="true" />
+          <span className="wpm-title">TunnelMind</span>
+          <span className="wpm-pinstripe" aria-hidden="true" />
         </header>
 
         <TopNav site="tunnelmind" currentPage={page} onNavigate={handleNavigate} />

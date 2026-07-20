@@ -1,382 +1,125 @@
-/* wp-mac v0.1.0 — WordPerfect 2.1 for Mac design system (BW1: strict 1-bit)
-   Rules baked in: no transitions/animations anywhere; patterns are chrome only,
-   never behind text; every interactive element gets a visible focus ring. */
+/* wp-mac.css — LOCKED visual contract for the WordPerfect-2.1-for-Mac look (HARDCORE / true-pixel).
+   Single source of truth. Sites COMPOSE these classes; they never hand-roll retro styles.
+   Change a value HERE and everything inherits. Per-site deviation is what causes drift and "meh".
 
-@font-face {
-  font-family: 'ChicagoFLF';
-  src: url('./fonts/ChicagoFLF.woff2') format('woff2');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
+   FONT: ChiKareGo2 by Giles Booth — a true 16px-grid pixel recreation of Susan Kare's Chicago.
+   LICENSE: Creative Commons Attribution (CC BY). Commercial use OK, but you MUST credit
+   "Giles Booth" somewhere visible (footer / credits / LICENSE). Do that; it's the license terms.
+   Edit the @font-face src to your self-hosted woff2 (literal path — var() does NOT work in
+   @font-face). PIXEL-GRID RULE: this font is crisp ONLY at 16px and integer multiples (32, 48).
+   Never use 11/12/13/15px — it interpolates to mush. All --wpm-sz* below obey this. */
+
+@font-face{
+  font-family:'ChiKareGo2';
+  /* Self-hosted; resolves against this stylesheet's URL (repo: fonts/, vendored: /wp-mac/fonts/).
+     Attribution: font by Giles Booth (CC BY). */
+  src:url('fonts/ChiKareGo2.woff2') format('woff2');
+  font-weight:400 700; font-display:swap;
 }
 
-:root {
-  /* ink & paper — BW1, no color */
-  --wpm-ink: #000;
-  --wpm-paper: #fff;
-  /* dither patterns (chrome only, never under text) */
-  --wpm-dither50: repeating-conic-gradient(var(--wpm-ink) 0% 25%, var(--wpm-paper) 0% 50%);
-  --wpm-dither25: conic-gradient(var(--wpm-ink) 0 25%, var(--wpm-paper) 0);
-  --wpm-pinstripe: repeating-linear-gradient(to bottom,
-      var(--wpm-ink) 0 1px, var(--wpm-paper) 1px 3px);
-  /* metrics */
-  --wpm-border: 2px solid var(--wpm-ink);
-  --wpm-hairline: 1px solid var(--wpm-ink);
-  --wpm-shadow: 3px 3px 0 var(--wpm-ink);
-  --wpm-radius: 6px;           /* the classic small button radius */
-  /* type — keyed to Chicago's pixel grid: integer sizes only */
-  --wpm-font-chrome: 'ChicagoFLF', 'Geneva', sans-serif;
-  --wpm-font-body: 'ChicagoFLF', 'Geneva', sans-serif;
-  --wpm-font-mono: 'JetBrains Mono', ui-monospace, monospace;
-  --wpm-size-body: 16px;       /* guardrail floor: never below 14px */
-  --wpm-size-chrome: 14px;
-  --wpm-size-h1: 32px;
-  --wpm-size-h2: 24px;
-  --wpm-lh-body: 1.5;
+:root{
+  /* palette — PURE 1-bit. No near-blacks, no soft greys for text. */
+  --wpm-ink:#000;              /* all text, all borders */
+  --wpm-paper:#fff;            /* all surfaces */
+  --wpm-hair:#ccc;             /* row separators only */
+  --wpm-mute:#666;             /* "querying…" transient only */
+  --wpm-tag:#555;              /* the one small caption line */
+  --wpm-fill:#f2f2f2;          /* toolbar/status fill */
+  --wpm-dither-a:#b8b8b8;      /* desktop dither */
+  --wpm-dither-b:#cfcfcf;
+
+  /* structure — integers only. No sub-pixel, no soft shadows. */
+  --wpm-border:2px solid var(--wpm-ink);
+  --wpm-hairline:1px solid var(--wpm-ink);
+  --wpm-shadow:3px 3px 0 var(--wpm-ink);     /* hard, zero blur */
+  --wpm-shadow-sm:2px 2px 0 var(--wpm-ink);
+  --wpm-radius-btn:8px;                       /* the ONLY rounded thing */
+
+  /* type — PIXEL GRID. Only these sizes are crisp. Do not introduce off-grid sizes. */
+  --wpm-sz:16px;               /* base / body / all UI text (16px floor) */
+  --wpm-sz-lg:32px;            /* headings / hero / verdict name (2x) */
+  --wpm-lh:1.25;               /* leading may be fractional; only font-size must be on-grid */
+  --wpm-font:'ChiKareGo2','ChicagoFLF','Geneva','Chicago',-apple-system,sans-serif;
+  --wpm-mono:'Monaco','Courier New',monospace;
+
+  /* reveal timing (static/marketing) */
+  --wpm-stagger:760ms;
 }
 
-/* ---------- base ---------- */
+/* FIDELITY RESET — scope everything retro under .wpm; kill inherited softness; force crisp pixels. */
+.wpm, .wpm *{box-sizing:border-box; border-radius:0;}
+.wpm{font-family:var(--wpm-font); color:var(--wpm-ink); font-size:var(--wpm-sz); line-height:var(--wpm-lh);
+  -webkit-font-smoothing:none; -moz-osx-font-smoothing:grayscale; font-smooth:never;}
+.wpm-mono{font-family:var(--wpm-mono); font-size:var(--wpm-sz);}
+.wpm img, .wpm svg{image-rendering:pixelated;}
+/* NOTE: Firefox ignores font-smoothing; crispness there relies on on-grid 16/32px sizing. */
 
-.wpm {
-  background: var(--wpm-paper);
-  color: var(--wpm-ink);
-  font-family: var(--wpm-font-body);
-  font-size: var(--wpm-size-body);
-  line-height: var(--wpm-lh-body);
-  -webkit-font-smoothing: none; /* keep the bitmap edge where supported */
-}
+/* window */
+.wpm-window{background:var(--wpm-paper); border:var(--wpm-border); box-shadow:var(--wpm-shadow);}
+.wpm-titlebar{display:flex; align-items:center; gap:6px; min-height:26px; padding:2px 6px;
+  border-bottom:var(--wpm-border);}
+.wpm-close{width:12px; height:12px; border:var(--wpm-border); background:var(--wpm-paper); flex:none;}
+.wpm-pinstripe{flex:1; height:12px;
+  background:repeating-linear-gradient(var(--wpm-ink) 0 1px, var(--wpm-paper) 1px 3px);}
+.wpm-title{padding:0 8px; font-size:var(--wpm-sz); white-space:nowrap;}
 
-.wpm *, .wpm *::before, .wpm *::after {
-  transition: none !important;
-  animation: none !important;
-}
+/* menu bar + button bar */
+.wpm-menubar{display:flex; gap:16px; padding:3px 10px; font-size:var(--wpm-sz);
+  border-bottom:var(--wpm-hairline);}
+.wpm-buttonbar{display:flex; gap:3px; padding:4px 10px; font-size:var(--wpm-sz);
+  border-bottom:var(--wpm-hairline); background:var(--wpm-fill);}
+.wpm-buttonbar > *{border:var(--wpm-hairline); padding:1px 6px; background:var(--wpm-paper);}
 
-.wpm :focus-visible {
-  outline: 2px dotted var(--wpm-ink);
-  outline-offset: 2px;
-}
+/* buttons — classic rounded rect, hard shadow, invert on press. No synthetic bold (breaks pixels);
+   emphasis comes from inversion/size, the authentic Mac way. */
+.wpm-btn{font-family:var(--wpm-font); font-size:var(--wpm-sz); padding:5px 16px;
+  border:var(--wpm-border); border-radius:var(--wpm-radius-btn); background:var(--wpm-paper);
+  box-shadow:var(--wpm-shadow-sm); cursor:pointer; line-height:1.1;}
+.wpm-btn:active{background:var(--wpm-ink); color:var(--wpm-paper); box-shadow:none;
+  transform:translate(2px,2px);}
+.wpm-btn:focus-visible{outline:2px dotted var(--wpm-ink); outline-offset:2px;}
+.wpm-btn--default{box-shadow:var(--wpm-shadow-sm), 0 0 0 4px var(--wpm-paper), 0 0 0 6px var(--wpm-ink);}
 
-.wpm-mono { font-family: var(--wpm-font-mono); }
+/* form controls */
+.wpm-field{border:var(--wpm-hairline); background:var(--wpm-paper); padding:4px 6px;
+  font-family:var(--wpm-mono); font-size:var(--wpm-sz); box-shadow:inset 1px 1px 0 #999;}
+.wpm-check{width:16px; height:16px; border:var(--wpm-hairline); background:var(--wpm-paper);
+  display:inline-flex; align-items:center; justify-content:center; font-size:var(--wpm-sz);}
 
-/* desktop backdrop — the classic grey desktop pattern */
-.wpm-desktop {
-  background: var(--wpm-paper) var(--wpm-dither50);
-  background-size: 2px 2px;
-  padding: 24px;
-}
+/* pills + signature chip (used by VerifyTrace and status UIs) */
+.wpm-pill{font-size:var(--wpm-sz); padding:1px 6px; border:var(--wpm-hairline); white-space:nowrap;}
+.wpm-pill--bad{background:var(--wpm-ink); color:var(--wpm-paper);}
+.wpm-sig{font-size:var(--wpm-sz); border:var(--wpm-hairline); padding:0 5px; white-space:nowrap;}
 
-/* ---------- window frame ---------- */
+/* status bar */
+.wpm-statusbar{display:flex; justify-content:space-between; font-size:var(--wpm-sz); padding:3px 10px;
+  border-top:var(--wpm-hairline); background:var(--wpm-fill);}
 
-.wpm-window {
-  background: var(--wpm-paper);
-  border: var(--wpm-border);
-  box-shadow: var(--wpm-shadow);
-}
+/* desktop backdrop (for framed mockups / hero) */
+.wpm-desktop{background:repeating-conic-gradient(var(--wpm-dither-a) 0 25%, var(--wpm-dither-b) 0 50%) 0 0 / 6px 6px;
+  padding:20px;}
 
-/* ---------- title bar ---------- */
+/* progress (barber pole) */
+.wpm-bar{height:16px; border:var(--wpm-hairline); background:var(--wpm-paper); overflow:hidden;}
+.wpm-bar > i{display:block; height:100%;
+  background:repeating-linear-gradient(-45deg, var(--wpm-ink) 0 4px, var(--wpm-paper) 4px 8px);
+  animation:wpm-march .5s linear infinite;}
+@keyframes wpm-march{to{background-position:16px 0;}}
 
-.wpm-titlebar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 26px;
-  padding: 4px 6px;
-  border-bottom: var(--wpm-border);
-  background: var(--wpm-pinstripe);
-  background-clip: content-box;
-}
+@media (prefers-reduced-motion:reduce){ .wpm-bar > i{animation:none;} }
 
-.wpm-titlebar-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 0 12px;
-  background: var(--wpm-paper);   /* chip knocks out the stripes: no text on pattern */
-  font-family: var(--wpm-font-chrome);
-  font-size: var(--wpm-size-chrome);
-  line-height: 18px;
-  white-space: nowrap;
-  max-width: 70%;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.wpm-closebox, .wpm-zoombox {
-  width: 14px;
-  height: 14px;
-  padding: 0;
-  border: var(--wpm-hairline);
-  background: var(--wpm-paper);
-  box-shadow: 0 0 0 2px var(--wpm-paper); /* gap that separates box from stripes */
-  cursor: pointer;
-  flex: none;
-}
-.wpm-zoombox { margin-left: auto; position: relative; }
-.wpm-zoombox::after {
-  content: '';
-  position: absolute;
-  top: 2px; left: 2px;
-  width: 6px; height: 6px;
-  border: var(--wpm-hairline);
-}
-.wpm-closebox:active, .wpm-zoombox:active { background: var(--wpm-ink); }
-
-/* ---------- menu bar ---------- */
-
-.wpm-menubar {
-  display: flex;
-  align-items: stretch;
-  gap: 0;
-  background: var(--wpm-paper);
-  border-bottom: var(--wpm-border);
-  font-family: var(--wpm-font-chrome);
-  font-size: var(--wpm-size-chrome);
-  padding: 0 8px;
-  flex-wrap: wrap;
-}
-
-.wpm-menubar-logo { padding: 6px 12px; }
-
-.wpm-menu { position: relative; }
-
-.wpm-menu > summary,
-.wpm-menu-item {
-  display: block;
-  list-style: none;
-  padding: 6px 12px;
-  color: var(--wpm-ink);
-  text-decoration: none;
-  cursor: pointer;
-  user-select: none;
-}
-.wpm-menu > summary::-webkit-details-marker { display: none; }
-
-.wpm-menu > summary:hover, .wpm-menu-item:hover,
-.wpm-menu[open] > summary,
-.wpm-menu-item[aria-current="page"] {
-  background: var(--wpm-ink);
-  color: var(--wpm-paper);
-}
-
-.wpm-menu-drop {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 10;
-  min-width: 180px;
-  background: var(--wpm-paper);
-  border: var(--wpm-hairline);
-  box-shadow: 2px 2px 0 var(--wpm-ink);
-  padding: 2px 0;
-}
-.wpm-menu-drop .wpm-menu-item { padding: 4px 16px; }
-.wpm-menu-sep { border-top: 1px dotted var(--wpm-ink); margin: 3px 0; }
-
-/* ---------- button bar / ribbon (the WP row) ---------- */
-
-.wpm-buttonbar {
-  display: flex;
-  gap: 6px;
-  padding: 6px 8px;
-  border-bottom: var(--wpm-border);
-  background: var(--wpm-paper);
-  overflow-x: auto;
-}
-
-.wpm-bb-btn {
-  font-family: var(--wpm-font-chrome);
-  font-size: var(--wpm-size-chrome);
-  padding: 3px 12px;
-  background: var(--wpm-paper);
-  color: var(--wpm-ink);
-  border: var(--wpm-border);
-  border-radius: 999px;
-  cursor: pointer;
-  white-space: nowrap;
-  text-decoration: none;
-}
-.wpm-bb-btn:active, .wpm-bb-btn[aria-pressed="true"], .wpm-bb-btn[aria-current] {
-  background: var(--wpm-ink);
-  color: var(--wpm-paper);
-}
-
-/* ---------- ruler ---------- */
-
-.wpm-ruler {
-  position: relative;
-  height: 22px;
-  border-bottom: var(--wpm-hairline);
-  background:
-    repeating-linear-gradient(to right, transparent 0 7px, var(--wpm-ink) 7px 8px) left bottom / 100% 5px no-repeat,
-    repeating-linear-gradient(to right, transparent 0 63px, var(--wpm-ink) 63px 64px) left bottom / 100% 10px no-repeat,
-    var(--wpm-paper);
-}
-.wpm-ruler::before, .wpm-ruler::after { /* margin markers */
-  content: '';
-  position: absolute;
-  bottom: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-bottom: 8px solid var(--wpm-ink);
-}
-.wpm-ruler::before { left: 16px; }
-.wpm-ruler::after { right: 16px; }
-
-/* ---------- buttons ---------- */
-
-.wpm-btn {
-  font-family: var(--wpm-font-chrome);
-  font-size: var(--wpm-size-body);
-  padding: 6px 20px;
-  background: var(--wpm-paper);
-  color: var(--wpm-ink);
-  border: var(--wpm-border);
-  border-radius: var(--wpm-radius);
-  box-shadow: var(--wpm-shadow);
-  cursor: pointer;
-  text-decoration: none;
-  display: inline-block;
-}
-.wpm-btn:active {
-  background: var(--wpm-ink);
-  color: var(--wpm-paper);
-  box-shadow: none;
-  transform: translate(3px, 3px);
-}
-.wpm-btn-default { /* the classic double ring */
-  box-shadow: 0 0 0 3px var(--wpm-paper), 0 0 0 6px var(--wpm-ink), 6px 6px 0 3px var(--wpm-ink);
-  margin: 6px;
-}
-.wpm-btn-default:active { box-shadow: 0 0 0 3px var(--wpm-paper), 0 0 0 6px var(--wpm-ink); transform: none; }
-.wpm-btn[disabled] { opacity: 0.4; cursor: default; }
-.wpm-btn[disabled]:active { background: var(--wpm-paper); color: var(--wpm-ink); box-shadow: var(--wpm-shadow); transform: none; }
-
-/* ---------- form controls ---------- */
-
-.wpm-field, .wpm select.wpm-field {
-  font-family: var(--wpm-font-mono);
-  font-size: var(--wpm-size-body);
-  padding: 6px 8px;
-  background: var(--wpm-paper);
-  color: var(--wpm-ink);
-  border: var(--wpm-border);
-  border-radius: 0; /* classic fields are square, no inset effect pre-Platinum */
-}
-.wpm-field::placeholder { color: var(--wpm-ink); opacity: 0.45; }
-
-.wpm-checkbox, .wpm-radio {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 16px;
-  height: 16px;
-  border: var(--wpm-border);
-  background: var(--wpm-paper);
-  vertical-align: -3px;
-  margin-right: 8px;
-  cursor: pointer;
-  position: relative;
-  flex: none;
-}
-.wpm-radio { border-radius: 50%; }
-.wpm-checkbox:checked::after { /* the classic X */
-  content: '';
-  position: absolute;
-  inset: -2px;
-  background:
-    linear-gradient(45deg, transparent calc(50% - 1px), var(--wpm-ink) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)),
-    linear-gradient(-45deg, transparent calc(50% - 1px), var(--wpm-ink) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px));
-}
-.wpm-radio:checked::after {
-  content: '';
-  position: absolute;
-  inset: 2px;
-  border-radius: 50%;
-  background: var(--wpm-ink);
-}
-.wpm-label {
-  display: inline-flex;
-  align-items: center;
-  font-size: var(--wpm-size-body);
-  cursor: pointer;
-}
-
-/* ---------- dialog / alert (in normal flow) ---------- */
-
-.wpm-dialog {
-  background: var(--wpm-paper);
-  border: var(--wpm-border);
-  box-shadow: var(--wpm-shadow);
-  padding: 20px;
-  max-width: 440px;
-}
-.wpm-dialog-body { display: flex; gap: 16px; align-items: flex-start; }
-.wpm-dialog-icon { font-size: 32px; line-height: 1; flex: none; }
-.wpm-dialog-actions {
-  display: flex;
-  gap: 20px;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
-/* ---------- status bar ---------- */
-
-.wpm-statusbar {
-  display: flex;
-  border-top: var(--wpm-border);
-  background: var(--wpm-paper);
-  font-family: var(--wpm-font-chrome);
-  font-size: var(--wpm-size-chrome);
-  overflow-x: auto;
-}
-.wpm-status-cell {
-  padding: 4px 12px;
-  border-right: var(--wpm-hairline);
-  white-space: nowrap;
-}
-.wpm-status-cell:last-child { border-right: none; margin-left: auto; }
-
-/* ---------- scroll bars ---------- */
-
-/* decorative rail (layout chrome) */
-.wpm-scrollbar-v {
-  width: 18px;
-  border-left: var(--wpm-border);
-  background: var(--wpm-dither50);
-  background-size: 2px 2px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  flex: none;
-}
-.wpm-scroll-arrow {
-  width: 100%;
-  height: 18px;
-  background: var(--wpm-paper);
-  border: none;
-  border-bottom: var(--wpm-hairline);
-  font-size: 10px;
-  line-height: 1;
-  cursor: pointer;
-  color: var(--wpm-ink);
-}
-.wpm-scrollbar-v .wpm-scroll-arrow:last-child { border-bottom: none; border-top: var(--wpm-hairline); }
-
-/* real scrollbars on scrollable regions */
-.wpm-scroll { overflow: auto; scrollbar-color: var(--wpm-ink) var(--wpm-paper); }
-.wpm-scroll::-webkit-scrollbar { width: 14px; height: 14px; }
-.wpm-scroll::-webkit-scrollbar-track { background: var(--wpm-paper); border-left: var(--wpm-hairline); }
-.wpm-scroll::-webkit-scrollbar-thumb { background: var(--wpm-paper); border: var(--wpm-hairline); }
-
-/* ---------- document area & type ---------- */
-
-.wpm-doc { padding: 24px; }
-.wpm-doc h1, .wpm-h1 { font-family: var(--wpm-font-chrome); font-size: var(--wpm-size-h1); line-height: 1.25; margin: 0 0 16px; font-weight: normal; }
-.wpm-doc h2, .wpm-h2 { font-family: var(--wpm-font-chrome); font-size: var(--wpm-size-h2); line-height: 1.3; margin: 32px 0 12px; font-weight: normal; }
-.wpm-doc p { margin: 0 0 16px; max-width: 68ch; }
-
-.wpm-table { border-collapse: collapse; font-family: var(--wpm-font-mono); font-size: 14px; }
-.wpm-table th, .wpm-table td { border: var(--wpm-hairline); padding: 6px 12px; text-align: left; }
-.wpm-table th { background: var(--wpm-paper); border-bottom: var(--wpm-border); }
-
-.wpm-invert { background: var(--wpm-ink); color: var(--wpm-paper); padding: 0 4px; }
-.wpm-hr { border: none; border-top: var(--wpm-border); margin: 24px 0; }
+/* ── chrome extensions (v0.3.1, additive — no locked value above is altered) ──
+   Interactive chrome states the shell needs: nav items, button-bar buttons,
+   status-bar cells. Same idiom: inversion is the only emphasis. */
+.wpm-menu-item{border:none; background:none; font:inherit; color:var(--wpm-ink);
+  padding:1px 6px; cursor:pointer;}
+.wpm-menu-item[aria-current="page"]{background:var(--wpm-ink); color:var(--wpm-paper);}
+.wpm-menu-item:focus-visible{outline:2px dotted var(--wpm-ink); outline-offset:1px;}
+.wpm-bb-btn{font:inherit; color:var(--wpm-ink); cursor:pointer;}
+.wpm-bb-btn:active, .wpm-bb-btn[aria-pressed="true"], .wpm-bb-btn[aria-current]{
+  background:var(--wpm-ink); color:var(--wpm-paper);}
+.wpm-bb-btn:focus-visible{outline:2px dotted var(--wpm-ink); outline-offset:1px;}
+.wpm-statusbar{flex-wrap:wrap;}  /* cells wrap rather than force page hscroll at 375 */
+.wpm-status-cell{padding:0 8px; border-right:var(--wpm-hairline); white-space:nowrap;}
+.wpm-status-cell:first-child{padding-left:0;}
+.wpm-status-cell:last-child{border-right:none; padding-right:0;}

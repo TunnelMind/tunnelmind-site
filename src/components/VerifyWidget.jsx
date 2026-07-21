@@ -283,9 +283,30 @@ export default function VerifyWidget({ onNavigate }) {
     if (typeof window !== 'undefined') {
       try { target = new URLSearchParams(window.location.search).get('verify') || '' } catch { /* noop */ }
     }
-    if (target.trim()) verify(target)
-    else runReveal()
-    return clearTimers
+    if (target.trim()) { verify(target); return clearTimers }
+
+    // No deep-link: reveal the daily rotating example — a real signed verdict
+    // the example-pick cron chose from a random top-site. KV-backed and fast;
+    // if it's slow or unset, reveal the baked SEED so the hero always resolves.
+    let alive = true
+    const revealFallback = setTimeout(() => { if (alive) { alive = false; runReveal() } }, 1500)
+    fetch('/api/example', { headers: { Accept: 'application/json' } })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (!alive) return
+        alive = false
+        clearTimeout(revealFallback)
+        const ex = j && j.ok && j.data
+        if (ex && ex.node && ex.node.value && ex.receipt) {
+          setResult(ex)
+          setHost(ex.node.value)
+          activeNode.current = ex.node.value
+        }
+        runReveal()
+      })
+      .catch(() => { if (alive) { alive = false; clearTimeout(revealFallback); runReveal() } })
+
+    return () => { alive = false; clearTimeout(revealFallback); clearTimers() }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -389,7 +410,7 @@ export default function VerifyWidget({ onNavigate }) {
           autoCapitalize="none"
           autoCorrect="off"
           onChange={(e) => setHost(e.target.value)}
-          placeholder="api.anthropic.com"
+          placeholder="verify any domain, IP, or ASN"
         />
         <button type="submit" disabled={evaluating}>
           {evaluating ? 'verifying…' : 'verify'}

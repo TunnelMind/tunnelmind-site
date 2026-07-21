@@ -318,7 +318,21 @@ export function initRadar(root, { pollMs = 10000, initialLookup = null } = {}) {
     if (!el) return;
     const svg = $('#graphSvg');
     if (svg) svg.style.display = 'none'; // legacy SVG layer no longer renders
-    graph3d = ForceGraph3D()(el)
+    // ponytail: WebGL may be unavailable (headless crawlers, blocked GPU, some
+    // browsers). ForceGraph3D builds a THREE.WebGLRenderer on construction and
+    // throws if it can't — uncaught, that escapes this effect and unmounts the
+    // whole React page (blank radar, no h1/main). Guard it: skip the graph, let
+    // everything else render. Downstream code already null-checks graph3d.
+    let fg;
+    try {
+      fg = ForceGraph3D()(el);
+    } catch (e) {
+      el.innerHTML = '<p style="padding:2rem 1rem;text-align:center;opacity:.7">' +
+        'The live 3-D graph needs WebGL, which is unavailable here. ' +
+        'The lens data and verify tools below are unaffected.</p>';
+      return;
+    }
+    graph3d = fg
       .backgroundColor('rgba(0,0,0,0)')
       .width(W()).height(H())
       .showNavInfo(false)

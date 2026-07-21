@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react'
 
 import { MCP_TOOL_TOTAL } from './config/facts.js'
 import TopNav from './components/shared/TopNav.jsx'
-import Footer from './components/shared/Footer.jsx'
+import FooterMenu from './components/shared/Footer.jsx'
 
 import Home from './pages/Home.jsx'
 import Radar from './pages/Radar.jsx'
@@ -126,7 +126,6 @@ export default function App() {
         </main>
 
         <footer>
-          <Footer />
           <StatusBar page={page} />
         </footer>
       </div>
@@ -164,6 +163,7 @@ function StatusBar({ page }) {
 
   return (
     <div className="wpm-statusbar" aria-label="Live stats">
+      <FooterMenu />
       <span className="wpm-status-cell">Doc: {label}</span>
       <span className="wpm-status-cell">Scry {stats && stats.scryObs != null ? fmtK(stats.scryObs) : '-'} obs</span>
       <span className="wpm-status-cell">Sigil {stats && stats.sigilLinks != null ? fmtM(stats.sigilLinks) : '-'} links</span>

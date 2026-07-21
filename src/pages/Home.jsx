@@ -58,9 +58,9 @@ export default function Home({ onNavigate }) {
 
       <div className="hm-wrap" id="top">
         <section className="hm-hero">
-          <p className="hm-eyebrow">Trust attestation &middot; the agentic internet</p>
-          <h1 className="hm-h1">Ask one question. Get a verdict <span className="hm-qt">no single feed can return.</span></h1>
-          <p className="hm-lede">The web is filling with traffic no human ever typed. TunnelMind resolves any IP, ASN, domain, or ad-tech entity through four correlated lenses and returns <strong>one signed verdict</strong>. Every observation is Ed25519-signed at the source, so the data proves where it came from.</p>
+          <p className="hm-eyebrow">Perception for AI agents</p>
+          <h1 className="hm-h1">The perception layer<br /><span className="hm-qt">for the agentic internet.</span></h1>
+          <p className="hm-lede">See the internet &mdash; and see the other agents on it. TunnelMind resolves any IP, ASN, domain, or agent through four correlated lenses &mdash; attacker history, supply-chain trust, surveillance, and routing &mdash; fused into <strong>one signed verdict</strong>. Every observation is Ed25519-signed at the source.</p>
           <VerifyWidget onNavigate={onNavigate} />
         </section>
 

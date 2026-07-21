@@ -2123,7 +2123,7 @@ h1, h2 {
 
 /* hero */
 .hm-hero { padding: var(--s5) 0 var(--s6); }
-.hm-h1 { font-family: var(--display); font-weight: 600; font-size: 48px; line-height: 1.1; letter-spacing: .01em; max-width: 18ch; text-transform: uppercase; margin: 0; }
+.hm-h1 { font-family: var(--display); font-weight: 600; font-size: 48px; line-height: 1.04; letter-spacing: .01em; max-width: 26ch; text-transform: uppercase; margin: 0; }
 .hm-qt { color: var(--hm-gold); text-shadow: 0 0 26px rgba(201,168,106,.35); }
 .hm-lede { margin-top: var(--s3); max-width: 60ch; color: var(--hm-mute); font-size: 16px; }
 .hm-lede strong { color: var(--hm-bone); font-weight: 500; }
@@ -2294,7 +2294,7 @@ h1, h2 {
 /* ---------- landing: neutralize hardcoded effects ---------- */
 /* ponytail: old-site dark navy accent on the key phrase, no knockout box (was
    ragged per-line black boxes). Tune this one hex if Josh wants it bluer/darker. */
-.hm-page .hm-qt { text-shadow: none; background: none; color: #1e3a8a; padding: 0; }
+.hm-page .hm-qt { text-shadow: none; background: none; color: #172554; padding: 0; }
 .hm-page .hm-moat { background: none; border-left: 4px solid var(--wpm-ink); font-size: 16px; }
 .hm-page .hm-inline { color: var(--wpm-ink); border-bottom: 1px solid var(--wpm-ink); }
 .hm-page .hm-inline:hover { background: var(--wpm-ink); color: var(--wpm-paper); }
